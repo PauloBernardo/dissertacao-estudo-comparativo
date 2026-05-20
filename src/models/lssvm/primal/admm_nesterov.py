@@ -1,43 +1,41 @@
 """Sparse LSSVM in Primal via Nesterov-Accelerated ADMM.
 
-Implements Algorithm 3 (Fast LSSVM-ADMM) from:
+Implements Fast LSSVM-ADMM from:
     Marinho et al. "Sparse Least Square SVM in Primal via Nesterov
     Accelerated Alternating Directions Method of Multipliers", IWANN 2023.
 
-Mathematical formulation (following paper notation):
-----------------------------------------------------
-Primal LSSVM problem (Eq. 8):
-    min_{w,ε}  f(w,ε) = ½ wᵀw + 1/(2τ) Σ εᵢ²
-    s.t.       yᵢ = wφ(xᵢ) + εᵢ,  i = 1,...,N
+Mathematical formulation
+------------------------
+Primal LSSVM (Eq. 8):
+    min_{w,ε}  ½ wᵀw + 1/(2τ) Σ εᵢ²   s.t. yᵢ = wᵀφ(xᵢ) + εᵢ
 
-After KKT conditions and representer theorem (Eq. 11):
-    (τK + KᵀK) α = Ky   →   (τI + K) α = y
-
-Tikhonov-regularised kernel matrix (Eq. 13):
-    K̃ = K + σ_tik·I = PP^T   (Cholesky decomposition)
-
-Reformulated LASSO problem (Eq. 16):
+After representer theorem (Eq. 13–16), reduce to LASSO:
     min_α  ‖Aα - u‖₂² + λ‖α‖₁
-where A = P^T,  u = (τI + PP^T)⁻¹ P^T y.
+where:
+    K̃  = K + σ_tik·I = LLᵀ   (Cholesky; L lower-triangular)
+    A  = Lᵀ                    (upper-triangular, n×n)
+    u  = (τI + K̃)⁻¹ Lᵀ y     (n-vector)
 
-ADMM update rules (Eq. 20):
-    α^{k+1} = (PP^T + ρI)⁻¹ (P(τI + PP^T)⁻¹ P^T y + ρ(ẑ^k - û^k))
-    z^{k+1} = S_{λ/ρ}(α^{k+1} + û^k)
+Fast ADMM with FISTA momentum (Algorithm 2+3):
+    α^{k+1} = (K̃ + ρI)⁻¹ (r + ρ(ẑ^k - û^k))   where r = L u
+    z^{k+1} = S_{λ/(2ρ)}(α^{k+1} + û^k)          soft-threshold
     u^{k+1} = û^k + α^{k+1} - z^{k+1}
+    t^{k+1} = (1 + √(1 + 4t_k²)) / 2              FISTA momentum
+    ẑ^{k+1} = z^{k+1} + ((t_k-1)/t_{k+1})(z^{k+1} - z^k)
+    û^{k+1} = u^{k+1} + ((t_k-1)/t_{k+1})(u^{k+1} - u^k)
 
-Fast ADMM adds Nesterov momentum (Algorithm 2):
-    β_{k+1}  = (1 + √(1 + β_k²)) / 2
-    ẑ^{k+1}  = z^{k+1} + (β_k / β_{k+1})(z^{k+1} - z^k)
-    û^{k+1}  = u^{k+1} + (β_k / β_{k+1})(u^{k+1} - u^k)
+Adaptive restart (Fast_ADMM_restart variant):
+    c_k = (1/η)(‖u^{k+1} - û^k‖² + η²‖z^{k+1} - ẑ^k‖²)
+    If c_k < η·c_{k-1}: keep momentum; else: reset t=1, ẑ=z, û=u.
 
-Prediction (Eq. 12):
-    f(x) = Σ_{i∈B} αᵢ K(xᵢ, x)    [no bias in primal formulation]
+Prediction:
+    f(x) = αᵀ K(X_train, x)    (no bias in primal; bias estimated optionally)
 """
 
 from __future__ import annotations
 
 import logging
-from typing import Optional
+from math import log, sqrt
 
 import numpy as np
 import scipy.linalg
@@ -57,194 +55,201 @@ class ADMMNesterovLSSVM(BaseLSSVM):
     sigma : float
         RBF kernel bandwidth (γ = 1/(2σ²)).
     tau : float
-        LSSVM regularisation parameter (trade-off bias/variance).
-    lambda_ : float
-        L1 (LASSO) regularisation parameter — controls sparsity.
-        Larger values yield fewer support vectors.
-    rho : float
-        ADMM penalty parameter. Controls convergence speed.
+        LSSVM regularisation parameter (bias/variance trade-off).
+    lambda_ : float or None
+        L1 regularisation — controls sparsity. If None, auto-set to
+        √(2 log n) following the FISTA compressed-sensing convention.
+    rho : float or None
+        ADMM augmented-Lagrangian penalty. If None, auto-set to
+        1/max_eigenvalue(AᵀA), matching the reference implementation.
     tol : float
-        Primal and dual residual tolerance for convergence.
+        Convergence tolerance on primal and dual residuals.
     max_iter : int
         Maximum ADMM iterations.
     use_nesterov : bool
-        Whether to apply Nesterov momentum (Algorithm 2). If False,
-        runs standard ADMM without acceleration.
+        Apply FISTA momentum (Algorithm 2). If False, runs plain ADMM.
     adaptive_restart : bool
-        If True, resets Nesterov momentum when the primal residual
-        increases significantly (stabilises oscillating trajectories).
-        Mentioned as future work in the paper; enabled by default.
+        Lyapunov-based restart (Fast_ADMM_restart): reset momentum when
+        the convergence indicator stops decreasing.
+    restart_eta : float
+        Restart threshold η in [0, 1]. Momentum reset when c_k ≥ η·c_{k-1}.
     tikhonov_reg : float
-        Small positive constant added to K before Cholesky to ensure
-        positive definiteness: K̃ = K + tikhonov_reg·I.
+        Tikhonov regularisation added to K for Cholesky stability:
+        K̃ = K + tikhonov_reg·I.
+    estimate_bias : bool
+        Whether to estimate an intercept as b = mean(y - Kα). The pure
+        primal formulation has no bias; enabling this helps on imbalanced data.
     """
 
     def __init__(
         self,
         sigma: float = 1.0,
         tau: float = 1.0,
-        lambda_: float = 1.0,
-        rho: float = 1.0,
+        lambda_: float | None = None,
+        rho: float | None = None,
         tol: float = 1e-6,
-        max_iter: int = 500,
+        max_iter: int = 5000,
         use_nesterov: bool = True,
         adaptive_restart: bool = True,
-        tikhonov_reg: float = 1e-6,
+        restart_eta: float = 0.999,
+        tikhonov_reg: float = 0.01,
+        estimate_bias: bool = True,
     ) -> None:
         super().__init__(sigma=sigma, tau=tau, tol=tol, max_iter=max_iter)
         self.lambda_ = lambda_
         self.rho = rho
         self.use_nesterov = use_nesterov
         self.adaptive_restart = adaptive_restart
+        self.restart_eta = restart_eta
         self.tikhonov_reg = tikhonov_reg
+        self.estimate_bias = estimate_bias
 
-    # ── Soft-thresholding operator ────────────────────────────────────────────
+    # ── Soft-thresholding ─────────────────────────────────────────────────────
 
     @staticmethod
     def _soft_threshold(v: NDArray, threshold: float) -> NDArray:
-        """S_κ(v) = sign(v) · max(|v| - κ, 0) (element-wise)."""
+        """S_κ(v) = sign(v) · max(|v| - κ, 0)."""
         return np.sign(v) * np.maximum(np.abs(v) - threshold, 0.0)
 
     # ── Core solver ───────────────────────────────────────────────────────────
 
     def _solve(self, X: NDArray, y: NDArray) -> None:
-        """Run Fast LSSVM-ADMM (Algorithms 2+3 from the paper).
-
-        After convergence, populates:
-        - self.alpha_  : primal Lagrange multipliers (sparse)
-        - self.bias_   : estimated intercept
-        - self.n_iter_ : iterations until convergence
-        """
         n = len(y)
 
-        # ── Step 1 of Algorithm 3: kernel + Cholesky factorisation ────────────
-        K = self.kernel_matrix(X)  # (n, n) kernel matrix
-
-        # K̃ = K + σ_tik·I  — Tikhonov regularisation for numerical stability
+        # ── Step 1: Kernel matrix + Cholesky ──────────────────────────────────
+        K = self.kernel_matrix(X)
         K_tik = K + self.tikhonov_reg * np.eye(n)
 
-        # Cholesky: K̃ = LL^T  →  P = L (lower triangular), A = P^T
         try:
             L = np.linalg.cholesky(K_tik)
         except np.linalg.LinAlgError:
-            logger.warning("Cholesky failed; adding extra regularisation 1e-4.")
-            L = np.linalg.cholesky(K_tik + 1e-4 * np.eye(n))
+            logger.warning("Cholesky failed — adding extra regularisation 1e-3.")
+            L = np.linalg.cholesky(K_tik + 1e-3 * np.eye(n))
 
-        # b_vec = (τI + K̃)⁻¹ P^T y   [vector used as RHS in ADMM]
-        # Solved via the linear system (τI + K̃) b_vec = P^T y
-        Pt_y = L.T @ y                                      # P^T y
-        tau_eye = self.tau * np.eye(n)
-        b_vec = np.linalg.solve(tau_eye + K_tik, Pt_y)     # (n,)
+        # A = Lᵀ  (n×n upper triangular)
+        A = L.T
 
-        # r = A^T b_vec = P b_vec   [precomputed ADMM RHS contribution]
-        r = L @ b_vec                                        # (n,)
+        # u = (τI + K̃)⁻¹ Lᵀ y
+        Pt_y = A @ y
+        b_vec = np.linalg.solve(self.tau * np.eye(n) + K_tik, Pt_y)
 
-        # ── Precompute (A^T A + ρI) = (K̃ + ρI) and its Cholesky ─────────────
-        # This is reused every ADMM iteration (caching the factorisation).
-        M = K_tik + self.rho * np.eye(n)                   # (n, n)
-        L_M = np.linalg.cholesky(M)                        # lower triangular
+        # r = A u = L b_vec  (cached RHS contribution)
+        r = L @ b_vec
 
-        # ── Step 2 of Algorithm 3: Fast ADMM (Algorithm 2) ───────────────────
+        # ── Step 2: Auto-select ρ and λ if not provided ───────────────────────
+        # ρ from max eigenvalue of AᵀA = K̃  (reference: rho = 1/max_eig)
+        AtA = A.T @ A   # = K̃  (symmetric)
+        eig_max = float(np.linalg.eigvalsh(AtA).max())
+        rho = self.rho if self.rho is not None else (1.0 / eig_max if eig_max > 0 else 1.0)
+
+        # λ from compressed sensing: √(2 log n)  (reference default)
+        lam = self.lambda_ if self.lambda_ is not None else sqrt(2.0 * log(n))
+
+        # Soft-threshold: reference uses gamma/2 convention → threshold = λ/(2ρ)
+        threshold = lam / (2.0 * rho)
+
+        # ── Step 3: Precompute (K̃ + ρI) factorisation ────────────────────────
+        M = K_tik + rho * np.eye(n)
+        L_M = np.linalg.cholesky(M)
+
+        # ── Step 4: ADMM loop ─────────────────────────────────────────────────
         alpha = np.zeros(n)
-        z = np.zeros(n)       # actual z^k
-        u = np.zeros(n)       # actual u^k
-        z_hat = np.zeros(n)   # ẑ^k  (extrapolated, used in α and z updates)
-        u_hat = np.zeros(n)   # û^k  (extrapolated, used in α and z updates)
-        beta = 1.0            # β_1 = 1
-        threshold = self.lambda_ / self.rho   # λ/ρ for soft-thresholding
+        z = np.zeros(n)
+        u = np.zeros(n)
+        z_hat = np.zeros(n)
+        u_hat = np.zeros(n)
+        t = 1.0           # FISTA momentum variable
 
-        prev_primal_res = np.inf
+        # Lyapunov-based restart bookkeeping
+        c_prev = np.inf
+
         converged = False
-
         for k in range(self.max_iter):
-            # α^{k+1} = (K̃ + ρI)⁻¹ (r + ρ(ẑ^k - û^k))
-            rhs = r + self.rho * (z_hat - u_hat)
+            # α-step
+            rhs = r + rho * (z_hat - u_hat)
             alpha_new = scipy.linalg.cho_solve((L_M, True), rhs)
 
-            # z^{k+1} = S_{λ/ρ}(α^{k+1} + û^k)
+            # z-step (soft-threshold with λ/(2ρ) — matches reference Sthresh)
+            z_prev = z.copy()
             z_new = self._soft_threshold(alpha_new + u_hat, threshold)
 
-            # u^{k+1} = û^k + α^{k+1} - z^{k+1}
+            # u-step
+            u_prev = u.copy()
             u_new = u_hat + alpha_new - z_new
 
-            # ── Convergence check ─────────────────────────────────────────────
+            # Convergence check
             primal_res = float(np.linalg.norm(alpha_new - z_new))
-            dual_res = float(self.rho * np.linalg.norm(z_new - z))
-
+            dual_res = float(rho * np.linalg.norm(z_new - z_prev))
             if primal_res < self.tol and dual_res < self.tol:
                 z = z_new
                 alpha = alpha_new
                 converged = True
                 break
 
-            # ── Nesterov momentum update (Algorithm 2) ────────────────────────
+            # Nesterov / FISTA momentum
             if self.use_nesterov:
-                beta_new = (1.0 + np.sqrt(1.0 + beta**2)) / 2.0
+                # FISTA formula: t_{k+1} = (1 + √(1 + 4t_k²)) / 2
+                t_new = (1.0 + sqrt(1.0 + 4.0 * t * t)) / 2.0
+                momentum = (t - 1.0) / t_new
 
-                # Adaptive restart: reset momentum on oscillation
-                if self.adaptive_restart and primal_res > prev_primal_res * 1.5:
-                    beta_new = 1.0
-                    z_hat_new = z_new.copy()
-                    u_hat_new = u_new.copy()
+                if self.adaptive_restart:
+                    # Lyapunov condition: c_k = ‖Δu‖²/η + η‖Δz‖²
+                    eta = self.restart_eta
+                    delta_u = u_new - u_hat
+                    delta_z = z_new - z_hat
+                    c = float(np.dot(delta_u, delta_u) / eta +
+                              eta * np.dot(delta_z, delta_z))
+
+                    if c < eta * c_prev:
+                        # Good progress — keep momentum
+                        z_hat = z_new + momentum * (z_new - z_prev)
+                        u_hat = u_new + momentum * (u_new - u_prev)
+                        c_prev = c
+                    else:
+                        # Restart: reset momentum
+                        t_new = 1.0
+                        z_hat = z_new.copy()
+                        u_hat = u_new.copy()
+                        c_prev = c / eta
                 else:
-                    # ẑ^{k+1} = z^{k+1} + (β_k/β_{k+1})(z^{k+1} - z^k)
-                    # û^{k+1} = u^{k+1} + (β_k/β_{k+1})(u^{k+1} - u^k)
-                    momentum = beta / beta_new
-                    z_hat_new = z_new + momentum * (z_new - z)
-                    u_hat_new = u_new + momentum * (u_new - u)
-            else:
-                beta_new = beta
-                z_hat_new = z_new.copy()
-                u_hat_new = u_new.copy()
+                    z_hat = z_new + momentum * (z_new - z_prev)
+                    u_hat = u_new + momentum * (u_new - u_prev)
 
-            # Advance state
+                t = t_new
+            else:
+                z_hat = z_new.copy()
+                u_hat = u_new.copy()
+
             z = z_new
             u = u_new
-            z_hat = z_hat_new
-            u_hat = u_hat_new
-            beta = beta_new
             alpha = alpha_new
-            prev_primal_res = primal_res
 
         self.n_iter_: int = k + 1
-        # z is the ADMM primal variable that is always sparse (passes through
-        # soft-thresholding at every step). Use z as the final solution.
-        # At convergence alpha ≈ z; if not converged, z is still sparse.
-        self.alpha_ = z
+        self.alpha_ = z       # z is always sparse (passes through soft-threshold)
         self.converged_ = converged
+        self.rho_used_ = rho
+        self.lambda_used_ = lam
 
         if not converged:
             logger.warning(
-                "ADMMNesterovLSSVM did not converge in %d iterations "
-                "(primal_res=%.2e).",
-                self.max_iter,
-                float(np.linalg.norm(alpha - z_new)),
+                "ADMMNesterovLSSVM did not converge in %d iters (primal_res=%.2e).",
+                self.max_iter, float(np.linalg.norm(alpha - z)),
             )
 
-        # Bias estimation: b = mean(y - K α)
-        # In the paper the bias is omitted, but we estimate it for robustness
-        # on imbalanced datasets.
-        self.bias_: float = float(np.mean(y - K @ alpha))
+        # Optional bias estimate: b = mean(y - Kα)
+        self.bias_: float = float(np.mean(y - K @ self.alpha_)) if self.estimate_bias else 0.0
 
         logger.info(
             "ADMMNesterovLSSVM — n_sv=%d/%d (%.1f%% sparse), %d iters, "
-            "bias=%.4f, converged=%s",
-            self.n_support_,
-            n,
-            100.0 * self.sparsity_ratio_,
-            self.n_iter_,
-            self.bias_,
-            converged,
+            "λ=%.4f, ρ=%.4f, bias=%.4f, converged=%s",
+            self.n_support_, n, 100.0 * self.sparsity_ratio_,
+            self.n_iter_, lam, rho, self.bias_, converged,
         )
 
-    # ── Primal decision function (overrides dual formula in BaseLSSVM) ────────
+    # ── Primal decision function ──────────────────────────────────────────────
 
     def decision_function(self, X: NDArray) -> NDArray:
-        """Primal prediction: f(x) = Σᵢ αᵢ K(xᵢ, x) + b  (Eq. 12).
-
-        Note: unlike the dual LSSVM, there is no yᵢ factor here — the primal
-        Lagrange multipliers αᵢ already encode the class direction.
-        """
+        """f(x) = αᵀ K(X_train, x) + b."""
         check_is_fitted(self, ["alpha_", "bias_", "X_train_"])
         X = check_array(X)
         K = self.kernel_matrix(X, self.X_train_)
