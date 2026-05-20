@@ -178,6 +178,7 @@ def tune_model(
     metric: str = "f1_macro",
     seed: int = 0,
     timeout: float | None = None,
+    fixed_params_override: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Tune a model on a dataset and return the best hyperparameters.
 
@@ -189,6 +190,8 @@ def tune_model(
     n_trials : number of Optuna trials
     cv_folds : number of CV folds
     metric : optimisation objective ("f1_macro", "accuracy", "auc_roc")
+    fixed_params_override : overrides for fixed_params (e.g. {"max_epochs": 50}
+                            to speed up transformer tuning)
     seed : global random seed
     timeout : seconds budget (None = unlimited)
 
@@ -217,17 +220,19 @@ def tune_model(
 
     model_cfg = config[config_key]
     search_space = model_cfg.get("search_space", {})
-    fixed_params = model_cfg.get("fixed_params", {})
+    fixed_params = {**model_cfg.get("fixed_params", {}), **(fixed_params_override or {})}
 
     X, y, _ = DatasetLoader.load(dataset_name)
     label_format = "signed" if class_name in _LSSVM_MODELS else "binary"
     cv = StratifiedKFold(n_splits=cv_folds, shuffle=True, random_state=seed)
 
+    # Models that accept a random_state constructor argument
+    _accepts_random_state = {"OppositeMapsLSSVM", "FTTransformer"}
+
     def objective(trial: optuna.Trial) -> float:
         sampled = _suggest_params(trial, search_space)
         params = {**fixed_params, **sampled}
-        # Pass seed to models that support it
-        if "random_state" in _build_model.__code__.co_varnames:
+        if class_name in _accepts_random_state:
             params.setdefault("random_state", seed)
         return _cv_score(class_name, params, X, y, cv, metric, label_format)
 
