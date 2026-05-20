@@ -1,0 +1,274 @@
+models:
+  # ── LSSVM Methods ────────────────────────────────────────────────────────────
+  lssvm_standard:
+    class: src.models.lssvm.standard.StandardLSSVM
+    description: Classic LSSVM (Suykens & Vandewalle, 1999) via Conjugate Gradient
+    search_space:
+      sigma:
+        type: log_uniform
+        low: 0.01
+        high: 100.0
+      tau:
+        type: log_uniform
+        low: 0.01
+        high: 100.0
+    fixed_params:
+      max_iter: 1000
+      tol: 1.0e-6
+
+  lssvm_admm_nesterov:
+    class: src.models.lssvm.primal.admm_nesterov.ADMMNesterovLSSVM
+    description: Sparse LSSVM in Primal via Nesterov-accelerated ADMM (Marinho et al.)
+    search_space:
+      sigma:
+        type: log_uniform
+        low: 0.01
+        high: 100.0
+      tau:
+        type: log_uniform
+        low: 0.01
+        high: 100.0
+      lambda_:
+        type: log_uniform
+        low: 0.01
+        high: 100.0
+      rho:
+        type: log_uniform
+        low: 0.1
+        high: 10.0
+    fixed_params:
+      max_iter: 500
+      tol: 1.0e-6
+      use_nesterov: true
+      adaptive_restart: true
+
+  lssvm_pcp:
+    class: src.models.lssvm.primal.pcp_lssvm.PCPLSSVm
+    description: Pivoted Cholesky Primal LSSVM (Zhou, 2015)
+    search_space:
+      sigma:
+        type: log_uniform
+        low: 0.01
+        high: 100.0
+      tau:
+        type: log_uniform
+        low: 0.01
+        high: 100.0
+      rank:
+        type: int_uniform
+        low: 5
+        high: 200
+    fixed_params:
+      tol: 1.0e-6
+
+  lssvm_fsa:
+    class: src.models.lssvm.primal.fsa_lssvm.FSALSSVm
+    description: Fast Sparse Approximation LSSVM (Jiao et al., 2007)
+    search_space:
+      sigma:
+        type: log_uniform
+        low: 0.01
+        high: 100.0
+      tau:
+        type: log_uniform
+        low: 0.01
+        high: 100.0
+      n_components:
+        type: int_uniform
+        low: 5
+        high: 200
+    fixed_params:
+      tol: 1.0e-6
+
+  lssvm_pruning:
+    class: src.models.lssvm.dual.p_lssvm.PruningLSSVM
+    description: Pruning LSSVM (Suykens et al.) — dual sparsification
+    search_space:
+      sigma:
+        type: log_uniform
+        low: 0.01
+        high: 100.0
+      tau:
+        type: log_uniform
+        low: 0.01
+        high: 100.0
+      pruning_rate:
+        type: uniform
+        low: 0.05
+        high: 0.5
+    fixed_params:
+      max_pruning_steps: 20
+      tol: 1.0e-6
+
+  lssvm_ip:
+    class: src.models.lssvm.dual.ip_lssvm.IPLSSVm
+    description: Two-step Sparse LSSVM (Carvalho & Braga, 2009)
+    search_space:
+      sigma:
+        type: log_uniform
+        low: 0.01
+        high: 100.0
+      tau:
+        type: log_uniform
+        low: 0.01
+        high: 100.0
+      selection_ratio:
+        type: uniform
+        low: 0.05
+        high: 0.5
+    fixed_params:
+      tol: 1.0e-6
+
+  lssvm_opposite_maps:
+    class: src.models.lssvm.dual.opposite_maps.OppositeMapsLSSVM
+    description: Opposite Maps LSSVM (Neto & Barreto, 2013)
+    search_space:
+      sigma:
+        type: log_uniform
+        low: 0.01
+        high: 100.0
+      tau:
+        type: log_uniform
+        low: 0.01
+        high: 100.0
+      n_prototypes:
+        type: int_uniform
+        low: 5
+        high: 100
+    fixed_params:
+      tol: 1.0e-6
+
+  # ── Tabular Transformer Methods ───────────────────────────────────────────────
+  ft_transformer:
+    class: src.models.transformers.ft_transformer.FTTransformer
+    description: Feature Tokenizer + Transformer (Gorishniy et al., 2021)
+    search_space:
+      embedding_dim:
+        type: categorical
+        choices: [32, 64, 128, 192]
+      num_blocks:
+        type: categorical
+        choices: [2, 3, 4, 6]
+      num_heads:
+        type: categorical
+        choices: [2, 4, 8]
+      ffn_factor:
+        type: categorical
+        choices: [2, 4]
+      dropout:
+        type: uniform
+        low: 0.0
+        high: 0.3
+      attn_dropout:
+        type: uniform
+        low: 0.0
+        high: 0.2
+      lr:
+        type: log_uniform
+        low: 1.0e-5
+        high: 1.0e-3
+      weight_decay:
+        type: log_uniform
+        low: 1.0e-6
+        high: 1.0e-2
+      batch_size:
+        type: categorical
+        choices: [64, 128, 256, 512]
+    fixed_params:
+      max_epochs: 200
+      patience: 20
+      attention_type: softmax
+
+  ft_transformer_topk:
+    class: src.models.transformers.ft_transformer.FTTransformer
+    description: FT-Transformer with Top-k sparse attention
+    search_space:
+      embedding_dim:
+        type: categorical
+        choices: [32, 64, 128, 192]
+      num_blocks:
+        type: categorical
+        choices: [2, 3, 4, 6]
+      num_heads:
+        type: categorical
+        choices: [2, 4, 8]
+      dropout:
+        type: uniform
+        low: 0.0
+        high: 0.3
+      lr:
+        type: log_uniform
+        low: 1.0e-5
+        high: 1.0e-3
+      batch_size:
+        type: categorical
+        choices: [64, 128, 256, 512]
+      topk_ratio:
+        type: categorical
+        choices: [0.05, 0.10, 0.25]
+    fixed_params:
+      max_epochs: 200
+      patience: 20
+      attention_type: topk
+
+  ft_transformer_entmax:
+    class: src.models.transformers.ft_transformer.FTTransformer
+    description: FT-Transformer with alpha-entmax sparse attention
+    search_space:
+      embedding_dim:
+        type: categorical
+        choices: [32, 64, 128, 192]
+      num_blocks:
+        type: categorical
+        choices: [2, 3, 4, 6]
+      num_heads:
+        type: categorical
+        choices: [2, 4, 8]
+      dropout:
+        type: uniform
+        low: 0.0
+        high: 0.3
+      lr:
+        type: log_uniform
+        low: 1.0e-5
+        high: 1.0e-3
+      batch_size:
+        type: categorical
+        choices: [64, 128, 256, 512]
+      alpha:
+        type: uniform
+        low: 1.2
+        high: 2.0
+    fixed_params:
+      max_epochs: 200
+      patience: 20
+      attention_type: entmax
+
+  ft_transformer_sparsemax:
+    class: src.models.transformers.ft_transformer.FTTransformer
+    description: FT-Transformer with sparsemax attention
+    search_space:
+      embedding_dim:
+        type: categorical
+        choices: [32, 64, 128, 192]
+      num_blocks:
+        type: categorical
+        choices: [2, 3, 4, 6]
+      num_heads:
+        type: categorical
+        choices: [2, 4, 8]
+      dropout:
+        type: uniform
+        low: 0.0
+        high: 0.3
+      lr:
+        type: log_uniform
+        low: 1.0e-5
+        high: 1.0e-3
+      batch_size:
+        type: categorical
+        choices: [64, 128, 256, 512]
+    fixed_params:
+      max_epochs: 200
+      patience: 20
+      attention_type: sparsemax

@@ -1,0 +1,158 @@
+datasets:
+  # Tier 1 — Pequenos (datasets originais do paper)
+  HAB:
+    name: Haberman
+    tier: 1
+    n_samples: 306
+    n_features: 3
+    source: UCI
+    url: https://archive.ics.uci.edu/ml/machine-learning-databases/haberman/haberman.data
+    target_col: survival
+    positive_class: 1
+    negative_class: 2
+
+  PID:
+    name: Pima Diabetes
+    tier: 1
+    n_samples: 768
+    n_features: 8
+    source: UCI
+    url: https://raw.githubusercontent.com/jbrownlee/Datasets/master/pima-indians-diabetes.csv
+    target_col: outcome
+    positive_class: 1
+    negative_class: 0
+
+  BCW:
+    name: Breast Cancer Wisconsin
+    tier: 1
+    n_samples: 569
+    n_features: 30
+    source: sklearn
+    target_col: target
+    positive_class: 1
+    negative_class: 0
+
+  VCP:
+    name: Vertebral Column
+    tier: 1
+    n_samples: 310
+    n_features: 6
+    source: UCI
+    url: https://archive.ics.uci.edu/ml/machine-learning-databases/00212/vertebral_column_data.zip
+    target_col: class
+    positive_class: AB
+    negative_class: NO
+
+  GCR:
+    name: German Credit
+    tier: 1
+    n_samples: 1000
+    n_features: 20
+    source: UCI
+    url: https://archive.ics.uci.edu/ml/machine-learning-databases/statlog/german/german.data
+    target_col: credit_risk
+    positive_class: 1
+    negative_class: 2
+
+  AUS:
+    name: Australian Credit
+    tier: 1
+    n_samples: 690
+    n_features: 14
+    source: UCI
+    url: https://archive.ics.uci.edu/ml/machine-learning-databases/statlog/australian/australian.dat
+    target_col: class
+    positive_class: 1
+    negative_class: 0
+
+  # Tier 2 — Médios
+  ADULT:
+    name: Adult Income
+    tier: 2
+    n_samples: 48842
+    n_features: 14
+    source: UCI
+    target_col: income
+    positive_class: ">50K"
+    negative_class: "<=50K"
+
+  BANK:
+    name: Bank Marketing
+    tier: 2
+    n_samples: 45211
+    n_features: 16
+    source: UCI
+    target_col: subscribed
+    positive_class: "yes"
+    negative_class: "no"
+
+  CREDIT:
+    name: Credit Card Default
+    tier: 2
+    n_samples: 30000
+    n_features: 23
+    source: UCI
+    target_col: default
+    positive_class: 1
+    negative_class: 0
+
+  TELCO:
+    name: Telco Churn
+    tier: 2
+    n_samples: 7043
+    n_features: 20
+    source: kaggle
+    target_col: Churn
+    positive_class: "Yes"
+    negative_class: "No"
+
+  SHOPPERS:
+    name: Online Shoppers
+    tier: 2
+    n_samples: 12330
+    n_features: 17
+    source: UCI
+    target_col: Revenue
+    positive_class: true
+    negative_class: false
+
+  HIGGS50K:
+    name: Higgs Boson (50k subset)
+    tier: 2
+    n_samples: 50000
+    n_features: 28
+    source: UCI
+    target_col: label
+    positive_class: 1
+    negative_class: 0
+
+  # Tier 3 — Grandes (subsets para escalabilidade)
+  HIGGS500K:
+    name: HIGGS (500k subset)
+    tier: 3
+    n_samples: 500000
+    n_features: 28
+    source: UCI
+    target_col: label
+    positive_class: 1
+    negative_class: 0
+
+  COVER:
+    name: Covertype (1 vs 2)
+    tier: 3
+    n_samples: 495141
+    n_features: 54
+    source: sklearn
+    target_col: Cover_Type
+    positive_class: 1
+    negative_class: 2
+
+  KDD99:
+    name: KDD Cup 99 (Normal vs Attack, 500k)
+    tier: 3
+    n_samples: 500000
+    n_features: 41
+    source: sklearn
+    target_col: labels
+    positive_class: normal
+    negative_class: attack
