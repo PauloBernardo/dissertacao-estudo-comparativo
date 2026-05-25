@@ -42,6 +42,7 @@ RUNNER_TO_TUNING_KEY = {
     "PruningLSSVM":          "PruningLSSVM",
     "IPLSSVm":               "IPLSSVm",
     "OppositeMapsLSSVM":     "OppositeMapsLSSVM",
+    "ADMMNesterovLSSVM":     "ADMMNesterovLSSVM",
     "FTTransformer_softmax": "FTTransformer_softmax",
     "FTTransformer_topk":    "FTTransformer_topk",
     "FTTransformer_entmax":  "FTTransformer_entmax",
@@ -64,6 +65,7 @@ DEFAULT_PARAMS = {
     "PruningLSSVM":         {"sigma": 1.0, "tau": 1.0},
     "IPLSSVm":              {"sigma": 1.0, "tau": 1.0},
     "OppositeMapsLSSVM":    {"sigma": 1.0, "tau": 1.0, "n_prototypes": 10},
+    "ADMMNesterovLSSVM":    {"sigma": 1.0, "tau": 1.0},
     "FTTransformer_softmax":  {"embedding_dim": 64, "num_blocks": 3, "num_heads": 4,
                                "max_epochs": 200, "patience": 20, "attention_type": "softmax"},
     "FTTransformer_topk":     {"embedding_dim": 64, "num_blocks": 3, "num_heads": 4,
@@ -129,7 +131,9 @@ def main() -> None:
     if args.output.exists():
         existing_results = json.loads(args.output.read_text())
         for r in existing_results:
-            k = f"{r.get('model')}__{r.get('dataset')}__{r.get('seed')}"
+            # model_variant distinguishes transformer attention types (e.g. FTTransformer_softmax)
+            variant = r.get('model_variant') or r.get('model')
+            k = f"{variant}__{r.get('dataset')}__{r.get('seed')}"
             existing_keys.add(k)
         log.info("Resuming: %d results already saved", len(existing_results))
 

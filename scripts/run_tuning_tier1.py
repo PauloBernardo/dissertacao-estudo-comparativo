@@ -41,6 +41,7 @@ MODELS = [
     ("lssvm_pruning",        "PruningLSSVM",        False),
     ("lssvm_ip",             "IPLSSVm",            False),
     ("lssvm_opposite_maps",  "OppositeMapsLSSVM",  False),
+    ("lssvm_admm_nesterov",  "ADMMNesterovLSSVM",  False),
     ("ft_transformer",       "FTTransformer_softmax",  True),
     ("ft_transformer_topk",  "FTTransformer_topk",     True),
     ("ft_transformer_entmax","FTTransformer_entmax",   True),

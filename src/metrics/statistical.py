@@ -85,11 +85,15 @@ def nemenyi_cd(n_models: int, n_datasets: int, alpha: float = 0.05) -> float:
     -------
     cd : critical difference value
     """
-    # q_alpha values from standard table (alpha=0.05)
-    # Demsar (2006) Table 5, k=2..10
+    # q_alpha values from Demsar (2006) Table 5, k=2..25
+    # Extended with values from the Studentised range distribution
     q_alpha_table = {
-        0.05: [np.nan, np.nan, 1.960, 2.343, 2.569, 2.728, 2.850, 2.949, 3.031, 3.102, 3.164],
-        0.10: [np.nan, np.nan, 1.645, 2.052, 2.291, 2.459, 2.589, 2.693, 2.780, 2.855, 2.920],
+        0.05: [np.nan, np.nan, 1.960, 2.343, 2.569, 2.728, 2.850, 2.949, 3.031, 3.102, 3.164,
+               3.219, 3.268, 3.313, 3.354, 3.391, 3.426, 3.458, 3.489, 3.517, 3.544,
+               3.569, 3.593, 3.616, 3.637, 3.658],
+        0.10: [np.nan, np.nan, 1.645, 2.052, 2.291, 2.459, 2.589, 2.693, 2.780, 2.855, 2.920,
+               2.978, 3.030, 3.077, 3.120, 3.159, 3.196, 3.230, 3.261, 3.291, 3.319,
+               3.346, 3.371, 3.394, 3.417, 3.439],
     }
     if alpha not in q_alpha_table:
         raise ValueError(f"alpha must be 0.05 or 0.10, got {alpha}")
