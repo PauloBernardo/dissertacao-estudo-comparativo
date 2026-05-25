@@ -174,12 +174,19 @@ def run(results_path: Path, metric: str) -> None:
             res = wilcoxon_pairwise(a[valid], b[valid])
             raw_pvalues.append((labels_v[i], labels_v[j], res["pvalue"]))
 
-    # Holm-Bonferroni: sort by p-value, multiply by (n_comparisons - rank)
+    # Holm-Bonferroni: sort ascending, multiply each by (n_comparisons - rank),
+    # then enforce monotonicity with cumulative max so p_adj[i] >= p_adj[i-1].
     raw_pvalues.sort(key=lambda x: x[2])
+    adjusted: list[float] = []
+    running_max = 0.0
+    for rank, (_, _, p_raw) in enumerate(raw_pvalues):
+        p_adj = min(1.0, p_raw * (n_comparisons - rank))
+        running_max = max(running_max, p_adj)
+        adjusted.append(running_max)
+
     pmat = pd.DataFrame(np.nan, index=labels_v, columns=labels_v)
     pmat_raw = pd.DataFrame(np.nan, index=labels_v, columns=labels_v)
-    for rank, (li, lj, p_raw) in enumerate(raw_pvalues):
-        p_adj = min(1.0, p_raw * (n_comparisons - rank))
+    for (li, lj, p_raw), p_adj in zip(raw_pvalues, adjusted):
         pmat.loc[li, lj] = p_adj
         pmat.loc[lj, li] = p_adj
         pmat_raw.loc[li, lj] = p_raw

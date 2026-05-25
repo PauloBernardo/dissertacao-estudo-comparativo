@@ -368,19 +368,19 @@ def _load_kdd99() -> tuple[NDArray, NDArray, dict]:
 @_register("TWS")
 def _load_tws() -> tuple[NDArray, NDArray, dict]:
     from src.data.synthetic import make_tws
-    X, y = make_tws(n_samples=800)
+    X, y = make_tws(n_samples=400)
     return X, (y + 1) // 2, {"tier": 0}   # convert {-1,1} → {0,1}
 
 
 @_register("TWM")
 def _load_twm() -> tuple[NDArray, NDArray, dict]:
     from src.data.synthetic import make_twm
-    X, y = make_twm(n_samples=800)
+    X, y = make_twm(n_samples=400)
     return X, (y + 1) // 2, {"tier": 0}
 
 
 @_register("TWC")
 def _load_twc() -> tuple[NDArray, NDArray, dict]:
     from src.data.synthetic import make_twc
-    X, y = make_twc(n_samples=800)
+    X, y = make_twc(n_samples=400)
     return X, (y + 1) // 2, {"tier": 0}

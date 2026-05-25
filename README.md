@@ -41,9 +41,9 @@ Accelerated Alternating Directions Method of Multipliers"*, IWANN 2023.
 | VCP | 310 | 6 | UCI |
 | GCR | 1000 | 20 | UCI |
 | AUS | 690 | 14 | UCI |
-| TWS | 800 | 2 | Sintético |
-| TWM | 800 | 2 | Sintético |
-| TWC | 800 | 2 | Sintético |
+| TWS | 400 | 2 | Sintético |
+| TWM | 400 | 2 | Sintético |
+| TWC | 400 | 2 | Sintético |
 
 ---
 

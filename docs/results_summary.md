@@ -27,10 +27,15 @@
 
 ## Nemenyi CD (α = 0.05)
 - CD = 5.03 (com 9 datasets)
-- LSSVM-Standard é significativamente superior apenas a FT-TopK e LSSVM-OppMaps
-- Mais datasets (Tier 2) reduzirão o CD e aumentarão o poder discriminativo
+- Pares significativamente diferentes (|rank_i − rank_j| > CD):
+  - LSSVM-Standard (1.78) vs LSSVM-ADMM (7.78): diff = 6.0 → **significativo**
+  - LSSVM-Standard (1.78) vs FT-TopK (8.22): diff = 6.44 → **significativo**
+  - LSSVM-Standard (1.78) vs LSSVM-OppMaps (8.67): diff = 6.89 → **significativo**
+- Todos os demais pares: não significativos
+- Mais datasets (Tier 2) reduzirão o CD para ~3.8 e aumentarão o poder discriminativo
 
 ## Conclusão central
-LSSVMs superam FT-Transformers em todos os aspectos (performance, velocidade, esparsidade)
-em datasets tabulares de pequeno/médio porte. A esparsidade via ADMM-Nesterov não
-compromete significativamente a performance em relação ao LSSVM-Standard.
+LSSVMs superam FT-Transformers em performance, velocidade e esparsidade em datasets
+tabulares de pequeno/médio porte. LSSVM-Standard supera LSSVM-ADMM significativamente
+pelo Nemenyi, mas a diferença absoluta em F1 é apenas 0.033 — o ADMM oferece esparsidade
+real (30% de redução média de SVs) com custo de performance limitado.

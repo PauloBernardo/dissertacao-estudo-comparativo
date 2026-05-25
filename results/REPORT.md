@@ -25,6 +25,8 @@ de FT-Transformer (1 densa + 3 com atenção esparsa) em 9 datasets de classific
 
 ### 2.1 Ranking geral (média ± std, 30 seeds × 9 datasets)
 
+Ordenado por F1-macro médio (↓); rank médio de Friedman entre parênteses.
+
 | Pos. | Modelo | F1-macro | Rank Médio |
 |------|--------|----------|------------|
 | 1 | LSSVM (Standard) | 0.842 ± 0.138 | 1.78 |
@@ -32,12 +34,12 @@ de FT-Transformer (1 densa + 3 com atenção esparsa) em 9 datasets de classific
 | 3 | LSSVM-IP | 0.835 ± 0.142 | 3.67 |
 | 4 | LSSVM-PCP | 0.830 ± 0.126 | 5.67 |
 | 5 | **LSSVM-ADMM** | **0.809 ± 0.142** | **7.78** |
-| 6 | FT-Sparsemax | 0.774 ± 0.165 | 6.33 |
-| 7 | LSSVM-Pruning | 0.783 ± 0.209 | 6.89 |
-| 8 | FT-Softmax | 0.740 ± 0.178 | 6.67 |
+| 6 | LSSVM-Pruning | 0.783 ± 0.209 | 6.89 |
+| 7 | FT-Sparsemax | 0.774 ± 0.165 | 6.33 |
+| 8 | LSSVM-OppMaps | 0.769 ± 0.208 | 8.67 |
 | 9 | FT-Entmax | 0.742 ± 0.178 | 7.00 |
-| 10 | FT-TopK | 0.729 ± 0.177 | 8.22 |
-| 11 | LSSVM-OppMaps | 0.769 ± 0.208 | 8.67 |
+| 10 | FT-Softmax | 0.740 ± 0.178 | 6.67 |
+| 11 | FT-TopK | 0.729 ± 0.177 | 8.22 |
 
 ### 2.2 Testes Estatísticos
 
