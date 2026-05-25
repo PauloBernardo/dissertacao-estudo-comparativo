@@ -40,12 +40,16 @@ def cd_diagram(
     cd: float,
     title: str = "Critical Difference Diagram",
 ) -> plt.Figure:
-    """Draw a Demsar-style CD diagram.
+    """Draw a Demsar (2006) style CD diagram.
+
+    Models are split left/right of the axis; lines connect labels to rank
+    positions. Horizontal bars below the axis mark groups of models that are
+    NOT significantly different (rank difference < CD).
 
     Parameters
     ----------
-    ranks : (n_models,) average Friedman ranks
-    model_names : model labels in the same order as ranks
+    ranks : (n_models,) average Friedman ranks (lower = better)
+    model_names : labels in the same order as ranks
     cd : critical difference threshold
     title : plot title
     """
@@ -54,32 +58,107 @@ def cd_diagram(
     sorted_names = [model_names[i] for i in order]
     n = len(sorted_ranks)
 
-    fig, ax = plt.subplots(figsize=(max(6, 0.8 * n), 3))
-    ax.set_xlim(sorted_ranks[0] - 0.5, sorted_ranks[-1] + 0.5)
-    ax.set_ylim(-1, 1.5)
+    # Split: left side = better half, right side = worse half
+    n_left  = (n + 1) // 2
+    n_right = n - n_left
+
+    left_names  = sorted_names[:n_left]
+    left_ranks  = sorted_ranks[:n_left]
+    right_names = sorted_names[n_left:]
+    right_ranks = sorted_ranks[n_left:]
+
+    # Layout constants — scale axis so each rank unit = 1 inch
+    rank_min    = sorted_ranks[0]
+    rank_max    = sorted_ranks[-1]
+    axis_span   = rank_max - rank_min or 1.0
+    label_col_w = 2.8             # inches for label columns (each side)
+    axis_w      = max(axis_span * 0.95, 5.0)   # axis width in inches (≥5)
+    scale       = axis_w / axis_span            # inches per rank unit
+
+    fig_w = label_col_w * 2 + axis_w
+    fig_h = max(4.0, 0.55 * n_left + 2.0)
+    fig, ax = plt.subplots(figsize=(fig_w, fig_h))
     ax.axis("off")
 
-    y_line = 0.8
-    ax.hlines(y_line, sorted_ranks[0], sorted_ranks[-1], colors="black", linewidths=1.5)
+    def rank_to_x(r: float) -> float:
+        return label_col_w + (r - rank_min) * scale
 
-    for rank, name in zip(sorted_ranks, sorted_names):
-        ax.plot(rank, y_line, "o", color="black", markersize=5, zorder=3)
-        # Alternate labels above/below
-        idx = list(sorted_ranks).index(rank)
-        y_text = y_line + 0.35 if idx % 2 == 0 else y_line - 0.55
-        ax.text(rank, y_text, name, ha="center", va="bottom" if idx % 2 == 0 else "top",
-                fontsize=8, rotation=45)
+    # y positions (normalised 0-1 in data coords → use figure inches via transform)
+    y_axis      = 0.72
+    y_label_top = 0.92
+    row_h       = max(0.07, (y_label_top - 0.18) / max(n_left, 1))
 
-    # Draw CD bar
-    mid = (sorted_ranks[0] + sorted_ranks[-1]) / 2
-    ax.annotate(
-        "", xy=(mid + cd / 2, y_line + 0.2),
-        xytext=(mid - cd / 2, y_line + 0.2),
-        arrowprops=dict(arrowstyle="|-|", color="red", lw=1.5),
-    )
-    ax.text(mid, y_line + 0.30, f"CD={cd:.2f}", ha="center", color="red", fontsize=9)
+    ax.set_xlim(0, fig_w)
+    ax.set_ylim(-0.40, 1.15)
 
-    ax.set_title(title, pad=10)
+    # ── Axis line ─────────────────────────────────────────────────────────────
+    ax.hlines(y_axis, rank_to_x(rank_min), rank_to_x(rank_max),
+              colors="black", linewidths=1.8, zorder=2)
+
+    # Tick marks
+    for r in sorted_ranks:
+        ax.vlines(rank_to_x(r), y_axis - 0.03, y_axis + 0.03,
+                  colors="black", linewidths=1.2, zorder=3)
+
+    # Rank labels on axis
+    for r in sorted_ranks:
+        ax.text(rank_to_x(r), y_axis + 0.05, f"{r:.1f}",
+                ha="center", va="bottom", fontsize=7.5, color="#444444")
+
+    # ── Left side labels (better models) ──────────────────────────────────────
+    for i, (name, r) in enumerate(zip(left_names, left_ranks)):
+        y_text = y_label_top - i * row_h
+        x_tick = rank_to_x(r)
+        # Horizontal line from label to axis tick
+        ax.plot([0.15, x_tick], [y_text, y_axis],
+                color="#555555", linewidth=0.8, zorder=1)
+        ax.text(0.10, y_text, name, ha="right", va="center", fontsize=9)
+
+    # ── Right side labels (worse models) ─────────────────────────────────────
+    x_right_edge = fig_w - 0.10
+    for i, (name, r) in enumerate(zip(right_names, right_ranks)):
+        y_text = y_label_top - i * row_h
+        x_tick = rank_to_x(r)
+        ax.plot([x_tick, x_right_edge - 0.05], [y_axis, y_text],
+                color="#555555", linewidth=0.8, zorder=1)
+        ax.text(x_right_edge, y_text, name, ha="left", va="center", fontsize=9)
+
+    # ── CD bar (top-left corner) ───────────────────────────────────────────────
+    cd_y   = y_axis + 0.28
+    cd_x0  = rank_to_x(rank_min)
+    cd_x1  = cd_x0 + cd * scale
+    ax.hlines(cd_y, cd_x0, cd_x1, colors="#cc0000", linewidths=2.5)
+    ax.vlines([cd_x0, cd_x1], cd_y - 0.025, cd_y + 0.025,
+              colors="#cc0000", linewidths=2.0)
+    ax.text((cd_x0 + cd_x1) / 2, cd_y + 0.04, f"CD = {cd:.2f}",
+            ha="center", va="bottom", fontsize=9, color="#cc0000", fontweight="bold")
+
+    # ── Clique bars (groups not significantly different) ──────────────────────
+    # For each model i, find the rightmost model j where rank_j - rank_i < cd
+    # Draw a bar from rank_i to rank_j below the axis
+    bar_y_start = y_axis - 0.08
+    bar_step    = 0.055
+    drawn: list[tuple[float, float]] = []
+
+    for i in range(n):
+        j = i
+        while j + 1 < n and sorted_ranks[j + 1] - sorted_ranks[i] < cd:
+            j += 1
+        if j > i:
+            seg = (sorted_ranks[i], sorted_ranks[j])
+            # Avoid drawing duplicate or fully contained segments
+            if not any(s[0] <= seg[0] and s[1] >= seg[1] for s in drawn):
+                # Stack bars so they don't overlap
+                level = sum(
+                    1 for s in drawn
+                    if not (s[1] < seg[0] or s[0] > seg[1])
+                )
+                y_bar = bar_y_start - level * bar_step
+                ax.hlines(y_bar, rank_to_x(seg[0]), rank_to_x(seg[1]),
+                          colors="black", linewidths=3.5, zorder=4)
+                drawn.append(seg)
+
+    ax.set_title(title, fontsize=11, pad=6)
     fig.tight_layout()
     return fig
 
