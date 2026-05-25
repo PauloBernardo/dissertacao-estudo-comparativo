@@ -49,22 +49,24 @@ Accelerated Alternating Directions Method of Multipliers"*, IWANN 2023.
 
 ## Resultados Principais (Tier 1 — F1-macro, 30 seeds)
 
-| Modelo | F1-macro | Rank Médio |
-|--------|----------|------------|
+Ordenado por F1-macro médio (30 seeds × 9 datasets).
+
+| Modelo | F1-macro | Rank Médio (Friedman) |
+|--------|----------|-----------------------|
 | LSSVM (Standard) | 0.842 ± 0.138 | 1.78 |
 | LSSVM-FSA | 0.837 ± 0.139 | 3.33 |
 | LSSVM-IP | 0.835 ± 0.142 | 3.67 |
 | LSSVM-PCP | 0.830 ± 0.126 | 5.67 |
-| **LSSVM-ADMM** | **0.809 ± 0.142** | 7.78 |
+| **LSSVM-ADMM** | **0.809 ± 0.142** | **7.78** |
 | LSSVM-Pruning | 0.783 ± 0.209 | 6.89 |
 | FT-Sparsemax | 0.774 ± 0.165 | 6.33 |
 | LSSVM-OppMaps | 0.769 ± 0.208 | 8.67 |
-| FT-Softmax | 0.742 ± 0.172 | 6.78 |
-| FT-Entmax | 0.742 ± 0.178 | 6.89 |
+| FT-Entmax | 0.742 ± 0.178 | 7.00 |
+| FT-Softmax | 0.740 ± 0.178 | 6.67 |
 | FT-TopK | 0.729 ± 0.177 | 8.22 |
 
-**Friedman test:** χ² = 39.67, p < 0.001 — diferença significativa entre modelos.
-**Nemenyi CD (α=0.05):** 5.03
+**Friedman test:** χ² = 39.71, p < 0.001 — diferença significativa entre modelos.
+**Nemenyi CD (α=0.05):** 5.03 — Standard significativamente superior a ADMM, FT-TopK e OppMaps.
 
 ---
 

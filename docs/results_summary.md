@@ -23,7 +23,7 @@
 11. FT-TopK — 0.729
 
 ## Teste de Friedman
-- χ² = 39.67, p = 0.000019 → diferença significativa entre modelos
+- χ² = 39.71, p = 0.000019 → diferença significativa entre modelos
 
 ## Nemenyi CD (α = 0.05)
 - CD = 5.03 (com 9 datasets)

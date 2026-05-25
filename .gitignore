@@ -21,6 +21,9 @@ results/*.json
 results/*.csv
 results/*.parquet
 
+# Exception: tuning best_params is small and important for reproducibility
+!results/tuning/best_params.json
+
 # Optuna study DBs
 *.db
 

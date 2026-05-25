@@ -44,7 +44,7 @@ Ordenado por F1-macro médio (↓); rank médio de Friedman entre parênteses.
 ### 2.2 Testes Estatísticos
 
 **Friedman test** (hipótese nula: todos os modelos têm performance equivalente):
-- Estatística: χ² = 39.67
+- Estatística: χ² = 39.71
 - p-valor: 0.000019 → **rejeita H₀** (diferença significativa)
 
 **Nemenyi post-hoc** (α = 0.05):
