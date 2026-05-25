@@ -1,4 +1,13 @@
 #!/usr/bin/env bash
+# DEPRECATED — Este script está desatualizado e não deve ser usado.
+#
+# Use os scripts específicos em vez deste:
+#   python scripts/run_tuning_tier1.py     # tuning Bayesian (Optuna)
+#   python scripts/run_experiments_tier1.py --seeds 30   # experimentos Tier 1
+#   python scripts/generate_analysis.py    # tabelas e figuras
+#
+# Este arquivo é mantido apenas para referência histórica.
+# -----------------------------------------------------------------------
 # Run the full 12 × 18 × 30 comparative experiment.
 #
 # Usage:

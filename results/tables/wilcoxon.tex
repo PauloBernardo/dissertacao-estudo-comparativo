@@ -1,0 +1,23 @@
+\begin{table}[ht]
+  \centering
+  \caption{P-valores do teste de Wilcoxon signed-rank com correção de Holm-Bonferroni ($n_{\text{comp}}=55$; negrito = significativo em $\alpha=0{,}05$).}
+  \label{tab:wilcoxon}
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{lrrrrrrrrrrr}
+    \toprule
+     & LSSVM-ADMM & LSSVM-FSA & FT-Entmax & FT-Softmax & FT-Sparsemax & FT-TopK & LSSVM-IP & LSSVM-OppMaps & LSSVM-PCP & LSSVM-Pruning & LSSVM (Standard) \\
+    \midrule
+    LSSVM-ADMM & -- & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 & 0.391 & 1.000 & 1.000 \\
+LSSVM-FSA & 1.000 & -- & 0.516 & 0.383 & 0.938 & 0.215 & 1.000 & 0.504 & 1.000 & 1.000 & 1.000 \\
+FT-Entmax & 1.000 & 0.516 & -- & 1.000 & 1.000 & 1.000 & 0.492 & 1.000 & 1.000 & 1.000 & 0.211 \\
+FT-Softmax & 1.000 & 0.383 & 1.000 & -- & 1.000 & 1.000 & 0.375 & 1.000 & 1.000 & 1.000 & 0.367 \\
+FT-Sparsemax & 1.000 & 0.938 & 1.000 & 1.000 & -- & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 & 0.641 \\
+FT-TopK & 1.000 & 0.215 & 1.000 & 1.000 & 1.000 & -- & 0.207 & 1.000 & 1.000 & 1.000 & 0.203 \\
+LSSVM-IP & 1.000 & 1.000 & 0.492 & 0.375 & 1.000 & 0.207 & -- & 1.000 & 1.000 & 0.984 & 0.359 \\
+LSSVM-OppMaps & 1.000 & 0.504 & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 & -- & 1.000 & 1.000 & 0.199 \\
+LSSVM-PCP & 0.391 & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 & -- & 1.000 & 1.000 \\
+LSSVM-Pruning & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 & 0.984 & 1.000 & 1.000 & -- & 0.352 \\
+LSSVM (Standard) & 1.000 & 1.000 & 0.211 & 0.367 & 0.641 & 0.203 & 0.359 & 0.199 & 1.000 & 0.352 & -- \\
+    \bottomrule
+  \end{tabular}}
+\end{table}

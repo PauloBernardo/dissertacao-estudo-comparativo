@@ -124,20 +124,25 @@ def sparsity_table(
     if df.empty:
         return "% No sparsity data\n"
 
-    # Collect sparsity columns
-    sparsity_col = None
-    for col in ("sparsity_ratio", "mean_zero_fraction"):
-        if col in df.columns:
-            sparsity_col = col
-            break
-    if sparsity_col is None:
-        return f"% No sparsity column found\n"
+    # Merge sparsity_ratio (LSSVM) and mean_zero_fraction (Transformers) into one column
+    if "sparsity_ratio" not in df.columns and "mean_zero_fraction" not in df.columns:
+        return "% No sparsity column found\n"
 
-    agg = df.groupby(model_col)[sparsity_col].agg(["mean", "std"]).reset_index()
+    df = df.copy()
+    if "sparsity_ratio" not in df.columns:
+        df["sparsity_ratio"] = np.nan
+    if "mean_zero_fraction" not in df.columns:
+        df["mean_zero_fraction"] = np.nan
+    # Use sparsity_ratio when available, fall back to mean_zero_fraction
+    df["_sparsity"] = df["sparsity_ratio"].fillna(df["mean_zero_fraction"])
+
+    agg = df.groupby(model_col)["_sparsity"].agg(["mean", "std"]).reset_index()
     agg["std"] = agg["std"].fillna(0.0)
 
     rows = []
     for _, row in agg.iterrows():
+        if np.isnan(row["mean"]):
+            continue
         name = str(row[model_col]).replace("_", r"\_")
         rows.append(f"        {name} & {_fmt(row['mean'], row['std'])} \\\\")
     body = "\n".join(rows)

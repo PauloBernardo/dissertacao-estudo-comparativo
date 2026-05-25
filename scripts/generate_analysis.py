@@ -159,26 +159,48 @@ def run(results_path: Path, metric: str) -> None:
     cd = nemenyi_cd(len(models_v), len(d_order))
     print(f"  Nemenyi CD (α=0.05): {cd:.3f}")
 
-    # Wilcoxon pairwise (mean per dataset as the paired observation)
+    # Wilcoxon pairwise with Holm-Bonferroni correction
+    # Use per-dataset mean scores as paired observations (n_datasets,)
     n_m = len(models_v)
-    pmat = pd.DataFrame(np.nan, index=labels_v, columns=labels_v)
+    n_comparisons = n_m * (n_m - 1) // 2
+    raw_pvalues: list[tuple[str, str, float]] = []
     for i in range(n_m):
         for j in range(i + 1, n_m):
-            # Use per-dataset mean scores so paired observations are (n_datasets,)
             a = score_mat_T[:, i]
             b = score_mat_T[:, j]
             valid = ~(np.isnan(a) | np.isnan(b))
             if valid.sum() < 2:
                 continue
             res = wilcoxon_pairwise(a[valid], b[valid])
-            pmat.loc[labels_v[i], labels_v[j]] = res["pvalue"]
-            pmat.loc[labels_v[j], labels_v[i]] = res["pvalue"]
+            raw_pvalues.append((labels_v[i], labels_v[j], res["pvalue"]))
+
+    # Holm-Bonferroni: sort by p-value, multiply by (n_comparisons - rank)
+    raw_pvalues.sort(key=lambda x: x[2])
+    pmat = pd.DataFrame(np.nan, index=labels_v, columns=labels_v)
+    pmat_raw = pd.DataFrame(np.nan, index=labels_v, columns=labels_v)
+    for rank, (li, lj, p_raw) in enumerate(raw_pvalues):
+        p_adj = min(1.0, p_raw * (n_comparisons - rank))
+        pmat.loc[li, lj] = p_adj
+        pmat.loc[lj, li] = p_adj
+        pmat_raw.loc[li, lj] = p_raw
+        pmat_raw.loc[lj, li] = p_raw
 
     tex_wilcoxon = wilcoxon_table(
         pmat,
-        caption="P-valores do teste de Wilcoxon signed-rank (negrito = significativo em $\\alpha=0{,}05$).",
+        caption=(
+            "P-valores do teste de Wilcoxon signed-rank com correção de Holm-Bonferroni "
+            r"($n_{\text{comp}}=" + str(n_comparisons) + r"$; "
+            r"negrito = significativo em $\alpha=0{,}05$)."
+        ),
         label="tab:wilcoxon",
     )
+    tex_wilcoxon_raw = wilcoxon_table(
+        pmat_raw,
+        caption="P-valores brutos do teste de Wilcoxon signed-rank (sem correção; negrito = $p<0{,}05$).",
+        label="tab:wilcoxon_raw",
+    )
+    (TABLES_DIR / "wilcoxon_raw.tex").write_text(tex_wilcoxon_raw)
+    print(f"  Saved tables/wilcoxon_raw.tex")
     (TABLES_DIR / "wilcoxon.tex").write_text(tex_wilcoxon)
     print(f"  Saved tables/wilcoxon.tex")
 

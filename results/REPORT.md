@@ -1,7 +1,7 @@
 # Relatório de Resultados — Estudo Comparativo Tier 1
 
 **Gerado em:** 2026-05-21  
-**Protocolo:** 11 modelos × 9 datasets × 30 seeds = 2.970 execuções  
+**Protocolo:** 11 modelos × 9 datasets × 30 seeds = 2.970 execuções (deduplicado)  
 **Métrica principal:** F1-macro (robusta a desbalanceamento de classes)
 
 ---
@@ -31,13 +31,13 @@ de FT-Transformer (1 densa + 3 com atenção esparsa) em 9 datasets de classific
 | 2 | LSSVM-FSA | 0.837 ± 0.139 | 3.33 |
 | 3 | LSSVM-IP | 0.835 ± 0.142 | 3.67 |
 | 4 | LSSVM-PCP | 0.830 ± 0.126 | 5.67 |
-| 5 | LSSVM-ADMM | 0.809 ± 0.142 | 7.78 |
-| 6 | LSSVM-Pruning | 0.783 ± 0.209 | 6.89 |
-| 7 | FT-Sparsemax | 0.774 ± 0.165 | 6.33 |
-| 8 | LSSVM-OppMaps | 0.769 ± 0.208 | 8.67 |
-| 9 | FT-Softmax | 0.742 ± 0.172 | 6.78 |
-| 10 | FT-Entmax | 0.742 ± 0.178 | 6.89 |
-| 11 | FT-TopK | 0.729 ± 0.177 | 8.22 |
+| 5 | **LSSVM-ADMM** | **0.809 ± 0.142** | **7.78** |
+| 6 | FT-Sparsemax | 0.774 ± 0.165 | 6.33 |
+| 7 | LSSVM-Pruning | 0.783 ± 0.209 | 6.89 |
+| 8 | FT-Softmax | 0.740 ± 0.178 | 6.67 |
+| 9 | FT-Entmax | 0.742 ± 0.178 | 7.00 |
+| 10 | FT-TopK | 0.729 ± 0.177 | 8.22 |
+| 11 | LSSVM-OppMaps | 0.769 ± 0.208 | 8.67 |
 
 ### 2.2 Testes Estatísticos
 
@@ -47,10 +47,11 @@ de FT-Transformer (1 densa + 3 com atenção esparsa) em 9 datasets de classific
 
 **Nemenyi post-hoc** (α = 0.05):
 - Diferença Crítica (CD) = 5.03
-- Grupos não significativamente diferentes (|rank_i - rank_j| < CD):
-  - {LSSVM-Standard, FSA, IP, PCP, ADMM, Pruning, FT-Sparsemax, FT-Softmax, FT-Entmax}
-  - {FSA, IP, PCP, ADMM, Pruning, FT-Sparsemax, Softmax, Entmax, TopK, OppMaps}
-- O CD=5.03 é amplo dado que temos apenas 9 datasets — mais datasets Tier 2 irão estreitar o CD e aumentar o poder discriminativo.
+- **Par significativamente diferente:** LSSVM-Standard (rank 1.78) vs LSSVM-ADMM (rank 7.78) — diferença = 6.0 > CD → p < 0.05
+- **Par significativamente diferente:** LSSVM-Standard vs FT-TopK (rank 8.22) — diferença = 6.44 > CD
+- **Par significativamente diferente:** LSSVM-Standard vs LSSVM-OppMaps (rank 8.67) — diferença = 6.89 > CD
+- Demais pares: não significativos (diferença de ranks < 5.03)
+- **Nota:** CD=5.03 é amplo com apenas 9 datasets. Tier 2 (6 datasets adicionais) reduzirá o CD para ~3.8 e aumentará o poder discriminativo.
 
 ---
 
@@ -111,9 +112,10 @@ Referência: `results/plots/training_time.pdf`
 1. **Hipótese confirmada:** LSSVMs esparsos superam Transformers esparsos em dados tabulares
    de pequeno/médio porte, tanto em performance como em eficiência.
 
-2. **Achado relevante:** A esparsidade nos LSSVMs não compromete a performance de forma
-   estatisticamente significativa (diferença LSSVM-Standard vs LSSVM-ADMM: 0.033 em F1-macro,
-   não significativa pelo Nemenyi).
+2. **Achado relevante:** LSSVM-Standard supera LSSVM-ADMM significativamente pelo Nemenyi
+   (diferença de ranks = 6.0 > CD=5.03). Porém, a diferença absoluta em F1 é de apenas 0.033,
+   e com mais datasets (Tier 2) o CD reduz — a significância prática deve ser discutida junto
+   à significância estatística.
 
 3. **Achado sobre Transformers:** As variantes esparsas do FT-Transformer (Sparsemax) superam
    o FT-Softmax padrão — esparsidade pode ajudar a regularizar em datasets pequenos.
