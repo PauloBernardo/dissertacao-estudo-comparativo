@@ -1,0 +1,152 @@
+{
+  "OriginalADMM__BCW": {
+    "best_params": {
+      "sigma": 8.285503329286128,
+      "tau": 0.015187472158115082,
+      "lambda_": 0.010394979896535836,
+      "rho": 1.4607243056354808
+    },
+    "best_value": 0.9083980267749159,
+    "metric": "f1_macro"
+  },
+  "OriginalADMM__PID": {
+    "best_params": {
+      "sigma": 35.08167214845233,
+      "tau": 0.2766796174086355,
+      "lambda_": 0.04480757127565288,
+      "rho": 0.20641940168483192
+    },
+    "best_value": 0.7034240129313767,
+    "metric": "f1_macro"
+  },
+  "OriginalADMM__HAB": {
+    "best_params": {
+      "sigma": 0.4884965035018639,
+      "tau": 3.0342556116579016,
+      "lambda_": 0.4766579440779102,
+      "rho": 4.8601540627895226
+    },
+    "best_value": 0.6593996232846163,
+    "metric": "f1_macro"
+  },
+  "OriginalADMM__VCP": {
+    "best_params": {
+      "sigma": 0.634355935824423,
+      "tau": 0.9171934756039002,
+      "lambda_": 0.21360426672379512,
+      "rho": 1.209335000097502
+    },
+    "best_value": 0.8032164783487425,
+    "metric": "f1_macro"
+  },
+  "OriginalADMM__GCR": {
+    "best_params": {
+      "sigma": 1.4550500445279546,
+      "tau": 1.389220973425001,
+      "lambda_": 0.021269633088696106,
+      "rho": 0.5856609550586465
+    },
+    "best_value": 0.6329586208090257,
+    "metric": "f1_macro"
+  },
+  "OriginalADMM__AUS": {
+    "best_params": {
+      "sigma": 7.852777607386729,
+      "tau": 4.989908145405177,
+      "lambda_": 0.05480058593461794,
+      "rho": 0.1507512234139608
+    },
+    "best_value": 0.8586150017138363,
+    "metric": "f1_macro"
+  },
+  "OriginalADMM__TWS": {
+    "best_params": {
+      "sigma": 0.23551382501513715,
+      "tau": 17.961592296664598,
+      "lambda_": 0.012891526289311636,
+      "rho": 0.15743851283747956
+    },
+    "best_value": 0.992498827941866,
+    "metric": "f1_macro"
+  },
+  "OriginalADMM__TWM": {
+    "best_params": {
+      "sigma": 0.23340056362520714,
+      "tau": 0.1851190535822799,
+      "lambda_": 1.6933690325314816,
+      "rho": 0.5027927443305081
+    },
+    "best_value": 0.9974996093139552,
+    "metric": "f1_macro"
+  },
+  "OriginalADMM__TWC": {
+    "best_params": {
+      "sigma": 0.07168616402206172,
+      "tau": 3.018387445941794,
+      "lambda_": 0.03212223154587515,
+      "rho": 2.325116621009173
+    },
+    "best_value": 0.9143906101597896,
+    "metric": "f1_macro"
+  },
+  "OriginalADMM__TWS_5f": {
+    "best_params": {
+      "sigma": 0.36686825382239524,
+      "tau": 0.08475014311595001,
+      "lambda_": 0.023265906829935925,
+      "rho": 0.21092551103167972
+    },
+    "best_value": 0.6433349584954202,
+    "metric": "f1_macro"
+  },
+  "OriginalADMM__TWM_5f": {
+    "best_params": {
+      "sigma": 0.6157254362044987,
+      "tau": 7.617581990512132,
+      "lambda_": 0.011715094573563381,
+      "rho": 3.86182452830242
+    },
+    "best_value": 0.9247485907982755,
+    "metric": "f1_macro"
+  },
+  "OriginalADMM__TWC_5f": {
+    "best_params": {
+      "sigma": 0.3437078441704546,
+      "tau": 0.37421262755832446,
+      "lambda_": 0.2236163196412207,
+      "rho": 0.3468712803486276
+    },
+    "best_value": 0.5485842413357612,
+    "metric": "f1_macro"
+  },
+  "OriginalADMM__MKE": {
+    "best_params": {
+      "sigma": 1.2229065947034368,
+      "tau": 0.4556671913921477,
+      "lambda_": 0.11434638743472199,
+      "rho": 3.535634629148812
+    },
+    "best_value": 0.9824980465697765,
+    "metric": "f1_macro"
+  },
+  "OriginalADMM__MKM": {
+    "best_params": {
+      "sigma": 0.962656661349121,
+      "tau": 5.734738880137243,
+      "lambda_": 0.019250520739192933,
+      "rho": 1.0969653402417567
+    },
+    "best_value": 0.8244671525028094,
+    "metric": "f1_macro"
+  },
+  "OriginalADMM__MKH": {
+    "best_params": {
+      "sigma": 0.5410317676052276,
+      "tau": 3.019097483495748,
+      "lambda_": 0.02458978133379004,
+      "rho": 5.636074714660297
+    },
+    "best_value": 0.7158347358057,
+    "metric": "f1_macro"
+  }
+}

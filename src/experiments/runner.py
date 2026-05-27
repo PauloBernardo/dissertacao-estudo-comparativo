@@ -49,6 +49,15 @@ def _build_model(model_name: str, model_params: dict[str, Any], label_format: st
     elif model_name == "ADMMNesterovLSSVM":
         from src.models.lssvm.primal.admm_nesterov import ADMMNesterovLSSVM
         return ADMMNesterovLSSVM(**model_params), label_format
+    elif model_name == "OriginalADMMNesterovLSSVM":
+        from src.models.lssvm.primal.original_admm import OriginalADMMNesterovLSSVM
+        return OriginalADMMNesterovLSSVM(**model_params), label_format
+    elif model_name == "FISTANesterovLSSVM":
+        from src.models.lssvm.primal.fista_lssvm import FISTANesterovLSSVM
+        return FISTANesterovLSSVM(**model_params), label_format
+    elif model_name == "DualFISTALSSVM":
+        from src.models.lssvm.dual.fista_dual_lssvm import DualFISTALSSVM
+        return DualFISTALSSVM(**model_params), label_format
     elif model_name == "PCPLSSVm":
         from src.models.lssvm.primal.pcp_lssvm import PCPLSSVm
         return PCPLSSVm(**model_params), label_format
@@ -67,19 +76,34 @@ def _build_model(model_name: str, model_params: dict[str, Any], label_format: st
     elif model_name == "FTTransformer":
         from src.models.transformers.ft_transformer import FTTransformer
         return FTTransformer(**model_params), "binary"
+    elif model_name == "NystromLSSVMColnorm":
+        from src.models.nystrom_lssvm_wrapper import NystromLSSVMColnorm
+        return NystromLSSVMColnorm(**model_params), "signed"
+    elif model_name == "FTTransformerCURColnorm":
+        from src.models.ft_transformer_cur_wrapper import FTTransformerCURColnorm
+        return FTTransformerCURColnorm(**model_params), "binary"
+    elif model_name == "SAINTColnorm":
+        from src.models.ft_transformer_saint_wrapper import SAINTColnorm
+        return SAINTColnorm(**model_params), "binary"
+    elif model_name == "XGBoost":
+        from src.models.xgboost_wrapper import XGBoostBaseline
+        return XGBoostBaseline(**model_params), "binary"
     else:
         raise ValueError(f"Unknown model: {model_name!r}")
 
 
 _LSSVM_MODELS = {
-    "StandardLSSVM", "ADMMNesterovLSSVM", "PCPLSSVm", "FSALSSVm",
-    "PruningLSSVM", "IPLSSVm", "OppositeMapsLSSVM",
+    "StandardLSSVM", "ADMMNesterovLSSVM", "OriginalADMMNesterovLSSVM",
+    "FISTANesterovLSSVM", "DualFISTALSSVM", "PCPLSSVm", "FSALSSVm",
+    "PruningLSSVM", "IPLSSVm", "OppositeMapsLSSVM", "NystromLSSVMColnorm",
 }
 _TRANSFORMER_MODELS = {"FTTransformer"}
+# Inter-instance models expose n_support_/sparsity_ratio_/n_samples_fit_ like LSSVMs
+_INTER_INSTANCE_MODELS = {"FTTransformerCURColnorm", "SAINTColnorm"}
 
 
 def _collect_sparsity(model_name: str, model, X_test_proc) -> dict[str, float]:
-    if model_name in _LSSVM_MODELS:
+    if model_name in _LSSVM_MODELS or model_name in _INTER_INSTANCE_MODELS:
         return lssvm_sparsity(model)
     elif model_name in _TRANSFORMER_MODELS:
         # Run a small forward pass to populate _last_attn_weights
@@ -99,6 +123,7 @@ def run_single_experiment(
     seed: int,
     model_params: dict[str, Any] | None = None,
     test_size: float = 0.30,
+    n_samples_cap: int | None = None,
 ) -> dict[str, Any]:
     """Run one experiment and return a results dict.
 
@@ -109,6 +134,8 @@ def run_single_experiment(
     seed : random seed for the split and model
     model_params : hyperparameters passed to the model constructor
     test_size : fraction of data held out for testing
+    n_samples_cap : if set, stratified subsample to this many rows
+                    (deterministic per seed) before train/test split
 
     Returns
     -------
@@ -127,6 +154,14 @@ def run_single_experiment(
 
         X, y, meta = DatasetLoader.load(dataset_name)
 
+        # Optional: stratified subsample to cap N (for Tier 2 N=5000 protocol)
+        if n_samples_cap is not None and len(X) > n_samples_cap:
+            from sklearn.model_selection import StratifiedShuffleSplit
+            sss = StratifiedShuffleSplit(
+                n_splits=1, train_size=n_samples_cap, random_state=seed)
+            idx_keep, _ = next(sss.split(X, y))
+            X, y = X[idx_keep], y[idx_keep]
+
         # Determine label format: LSSVM models need signed {-1,+1}
         label_format = "signed" if model_name in _LSSVM_MODELS else "binary"
 
@@ -138,10 +173,11 @@ def run_single_experiment(
         )
 
         model, _ = _build_model(model_name, model_params, label_format)
-        if model_name in _LSSVM_MODELS and hasattr(model, "random_state"):
-            model.set_params(random_state=seed)
-        elif hasattr(model, "random_state"):
-            model.set_params(random_state=seed)
+        if hasattr(model, "random_state"):
+            if hasattr(model, "set_params"):
+                model.set_params(random_state=seed)
+            else:
+                model.random_state = seed
 
         # Fit with timing
         model, train_time = measure_fit_time(model, X_train_p, y_train_p)

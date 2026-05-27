@@ -1,0 +1,41 @@
+{
+  "SAINTColnorm__MKE": {
+    "best_params": {
+      "d_model": 64,
+      "n_heads": 4,
+      "n_layers": 2,
+      "lr": 0.003559333970116141,
+      "epochs": 200,
+      "patience": 20
+    },
+    "best_value": 0.9774917926610837,
+    "metric": "f1_macro",
+    "n_trials": 20
+  },
+  "SAINTColnorm__MKM": {
+    "best_params": {
+      "d_model": 64,
+      "n_heads": 4,
+      "n_layers": 3,
+      "lr": 0.00545891999636056,
+      "epochs": 200,
+      "patience": 20
+    },
+    "best_value": 0.7990247075392927,
+    "metric": "f1_macro",
+    "n_trials": 20
+  },
+  "SAINTColnorm__MKH": {
+    "best_params": {
+      "d_model": 64,
+      "n_heads": 4,
+      "n_layers": 3,
+      "lr": 0.001291620914412459,
+      "epochs": 200,
+      "patience": 20
+    },
+    "best_value": 0.6812697793155266,
+    "metric": "f1_macro",
+    "n_trials": 20
+  }
+}

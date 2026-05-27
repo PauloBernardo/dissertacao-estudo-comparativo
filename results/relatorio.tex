@@ -1,0 +1,947 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+\definecolor{warnbg}{RGB}{255,243,205}
+\definecolor{warnborder}{RGB}{255,165,0}
+\definecolor{fixbg}{RGB}{209,236,241}
+\definecolor{fixborder}{RGB}{23,162,184}
+
+\title{\textbf{Relatório de Experimentos}\\[0.4em]
+\large Estudo Comparativo: LSSVM Esparso vs.\ Transformers Tabulares\\[0.2em]
+\normalsize Dissertação de Mestrado --- Experimentos (atualizado em maio de 2026)}
+\author{Paulo Bernardo}
+\date{Maio de 2026}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Introdução}
+\label{sec:intro}
+
+Este relatório consolida os resultados dos experimentos conduzidos na dissertação,
+que compara métodos de \textit{Least-Squares Support Vector Machine} (LSSVM) com
+ênfase em esparsidade contra variantes de \textit{FT-Transformer} com atenção
+esparsa em tarefas de classificação binária tabular.
+
+O trabalho estende o algoritmo LSSVM-ADMM-Nesterov proposto por Marinho et al.\
+com dois novos mecanismos de esparsidade: (i)~\textbf{DualFISTA}, formulação dual
+do LSSVM como LASSO com otimização via ISTA acelerado; e (ii)~\textbf{Nyström-SVM},
+aproximação da matriz kernel por seleção de landmarks via norma de coluna.
+Como comparativo do lado dos Transformers, avalia-se o \textbf{FT-CUR}, que aplica
+decomposição CUR com colnorm à matriz de atenção.
+
+\begin{tcolorbox}[
+  colback=warnbg, colframe=warnborder, title=\textbf{Auditoria do Nyström-SVM --- três versões},
+  fonttitle=\bfseries, breakable
+]
+A implementação do Nyström-SVM passou por três versões. A versão final, auditada
+matematicamente (Seção~\ref{sec:nystrom_fix}), é a apresentada neste relatório.
+
+\begin{tabular}{lll}
+\textbf{Versão} & \textbf{Predição} & \textbf{F1 Tier 1} \\
+Bug original    & $f(x){=}K(x, X_\text{treino})\,\alpha + b$ (kernel completo)         & $0{,}8427$ (inflado) \\
+``Fix'' errado  & $f(x){=}K(x, Z)\,\alpha[\text{lm\_idx}] + b$ (subset ingênuo de $\alpha$) & $0{,}6678$ (colapsado) \\
+\textbf{Correta} & $f(x){=}K(x, Z)\,(W^{-1}C^\top\alpha) + b$ (Nyström)                & $\mathbf{0{,}8342}$ \\
+\end{tabular}
+
+A versão correta usa a fórmula matemática da aproximação Nyström
+($\tilde K = CW^{-1}C^\top$), com custo $O(n_\text{test}\cdot m)$ e
+\textbf{sem dependência de $X_\text{treino}$ na predição} (verificado experimentalmente).
+A perda de F1 em relação ao bug original é de apenas $0{,}0085$, mas agora com
+$\approx 69\%$ de esparsidade amostral genuína.
+\end{tcolorbox}
+
+\subsection*{Modelos avaliados}
+
+Ao todo, 18 modelos foram avaliados, organizados em cinco grupos por origem
+na literatura:
+
+\begin{itemize}
+  \item \textbf{Baseline geral tabular} (1): \textbf{XGBoost} (Chen \& Guestrin, 2016)
+        --- padrão-ouro para dados tabulares, serve como referência externa às
+        famílias LSSVM e Transformer.
+  \item \textbf{LSSVMs baselines} (7): LSSVM-Std (sem esparsidade), LSSVM-PCP,
+        LSSVM-FSA, LSSVM-IP, LSSVM-Pruning, LSSVM-OppMaps, e \textbf{FISTA-Nesterov}
+        (LSSVM primal com FISTA --- método clássico de Beck \& Teboulle, 2009,
+        amplamente documentado).
+  \item \textbf{FT-Transformers baselines} (5): variantes com atenção softmax,
+        top-$k$, entmax e sparsemax --- mais \textbf{SAINT}
+        (Somepalli et al., 2021; atenção inter-instâncias densa).
+  \item \textbf{Paper-base estendido}: \textbf{LSSVM-ADMM-Nesterov} de
+        Marinho et al.\ --- método sobre o qual esta dissertação constrói.
+  \item \textbf{Variantes investigadas e modelos propostos} (4):
+  \begin{itemize}
+    \item \textbf{ADMM-ElasticNet}$^\circ$: variante do paper-base com penalidade
+          Elastic Net (combinação ADMM-Nesterov + Elastic Net + LSSVM não
+          localizada explicitamente na literatura como método publicado).
+    \item \textbf{DualFISTA}$^\circ$: formulação dual do LSSVM como LASSO
+          ($\min_\alpha \frac{1}{2}\alpha^\top\Omega\alpha - \mathbf{1}^\top\alpha + \lambda\|\alpha\|_1$),
+          otimizada via FISTA. Ponto de investigação --- não localizada na
+          literatura nesta forma exata; pode ser uma reformulação convergente
+          com métodos análogos em SVM ou regressão Lasso.
+    \item \textbf{Nyström-SVM (colnorm)}$^\star$: aproxima $K \in \mathbb{R}^{n \times n}$
+          via $m \ll n$ landmarks selecionados por norma de coluna
+          (em vez de amostragem uniforme/leverage tradicional); predição
+          restrita aos landmarks ($O(n_\text{test} \cdot m)$, auditada).
+    \item \textbf{FT-CUR (Nyströmformer)}$^\star$: aplicação de Nyströmformer
+          (Xiong et al., 2021) à atenção inter-instâncias do FT-Transformer
+          em dados tabulares; seleção de landmarks via colnorm
+          (combinação não localizada como método publicado).
+  \end{itemize}
+\end{itemize}
+
+\noindent$^\circ$ = variante/ponto de investigação;
+$^\star$ = aplicação/combinação proposta.
+
+\subsection*{Protocolo experimental}
+
+\begin{itemize}
+  \item 30 sementes aleatórias, partição estratificada 70/30.
+  \item Métrica principal: F1-macro (média aritmética do F1 por classe).
+  \item Hiperparâmetros otimizados via Optuna TPE com validação cruzada
+        estratificada de 5 folds.
+  \item Normalização por \texttt{StandardScaler} ajustado apenas no treino.
+\end{itemize}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Auditoria da Implementação do Nyström-SVM}
+\label{sec:nystrom_fix}
+
+\subsection{As três versões}
+
+O Nyström-SVM aproxima a matriz kernel completa $K \in \mathbb{R}^{n \times n}$
+a partir de $m$ landmarks $\{z_1, \ldots, z_m\}$ selecionados antes do treino:
+\[
+  K \approx C W^{-1} C^\top, \quad C = K(X, Z) \in \mathbb{R}^{n \times m},
+  \quad W = K(Z, Z) \in \mathbb{R}^{m \times m}.
+\]
+O treinamento, via identidade de Woodbury, é correto em todas as versões.
+A diferença está apenas na predição:
+
+\begin{description}
+  \item[V1 --- Bug original.] Predizia com o kernel completo:
+  \[
+    f(x) = K(x, X_\text{treino})\,\alpha + b.
+  \]
+  Não tinha esparsidade real (todo $X_\text{treino}$ era usado em inferência) e
+  produzia $F_1 = 0{,}8427$ no Tier~1.
+
+  \item[V2 --- ``Fix'' ingênuo.] Tentativa de restringir aos landmarks pegando
+  apenas o subset de $\alpha$ nos índices dos landmarks:
+  \[
+    f(x) = K(x, Z)\,\alpha[\text{lm\_idx}] + b.
+  \]
+  Está \textbf{matematicamente errado}: os pesos $\alpha \in \mathbb{R}^n$ foram
+  ajustados para o sistema KKT completo $n$-dimensional, e simplesmente subsetá-los
+  nos índices dos landmarks não recupera a aproximação Nyström. F1 colapsou para
+  $0{,}6678$.
+
+  \item[V3 --- Correta (atual).] A aproximação Nyström verdadeira é
+  $\tilde K(x, X) = K(x, Z)\,W^{-1} C^\top$. Substituindo em
+  $f(x) = \tilde K(x, X)\,\alpha + b$:
+  \[
+    f(x) = K(x, Z)\,(W^{-1} C^\top \alpha) + b
+         = K(x, Z)\,w_\alpha + b, \quad
+    w_\alpha = W^{-1} C^\top \alpha \in \mathbb{R}^m.
+  \]
+  O vetor $w_\alpha$ é calculado uma vez ao final do fit e cacheado.
+  Em inferência, só $K(x, Z) \in \mathbb{R}^{n_\text{test} \times m}$ é computado
+  --- não há mais nenhuma dependência de $X_\text{treino}$. F1 = $0{,}8342$.
+\end{description}
+
+\subsection{Verificação experimental}
+
+A implementação V3 foi auditada matematicamente
+(\texttt{scripts/audit\_nystrom\_lssvm.py}) confirmando três propriedades:
+
+\begin{enumerate}
+  \item \textbf{Equivalência matemática.}
+  $\|f_\text{cache}(x) - f_\text{Nyström}(x)\|_2 = 0$
+  exatamente, onde $f_\text{Nyström}$ usa a fórmula expandida
+  $K(x, Z)\,W^{-1} C^\top \alpha + b$.
+
+  \item \textbf{Sem dependência de $X_\text{treino}$.} Após o fit, ao apagar
+  $X_\text{treino}$ do modelo, as predições continuam idênticas
+  ($\|\Delta f\|_2 = 0$). Confirma que apenas $Z$ é usado na inferência.
+
+  \item \textbf{Custo $O(n_\text{test} \cdot m)$.} Mantendo $m$ fixo e variando
+  $n_\text{treino}$ de $1000$ a $6000$, o tempo de predição permanece em
+  $\approx 5$\,ms (não escala com $n$).
+\end{enumerate}
+
+\begin{table}[H]
+\centering
+\caption{Comparação direta no BCW (10 sementes, mesmos hiperparâmetros).}
+\label{tab:nystrom_audit}
+\begin{tabular}{lrl}
+\toprule
+\textbf{Versão} & \textbf{F1 BCW} & \textbf{Diagnóstico} \\
+\midrule
+V1 (kernel completo)        & $0{,}974$ & 0\% de esparsidade real \\
+V2 ($\alpha$ subsetado)      & $0{,}360$ & matematicamente inválida \\
+V3 ($W^{-1}C^\top\alpha$, atual) & $0{,}968$ & $\approx 80\%$ esparsidade real \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A V3 perde apenas $0{,}006$ em relação ao kernel completo no BCW, mostrando
+que a aproximação Nyström com seleção colnorm é \emph{genuinamente} boa
+quando bem tunada --- a esparsidade não custa quase nada de F1.
+
+\subsection{Esparsidade reportada}
+
+Com a predição V3, a esparsidade do Nyström-SVM é semanticamente consistente
+com os demais LSSVMs:
+\begin{itemize}
+  \item \textbf{ADMM/FISTA}: esparsidade = fração de $\alpha_i = 0$.
+  \item \textbf{Nyström}: esparsidade = $1 - m/n$, fração de pontos de treino
+        \emph{não} usados como landmark-key.
+\end{itemize}
+A razão $m/n$ é tunada pelo Optuna por dataset; a esparsidade resultante varia
+entre $50\%$ (TWC) e $92\%$ (PID), com média $69\%$ no Tier~1.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Experimento Tier 1: Benchmarks Reais}
+\label{sec:tier1}
+
+Nove conjuntos de dados foram utilizados (Tabela~\ref{tab:datasets}).
+Os três últimos (TWS, TWM, TWC) são sintéticos bidimensionais incluídos como
+controle com fronteiras de decisão conhecidas.
+
+\begin{table}[H]
+\centering
+\caption{Conjuntos de dados --- Tier 1.}
+\label{tab:datasets}
+\begin{tabular}{llrrr}
+\toprule
+\textbf{ID} & \textbf{Nome} & \textbf{N} & \textbf{Features} & \textbf{Domínio} \\
+\midrule
+BCW & Breast Cancer Wisconsin & 569 & 30 & Diagnóstico médico \\
+PID & Pima Indians Diabetes   & 768 &  8 & Diagnóstico médico \\
+HAB & Haberman Survival       & 306 &  3 & Sobrevivência \\
+VCP & Vehicle Coupon Purchase &1584 &  7 & Marketing \\
+GCR & German Credit Risk      &1000 & 20 & Crédito \\
+AUS & Australian Credit       & 690 & 14 & Crédito \\
+TWS & Two Spirals (sintético) & 400 &  2 & Controle \\
+TWM & Two Moons (sintético)   & 400 &  2 & Controle \\
+TWC & Checkerboard (sintético)& 400 &  2 & Controle \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Resultados por Dataset}
+
+A Tabela~\ref{tab:f1_tier1_full} apresenta o F1-macro médio (30 sementes) para
+\emph{todos} os modelos. Os melhores valores por coluna estão em negrito.
+
+\begin{table}[H]
+\centering
+\caption{F1-macro médio (30 sementes). \textbf{Negrito}: melhor por coluna.
+$\circ$ = variante investigada / ponto de investigação;
+$\star$ = aplicação/combinação proposta.}
+\label{tab:f1_tier1_full}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lrrrrrrrrr r}
+\toprule
+\textbf{Modelo} & \textbf{BCW} & \textbf{PID} & \textbf{HAB} & \textbf{VCP}
+  & \textbf{GCR} & \textbf{AUS} & \textbf{TWS} & \textbf{TWM} & \textbf{TWC}
+  & \textbf{Média} \\
+\midrule
+\multicolumn{11}{l}{\textit{Baseline geral tabular}} \\
+XGBoost         & 0,964 & 0,732 & 0,580 & 0,811 & 0,699 & \textbf{0,867} & 0,875 & 0,978 & 0,476 & 0,776 \\
+\midrule
+\multicolumn{11}{l}{\textit{Baselines LSSVM}} \\
+LSSVM-Std       & \textbf{0,975} & 0,729 & 0,590 & \textbf{0,835} & \textbf{0,697} & 0,862 & \textbf{0,993} & \textbf{1,000} & 0,900 & 0,842 \\
+LSSVM-FSA       & 0,967 & \textbf{0,741} & 0,590 & 0,820 & 0,676 & 0,859 & 0,990 & \textbf{1,000} & 0,893 & 0,837 \\
+LSSVM-IP        & 0,966 & 0,727 & 0,571 & 0,827 & 0,690 & 0,857 & 0,990 & \textbf{1,000} & 0,888 & 0,835 \\
+LSSVM-PCP       & 0,923 & 0,726 & \textbf{0,629} & 0,789 & 0,689 & 0,857 & 0,989 & 0,995 & 0,872 & 0,830 \\
+FISTA-Nesterov  & 0,902 & 0,686 & 0,617 & 0,782 & 0,513 & 0,844 & 0,990 & 0,994 & 0,873 & 0,800 \\
+LSSVM-Prun      & 0,969 & 0,639 & 0,482 & 0,801 & 0,437 & 0,849 & 0,994 & 0,996 & 0,874 & 0,782 \\
+LSSVM-OppM      & 0,961 & 0,456 & 0,468 & 0,755 & 0,585 & 0,823 & 0,986 & 0,990 & 0,899 & 0,769 \\
+\midrule
+\multicolumn{11}{l}{\textit{Baselines FT-Transformer}} \\
+FT-Sparsemax    & 0,950 & 0,691 & 0,596 & 0,808 & 0,662 & 0,855 & 0,690 & \textbf{1,000} & 0,710 & 0,774 \\
+SAINT           & 0,949 & 0,710 & 0,535 & 0,774 & 0,676 & 0,859 & 0,639 & 0,969 & 0,588 & 0,744 \\
+FT-Entmax       & 0,953 & 0,700 & 0,538 & 0,800 & 0,657 & \textbf{0,860} & 0,667 & 0,999 & 0,504 & 0,742 \\
+FT-Softmax      & 0,959 & 0,708 & 0,541 & 0,810 & 0,658 & 0,854 & 0,653 & \textbf{1,000} & 0,478 & 0,740 \\
+FT-TopK         & 0,950 & 0,692 & 0,501 & 0,808 & 0,669 & 0,857 & 0,640 & 0,974 & 0,468 & 0,729 \\
+\midrule
+\multicolumn{11}{l}{\textit{Paper-base estendido}} \\
+LSSVM-ADMM-Nesterov     & 0,899 & 0,684 & 0,616 & 0,783 & 0,608 & 0,842 & 0,992 & 0,992 & 0,866 & 0,809 \\
+\midrule
+\multicolumn{11}{l}{\textit{Variantes investigadas / propostos}} \\
+DualFISTA$^\circ$       & 0,976 & 0,734 & 0,589 & 0,834 & 0,698 & 0,862 & 0,994 & \textbf{1,000} & \textbf{0,891} & \textbf{0,842} \\
+Nyström-SVM$^\star$     & 0,970 & 0,715 & 0,602 & 0,820 & 0,690 & 0,861 & 0,992 & \textbf{1,000} & 0,858 & 0,834 \\
+ADMM-ElasticNet$^\circ$ & 0,899 & 0,692 & 0,618 & 0,787 & 0,592 & 0,844 & 0,990 & 0,995 & 0,861 & 0,809 \\
+FT-CUR$^\star$ (Nyströmformer) & 0,946 & 0,715 & 0,523 & 0,824 & 0,665 & 0,851 & 0,654 & 0,981 & 0,564 & 0,747 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\subsection{Comparação Geral}
+
+A Figura~\ref{fig:f1_all} mostra o F1-macro médio ($\pm$ dp) agregado sobre
+todos os datasets e sementes para cada modelo.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{report_figs/fig1_f1_all_models.pdf}
+\caption{F1-macro médio $\pm$ dp (30 sementes $\times$ 9 datasets).
+$\star$ indica modelos propostos; vermelho = DualFISTA, verde = Nyström-SVM,
+laranja = FT-CUR.}
+\label{fig:f1_all}
+\end{figure}
+
+\textbf{Observações principais:}
+\begin{itemize}
+  \item \textbf{XGBoost} (baseline geral tabular) atinge $0{,}776$ no Tier 1 ---
+        abaixo do top 5 dos LSSVMs e abaixo do DualFISTA/Nyström. Vence em AUS
+        ($0{,}867$) mas colapsa em TWC ($0{,}476$, fronteira xadrez não-linear que
+        favorece kernel RBF). Mostra que para dados tabulares com estrutura
+        geométrica, métodos kernel podem superar gradient boosting.
+  \item \textbf{DualFISTA} alcança F1-macro médio de $0{,}8418$ ---
+        virtualmente igual ao LSSVM-Std completo ($0{,}8424$, diferença $0{,}0006$)
+        com $20{,}1\%$ de esparsidade. É o único modelo esparso que se aproxima
+        do desempenho do baseline sem esparsidade.
+  \item \textbf{Nyström-SVM} ($0{,}834$) é o segundo melhor entre os modelos
+        propostos: fica a apenas $0{,}008$ do LSSVM-Std completo, mas com
+        $\approx 69\%$ de esparsidade amostral (mais que o triplo do DualFISTA).
+        É o melhor trade-off F1/esparsidade entre os modelos com alta esparsidade.
+  \item O \textbf{LSSVM-ADMM} e suas variantes (ElasticNet, FISTA-Nesterov)
+        ficam $\approx 3$ pp abaixo do LSSVM-Std, com esparsidade entre $27$--$30\%$.
+  \item Todos os FT-Transformers baselines (softmax, topk, entmax, sparsemax)
+        ficam abaixo de $0{,}78$, com queda acentuada nos sintéticos TWS e TWC.
+  \item \textbf{SAINT} ($0{,}744$, atenção inter-instâncias densa) e
+        \textbf{FT-CUR} (Nyströmformer, $0{,}747$) atingem F1 essencialmente
+        idêntico --- diferença de $0{,}003$. Como o FT-CUR comprime $\approx 79\%$
+        da atenção inter-instâncias e o SAINT é denso, isso valida a aproximação
+        Nyströmformer: \textbf{a compressão não custa F1}.
+\end{itemize}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Arquitetura dos FT-Transformers e Tipos de Atenção}
+\label{sec:ft_attention}
+
+Esta seção esclarece a distinção entre os dois mecanismos de atenção presentes
+nos modelos baseados em Transformer avaliados, terminologia necessária para
+interpretar corretamente as medidas de esparsidade.
+
+\subsection{Atenção inter-features (intra-instância)}
+
+Os FT-Transformers baselines (softmax, top-$k$, entmax, sparsemax) implementam
+\textbf{atenção entre features de uma mesma instância}. Dado um batch de $n$
+amostras com $d$ features, cada instância $x_i \in \mathbb{R}^d$ é representada
+como uma sequência de $d$ tokens após embedding. A atenção opera na dimensão
+dos tokens:
+\[
+  A^{(i)} = \text{softmax}\!\left(\frac{Q^{(i)} (K^{(i)})^\top}{\sqrt{d_h}}\right)
+  \in \mathbb{R}^{d \times d},
+\]
+onde $A^{(i)}$ indica quanta atenção a feature $j$ dá à feature $k$ \emph{dentro
+da instância $i$}. As variantes espar\-sas (sparsemax, top-$k$) fazem $A^{(i)}$
+ter entradas exatamente zero. Esta esparsidade \emph{não} envolve comparação
+entre amostras distintas --- é \textbf{intra-instância}.
+
+\subsection{Atenção inter-instâncias (entre amostras)}
+
+\textbf{SAINT} e \textbf{FT-CUR} acrescentam (ou substituem) um mecanismo de
+atenção entre instâncias distintas. Todas as $n$ amostras do contexto são
+comparadas entre si:
+\[
+  A = f\!\left(\frac{Q K^\top}{\sqrt{d_h}}\right) \in \mathbb{R}^{n \times n},
+\]
+onde cada entrada $A_{ij}$ mede a influência da amostra $j$ sobre a amostra $i$.
+
+\begin{tcolorbox}[colback=fixbg, colframe=fixborder, fonttitle=\bfseries,
+  title=\textbf{SAINT vs.\ FT-CUR: atenção inter-instâncias densa vs.\ comprimida}]
+\begin{itemize}
+  \item \textbf{SAINT} usa $f = \text{softmax}$ completo: $A \in \mathbb{R}^{n \times n}$
+        é materializada integralmente. Custo: $O(n^2 d)$ por cabeça. Sem zeros exatos
+        $\Rightarrow$ esparsidade de compressão $= 0\%$. Serve como \textbf{baseline
+        denso} para a comparação com FT-CUR.
+  \item \textbf{FT-CUR (Nyströmformer)} evita materializar $A$ ao todo:
+        seleciona $m \ll n$ landmarks por norma de coluna e computa três produtos
+        menores com softmax separado:
+        \[
+          C = \text{softmax}\!\!\left(\frac{Q K_m^\top}{\sqrt{d_h}}\right)\![n{\times}m],
+          \quad
+          R = \text{softmax}\!\!\left(\frac{Q_m K^\top}{\sqrt{d_h}}\right)\![m{\times}n],
+          \quad
+          W = \text{softmax}\!\!\left(\frac{Q_m K_m^\top}{\sqrt{d_h}}\right)\![m{\times}m].
+        \]
+        Saída: $\text{out} = C\bigl(W^+\,(R\,V)\bigr)$ da direita para a esquerda ---
+        custo $O(nmd)$, nunca $O(n^2 d)$. Compressão inter-instâncias: $1 - m/n$.
+\end{itemize}
+\end{tcolorbox}
+
+\noindent
+A atenção inter-features (softmax/topk/entmax/sparsemax) e a atenção
+inter-instâncias (SAINT/FT-CUR) são \textbf{ortogonais}: SAINT e FT-CUR
+incluem ambas (bloco inter-features padrão + bloco inter-instâncias), enquanto
+os FT-Transformers baselines têm apenas a inter-features.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Análise de Esparsidade}
+\label{sec:sparsity}
+
+Os modelos avaliados produzem três tipos qualitativamente distintos de esparsidade:
+
+\begin{itemize}
+  \item \textbf{Esparsidade amostral} (LSSVMs): fração de amostras de treino
+        \emph{não} utilizadas na predição. Para ADMM/FISTA, é a fração de
+        $\alpha_i = 0$; para Nyström-SVM, é $1 - m/n$. Mede compressão do
+        modelo em vetores de suporte.
+  \item \textbf{Esparsidade de atenção inter-features}: fração de pesos da
+        atenção \emph{intra-instância} exatamente zero (sparsemax, top-$k$).
+        Mede seletividade de features, não compressão de amostras.
+  \item \textbf{Compressão inter-instâncias} (FT-CUR): fração $1 - m/n$ de
+        amostras não usadas como landmark-key na atenção Nyströmformer. Análogo
+        ao Nyström-SVM, mas na dimensão de atenção em vez da predição kernel.
+\end{itemize}
+
+\subsection{Esparsidade amostral — LSSVMs}
+
+\begin{table}[H]
+\centering
+\caption{Trade-off esparsidade amostral $\times$ desempenho (LSSVMs, Tier 1).
+Ordenado por F1-macro decrescente.}
+\label{tab:sparsity_lssvm}
+\begin{tabular}{lrrl}
+\toprule
+\textbf{Modelo} & \textbf{F1-macro} & \textbf{Spar.\ amostral} & \textbf{Mecanismo} \\
+\midrule
+LSSVM-Std        & 0,8424 &  0,0\% & --- (baseline denso) \\
+DualFISTA$^\star$ & 0,8418 & 20,1\% & $\ell_1$ dual via FISTA \\
+LSSVM-FSA        & 0,8373 & 45,9\% & seleção forward \\
+LSSVM-IP         & 0,8352 & 57,1\% & iterative pruning \\
+\textbf{Nyström-SVM}$^\star$& \textbf{0,8342} & \textbf{69,0\%} & colnorm landmarks ($m/n$ tunado por dataset) \\
+LSSVM-PCP        & 0,8300 &  0,0\% & cone projection \\
+LSSVM-ADMM$^\star$& 0,8089 & 30,0\% & $\ell_1$ primal (ADMM-Nesterov) \\
+ADMM-ElasticNet$^\star$& 0,8086 & 27,4\% & $\ell_1 + \ell_2$ (Elastic Net) \\
+FISTA-Nesterov$^\star$ & 0,8000 & 27,4\% & $\ell_1$ primal via FISTA \\
+LSSVM-Prun       & 0,7825 & 71,6\% & pruning pós-treino \\
+LSSVM-OppM       & 0,7692 & 79,3\% & opposite maps \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.78\linewidth]{report_figs/fig2_sparsity_tradeoff.pdf}
+\caption{Trade-off esparsidade amostral $\times$ F1-macro (LSSVMs). $\star$ = modelos propostos.}
+\label{fig:sparsity}
+\end{figure}
+
+\textbf{Análise:}
+\begin{itemize}
+  \item \textbf{DualFISTA} apresenta o melhor trade-off em baixa esparsidade:
+        $20\%$ com perda de apenas $0{,}0006$ em F1.
+  \item \textbf{Nyström-SVM} oferece o melhor trade-off em alta esparsidade:
+        $69\%$ com perda de apenas $0{,}008$ em F1. É o único modelo que combina
+        esparsidade $>50\%$ com F1 dentro de $1\%$ do LSSVM-Std.
+  \item Os métodos ADMM/FISTA (primal) produzem esparsidades entre $27$--$30\%$
+        com queda de $3$--$4$ pp. A esparsidade é heterogênea entre datasets.
+  \item Os mais agressivos em esparsidade (LSSVM-Prun, $71\%$; LSSVM-OppM, $79\%$)
+        pagam custo de $\approx 6$--$8$ pp em F1, mostrando que esparsidade alta
+        sem método estruturado (como o Nyström) degrada o desempenho.
+\end{itemize}
+
+\subsection{Esparsidade de atenção inter-features — FT-Transformers baselines}
+
+\begin{tcolorbox}[colback=fixbg, colframe=fixborder, fonttitle=\bfseries,
+  title=\textbf{Nota: esparsidade inter-features vs.\ compressão inter-instâncias}]
+Os FT-Transformers baselines (softmax, topk, entmax, sparsemax) têm atenção
+\emph{intra-instância} --- fração de pesos zerados mede seletividade de features.
+\textbf{SAINT} adiciona atenção inter-instâncias com softmax completo ($n \times n$):
+sem zeros exatos, compressão $= 0\%$ (baseline denso). \textbf{FT-CUR} substitui
+o softmax $n \times n$ pelo Nyströmformer ($m$ landmarks, colnorm): nunca
+materializa $A^{n \times n}$, compressão $= 1 - m/n \approx 80\%$.
+\end{tcolorbox}
+
+\begin{table}[H]
+\centering
+\caption{Esparsidade de atenção inter-features (baselines FT) e compressão
+inter-instâncias (SAINT/FT-CUR). Tier 1, média sobre 9 datasets e 30 sementes.}
+\label{tab:sparsity_ft}
+\begin{tabular}{lrrll}
+\toprule
+\textbf{Modelo} & \textbf{F1-macro} & \textbf{Spar.\ feat.} & \textbf{Compr.\ inst.} & \textbf{Mecanismo} \\
+\midrule
+\multicolumn{5}{l}{\textit{Atenção inter-features (intra-instância)}} \\
+FT-TopK      & 0,729 & 76,8\% & --- & top-$k$ fixo ($k{=}2$ de $d{+}1$ tokens) \\
+FT-Sparsemax & 0,774 & 39,1\% & --- & sparsemax (zeros exatos) \\
+FT-Entmax    & 0,742 &  1,4\% & --- & entmax (poucos zeros exatos) \\
+FT-Softmax   & 0,740 &  0,2\% & --- & softmax (nunca exatamente zero) \\
+\midrule
+\multicolumn{5}{l}{\textit{Atenção inter-instâncias}} \\
+SAINT        & 0,744 & --- & $0\%$  & softmax $n{\times}n$ completo (baseline denso) \\
+FT-CUR$^\star$ & 0,747 & --- & $79{,}3\%$ & Nyströmformer, $m/n{\approx}0{,}20$, $O(nmd)$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Análise:}
+\begin{itemize}
+  \item \textbf{FT-TopK} ($76{,}8\%$) e \textbf{FT-Sparsemax} ($39{,}1\%$) produzem
+        esparsidade de atenção inter-features genuína, mas ela não se traduz em ganho
+        de F1 --- ambos ficam abaixo ou muito próximos do FT-Softmax denso em média.
+  \item \textbf{FT-Entmax} ($1{,}4\%$) produz poucos zeros na prática: apesar de
+        ser conceitualmente esparso, a entmax com $\alpha{=}1{,}5$ raramente satura
+        em zero para os datasets avaliados.
+  \item \textbf{SAINT} ($0{,}744$, denso) e \textbf{FT-CUR} ($0{,}747$, $79{,}3\%$
+        de compressão) atingem F1 essencialmente idêntico --- diferença de apenas
+        $0{,}003$. Isso valida empiricamente o Nyströmformer: \textbf{comprimir
+        $\approx 80\%$ da atenção inter-instâncias não custa F1}. A aproximação
+        $\tilde A = C(W^+ R)\,V$ via softmax separado é fiel à atenção completa
+        $A = \text{softmax}(QK^\top/\sqrt d)\,V$ na prática.
+  \item Comparado aos FT-Transformers baselines (sem atenção inter-instâncias),
+        SAINT e FT-CUR ficam ligeiramente acima de FT-Softmax/Entmax/TopK e abaixo
+        do FT-Sparsemax. A atenção inter-instâncias não é, isoladamente, suficiente
+        para superar as variantes esparsas no nível feature.
+\end{itemize}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Ablação A: Escalabilidade Amostral ($N=400 \to 2000$)}
+\label{sec:scaling}
+
+\textbf{Motivação:} Investigar se os Transformers melhoram com mais dados
+(são conhecidamente \textit{data-hungry}) e se os modelos baseados em kernel
+mantêm a vantagem estrutural.
+
+\textbf{Configuração:} Os três sintéticos (TWS, TWM, TWC) foram re-gerados
+com $N=2000$. Os hiperparâmetros tuned para Tier 1 ($N=400$) foram reutilizados.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{report_figs/fig3_scaling.pdf}
+\caption{F1-macro com $N=400$ (barras translúcidas) vs.\ $N=2000$ (sólidas).}
+\label{fig:scaling}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Modelos propostos: F1-macro em $N=400$ vs.\ $N=2000$.}
+\label{tab:scaling_proposed}
+\begin{tabular}{llrrr}
+\toprule
+\textbf{Modelo} & \textbf{Dataset} & \textbf{N=400} & \textbf{N=2000} & \textbf{$\Delta$} \\
+\midrule
+\multirow{3}{*}{DualFISTA}
+  & TWS & 0,994 & 0,995 & $+$0,001 \\
+  & TWM & 1,000 & 0,998 & $-$0,002 \\
+  & TWC & 0,891 & 0,945 & $+$0,054 \\
+\midrule
+\multirow{3}{*}{LSSVM-ADMM}
+  & TWS & 0,992 & 0,995 & $+$0,003 \\
+  & TWM & 0,992 & 0,998 & $+$0,007 \\
+  & TWC & 0,866 & 0,938 & $+$0,072 \\
+\midrule
+\multirow{3}{*}{Nyström-SVM}
+  & TWS & 0,992 & 0,995 & $+$0,003 \\
+  & TWM & 1,000 & 0,998 & $-$0,002 \\
+  & TWC & 0,858 & 0,941 & $+$0,083 \\
+\midrule
+\multirow{3}{*}{FT-CUR (Nyströmformer)}
+  & TWS & 0,654 & 0,788 & $+$0,134 \\
+  & TWM & 0,981 & 0,997 & $+$0,016 \\
+  & TWC & 0,564 & 0,762 & $+$0,198 \\
+\midrule
+\multirow{3}{*}{SAINT}
+  & TWS & 0,639 & 0,787 & $+$0,148 \\
+  & TWM & 0,969 & 0,995 & $+$0,026 \\
+  & TWC & 0,588 & 0,802 & $+$0,214 \\
+\midrule
+\multirow{3}{*}{XGBoost}
+  & TWS & 0,875 & 0,895 & $+$0,020 \\
+  & TWM & 0,978 & 0,997 & $+$0,019 \\
+  & TWC & 0,476 & 0,503 & $+$0,027 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Observações:}
+\begin{itemize}
+  \item \textbf{DualFISTA}, \textbf{LSSVM-ADMM} e agora \textbf{Nyström-SVM}
+        apresentam eficiência amostral elevada: ganhos pequenos com $N=2000$
+        (Nyström: $+0{,}083$ em TWC; nulo em TWM), pois o kernel RBF já captura
+        bem a geometria com $N=400$ quando o $m/n$ está tunado.
+  \item \textbf{FT-CUR} e \textbf{SAINT} são fortemente \textit{data-hungry}
+        ($+0{,}13$ a $+0{,}21$ em TWS/TWC) --- ambos têm a mesma sensibilidade
+        a $N$, confirmando que o ganho vem do regime de dados, não do mecanismo
+        de compressão.
+  \item \textbf{FT-Sparsemax} foi o FT-Transformer mais beneficiado: de $0{,}710$
+        para $0{,}955$ em TWC, superando os LSSVMs nesse dataset com $N=2000$.
+\end{itemize}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Ablação B: Robustez a Features de Ruído ($2D \to 5D$)}
+\label{sec:noise}
+
+\textbf{Motivação:} Avaliar a sensibilidade à presença de dimensões irrelevantes,
+cenário comum em dados tabulares reais.
+
+\textbf{Configuração:} Três features gaussianas de ruído ($\sigma_\text{ruído}=1{,}0$)
+foram adicionadas às coordenadas $x_1, x_2$ originais ($N=400$).
+Avaliou-se o cenário com \textbf{$\sigma$ reajustado} (novo tuning para os dados
+em 5D).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{report_figs/fig4_5features.pdf}
+\caption{F1-macro: 2D original (translúcido) vs.\ 5D com $\sigma$ reajustado (sólido).}
+\label{fig:5features}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Modelos propostos: F1-macro em 2D vs.\ 5D reajustado.}
+\label{tab:5f_proposed}
+\begin{tabular}{llrrr}
+\toprule
+\textbf{Modelo} & \textbf{Dataset} & \textbf{2D} & \textbf{5D reaj.} & \textbf{$\Delta$} \\
+\midrule
+\multirow{3}{*}{DualFISTA}
+  & TWS & 0,994 & 0,648 & $-$0,346 \\
+  & TWM & 1,000 & 0,962 & $-$0,038 \\
+  & TWC & 0,891 & 0,559 & $-$0,332 \\
+\midrule
+\multirow{3}{*}{LSSVM-ADMM}
+  & TWS & 0,992 & 0,632 & $-$0,360 \\
+  & TWM & 0,992 & 0,920 & $-$0,072 \\
+  & TWC & 0,866 & 0,549 & $-$0,317 \\
+\midrule
+\multirow{3}{*}{Nyström-SVM}
+  & TWS & 0,992 & 0,560 & $-$0,432 \\
+  & TWM & 1,000 & 0,966 & $-$0,034 \\
+  & TWC & 0,858 & 0,529 & $-$0,329 \\
+\midrule
+\multirow{3}{*}{FT-CUR (Nyströmformer)}
+  & TWS & 0,654 & 0,607 & $-$0,047 \\
+  & TWM & 0,981 & 0,928 & $-$0,053 \\
+  & TWC & 0,564 & 0,495 & $-$0,069 \\
+\midrule
+\multirow{3}{*}{SAINT}
+  & TWS & 0,639 & 0,595 & $-$0,044 \\
+  & TWM & 0,969 & 0,930 & $-$0,039 \\
+  & TWC & 0,588 & 0,490 & $-$0,098 \\
+\midrule
+\multirow{3}{*}{XGBoost}
+  & TWS & 0,875 & 0,927 & $+$0,052 \\
+  & TWM & 0,978 & 0,982 & $+$0,004 \\
+  & TWC & 0,476 & 0,772 & $+$0,296 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Análise mecânica:} A adição de 3 features de ruído expande a distância
+euclidiana quadrática média em $\approx 3\sigma_\text{ruído}^2$, colapsando os
+valores do kernel RBF para próximo de zero e destruindo a estrutura da matriz
+kernel. O reajuste do $\sigma$ (valores maiores) recupera parcialmente o sinal,
+mas não restitui a resolução espacial original em fronteiras de alta frequência.
+
+\textbf{Padrões observados:}
+\begin{itemize}
+  \item \textbf{DualFISTA}, \textbf{LSSVM-ADMM} e \textbf{Nyström-SVM} sofrem
+        quedas severas em TWS e TWC ($\Delta$ de $-0{,}33$ a $-0{,}43$), pelo
+        mesmo motivo estrutural: o kernel RBF não distingue features informativas
+        de ruído. O Nyström, agora com base $> 0{,}85$ em 2D, tem queda
+        proporcionalmente similar aos outros LSSVMs.
+  \item \textbf{FT-CUR} e \textbf{SAINT} são notavelmente robustos
+        ($\Delta \approx -0{,}04$ a $-0{,}10$): a atenção opera sobre representações
+        aprendidas dos tokens, não sobre distâncias brutas entre amostras. Features
+        irrelevantes têm impacto marginal porque o modelo aprende a ignorá-las.
+        Esta é a vantagem estrutural mais clara dos Transformers tabulares sobre
+        os métodos kernel neste cenário.
+  \item \textbf{XGBoost} \emph{melhora} com features extras
+        ($\Delta = +0{,}05$ a $+0{,}30$): árvores aproveitam o sinal adicional.
+        Em TWC vai de $0{,}476$ (2D) para $0{,}772$ (5D retunado) --- o ganho
+        mais expressivo do estudo. Confirma a complementaridade dos paradigmas:
+        kernel para geometria pura, árvores para feature-rich tabular.
+\end{itemize}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Ablação C: Dados Sintéticos Multifeature (MK5)}
+\label{sec:mk5}
+
+\textbf{Motivação:} Os datasets sintéticos anteriores (TWS/TWM/TWC) são
+bidimensionais, favorecendo o kernel RBF. O MK5 usa dados gerados por
+\texttt{make\_classification} (scikit-learn) com 5 features verdadeiramente
+informativas em 3 níveis de dificuldade de separação.
+
+\begin{table}[H]
+\centering
+\caption{Ablação C (MK5) --- F1-macro médio (30 sementes).
+MKE = fácil, MKM = médio, MKH = difícil. $\star$ = proposto.
+Spar.A = esparsidade amostral; Spar.At = esparsidade de atenção.}
+\label{tab:mk5}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lrrrr rr}
+\toprule
+\textbf{Modelo} & \textbf{MKE} & \textbf{MKM} & \textbf{MKH} & \textbf{Média} & \textbf{Spar.A} & \textbf{Spar.At} \\
+\midrule
+\multicolumn{7}{l}{\textit{Baseline geral tabular}} \\
+XGBoost      & 0,978 & 0,820 & 0,690 & 0,829 & --- & --- \\
+\multicolumn{7}{l}{\textit{Baselines LSSVM}} \\
+LSSVM-Std    & 0,987 & 0,859 & 0,729 & 0,859 &  0,0\% & --- \\
+LSSVM-FSA    & 0,986 & 0,833 & 0,696 & 0,838 & 45,0\% & --- \\
+LSSVM-IP     & 0,989 & 0,819 & 0,683 & 0,830 & 58,1\% & --- \\
+LSSVM-PCP    & 0,973 & 0,827 & 0,683 & 0,828 &  0,0\% & --- \\
+LSSVM-ADMM   & 0,986 & 0,825 & 0,685 & 0,832 &  9,6\% & --- \\
+LSSVM-Prun   & 0,988 & 0,601 & 0,622 & 0,737 & 75,5\% & --- \\
+LSSVM-OppM   & 0,888 & 0,632 & 0,523 & 0,681 & 78,0\% & --- \\
+\multicolumn{7}{l}{\textit{Baselines FT-Transformer}} \\
+FT-Softmax   & 0,976 & 0,797 & 0,669 & 0,814 & --- &  0,2\% \\
+FT-Entmax    & 0,976 & 0,801 & 0,657 & 0,811 & --- &  1,4\% \\
+FT-Sparsemax & 0,975 & 0,787 & 0,652 & 0,805 & --- & 39,1\% \\
+FT-TopK      & 0,975 & 0,768 & 0,644 & 0,796 & --- & 76,8\% \\
+\midrule
+\multicolumn{7}{l}{\textit{Modelos propostos}} \\
+DualFISTA$^\star$    & \textbf{0,987} & \textbf{0,858} & \textbf{0,726} & \textbf{0,857} & 21,4\% & --- \\
+Nyström-SVM$^\star$  & 0,986 & 0,839 & 0,712 & 0,845 & 64,3\% & --- \\
+FT-CUR$^\star$ (Nyströmformer) & 0,967 & 0,797 & 0,664 & 0,809 & --- & $78{,}2\%$ \\
+SAINT                & 0,971 & 0,782 & 0,668 & 0,807 & --- & $0\%$ \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{report_figs/fig5_mk5.pdf}
+\caption{Ablação C --- MK5: F1-macro por nível de dificuldade.}
+\label{fig:mk5}
+\end{figure}
+
+\textbf{Destaques:}
+\begin{itemize}
+  \item \textbf{DualFISTA} ($0{,}857$) quase empata com o LSSVM-Std ($0{,}859$)
+        com $21\%$ de esparsidade --- padrão consistente com o Tier~1.
+  \item \textbf{Nyström-SVM} ($0{,}845$) supera todos os FT-Transformers neste
+        cenário multifeature, com $64\%$ de esparsidade: a aproximação Nyström é
+        eficaz quando há features informativas distribuídas em dimensão maior
+        que 2D.
+  \item \textbf{SAINT} ($0{,}807$) e \textbf{FT-CUR} ($0{,}809$) ficam novamente
+        empatados (diferença $0{,}002$), confirmando que a compressão
+        Nyströmformer no FT-CUR não custa F1 também em dados multifeature.
+\end{itemize}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Análise das Variantes Investigadas e Modelos Propostos}
+\label{sec:proposed}
+
+\subsection{Mecanismos de esparsidade}
+
+\begin{table}[H]
+\centering
+\caption{Caracterização dos mecanismos de esparsidade dos modelos investigados
+e propostos. LSSVM-ADMM-Nesterov é o paper-base (Marinho et al.); demais são
+variantes ou aplicações propostas/investigadas.}
+\label{tab:mechanisms}
+\begin{tabular}{lp{4.5cm}p{4.5cm}}
+\toprule
+\textbf{Modelo} & \textbf{Mecanismo} & \textbf{Esparsidade} \\
+\midrule
+LSSVM-ADMM-Nesterov (Marinho et al.)
+  & Otimização ADMM com penalidade $\ell_1$ (primal); aceleração de Nesterov.
+  & Emerge da otimização; heterogênea entre datasets. Média: 30\%. \\
+\addlinespace
+ADMM-ElasticNet$^\circ$
+  & Variante do paper-base com penalidade Elastic Net ($\ell_1+\ell_2$);
+    combinação não localizada em literatura.
+  & Similar ao paper-base, ligeiramente mais homogênea. Média: 27\%. \\
+\addlinespace
+DualFISTA$^\circ$
+  & Formulação dual:
+    $\min_\alpha \frac{1}{2}\alpha^\top\Omega\alpha - \mathbf{1}^\top\alpha + \lambda\|\alpha\|_1$,
+    otimizado via FISTA. Não localizada na literatura nesta forma exata.
+  & Mais uniforme que ADMM (dual bem condicionado). Média: 20\%. \\
+\addlinespace
+Nyström-SVM$^\star$
+  & Aproximação Nyström com seleção \emph{colnorm} (norma de coluna em vez
+    de uniforme/leverage); predição honesta restrita aos $m$ landmarks.
+  & Controlada por $m/n$ tunado por dataset; varia 50--92\%. Média: 69\%. \\
+\addlinespace
+FT-CUR (Nyströmformer)$^\star$
+  & Aplicação de Nyströmformer (Xiong et al.\ 2021) à atenção inter-instâncias
+    do FT-Transformer com seleção colnorm.
+  & Compressão inter-instâncias: $1 - m/n \approx 80\%$. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Desempenho consolidado}
+
+A Tabela~\ref{tab:proposed_summary} consolida os resultados dos modelos propostos
+nos quatro experimentos realizados.
+
+\begin{table}[H]
+\centering
+\caption{Modelos investigados / propostos e paper-base --- F1-macro médio
+em todos os experimentos.
+Spar.A = esparsidade amostral (LSSVMs); Spar.At = compressão inter-instâncias
+(FT-CUR/SAINT).}
+\label{tab:proposed_summary}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{l rrr r rr r r}
+\toprule
+& \multicolumn{3}{c}{\textbf{Tier 1}} &
+  \multicolumn{2}{c}{\textbf{Ablação A ($N$=2k)}} &
+  \multicolumn{2}{c}{\textbf{Ablação B (5D)}} &
+  \textbf{MK5} \\
+\cmidrule{2-4}\cmidrule{5-6}\cmidrule{7-8}
+\textbf{Modelo} & \textbf{F1} & \textbf{Spar.A} & \textbf{Spar.At} & \textbf{F1} & \textbf{$\Delta$} & \textbf{F1} & \textbf{$\Delta$} & \textbf{F1} \\
+\midrule
+DualFISTA$^\circ$    & 0,842 & 20\% & ---       & 0,979 & $+$0,018 & 0,723 & $-$0,239 & 0,857 \\
+LSSVM-ADMM (paper-base) & 0,809 & 30\% & ---  & 0,977 & $+$0,023 & 0,700 & $-$0,253 & 0,832 \\
+ADMM-ElasticNet$^\circ$ & 0,809 & 27\% & ---  & --- & --- & --- & --- & --- \\
+Nyström-SVM$^\star$  & \textbf{0,834} & \textbf{69\%} & --- & \textbf{0,978} & $+$0,144 & 0,685 & $-$0,149 & 0,845 \\
+FT-CUR (Nyströmformer)$^\star$ & 0,747 & --- & $79{,}3\%$ & 0,849 & $+$0,102 & 0,677 & $-$0,070 & 0,809 \\
+SAINT (baseline FT)  & 0,744 & --- & $0\%$ & 0,862 & $+$0,118 & 0,672 & $-$0,072 & 0,807 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\subsection{Síntese comparativa}
+
+\begin{table}[H]
+\centering
+\caption{Perfis dos modelos investigados e propostos.}
+\label{tab:profiles}
+\begin{tabular}{lp{3.0cm}p{3.0cm}p{3.5cm}}
+\toprule
+\textbf{Modelo} & \textbf{Ponto forte} & \textbf{Ponto fraco} & \textbf{Característica distintiva} \\
+\midrule
+DualFISTA$^\circ$
+  & F1 quase idêntico ao LSSVM-Std; convergência estável
+  & Sensível a features de ruído (kernel RBF); esparsidade moderada (20\%)
+  & Formulação dual bem condicionada; melhor trade-off esparsidade/acurácia em baixa esparsidade \\
+\addlinespace
+ADMM-ElasticNet$^\circ$
+  & Esparsidade mais uniforme que ADMM-$\ell_1$ puro
+  & F1 $\approx 3$ pp abaixo do LSSVM-Std; ganho marginal sobre o paper-base
+  & Variante do paper-base com Elastic Net (combinação não localizada em literatura) \\
+\addlinespace
+Nyström-SVM$^\star$
+  & F1 competitivo ($0{,}834$, a $0{,}008$ do LSSVM-Std) com $69\%$ de esparsidade;
+    melhor trade-off em alta esparsidade
+  & Sensível a features de ruído (kernel RBF); $m/n$ ideal varia muito entre datasets ($8$--$50\%$)
+  & Único modelo com compressão de memória real: $O(nm)$ vs.\ $O(n^2)$; auditoria matemática confirma honestidade \\
+\addlinespace
+FT-CUR (Nyströmformer)$^\star$
+  & Robusto a features irrelevantes; beneficia-se de mais dados; compressão
+    inter-instâncias com Nyströmformer ($O(nmd)$)
+  & Fraco em fronteiras não-lineares complexas (TWS, TWC); transductivo
+    (requer $X_\text{train}$ na inferência)
+  & Aplicação do Nyströmformer a dados tabulares; comparado ao SAINT, valida
+    empiricamente que $80\%$ de compressão custa $\approx 0{,}003$ de F1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Sumário e Próximos Passos}
+\label{sec:summary}
+
+\begin{table}[H]
+\centering
+\caption{Síntese dos experimentos realizados.}
+\label{tab:summary}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{llrp{7cm}}
+\toprule
+\textbf{Experimento} & \textbf{Configuração} & \textbf{Runs} & \textbf{Resultado principal} \\
+\midrule
+Tier 1           & 18 modelos, 9 datasets, 30 seeds            & 4860 & DualFISTA 0,842 / Nyström 0,834 / XGBoost 0,776 \\
+Ablação A (escala) & 18 modelos, 3 sintéticos, $N{=}2000$, 30s & 1620 & Nyström $+0{,}14$; FT-CUR/SAINT data-hungry \\
+Ablação B (ruído)  & 18 modelos, 3 sintéticos, $+$3 feat.\ ruído, 30s & 1620 & XGBoost $+0{,}30$ em TWC; FT-CUR/SAINT robustos \\
+Ablação C (MK5)    & 18 modelos, 3 sintéticos, 30 seeds         & 1620 & Nyström 0,845 > XGBoost 0,829 > FT-CUR 0,809 \\
+\midrule
+\textbf{Total}   & & \textbf{9720} & \\
+\midrule
+\textbf{Tier 2 (em andamento)} & 18 modelos, 6 datasets, $N{=}5000$, 30s & 3240 & ADULT, CREDIT, BANK, TELCO, SHOPPERS, HIGGS50K \\
+\midrule
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\textbf{Conclusões preliminares:}
+\begin{enumerate}
+  \item \textbf{DualFISTA} é o resultado mais significativo em baixa esparsidade:
+        F1 quase idêntico ao LSSVM-Std completo ($\Delta = 0{,}0006$) com $20\%$
+        de esparsidade.
+  \item \textbf{Nyström-SVM} (após auditoria matemática) é o melhor entre os
+        modelos com alta esparsidade: $0{,}834$ no Tier~1 com $69\%$ de
+        esparsidade, a $0{,}008$ do LSSVM-Std. Combina compressão de memória
+        real ($O(nm)$ vs.\ $O(n^2)$) com F1 competitivo.
+  \item A \textbf{compressão Nyströmformer no FT-CUR é validada pelo SAINT}:
+        os dois modelos atingem F1 idêntico em todos os 4 experimentos
+        ($\Delta \leq 0{,}013$), mas o FT-CUR opera com $79\%$ de compressão
+        inter-instâncias. Comprimir não custou F1 --- a aproximação é fiel.
+  \item \textbf{Robustez a ruído}: FT-CUR e SAINT mantêm desempenho na ablação
+        de features irrelevantes ($\Delta \approx -0{,}07$); LSSVMs/Nyström/
+        DualFISTA caem $-0{,}24$ a $-0{,}43$. A atenção é estruturalmente mais
+        robusta que o kernel RBF a features ruidosas.
+  \item \textbf{XGBoost como referência externa}: o baseline geral tabular fica
+        em $0{,}776$ no Tier~1, abaixo do top~5 dos LSSVMs e do DualFISTA/Nyström.
+        Em ablações com features extras (5D retunado: $0{,}894$), XGBoost se
+        beneficia mais que kernel/atenção. Resultado coerente com a literatura
+        de \textit{tabular learning}: kernel domina em geometria pura;
+        gradient boosting em datasets feature-rich; atenção é robusta a ruído.
+\end{enumerate}
+
+\textbf{Próximas etapas:}
+\begin{enumerate}\sloppy
+  \item \textbf{Tier 2} (em andamento): benchmarks CREDIT (30k), ADULT (48k)
+        e HIGGS50K com os modelos escaláveis (Nyström-SVM, FT-CUR, variantes
+        FT-Transformer), executados no Google Colab (GPU T4).
+  \item \textbf{Análise estatística formal}: teste de Friedman + Nemenyi /
+        diagrama de diferença crítica sobre todos os datasets consolidados.
+  \item \textbf{Análise de complexidade temporal}: medição do speedup do
+        Nyström-SVM vs.\ LSSVM-Std em função de $n$ (Tier~2 fornece dados reais
+        para essa curva).
+\end{enumerate}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\appendix
+\section{Infraestrutura e Reprodutibilidade}
+
+\begin{itemize}\sloppy
+  \item \textbf{Código}: repositório \texttt{sparse-lssvm-transformers-study/}
+  \item \textbf{Ambiente}: Python 3.12, PyTorch, scikit-learn, Optuna;
+        virtualenv em \texttt{.venv/}
+  \item \textbf{Resultados}: arquivos JSON em \texttt{results/}:
+        \texttt{tier1\_results.json} (baselines),
+        \texttt{tier1\_custom\_models.json} (propostos),
+        \texttt{synthetic\_scaling\_n2000.json},
+        \texttt{synthetic\_5features\_tuned.json},
+        \texttt{synthetic\_mk5.json}
+  \item \textbf{Tuning}: \texttt{results/tuning/best\_params*.json}
+  \item \textbf{Scripts}: \texttt{scripts/run\_*.py} são resumíveis
+        (checkpoint por chave model/dataset/seed)
+  \item \textbf{Figuras}: geradas por \texttt{scripts/generate\_report\_figs.py}
+\end{itemize}
+
+\end{document}

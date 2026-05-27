@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 logger = logging.getLogger(__name__)
 
 TIER1 = ["BCW", "PID", "HAB", "VCP", "GCR", "AUS"]
-TIER2 = ["ADULT", "CREDIT"]
+TIER2 = ["ADULT", "BANK", "CREDIT", "TELCO", "SHOPPERS", "HIGGS50K"]
 TIER3 = ["COVER", "KDD99"]
 SYNTHETIC = ["TWS", "TWM", "TWC"]
 

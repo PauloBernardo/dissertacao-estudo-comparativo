@@ -18,7 +18,7 @@ models:
 
   lssvm_admm_nesterov:
     class: src.models.lssvm.primal.admm_nesterov.ADMMNesterovLSSVM
-    description: Sparse LSSVM in Primal via Nesterov-accelerated ADMM (Marinho et al.)
+    description: Sparse LSSVM in Primal via Nesterov-accelerated ADMM + Elastic Net (Marinho et al.)
     search_space:
       sigma:
         type: log_uniform
@@ -32,6 +32,10 @@ models:
         type: log_uniform
         low: 0.01
         high: 100.0
+      lambda2_:
+        type: log_uniform
+        low: 0.001
+        high: 10.0
       rho:
         type: log_uniform
         low: 0.1

@@ -1,0 +1,137 @@
+{
+  "FISTANesterov__BCW": {
+    "best_params": {
+      "sigma": 8.689918087713744,
+      "tau": 0.036061020226960235,
+      "lambda_": 1.8312610735819526
+    },
+    "best_value": 0.9062606382559505,
+    "metric": "f1_macro"
+  },
+  "FISTANesterov__PID": {
+    "best_params": {
+      "sigma": 31.993692304271626,
+      "tau": 0.28294817814366224,
+      "lambda_": 0.01074688008725091
+    },
+    "best_value": 0.7010243801635554,
+    "metric": "f1_macro"
+  },
+  "FISTANesterov__HAB": {
+    "best_params": {
+      "sigma": 0.5994293721228595,
+      "tau": 6.4038617539904985,
+      "lambda_": 0.032604582593564004
+    },
+    "best_value": 0.6533632132102242,
+    "metric": "f1_macro"
+  },
+  "FISTANesterov__VCP": {
+    "best_params": {
+      "sigma": 0.7744551777248555,
+      "tau": 2.152922953755641,
+      "lambda_": 0.22616541285348507
+    },
+    "best_value": 0.809005345847814,
+    "metric": "f1_macro"
+  },
+  "FISTANesterov__GCR": {
+    "best_params": {
+      "sigma": 1.5426798029651099,
+      "tau": 2.440966015355866,
+      "lambda_": 0.048798784594188856
+    },
+    "best_value": 0.6050341798268625,
+    "metric": "f1_macro"
+  },
+  "FISTANesterov__AUS": {
+    "best_params": {
+      "sigma": 7.635179215867834,
+      "tau": 0.04197959494524757,
+      "lambda_": 0.3708131277367319
+    },
+    "best_value": 0.8563745877616821,
+    "metric": "f1_macro"
+  },
+  "FISTANesterov__TWS": {
+    "best_params": {
+      "sigma": 0.2300279260401268,
+      "tau": 6.592697736553821,
+      "lambda_": 0.04439509834635458
+    },
+    "best_value": 0.9899960916735641,
+    "metric": "f1_macro"
+  },
+  "FISTANesterov__TWM": {
+    "best_params": {
+      "sigma": 0.18359221077361176,
+      "tau": 87.96467289893506,
+      "lambda_": 0.012108081598113397
+    },
+    "best_value": 0.9974996093139552,
+    "metric": "f1_macro"
+  },
+  "FISTANesterov__TWC": {
+    "best_params": {
+      "sigma": 0.08781731465284315,
+      "tau": 4.321979810169133,
+      "lambda_": 0.01074144276959743
+    },
+    "best_value": 0.9146675719603647,
+    "metric": "f1_macro"
+  },
+  "FISTANesterov__TWS_5f": {
+    "best_params": {
+      "sigma": 18.65941761788856,
+      "tau": 0.03640084989652765,
+      "lambda_": 4.166947727488962
+    },
+    "best_value": 0.6311370946907658,
+    "metric": "f1_macro"
+  },
+  "FISTANesterov__TWM_5f": {
+    "best_params": {
+      "sigma": 0.5031528783591943,
+      "tau": 6.455215138545252,
+      "lambda_": 0.037402258377754245
+    },
+    "best_value": 0.9169432326835298,
+    "metric": "f1_macro"
+  },
+  "FISTANesterov__TWC_5f": {
+    "best_params": {
+      "sigma": 0.3361649017895801,
+      "tau": 0.3995009069021045,
+      "lambda_": 0.013403122917997596
+    },
+    "best_value": 0.5535543774036185,
+    "metric": "f1_macro"
+  },
+  "FISTANesterov__MKE": {
+    "best_params": {
+      "sigma": 1.1100207510911884,
+      "tau": 5.64914982040005,
+      "lambda_": 0.08575257888124209
+    },
+    "best_value": 0.9824980465697765,
+    "metric": "f1_macro"
+  },
+  "FISTANesterov__MKM": {
+    "best_params": {
+      "sigma": 1.0522109306657867,
+      "tau": 3.7179921389603985,
+      "lambda_": 0.010529004526305435
+    },
+    "best_value": 0.8219145609521556,
+    "metric": "f1_macro"
+  },
+  "FISTANesterov__MKH": {
+    "best_params": {
+      "sigma": 0.541887427029143,
+      "tau": 0.8285061591270613,
+      "lambda_": 0.03730914833195413
+    },
+    "best_value": 0.7107917293970083,
+    "metric": "f1_macro"
+  }
+}

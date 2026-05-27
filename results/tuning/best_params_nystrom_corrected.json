@@ -1,0 +1,92 @@
+{
+  "NystromLSSVMColnorm__BCW": {
+    "best_params": {
+      "sigma": 7.096219613195673,
+      "gamma": 6.79075447819343,
+      "m_ratio": 0.20354120777694013
+    },
+    "best_value": 0.9790811087896761,
+    "metric": "f1_macro_cv_corrected",
+    "n_trials": 50
+  },
+  "NystromLSSVMColnorm__PID": {
+    "best_params": {
+      "sigma": 1.871450068624068,
+      "gamma": 424.6031301768206,
+      "m_ratio": 0.08196622618904913
+    },
+    "best_value": 0.7419117830442895,
+    "metric": "f1_macro_cv_corrected",
+    "n_trials": 50
+  },
+  "NystromLSSVMColnorm__HAB": {
+    "best_params": {
+      "sigma": 4.089536502332509,
+      "gamma": 433.82759734456965,
+      "m_ratio": 0.351328261020775
+    },
+    "best_value": 0.6262906046396279,
+    "metric": "f1_macro_cv_corrected",
+    "n_trials": 50
+  },
+  "NystromLSSVMColnorm__VCP": {
+    "best_params": {
+      "sigma": 2.4685995093773574,
+      "gamma": 962.545162158401,
+      "m_ratio": 0.3096204392272626
+    },
+    "best_value": 0.8455661689185401,
+    "metric": "f1_macro_cv_corrected",
+    "n_trials": 50
+  },
+  "NystromLSSVMColnorm__GCR": {
+    "best_params": {
+      "sigma": 10.391297662438095,
+      "gamma": 482.23689987299974,
+      "m_ratio": 0.1230365486073784
+    },
+    "best_value": 0.7080295436836221,
+    "metric": "f1_macro_cv_corrected",
+    "n_trials": 50
+  },
+  "NystromLSSVMColnorm__AUS": {
+    "best_params": {
+      "sigma": 4.244630655189862,
+      "gamma": 1.4390431453133283,
+      "m_ratio": 0.45445808423958867
+    },
+    "best_value": 0.8728703013244183,
+    "metric": "f1_macro_cv_corrected",
+    "n_trials": 50
+  },
+  "NystromLSSVMColnorm__TWS": {
+    "best_params": {
+      "sigma": 0.468430493458945,
+      "gamma": 107.46978212143527,
+      "m_ratio": 0.28861651396647364
+    },
+    "best_value": 0.9974996093139552,
+    "metric": "f1_macro_cv_corrected",
+    "n_trials": 50
+  },
+  "NystromLSSVMColnorm__TWM": {
+    "best_params": {
+      "sigma": 0.5627932047415171,
+      "gamma": 287.6504143254693,
+      "m_ratio": 0.48364824222546315
+    },
+    "best_value": 1.0,
+    "metric": "f1_macro_cv_corrected",
+    "n_trials": 50
+  },
+  "NystromLSSVMColnorm__TWC": {
+    "best_params": {
+      "sigma": 0.1879382335459628,
+      "gamma": 761.0952267624745,
+      "m_ratio": 0.4953544303527978
+    },
+    "best_value": 0.9174174213400029,
+    "metric": "f1_macro_cv_corrected",
+    "n_trials": 50
+  }
+}

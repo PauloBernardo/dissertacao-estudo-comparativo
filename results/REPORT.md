@@ -12,6 +12,7 @@ O estudo comparou 7 variantes de LSSVM (6 esparsas + 1 baseline denso) com 4 var
 de FT-Transformer (1 densa + 3 com atenção esparsa) em 9 datasets de classificação binária tabular.
 
 **Principais achados:**
+
 - Os LSSVMs superam os Transformers em F1-macro médio em todos os cenários Tier 1.
 - O LSSVM-Standard (não esparso) lidera em performance (F1=0.842), mas sem esparsidade.
 - Entre os métodos esparsos, LSSVM-FSA e LSSVM-IP oferecem o melhor trade-off performance/esparsidade.

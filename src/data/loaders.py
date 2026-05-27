@@ -164,42 +164,53 @@ def _load_aus() -> tuple[NDArray, NDArray, dict]:
 
 @_register("ADULT")
 def _load_adult() -> tuple[NDArray, NDArray, dict]:
-    """Adult Income — from sklearn fetch_openml."""
-    from sklearn.datasets import fetch_openml
+    """Adult Income — UCI direct download (train + test combined)."""
     from sklearn.preprocessing import OrdinalEncoder
 
-    dest_flag = _DATA_DIR / "adult_downloaded.flag"
-    if not dest_flag.exists():
-        logger.info("Fetching Adult dataset via openml (may take a moment)...")
+    dest_train = _DATA_DIR / "adult.data"
+    dest_test  = _DATA_DIR / "adult.test"
+    _download("https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data",
+              dest_train)
+    _download("https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.test",
+              dest_test)
 
-    data = fetch_openml("adult", version=2, as_frame=True, parser="auto")
-    df = data.frame.dropna()
+    cols = ["age", "workclass", "fnlwgt", "education", "education-num",
+            "marital-status", "occupation", "relationship", "race", "sex",
+            "capital-gain", "capital-loss", "hours-per-week", "native-country", "income"]
+    df_train = pd.read_csv(dest_train, header=None, names=cols,
+                           skipinitialspace=True, na_values="?")
+    df_test  = pd.read_csv(dest_test,  header=None, names=cols,
+                           skipinitialspace=True, na_values="?", skiprows=1)
+    df = pd.concat([df_train, df_test], ignore_index=True).dropna()
+    df["income"] = df["income"].str.rstrip(".")  # test set has trailing dot
 
-    cat_cols = df.select_dtypes(include=["category", "object"]).columns.tolist()
-    cat_cols = [c for c in cat_cols if c != data.target_names[0]]
-    num_cols = [c for c in df.columns if c not in cat_cols and c != data.target_names[0]]
+    target = "income"
+    cat_cols = ["workclass", "education", "marital-status", "occupation",
+                "relationship", "race", "sex", "native-country"]
+    num_cols = ["age", "fnlwgt", "education-num", "capital-gain",
+                "capital-loss", "hours-per-week"]
 
     enc = OrdinalEncoder()
-    X_cat = enc.fit_transform(df[cat_cols]) if cat_cols else np.zeros((len(df), 0))
+    X_cat = enc.fit_transform(df[cat_cols])
     X_num = df[num_cols].values.astype(float)
     X = np.hstack([X_num, X_cat])
-
-    y_raw = df[data.target_names[0]].values
-    y = _to_binary(y_raw, positive_value=">50K")
-    dest_flag.touch()
+    y = (df[target] == ">50K").astype(int).values
     return X, y, {"tier": 2}
 
 
 @_register("CREDIT")
 def _load_credit() -> tuple[NDArray, NDArray, dict]:
-    """Credit Card Default — from sklearn fetch_openml."""
-    from sklearn.datasets import fetch_openml
-    data = fetch_openml("default-of-credit-card-clients", version=1, as_frame=True, parser="auto")
-    df = data.frame.dropna()
-    target = data.target_names[0]
-    X = df.drop(columns=[target]).values.astype(float)
-    y_raw = df[target].values
-    y = _to_binary(y_raw, positive_value="1") if y_raw.dtype == object else y_raw.astype(int)
+    """Credit Card Default — UCI direct download (Excel)."""
+    dest = _DATA_DIR / "credit_default.xls"
+    _download(
+        "https://archive.ics.uci.edu/ml/machine-learning-databases/00350/"
+        "default%20of%20credit%20card%20clients.xls",
+        dest,
+    )
+    df = pd.read_excel(dest, header=1)  # row 0 is a secondary header
+    target = "default payment next month"
+    X = df.drop(columns=["ID", target], errors="ignore").values.astype(float)
+    y = df[target].astype(int).values
     return X, y, {"tier": 2}
 
 
@@ -268,49 +279,49 @@ def _load_telco() -> tuple[NDArray, NDArray, dict]:
 
 @_register("SHOPPERS")
 def _load_shoppers() -> tuple[NDArray, NDArray, dict]:
-    """Online Shoppers Purchasing Intention — via OpenML."""
-    from sklearn.datasets import fetch_openml
+    """Online Shoppers Purchasing Intention — UCI direct download."""
     from sklearn.preprocessing import OrdinalEncoder
 
-    data = fetch_openml(data_id=42696, as_frame=True, parser="auto")
-    df = data.frame.dropna()
-    target = data.target_names[0]
+    dest = _DATA_DIR / "online_shoppers_intention.csv"
+    _download(
+        "https://archive.ics.uci.edu/ml/machine-learning-databases/00468/"
+        "online_shoppers_intention.csv",
+        dest,
+    )
+    df = pd.read_csv(dest).dropna()
+    target = "Revenue"
 
-    cat_cols = df.select_dtypes(include=["category", "object", "bool"]).columns.tolist()
-    cat_cols = [c for c in cat_cols if c != target]
+    cat_cols = ["Month", "VisitorType", "Weekend"]
     num_cols = [c for c in df.columns if c not in cat_cols and c != target]
 
     enc = OrdinalEncoder()
-    X_cat = enc.fit_transform(df[cat_cols].astype(str)) if cat_cols else np.zeros((len(df), 0))
+    X_cat = enc.fit_transform(df[cat_cols].astype(str))
     X_num = df[num_cols].values.astype(float)
     X = np.hstack([X_num, X_cat])
-
-    y_raw = df[target].astype(str).values
-    y = (y_raw == "True").astype(int)
-    if len(np.unique(y)) != 2:
-        # Fallback: map to most-common binary
-        uniq = np.unique(y_raw)
-        y = (y_raw == uniq[-1]).astype(int)
+    y = df[target].astype(int).values
     return X, y, {"tier": 2}
 
 
 def _load_higgs_subset(n_rows: int, tier: int) -> tuple[NDArray, NDArray, dict]:
-    """Load a subset of the HIGGS dataset from OpenML (data_id=23512)."""
-    dest = _DATA_DIR / "higgs_full.parquet"
-    if not dest.exists():
-        logger.info("Fetching HIGGS dataset (11M rows) — this may take a while...")
-        from sklearn.datasets import fetch_openml
-        data = fetch_openml(data_id=23512, as_frame=True, parser="auto")
-        df = data.frame
-        df.to_parquet(dest, index=False)
+    """Load a subset of the HIGGS dataset — streamed from UCI gz file."""
+    dest_parquet = _DATA_DIR / f"higgs_{n_rows}.parquet"
+    if dest_parquet.exists():
+        df = pd.read_parquet(dest_parquet)
     else:
-        import pandas as pd
-        df = pd.read_parquet(dest)
+        dest_gz = _DATA_DIR / "HIGGS.csv.gz"
+        if not dest_gz.exists():
+            logger.info("Downloading HIGGS.csv.gz (~2.6 GB) — this may take a while...")
+            _download(
+                "https://archive.ics.uci.edu/ml/machine-learning-databases/00280/HIGGS.csv.gz",
+                dest_gz,
+            )
+        logger.info("Reading first %d rows from HIGGS.csv.gz...", n_rows)
+        col_names = ["label"] + [f"f{i}" for i in range(1, 29)]
+        df = pd.read_csv(dest_gz, header=None, names=col_names, nrows=n_rows)
+        df.to_parquet(dest_parquet, index=False)
 
-    df = df.iloc[:n_rows]
-    target = df.columns[-1]   # last column is the label
-    X = df.iloc[:, :-1].values.astype(float)
-    y = df[target].astype(float).astype(int).values
+    X = df.iloc[:, 1:].values.astype(float)
+    y = df.iloc[:, 0].astype(int).values
     return X, y, {"tier": tier}
 
 
@@ -383,4 +394,73 @@ def _load_twm() -> tuple[NDArray, NDArray, dict]:
 def _load_twc() -> tuple[NDArray, NDArray, dict]:
     from src.data.synthetic import make_twc
     X, y = make_twc(n_samples=400)
+    return X, (y + 1) // 2, {"tier": 0}
+
+
+# ── MK5 series — 5 informative features, make_classification ──────────────────
+
+@_register("MKE")
+def _load_mke() -> tuple[NDArray, NDArray, dict]:
+    from src.data.synthetic import make_mke
+    X, y = make_mke(n_samples=400)
+    return X, (y + 1) // 2, {"tier": 0}
+
+
+@_register("MKM")
+def _load_mkm() -> tuple[NDArray, NDArray, dict]:
+    from src.data.synthetic import make_mkm
+    X, y = make_mkm(n_samples=400)
+    return X, (y + 1) // 2, {"tier": 0}
+
+
+@_register("MKH")
+def _load_mkh() -> tuple[NDArray, NDArray, dict]:
+    from src.data.synthetic import make_mkh
+    X, y = make_mkh(n_samples=400)
+    return X, (y + 1) // 2, {"tier": 0}
+
+
+# ── Synthetic 5-feature (N=400, 2D structure + 3 noise features) ──────────────
+
+@_register("TWS_5f")
+def _load_tws_5f() -> tuple[NDArray, NDArray, dict]:
+    from src.data.synthetic import make_tws_5f
+    X, y = make_tws_5f(n_samples=400)
+    return X, (y + 1) // 2, {"tier": 0}
+
+
+@_register("TWM_5f")
+def _load_twm_5f() -> tuple[NDArray, NDArray, dict]:
+    from src.data.synthetic import make_twm_5f
+    X, y = make_twm_5f(n_samples=400)
+    return X, (y + 1) // 2, {"tier": 0}
+
+
+@_register("TWC_5f")
+def _load_twc_5f() -> tuple[NDArray, NDArray, dict]:
+    from src.data.synthetic import make_twc_5f
+    X, y = make_twc_5f(n_samples=400)
+    return X, (y + 1) // 2, {"tier": 0}
+
+
+# ── Synthetic scaled (N=2000) ──────────────────────────────────────────────────
+
+@_register("TWS_2k")
+def _load_tws_2k() -> tuple[NDArray, NDArray, dict]:
+    from src.data.synthetic import make_tws
+    X, y = make_tws(n_samples=2000)
+    return X, (y + 1) // 2, {"tier": 0}
+
+
+@_register("TWM_2k")
+def _load_twm_2k() -> tuple[NDArray, NDArray, dict]:
+    from src.data.synthetic import make_twm
+    X, y = make_twm(n_samples=2000)
+    return X, (y + 1) // 2, {"tier": 0}
+
+
+@_register("TWC_2k")
+def _load_twc_2k() -> tuple[NDArray, NDArray, dict]:
+    from src.data.synthetic import make_twc
+    X, y = make_twc(n_samples=2000)
     return X, (y + 1) // 2, {"tier": 0}

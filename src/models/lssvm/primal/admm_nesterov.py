@@ -1,28 +1,36 @@
-"""Sparse LSSVM in Primal via Nesterov-Accelerated ADMM.
+"""Sparse LSSVM in Primal via Nesterov-Accelerated ADMM with Elastic Net.
 
 Implements Fast LSSVM-ADMM from:
     Marinho et al. "Sparse Least Square SVM in Primal via Nesterov
     Accelerated Alternating Directions Method of Multipliers", IWANN 2023.
+
+Extended with Elastic Net regularisation (L1 + L2) for unconditional
+Nesterov stability: the L2 term injects strong convexity, satisfying the
+Goldstein condition without requiring manual restart tuning.
 
 Mathematical formulation
 ------------------------
 Primal LSSVM (Eq. 8):
     min_{w,ε}  ½ wᵀw + 1/(2τ) Σ εᵢ²   s.t. yᵢ = wᵀφ(xᵢ) + εᵢ
 
-After representer theorem (Eq. 13–16), reduce to LASSO:
-    min_α  ‖Aα - u‖₂² + λ‖α‖₁
+After representer theorem (Eq. 13–16), reduce to Elastic Net:
+    min_α  ½‖Aα - b‖₂² + λ₁/2‖α‖₁ + λ₂/2‖α‖₂²
 where:
     K̃  = K + σ_tik·I = LLᵀ   (Cholesky; L lower-triangular)
     A  = Lᵀ                    (upper-triangular, n×n)
-    u  = (τI + K̃)⁻¹ Lᵀ y     (n-vector)
+    b  = (τI + K̃)⁻¹ Lᵀ y     (n-vector)
+
+Setting λ₂=0 recovers the original LASSO formulation.
 
 Fast ADMM with FISTA momentum (Algorithm 2+3):
-    α^{k+1} = (K̃ + ρI)⁻¹ (r + ρ(ẑ^k - û^k))   where r = L u
-    z^{k+1} = S_{λ/(2ρ)}(α^{k+1} + û^k)          soft-threshold
+    α^{k+1} = (K̃ + ρI)⁻¹ (r + ρ(ẑ^k - û^k))   where r = Aᵀb
+    z^{k+1} = S_{λ₁/(2ρ)}(α^{k+1} + û^k) / (1 + λ₂/ρ)   Elastic Net prox
     u^{k+1} = û^k + α^{k+1} - z^{k+1}
     t^{k+1} = (1 + √(1 + 4t_k²)) / 2              FISTA momentum
     ẑ^{k+1} = z^{k+1} + ((t_k-1)/t_{k+1})(z^{k+1} - z^k)
     û^{k+1} = u^{k+1} + ((t_k-1)/t_{k+1})(u^{k+1} - u^k)
+
+When λ₂=0 the z-step reduces to S_{λ₁/(2ρ)}, matching the original paper.
 
 Adaptive restart (Fast_ADMM_restart variant):
     c_k = (1/η)(‖u^{k+1} - û^k‖² + η²‖z^{k+1} - ẑ^k‖²)
@@ -50,6 +58,8 @@ logger = logging.getLogger(__name__)
 class ADMMNesterovLSSVM(BaseLSSVM):
     """Sparse LSSVM in Primal via Nesterov-Accelerated ADMM (Marinho et al.).
 
+    Extended with Elastic Net regularisation for unconditional Nesterov stability.
+
     Parameters
     ----------
     sigma : float
@@ -58,7 +68,11 @@ class ADMMNesterovLSSVM(BaseLSSVM):
         LSSVM regularisation parameter (bias/variance trade-off).
     lambda_ : float or None
         L1 regularisation — controls sparsity. If None, auto-set to
-        √(2 log n) following the FISTA compressed-sensing convention.
+        √(2 log n) · ‖b‖∞  (scale-adaptive, avoids over-thresholding).
+    lambda2_ : float
+        L2 regularisation for Elastic Net. Injects strong convexity for
+        unconditional Nesterov stability (Goldstein condition). Default 0.0
+        reduces to the original LASSO formulation.
     rho : float or None
         ADMM augmented-Lagrangian penalty. If None, auto-set to
         1/max_eigenvalue(AᵀA), matching the reference implementation.
@@ -86,6 +100,7 @@ class ADMMNesterovLSSVM(BaseLSSVM):
         sigma: float = 1.0,
         tau: float = 1.0,
         lambda_: float | None = None,
+        lambda2_: float = 0.0,
         rho: float | None = None,
         tol: float = 1e-6,
         max_iter: int = 5000,
@@ -97,6 +112,7 @@ class ADMMNesterovLSSVM(BaseLSSVM):
     ) -> None:
         super().__init__(sigma=sigma, tau=tau, tol=tol, max_iter=max_iter)
         self.lambda_ = lambda_
+        self.lambda2_ = lambda2_
         self.rho = rho
         self.use_nesterov = use_nesterov
         self.adaptive_restart = adaptive_restart
@@ -142,11 +158,20 @@ class ADMMNesterovLSSVM(BaseLSSVM):
         eig_max = float(np.linalg.eigvalsh(AtA).max())
         rho = self.rho if self.rho is not None else (1.0 / eig_max if eig_max > 0 else 1.0)
 
-        # λ from compressed sensing: √(2 log n)  (reference default)
-        lam = self.lambda_ if self.lambda_ is not None else sqrt(2.0 * log(n))
+        # λ auto-set: √(2 log n) scaled by ‖b‖∞ so the threshold is invariant
+        # to the alpha scale (O(1/n) in kernel LSSVM, not O(1) assumed by CS).
+        if self.lambda_ is not None:
+            lam = self.lambda_
+        else:
+            b_scale = float(np.abs(b_vec).max())
+            b_scale = b_scale if b_scale > 0 else 1.0
+            lam = sqrt(2.0 * log(n)) * b_scale
 
-        # Soft-threshold: reference uses gamma/2 convention → threshold = λ/(2ρ)
+        # Soft-threshold: reference uses λ/2 convention → threshold = λ/(2ρ)
         threshold = lam / (2.0 * rho)
+
+        # Elastic Net scaling for z-step: 1/(1 + λ₂/ρ)
+        elastic_scale = 1.0 / (1.0 + self.lambda2_ / rho) if self.lambda2_ > 0.0 else 1.0
 
         # ── Step 3: Precompute (K̃ + ρI) factorisation ────────────────────────
         M = K_tik + rho * np.eye(n)
@@ -169,9 +194,9 @@ class ADMMNesterovLSSVM(BaseLSSVM):
             rhs = r + rho * (z_hat - u_hat)
             alpha_new = scipy.linalg.cho_solve((L_M, True), rhs)
 
-            # z-step (soft-threshold with λ/(2ρ) — matches reference Sthresh)
+            # z-step: Elastic Net proximal — S_{λ₁/(2ρ)}(v) / (1 + λ₂/ρ)
             z_prev = z.copy()
-            z_new = self._soft_threshold(alpha_new + u_hat, threshold)
+            z_new = self._soft_threshold(alpha_new + u_hat, threshold) * elastic_scale
 
             # u-step
             u_prev = u.copy()
@@ -241,9 +266,9 @@ class ADMMNesterovLSSVM(BaseLSSVM):
 
         logger.info(
             "ADMMNesterovLSSVM — n_sv=%d/%d (%.1f%% sparse), %d iters, "
-            "λ=%.4f, ρ=%.4f, bias=%.4f, converged=%s",
+            "λ₁=%.4f, λ₂=%.4f, ρ=%.4f, bias=%.4f, converged=%s",
             self.n_support_, n, 100.0 * self.sparsity_ratio_,
-            self.n_iter_, lam, rho, self.bias_, converged,
+            self.n_iter_, lam, self.lambda2_, rho, self.bias_, converged,
         )
 
     # ── Primal decision function ──────────────────────────────────────────────

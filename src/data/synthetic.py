@@ -4,6 +4,14 @@ TWS — Two-class Spiral
 TWM — Two-class Moons (sklearn variant)
 TWC — Two-class Checkerboard
 
+Variants with suffix _5f embed the 2D problem in 5D by appending 3 Gaussian
+noise features (mean=0, std=1). The label depends only on the first 2 features.
+
+MK5 series — 5-feature make_classification datasets (all features informative):
+  MKE — Easy   (class_sep=2.0, 1 cluster/class,  flip_y=0.01)
+  MKM — Medium (class_sep=1.0, 2 clusters/class, flip_y=0.05)
+  MKH — Hard   (class_sep=0.5, 3 clusters/class, flip_y=0.10)
+
 All generators return (X, y) with y ∈ {-1, +1}.
 """
 
@@ -89,3 +97,78 @@ def make_twc(
     row = np.floor(X[:, 1]).astype(int)
     y = np.where((col + row) % 2 == 0, 1, -1).astype(int)
     return X, y
+
+
+# ── 5-feature variants (2D structure embedded in 5D with 3 noise features) ────
+
+def _add_noise_features(
+    X: NDArray,
+    y: NDArray,
+    n_noise: int = 3,
+    noise_std: float = 1.0,
+    random_state: int = 42,
+) -> tuple[NDArray, NDArray]:
+    rng = np.random.default_rng(random_state + 1000)
+    noise = rng.normal(0, noise_std, (len(X), n_noise))
+    return np.hstack([X, noise]), y
+
+
+def make_tws_5f(n_samples: int = 400, random_state: int = 42) -> tuple[NDArray, NDArray]:
+    """TWS embedded in 5D: 2 spiral features + 3 Gaussian noise features."""
+    X, y = make_tws(n_samples=n_samples, random_state=random_state)
+    return _add_noise_features(X, y, random_state=random_state)
+
+
+def make_twm_5f(n_samples: int = 400, random_state: int = 42) -> tuple[NDArray, NDArray]:
+    """TWM embedded in 5D: 2 moon features + 3 Gaussian noise features."""
+    X, y = make_twm(n_samples=n_samples, random_state=random_state)
+    return _add_noise_features(X, y, random_state=random_state)
+
+
+def make_twc_5f(n_samples: int = 400, random_state: int = 42) -> tuple[NDArray, NDArray]:
+    """TWC embedded in 5D: 2 checkerboard features + 3 Gaussian noise features."""
+    X, y = make_twc(n_samples=n_samples, random_state=random_state)
+    return _add_noise_features(X, y, random_state=random_state)
+
+
+# ── MK5 series — 5-feature make_classification (all features informative) ─────
+
+def _make_mk5(
+    n_samples: int,
+    class_sep: float,
+    n_clusters_per_class: int,
+    flip_y: float,
+    random_state: int,
+) -> tuple[NDArray, NDArray]:
+    from sklearn.datasets import make_classification
+    X, y = make_classification(
+        n_samples=n_samples,
+        n_features=5,
+        n_informative=5,
+        n_redundant=0,
+        n_repeated=0,
+        n_classes=2,
+        n_clusters_per_class=n_clusters_per_class,
+        class_sep=class_sep,
+        flip_y=flip_y,
+        random_state=random_state,
+    )
+    return X, np.where(y == 1, 1, -1).astype(int)
+
+
+def make_mke(n_samples: int = 400, random_state: int = 42) -> tuple[NDArray, NDArray]:
+    """MKE — Easy: class_sep=2.0, 1 cluster/class, flip_y=0.01."""
+    return _make_mk5(n_samples, class_sep=2.0, n_clusters_per_class=1,
+                     flip_y=0.01, random_state=random_state)
+
+
+def make_mkm(n_samples: int = 400, random_state: int = 42) -> tuple[NDArray, NDArray]:
+    """MKM — Medium: class_sep=1.0, 2 clusters/class, flip_y=0.05."""
+    return _make_mk5(n_samples, class_sep=1.0, n_clusters_per_class=2,
+                     flip_y=0.05, random_state=random_state)
+
+
+def make_mkh(n_samples: int = 400, random_state: int = 42) -> tuple[NDArray, NDArray]:
+    """MKH — Hard: class_sep=0.5, 3 clusters/class, flip_y=0.10."""
+    return _make_mk5(n_samples, class_sep=0.5, n_clusters_per_class=3,
+                     flip_y=0.10, random_state=random_state)
