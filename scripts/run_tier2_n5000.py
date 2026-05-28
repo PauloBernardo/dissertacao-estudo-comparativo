@@ -82,9 +82,19 @@ GENERAL_BASELINE = [
 ALL_MODELS = (GENERAL_BASELINE + LSSVM_BASELINES + LSSVM_PROPOSED
               + FT_VARIANTS + INTER_INSTANCE)
 
-# Modelos que serão tunados (os outros usam defaults razoáveis)
-TUNABLE = {"XGBoost", "DualFISTA", "NystromLSSVMColnorm",
-           "FTTransformerCURColnorm", "SAINTColnorm"}
+# Modelos que serão tunados (todos)
+TUNABLE = {
+    # Já tunados em rodada anterior (serão pulados via existing check)
+    "XGBoost", "DualFISTA", "NystromLSSVMColnorm",
+    "FTTransformerCURColnorm", "SAINTColnorm",
+    # LSSVMs baselines + propostos restantes
+    "StandardLSSVM", "PCPLSSVm", "FSALSSVm", "IPLSSVm",
+    "PruningLSSVM", "OppositeMapsLSSVM", "FISTANesterov",
+    "ADMMNesterovLSSVM", "ADMMElasticNet",
+    # FT-Transformer baselines
+    "FTTransformer_softmax", "FTTransformer_topk",
+    "FTTransformer_entmax",  "FTTransformer_sparsemax",
+}
 
 # Defaults com nomes de parâmetros corretos (verificados em inspect)
 DEFAULT_PARAMS = {
@@ -123,6 +133,35 @@ GROUPS = {
     "fast": GENERAL_BASELINE + [
         ("NystromLSSVMColnorm", "NystromLSSVMColnorm", {}),
         ("DualFISTALSSVM",      "DualFISTA",          {}),
+    ],
+    # Grupos para execução paralela CPU + GPU
+    "cpu_all": [  # CPU only: TODOS os LSSVMs (baselines + propostos) + SAINT
+        ("XGBoost",                   "XGBoost",             {}),
+        ("StandardLSSVM",             "StandardLSSVM",       {}),
+        ("PCPLSSVm",                  "PCPLSSVm",            {}),
+        ("FSALSSVm",                  "FSALSSVm",            {}),
+        ("IPLSSVm",                   "IPLSSVm",             {}),
+        ("PruningLSSVM",              "PruningLSSVM",        {}),
+        ("OppositeMapsLSSVM",         "OppositeMapsLSSVM",   {}),
+        ("FISTANesterovLSSVM",        "FISTANesterov",       {}),
+        ("ADMMNesterovLSSVM",         "ADMMNesterovLSSVM",   {}),
+        ("OriginalADMMNesterovLSSVM", "ADMMElasticNet",      {}),
+        ("DualFISTALSSVM",            "DualFISTA",           {}),
+        ("NystromLSSVMColnorm",       "NystromLSSVMColnorm", {}),
+        ("SAINTColnorm",              "SAINTColnorm",        {}),
+    ],
+    "cpu_propostos": [  # CPU only: LSSVM propostos restantes + SAINT (uso antigo)
+        ("OriginalADMMNesterovLSSVM", "ADMMElasticNet",      {}),
+        ("DualFISTALSSVM",            "DualFISTA",           {}),
+        ("NystromLSSVMColnorm",       "NystromLSSVMColnorm", {}),
+        ("SAINTColnorm",              "SAINTColnorm",        {}),
+    ],
+    "gpu_transformer": [  # GPU: FT-Transformer baselines + FT-CUR
+        ("FTTransformer", "FTTransformer_softmax",   {"attention_type": "softmax"}),
+        ("FTTransformer", "FTTransformer_topk",      {"attention_type": "topk", "topk_ratio": 0.10}),
+        ("FTTransformer", "FTTransformer_entmax",    {"attention_type": "entmax", "alpha": 1.5}),
+        ("FTTransformer", "FTTransformer_sparsemax", {"attention_type": "sparsemax"}),
+        ("FTTransformerCURColnorm",   "FTTransformerCURColnorm", {}),
     ],
 }
 
@@ -243,12 +282,128 @@ def _obj_xgb(trial, X, y, folds, seed):
     return _cv_eval(lambda: XGBoostBaseline(**p), X, y, folds, seed)
 
 
+# ── LSSVM baselines ──────────────────────────────────────────────────────────
+
+def _obj_std(trial, X, y, folds, seed):
+    from src.models.lssvm.standard import StandardLSSVM
+    p = {"sigma": trial.suggest_float("sigma", 0.1, 50.0, log=True),
+         "tau":   trial.suggest_float("tau",   0.01, 1000.0, log=True)}
+    return _cv_eval(lambda: StandardLSSVM(**p), X, y, folds, seed, signed=True)
+
+
+def _obj_pcp(trial, X, y, folds, seed):
+    from src.models.lssvm.primal.pcp_lssvm import PCPLSSVm
+    p = {"sigma": trial.suggest_float("sigma", 0.1, 50.0, log=True),
+         "tau":   trial.suggest_float("tau",   0.01, 1000.0, log=True),
+         "rank":  trial.suggest_int("rank", 50, 500)}
+    return _cv_eval(lambda: PCPLSSVm(**p), X, y, folds, seed, signed=True)
+
+
+def _obj_fsa(trial, X, y, folds, seed):
+    from src.models.lssvm.primal.fsa_lssvm import FSALSSVm
+    p = {"sigma": trial.suggest_float("sigma", 0.1, 50.0, log=True),
+         "tau":   trial.suggest_float("tau",   0.01, 1000.0, log=True),
+         "n_components": trial.suggest_int("n_components", 100, 500)}
+    return _cv_eval(lambda: FSALSSVm(**p), X, y, folds, seed, signed=True)
+
+
+def _obj_ip(trial, X, y, folds, seed):
+    from src.models.lssvm.dual.ip_lssvm import IPLSSVm
+    p = {"sigma": trial.suggest_float("sigma", 0.1, 50.0, log=True),
+         "tau":   trial.suggest_float("tau",   0.01, 1000.0, log=True),
+         "selection_ratio": trial.suggest_float("selection_ratio", 0.05, 0.50)}
+    return _cv_eval(lambda: IPLSSVm(**p), X, y, folds, seed, signed=True)
+
+
+def _obj_prune(trial, X, y, folds, seed):
+    from src.models.lssvm.dual.p_lssvm import PruningLSSVM
+    p = {"sigma": trial.suggest_float("sigma", 0.1, 50.0, log=True),
+         "tau":   trial.suggest_float("tau",   0.01, 1000.0, log=True),
+         "pruning_rate": trial.suggest_float("pruning_rate", 0.1, 0.5)}
+    return _cv_eval(lambda: PruningLSSVM(**p), X, y, folds, seed, signed=True)
+
+
+def _obj_oppm(trial, X, y, folds, seed):
+    from src.models.lssvm.dual.opposite_maps import OppositeMapsLSSVM
+    p = {"sigma": trial.suggest_float("sigma", 0.1, 50.0, log=True),
+         "tau":   trial.suggest_float("tau",   0.01, 1000.0, log=True),
+         "n_prototypes": trial.suggest_int("n_prototypes", 50, 300)}
+    return _cv_eval(lambda: OppositeMapsLSSVM(**p, random_state=seed), X, y, folds, seed, signed=True)
+
+
+def _obj_fista(trial, X, y, folds, seed):
+    from src.models.lssvm.primal.fista_lssvm import FISTANesterovLSSVM
+    p = {"sigma":   trial.suggest_float("sigma", 0.1, 50.0, log=True),
+         "tau":     trial.suggest_float("tau",   0.01, 1000.0, log=True),
+         "lambda_": trial.suggest_float("lambda_", 1e-4, 1.0, log=True)}
+    return _cv_eval(lambda: FISTANesterovLSSVM(**p), X, y, folds, seed, signed=True)
+
+
+def _obj_admm(trial, X, y, folds, seed):
+    from src.models.lssvm.primal.admm_nesterov import ADMMNesterovLSSVM
+    p = {"sigma":   trial.suggest_float("sigma", 0.1, 50.0, log=True),
+         "tau":     trial.suggest_float("tau",   0.01, 1000.0, log=True),
+         "rho":     trial.suggest_float("rho", 0.1, 10.0, log=True),
+         "lambda_": trial.suggest_float("lambda_", 1e-4, 1.0, log=True)}
+    return _cv_eval(lambda: ADMMNesterovLSSVM(**p), X, y, folds, seed, signed=True)
+
+
+def _obj_admm_en(trial, X, y, folds, seed):
+    from src.models.lssvm.primal.original_admm import OriginalADMMNesterovLSSVM
+    p = {"sigma":   trial.suggest_float("sigma", 0.1, 50.0, log=True),
+         "tau":     trial.suggest_float("tau",   0.01, 1000.0, log=True),
+         "rho":     trial.suggest_float("rho", 0.1, 10.0, log=True),
+         "lambda_": trial.suggest_float("lambda_", 1e-4, 1.0, log=True)}
+    return _cv_eval(lambda: OriginalADMMNesterovLSSVM(**p), X, y, folds, seed, signed=True)
+
+
+# ── FT-Transformer baselines (factory por attention_type) ────────────────────
+
+def _ft_obj_factory(attn_type, extra_static=None):
+    """Cria objetivo Optuna para uma variante FT-Transformer baseline."""
+    def _obj(trial, X, y, folds, seed):
+        from src.models.transformers.ft_transformer import FTTransformer
+        embedding_dim = trial.suggest_categorical("embedding_dim", [32, 64])
+        num_heads = trial.suggest_categorical("num_heads", [2, 4])
+        if embedding_dim % num_heads != 0:
+            return 0.0
+        p = dict(embedding_dim=embedding_dim,
+                 num_blocks=trial.suggest_int("num_blocks", 2, 4),
+                 num_heads=num_heads,
+                 dropout=trial.suggest_float("dropout", 0.0, 0.3),
+                 lr=trial.suggest_float("lr", 1e-4, 1e-2, log=True),
+                 batch_size=trial.suggest_categorical("batch_size", [128, 256]),
+                 max_epochs=30, patience=5,
+                 attention_type=attn_type)
+        if extra_static:
+            p.update(extra_static)
+        return _cv_eval(lambda: FTTransformer(**p), X, y, folds, seed)
+    return _obj
+
+
 OBJ_FN = {
-    "XGBoost":                _obj_xgb,
-    "DualFISTA":              _obj_dual_fista,
-    "NystromLSSVMColnorm":    _obj_nystrom,
-    "FTTransformerCURColnorm":_obj_ftcur,
-    "SAINTColnorm":           _obj_saint,
+    # Já tunados anteriormente
+    "XGBoost":                  _obj_xgb,
+    "DualFISTA":                _obj_dual_fista,
+    "NystromLSSVMColnorm":      _obj_nystrom,
+    "FTTransformerCURColnorm":  _obj_ftcur,
+    "SAINTColnorm":             _obj_saint,
+    # LSSVMs baselines
+    "StandardLSSVM":            _obj_std,
+    "PCPLSSVm":                 _obj_pcp,
+    "FSALSSVm":                 _obj_fsa,
+    "IPLSSVm":                  _obj_ip,
+    "PruningLSSVM":             _obj_prune,
+    "OppositeMapsLSSVM":        _obj_oppm,
+    "FISTANesterov":            _obj_fista,
+    # LSSVM paper-base + variant
+    "ADMMNesterovLSSVM":        _obj_admm,
+    "ADMMElasticNet":           _obj_admm_en,
+    # FT-Transformer baselines
+    "FTTransformer_softmax":    _ft_obj_factory("softmax"),
+    "FTTransformer_topk":       _ft_obj_factory("topk", {"topk_ratio": 0.10}),
+    "FTTransformer_entmax":     _ft_obj_factory("entmax", {"alpha": 1.5}),
+    "FTTransformer_sparsemax":  _ft_obj_factory("sparsemax"),
 }
 
 
@@ -311,7 +466,18 @@ def main():
     parser.add_argument("--models-group", choices=list(GROUPS.keys()), default="all")
     parser.add_argument("--datasets",     nargs="*", default=None)
     parser.add_argument("--skip-tuning",  action="store_true")
+    parser.add_argument("--output-file",  type=str, default=None,
+                        help="Override default output JSON path")
+    parser.add_argument("--params-file",  type=str, default=None,
+                        help="Override default tuning params JSON path")
     args = parser.parse_args()
+
+    # Permite output/params files customizados para rodar grupos em paralelo
+    global OUTPUT_FILE, PARAMS_FILE
+    if args.output_file:
+        OUTPUT_FILE = Path(args.output_file)
+    if args.params_file:
+        PARAMS_FILE = Path(args.params_file)
 
     from src.experiments.runner import run_single_experiment
 

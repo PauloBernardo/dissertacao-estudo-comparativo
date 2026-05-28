@@ -26,7 +26,19 @@ import torch
 from src.models.ft_transformer_model import SAINTClassifier, fit_model
 
 
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# SAINT mantém a atenção inter-instâncias n×n completa.
+# Em GPUs pequenas (ex.: MX350 com 2GB) o forward/backward pode estourar
+# para N≥3000. Detectamos automaticamente: usa CUDA se houver ≥4GB livres,
+# senão CPU. T4 (16GB) e A100 (40GB) cabem confortavelmente.
+def _pick_device():
+    if not torch.cuda.is_available():
+        return torch.device("cpu")
+    free_bytes, _ = torch.cuda.mem_get_info()
+    if free_bytes >= 4 * 1024**3:  # ≥4GB livres
+        return torch.device("cuda")
+    return torch.device("cpu")
+
+DEVICE = _pick_device()
 
 
 class SAINTColnorm:
