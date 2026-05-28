@@ -134,6 +134,17 @@ GROUPS = {
         ("NystromLSSVMColnorm", "NystromLSSVMColnorm", {}),
         ("DualFISTALSSVM",      "DualFISTA",          {}),
     ],
+    # Modelos que escalam para N completo (sem cap) — para Colab full-data
+    # Excluídos: LSSVMs que precisam de K n×n; SAINT (atenção n×n).
+    "scalable": [
+        ("XGBoost",                   "XGBoost",                  {}),
+        ("NystromLSSVMColnorm",       "NystromLSSVMColnorm",      {}),
+        ("FTTransformer",             "FTTransformer_softmax",    {"attention_type": "softmax"}),
+        ("FTTransformer",             "FTTransformer_topk",       {"attention_type": "topk", "topk_ratio": 0.10}),
+        ("FTTransformer",             "FTTransformer_entmax",     {"attention_type": "entmax", "alpha": 1.5}),
+        ("FTTransformer",             "FTTransformer_sparsemax",  {"attention_type": "sparsemax"}),
+        ("FTTransformerCURColnorm",   "FTTransformerCURColnorm",  {}),
+    ],
     # Grupos para execução paralela CPU + GPU
     "cpu_all": [  # CPU only: TODOS os LSSVMs (baselines + propostos) + SAINT
         ("XGBoost",                   "XGBoost",             {}),
@@ -409,7 +420,12 @@ OBJ_FN = {
 
 # ── Tuning ────────────────────────────────────────────────────────────────────
 
-def _tune(models, datasets, n_trials, folds, seed_tune):
+def _tune(models, datasets, n_trials, folds, seed_tune, n_cap_tune=None):
+    """Tune models via Optuna.
+
+    Se n_cap_tune for um inteiro, subamostra para esse N antes do CV.
+    Se None, tuna no dataset completo (mais lento mas mais fiel se for rodar em full).
+    """
     import optuna
     from sklearn.model_selection import StratifiedShuffleSplit
     from src.data.loaders import DatasetLoader
@@ -429,8 +445,8 @@ def _tune(models, datasets, n_trials, folds, seed_tune):
 
             log.info("[TUNE] %s (%d trials)...", key, n_trials)
             X, y, _ = DatasetLoader.load(dataset)
-            if len(X) > N_TOTAL_CAP:
-                sss = StratifiedShuffleSplit(n_splits=1, train_size=N_TOTAL_CAP,
+            if n_cap_tune is not None and len(X) > n_cap_tune:
+                sss = StratifiedShuffleSplit(n_splits=1, train_size=n_cap_tune,
                                               random_state=seed_tune)
                 idx, _ = next(sss.split(X, y))
                 X, y = X[idx], y[idx]
@@ -470,6 +486,9 @@ def main():
                         help="Override default output JSON path")
     parser.add_argument("--params-file",  type=str, default=None,
                         help="Override default tuning params JSON path")
+    parser.add_argument("--no-cap",       action="store_true",
+                        help="Desativa o subsample N=5000. Usa dataset completo "
+                             "(apenas modelos do grupo 'scalable' suportam isso)")
     args = parser.parse_args()
 
     # Permite output/params files customizados para rodar grupos em paralelo
@@ -478,6 +497,14 @@ def main():
         OUTPUT_FILE = Path(args.output_file)
     if args.params_file:
         PARAMS_FILE = Path(args.params_file)
+
+    # Cap: N_TOTAL_CAP se ativo, None se --no-cap (dataset completo)
+    n_cap = None if args.no_cap else N_TOTAL_CAP
+    if args.no_cap:
+        log.info("⚠️  --no-cap: usando dataset COMPLETO (apenas modelos 'scalable')")
+        if args.models_group not in ("scalable", "fast"):
+            log.warning("Grupo '%s' inclui modelos O(n²) — podem dar OOM em N completo",
+                        args.models_group)
 
     from src.experiments.runner import run_single_experiment
 
@@ -491,8 +518,10 @@ def main():
     log.info("Datasets: %s", datasets)
 
     if not args.skip_tuning:
-        log.info("── Tuning (Optuna, %d trials) ──", args.trials)
-        _tune(models, datasets, args.trials, args.folds, args.seed_tune)
+        log.info("── Tuning (Optuna, %d trials, n_cap=%s) ──",
+                 args.trials, "full" if n_cap is None else str(n_cap))
+        _tune(models, datasets, args.trials, args.folds, args.seed_tune,
+              n_cap_tune=n_cap)
 
     existing = json.loads(OUTPUT_FILE.read_text()) if OUTPUT_FILE.exists() else []
     done_keys = _existing_keys(existing)
@@ -521,10 +550,10 @@ def main():
                     dataset_name=dataset,
                     seed=seed,
                     model_params=params,
-                    n_samples_cap=N_TOTAL_CAP,
+                    n_samples_cap=n_cap,
                 )
                 result["model_variant"] = variant_name
-                result["n_samples_cap"] = N_TOTAL_CAP
+                result["n_samples_cap"] = n_cap
 
                 all_results.append(result)
                 done_keys.add(run_key)
