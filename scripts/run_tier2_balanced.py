@@ -85,7 +85,12 @@ def main():
     print("Comando:")
     print(" ", " ".join(cmd))
     print()
-    subprocess.run(cmd)
+    # check=True: falha alto e claro se o subprocess sair com erro
+    try:
+        subprocess.run(cmd, check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"\n❌ Subprocess falhou com código {e.returncode}", file=sys.stderr)
+        sys.exit(e.returncode)
 
 
 if __name__ == "__main__":

@@ -342,9 +342,27 @@ def _balance_undersample(X: np.ndarray, y: np.ndarray,
     return X[idx], y[idx]
 
 
+def _warn_fully_balanced(name: str, original: str) -> None:
+    """Emite warning runtime indicando que esse loader balanceia o teste também."""
+    import warnings
+    warnings.warn(
+        f"\n{'=' * 70}\n"
+        f"⚠️  Loader {name} balanceia o dataset ANTES do split → teste também\n"
+        f"   fica 50/50, comparação com Tier 2 imbalanceado fica contaminada.\n"
+        f"\n"
+        f"   Para H1 (testar se balanceamento corrige colapso), use:\n"
+        f"     scripts/run_tier2_balanced.py --group <group>\n"
+        f"   que usa o dataset {original} original + balanceamento\n"
+        f"   APENAS no treino via flag --balance-train do runner.\n"
+        f"{'=' * 70}",
+        stacklevel=3,
+    )
+
+
 @_register("CREDIT_BAL")
 def _load_credit_bal() -> tuple[NDArray, NDArray, dict]:
-    """CREDIT balanceado via random undersampling (50/50)."""
+    """CREDIT 50/50 via undersampling. ⚠️ Use run_tier2_balanced.py para H1."""
+    _warn_fully_balanced("CREDIT_BAL", "CREDIT")
     X, y, _ = _load_credit()
     X_b, y_b = _balance_undersample(X, y)
     return X_b, y_b, {"tier": 2, "balanced": True, "original": "CREDIT"}
@@ -352,7 +370,8 @@ def _load_credit_bal() -> tuple[NDArray, NDArray, dict]:
 
 @_register("BANK_BAL")
 def _load_bank_bal() -> tuple[NDArray, NDArray, dict]:
-    """BANK balanceado via random undersampling (50/50)."""
+    """BANK 50/50 via undersampling. ⚠️ Use run_tier2_balanced.py para H1."""
+    _warn_fully_balanced("BANK_BAL", "BANK")
     X, y, _ = _load_bank()
     X_b, y_b = _balance_undersample(X, y)
     return X_b, y_b, {"tier": 2, "balanced": True, "original": "BANK"}
@@ -360,7 +379,8 @@ def _load_bank_bal() -> tuple[NDArray, NDArray, dict]:
 
 @_register("SHOPPERS_BAL")
 def _load_shoppers_bal() -> tuple[NDArray, NDArray, dict]:
-    """SHOPPERS balanceado via random undersampling (50/50)."""
+    """SHOPPERS 50/50 via undersampling. ⚠️ Use run_tier2_balanced.py para H1."""
+    _warn_fully_balanced("SHOPPERS_BAL", "SHOPPERS")
     X, y, _ = _load_shoppers()
     X_b, y_b = _balance_undersample(X, y)
     return X_b, y_b, {"tier": 2, "balanced": True, "original": "SHOPPERS"}
