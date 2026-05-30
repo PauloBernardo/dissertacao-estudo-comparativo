@@ -663,14 +663,25 @@ def fit_model(model: FTTransformerClassifier,
         train_epoch(model, X_train_t, y_train_t, optimizer, criterion,
                     landmark_idx)
 
-        # Computa logits/preds em val uma vez para todas as métricas
+        # Computa logits/preds em val, espelhando exatamente a inferência final.
+        # Para modelos com atenção inter-instâncias (SAINT, FT-CUR):
+        # passamos [X_train || X_val] e extraímos logits[n_train:].
+        # Para FT-Transformer baselines (sem inter-instâncias): só X_val.
+        #
+        # Bug capturado em code review (29/05/2026): a versão anterior
+        # usava `landmark_idx is None` para decidir, o que quebrava SAINT
+        # (que tem inter-instâncias mas sem landmarks) — validava sem
+        # contexto enquanto a inferência final tinha contexto. Agora
+        # usamos `model.use_inter_instance` (mesma lógica do
+        # eval_with_context), simétrica entre SAINT e FT-CUR.
         model.eval()
+        uses_inter = getattr(model, 'use_inter_instance', True)
         with torch.no_grad():
-            if landmark_idx is None:
-                logits = model(X_ctx_val[n_train:], landmark_idx=None)
-            else:
+            if uses_inter:
                 logits_all = model(X_ctx_val, landmark_idx=landmark_idx)
                 logits = logits_all[n_train:]
+            else:
+                logits = model(X_val_t, landmark_idx=None)
             probs = torch.sigmoid(logits)
             preds = (probs >= 0.5).float()
 

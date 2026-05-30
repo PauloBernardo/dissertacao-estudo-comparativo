@@ -302,15 +302,23 @@ def _load_shoppers() -> tuple[NDArray, NDArray, dict]:
     return X, y, {"tier": 2}
 
 
-# ── Tier 2 balanceado: undersampling determinístico da classe majoritária ─────
+# ── Tier 2 "fully balanced" datasets (CREDIT_BAL, BANK_BAL, SHOPPERS_BAL) ─────
 #
-# Hipótese metodológica: parte do colapso de modelos esparsos (FT-CUR, SAINT,
-# Pruning, FISTA) em CREDIT, BANK e SHOPPERS pode ser devido ao desbalanceamento
-# de classes. Balanceamento por undersampling random é prática padrão em data
-# analysis (Chawla 2002, He & Garcia 2009).
+# ⚠️ ATENÇÃO METODOLÓGICA (revisão 29/05/2026):
 #
-# Seed fixo (42) para reprodutibilidade: o dataset balanceado é determinístico,
-# enquanto as 30 seeds do experimento variam o train/test split.
+# Esses loaders balanceiam o dataset ANTES do split train/test. Isto contamina
+# o conjunto de teste, tornando-o diferente da distribuição original. Para
+# testar a hipótese H1 "balanced training fixes the collapse" de forma justa,
+# use o protocolo correto via:
+#
+#     scripts/run_tier2_balanced.py --group <group>
+#
+# que aplica o balanceamento APENAS no treino após o split, mantendo o teste
+# com a distribuição original (imbalanceada). Estes loaders foram mantidos
+# como referência caso seja necessário um benchmark 50/50 de ponta a ponta,
+# mas NÃO devem ser usados para testar H1.
+#
+# Implementação: undersampling determinístico (seed=42) da classe majoritária.
 
 _BAL_SEED = 42
 

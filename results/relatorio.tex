@@ -1032,9 +1032,22 @@ foi implementado em \texttt{fit\_model}, com três opções: \texttt{val\_acc}
 (default original), \texttt{val\_loss} e \texttt{val\_f1\_macro} (alinhado à
 métrica primária do estudo). O script
 \texttt{scripts/run\_early\_stop\_ablation.py} executa o rerun focal de FT-CUR
-e SAINT em CREDIT e BANK variando \texttt{early\_stop\_metric}, mantendo
-todos os outros hiperparâmetros tunados constantes. Isto permite isolar
-empiricamente o efeito do critério de checkpoint do efeito da seleção colnorm.
+e SAINT em CREDIT e BANK retunando \emph{independentemente} cada combinação
+$(\text{modelo}, \text{dataset}, \texttt{early\_stop\_metric})$ via Optuna ---
+isto evita o viés de comparar params otimizados para \texttt{val\_acc} contra
+treino com \texttt{val\_loss}.
+
+\textbf{Correção metodológica capturada em \emph{code review} (29/05/2026).}
+A versão original do \texttt{fit\_model} usava o critério
+\texttt{landmark\_idx is None} para decidir se passava o contexto completo
+[$X_{\text{train}} \| X_{\text{val}}$] ao modelo. Isto era \emph{correto}
+para o FT-CUR (que tem \texttt{landmark\_idx} definido) mas \emph{quebrava
+o SAINT}, que tem atenção inter-instâncias \emph{densa} (sem
+\texttt{landmark\_idx}, mas que requer o contexto completo na validação,
+exatamente como na inferência final). A correção atualizada usa a flag
+arquitetural \texttt{model.use\_inter\_instance} (a mesma lógica do
+\texttt{eval\_with\_context}), garantindo simetria entre FT-CUR e SAINT
+na ablação H2.
 
 \subsubsection*{Tabela de hipóteses testáveis}
 
@@ -1051,9 +1064,11 @@ cada uma. Cada experimento isola uma causa específica.}
 H1: imbalanceamento
   & Seleção colnorm de landmarks é geométrica; minoria
     sub-representada nos $m$ landmarks
-  & Tier 2 balanceado (CREDIT\_BAL, BANK\_BAL, SHOPPERS\_BAL) via
-    random undersampling.
-    Script: \texttt{run\_tier2\_balanced.py} \\
+  & Tier 2 balanceado: treina com undersampling da majoritária
+    \emph{só no treino} (após split), preservando o teste original
+    para comparabilidade direta com o Tier 2 imbalanceado.
+    Script: \texttt{run\_tier2\_balanced.py}
+    (\texttt{--balance-train} no runner) \\
 \addlinespace
 H2: critério de early stopping
   & \texttt{val\_acc} favorece classe majoritária; o checkpoint

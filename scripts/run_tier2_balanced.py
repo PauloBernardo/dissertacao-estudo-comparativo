@@ -1,29 +1,27 @@
 #!/usr/bin/env python3
-"""Tier 2 balanceado: testa a hipótese de imbalanceamento como causa do colapso.
+"""Tier 2 balanceado: testa H1 (imbalanceamento como causa do colapso).
 
-Datasets:
-  - CREDIT_BAL    (13272 amostras, 50/50)  — originalmente 22% positivos
-  - BANK_BAL      (10578 amostras, 50/50)  — originalmente 11%
-  - SHOPPERS_BAL  ( 3816 amostras, 50/50)  — originalmente 15%
+Protocolo CORRIGIDO após code review (29/05/2026):
+  - Usa datasets ORIGINAIS (CREDIT, BANK, SHOPPERS) — NÃO os CREDIT_BAL etc
+  - Para cada seed:
+      1. Carrega dataset original (imbalanceado)
+      2. Subsample estratificado para N=7143
+      3. Split 70/30 (preserva proporção original)
+      4. Balanceia APENAS o treino via undersampling da majoritária
+      5. Teste permanece como original (imbalanceado)
+  - Resultado: comparação justa de "balanced training" vs "imbalanced training"
+    sobre o MESMO conjunto de teste do Tier 2.
 
-Random undersampling determinístico (seed=42) da classe majoritária.
+Versão anterior (bug): usava CREDIT_BAL/BANK_BAL/SHOPPERS_BAL que balanceavam
+o dataset inteiro antes do split, contaminando o teste.
 
-Protocolo: mesmo do Tier 2 N=5000:
-  - Subsample estratificado para N=7143 por seed (90/30 split → ~5000 train)
-  - Tuning Optuna 20 trials × 3-fold CV
-  - 30 seeds para experimentos
-
-Para evitar conflito com Tier 2 N=5000:
-  - Output: results/tier2_balanced.json
-  - Params: results/tuning/best_params_tier2_balanced.json
+Output: results/tier2_balanced.json (separado de tier2_n5000.json)
 
 Usage:
-    # Lança ambos grupos (CPU + GPU) em paralelo, como fizemos antes:
-
-    # Terminal 1 — Script CPU (todos os 13 modelos LSSVMs + SAINT)
+    # CPU group (todos os LSSVMs + SAINT)
     python scripts/run_tier2_balanced.py --group cpu_all
 
-    # Terminal 2 — Script GPU (4 FT baselines + FT-CUR)
+    # GPU group (4 FT baselines + FT-CUR)
     python scripts/run_tier2_balanced.py --group gpu_transformer
 """
 from __future__ import annotations
@@ -34,7 +32,8 @@ import sys
 from pathlib import Path
 
 
-DATASETS = ["CREDIT_BAL", "BANK_BAL", "SHOPPERS_BAL"]
+# Datasets ORIGINAIS — o balanceamento é aplicado no treino pelo runner
+DATASETS = ["CREDIT", "BANK", "SHOPPERS"]
 
 
 def main():
@@ -46,15 +45,14 @@ def main():
     parser.add_argument("--trials", type=int, default=20)
     parser.add_argument("--folds", type=int, default=3)
     parser.add_argument("--skip-tuning", action="store_true",
-                        help="Pula tuning Optuna (usa params do tier2_n5000 imbalanceado)")
+                        help="Pula tuning Optuna (usa params do tier2_n5000)")
     args = parser.parse_args()
 
     base = Path("results")
     out_file = base / f"tier2_balanced_{args.group}.json"
     params_file = base / "tuning" / f"best_params_tier2_balanced_{args.group}.json"
 
-    # Se --skip-tuning, usa os params do tier2 imbalanceado como base
-    # (não é rigoroso mas é rápido para validar a hipótese inicialmente)
+    # Se --skip-tuning, usa params do tier2_n5000 imbalanceado como base
     if args.skip_tuning:
         src_params = base / "tuning" / f"best_params_tier2_n5000_{args.group}.json"
         if src_params.exists() and not params_file.exists():
@@ -70,11 +68,21 @@ def main():
         "--datasets", *DATASETS,
         "--output-file", str(out_file),
         "--params-file", str(params_file),
+        "--balance-train",   # ← CHAVE: balanceia só treino, mantém teste original
     ]
     if args.skip_tuning:
         cmd.append("--skip-tuning")
 
-    print("Lançando:")
+    print("=" * 70)
+    print("Tier 2 BALANCEADO — protocolo:")
+    print("  - Datasets originais (imbalanceados):", DATASETS)
+    print("  - Subsample N=7143 por seed (estratificado)")
+    print("  - Split 70/30 (preserva proporção original)")
+    print("  - Balanceamento APENAS no treino (undersampling da majoritária)")
+    print("  - Teste preservado: mesma distribuição do Tier 2 imbalanceado")
+    print("=" * 70)
+    print()
+    print("Comando:")
     print(" ", " ".join(cmd))
     print()
     subprocess.run(cmd)

@@ -503,6 +503,9 @@ def main():
     parser.add_argument("--no-cap",       action="store_true",
                         help="Desativa o subsample N=5000. Usa dataset completo "
                              "(apenas modelos do grupo 'scalable' suportam isso)")
+    parser.add_argument("--balance-train", action="store_true",
+                        help="Balanceia APENAS o treino (undersampling da "
+                             "majoritária) após o split. Teste preservado.")
     args = parser.parse_args()
 
     # Permite output/params files customizados para rodar grupos em paralelo
@@ -565,9 +568,11 @@ def main():
                     seed=seed,
                     model_params=params,
                     n_samples_cap=n_cap,
+                    balance_train=args.balance_train,
                 )
                 result["model_variant"] = variant_name
                 result["n_samples_cap"] = n_cap
+                result["balance_train"] = args.balance_train
 
                 all_results.append(result)
                 done_keys.add(run_key)

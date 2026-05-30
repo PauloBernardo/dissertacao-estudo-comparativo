@@ -124,6 +124,7 @@ def run_single_experiment(
     model_params: dict[str, Any] | None = None,
     test_size: float = 0.30,
     n_samples_cap: int | None = None,
+    balance_train: bool = False,
 ) -> dict[str, Any]:
     """Run one experiment and return a results dict.
 
@@ -171,6 +172,25 @@ def run_single_experiment(
         X_train_p, X_test_p, y_train_p, y_test_p = preprocess(
             X_train, X_test, y_train, y_test, label_format=label_format
         )
+
+        # Optional: balance training set by undersampling majority class.
+        # Test set is preserved as-is (original class distribution),
+        # ensuring comparability of test metric with the imbalanced protocol.
+        if balance_train:
+            classes = np.unique(y_train_p)
+            if len(classes) == 2:
+                c1, c2 = classes
+                idx1 = np.where(y_train_p == c1)[0]
+                idx2 = np.where(y_train_p == c2)[0]
+                n_minor = min(len(idx1), len(idx2))
+                rng = np.random.RandomState(seed)
+                if len(idx1) > n_minor:
+                    idx1 = rng.choice(idx1, size=n_minor, replace=False)
+                if len(idx2) > n_minor:
+                    idx2 = rng.choice(idx2, size=n_minor, replace=False)
+                idx = np.sort(np.concatenate([idx1, idx2]))
+                X_train_p = X_train_p[idx]
+                y_train_p = y_train_p[idx]
 
         model, _ = _build_model(model_name, model_params, label_format)
         if hasattr(model, "random_state"):
