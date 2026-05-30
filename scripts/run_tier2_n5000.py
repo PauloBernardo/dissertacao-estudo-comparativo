@@ -145,6 +145,20 @@ GROUPS = {
         ("FTTransformer",             "FTTransformer_sparsemax",  {"attention_type": "sparsemax"}),
         ("FTTransformerCURColnorm",   "FTTransformerCURColnorm",  {}),
     ],
+    # Subdivisão de "scalable" para rodar em runtimes diferentes do Colab:
+    # colab_cpu pode rodar no CPU runtime (free tier ilimitado),
+    # colab_gpu precisa do T4 (free tier limitado em horas).
+    "colab_cpu": [
+        ("XGBoost",                   "XGBoost",                  {}),
+        ("NystromLSSVMColnorm",       "NystromLSSVMColnorm",      {}),
+    ],
+    "colab_gpu": [
+        ("FTTransformer",             "FTTransformer_softmax",    {"attention_type": "softmax"}),
+        ("FTTransformer",             "FTTransformer_topk",       {"attention_type": "topk", "topk_ratio": 0.10}),
+        ("FTTransformer",             "FTTransformer_entmax",     {"attention_type": "entmax", "alpha": 1.5}),
+        ("FTTransformer",             "FTTransformer_sparsemax",  {"attention_type": "sparsemax"}),
+        ("FTTransformerCURColnorm",   "FTTransformerCURColnorm",  {}),
+    ],
     # Grupos para execução paralela CPU + GPU
     "cpu_all": [  # CPU only: TODOS os LSSVMs (baselines + propostos) + SAINT
         ("XGBoost",                   "XGBoost",             {}),
