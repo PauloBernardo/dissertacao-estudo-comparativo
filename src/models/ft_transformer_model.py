@@ -620,18 +620,27 @@ def fit_model(model: FTTransformerClassifier,
               X_val_t: torch.Tensor, y_val_t: torch.Tensor,
               landmark_idx: Optional[torch.Tensor] = None,
               lr: float = 1e-3, epochs: int = 300, patience: int = 30,
-              weight_decay: float = 1e-4) -> dict:
+              weight_decay: float = 1e-4,
+              early_stop_metric: str = "val_acc") -> dict:
     """
-    Treina o modelo com early stopping na acurácia de validação.
+    Treina o modelo com early stopping em uma métrica de validação.
 
     A validação usa X_train como contexto (mesmo design da inferência final):
     concatena [X_train || X_val] e extrai predições para X_val.
     Landmark indices sempre referenciam X_train (posições 0..n_train-1).
 
+    Parameters
+    ----------
+    early_stop_metric : str
+        Métrica para early stopping:
+          - "val_acc"      (default, comportamento original): maximiza acurácia
+          - "val_loss"     : minimiza BCE loss
+          - "val_f1_macro" : maximiza F1-macro (recomendado para imbalanceados)
+
     Retorna
     -------
     info : dict
-        best_val_acc, n_epochs, train_time_s
+        best_val_{metric}, n_epochs, train_time_s
     """
     import time
     optimizer = torch.optim.Adam(model.parameters(), lr=lr,
@@ -639,9 +648,13 @@ def fit_model(model: FTTransformerClassifier,
     criterion = nn.BCEWithLogitsLoss()
 
     n_train = X_train_t.shape[0]
-    X_ctx_val = torch.cat([X_train_t, X_val_t], dim=0)  # contexto para val
+    X_ctx_val = torch.cat([X_train_t, X_val_t], dim=0)
 
-    best_val_acc = 0.0
+    if early_stop_metric not in {"val_acc", "val_loss", "val_f1_macro"}:
+        raise ValueError(f"early_stop_metric inválida: {early_stop_metric}")
+
+    # Inicialização (val_acc/val_f1 maximizam; val_loss minimiza)
+    best_score = float("inf") if early_stop_metric == "val_loss" else -float("inf")
     best_state = None
     no_improve = 0
     t0 = time.time()
@@ -650,13 +663,37 @@ def fit_model(model: FTTransformerClassifier,
         train_epoch(model, X_train_t, y_train_t, optimizer, criterion,
                     landmark_idx)
 
-        # Validação: X_train como contexto, predições em X_val
-        val_acc = eval_with_context(model, X_ctx_val, y_val_t,
-                                    n_context=n_train,
-                                    landmark_idx=landmark_idx)
+        # Computa logits/preds em val uma vez para todas as métricas
+        model.eval()
+        with torch.no_grad():
+            if landmark_idx is None:
+                logits = model(X_ctx_val[n_train:], landmark_idx=None)
+            else:
+                logits_all = model(X_ctx_val, landmark_idx=landmark_idx)
+                logits = logits_all[n_train:]
+            probs = torch.sigmoid(logits)
+            preds = (probs >= 0.5).float()
 
-        if val_acc > best_val_acc:
-            best_val_acc = val_acc
+            if early_stop_metric == "val_acc":
+                score = (preds == y_val_t).float().mean().item()
+                better = score > best_score
+            elif early_stop_metric == "val_loss":
+                score = criterion(logits, y_val_t).item()
+                better = score < best_score
+            else:  # val_f1_macro
+                tp = ((preds == 1) & (y_val_t == 1)).sum().item()
+                fp = ((preds == 1) & (y_val_t == 0)).sum().item()
+                fn = ((preds == 0) & (y_val_t == 1)).sum().item()
+                tn = ((preds == 0) & (y_val_t == 0)).sum().item()
+                # F1 da classe positiva
+                f1_pos = 2 * tp / max(2 * tp + fp + fn, 1)
+                # F1 da classe negativa (positivos invertidos)
+                f1_neg = 2 * tn / max(2 * tn + fn + fp, 1)
+                score = (f1_pos + f1_neg) / 2
+                better = score > best_score
+
+        if better:
+            best_score = score
             best_state = {k: v.clone() for k, v in model.state_dict().items()}
             no_improve = 0
         else:
@@ -668,7 +705,8 @@ def fit_model(model: FTTransformerClassifier,
         model.load_state_dict(best_state)
 
     return {
-        'best_val_acc': best_val_acc,
+        f'best_{early_stop_metric}': best_score,
+        'early_stop_metric': early_stop_metric,
         'n_epochs': epoch + 1,
         'train_time_s': time.time() - t0,
     }

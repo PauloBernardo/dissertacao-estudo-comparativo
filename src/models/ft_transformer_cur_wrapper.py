@@ -70,6 +70,7 @@ class FTTransformerCURColnorm:
         weight_decay: float = 1e-4,
         val_fraction: float = 0.20,
         random_state: int | None = None,
+        early_stop_metric: str = "val_acc",
     ):
         self.d_model = d_model
         self.n_heads = n_heads
@@ -82,6 +83,7 @@ class FTTransformerCURColnorm:
         self.weight_decay = weight_decay
         self.val_fraction = val_fraction
         self.random_state = random_state
+        self.early_stop_metric = early_stop_metric
 
     # ------------------------------------------------------------------
     # Helpers internos
@@ -143,6 +145,7 @@ class FTTransformerCURColnorm:
             landmark_idx=self._landmark_idx_,
             lr=self.lr, epochs=self.epochs, patience=self.patience,
             weight_decay=self.weight_decay,
+            early_stop_metric=self.early_stop_metric,
         )
 
         # Armazena X_train_ completo como contexto para inferência

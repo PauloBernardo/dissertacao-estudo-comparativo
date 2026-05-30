@@ -1027,6 +1027,52 @@ explicação alternativa, ou complementar, para o colapso observado em
 \textbf{CREDIT} e \textbf{BANK}: parte da queda pode decorrer do critério de
 seleção do checkpoint, e não apenas da seleção \emph{colnorm} de landmarks.
 
+\textbf{Suporte experimental adicionado.} O parâmetro \texttt{early\_stop\_metric}
+foi implementado em \texttt{fit\_model}, com três opções: \texttt{val\_acc}
+(default original), \texttt{val\_loss} e \texttt{val\_f1\_macro} (alinhado à
+métrica primária do estudo). O script
+\texttt{scripts/run\_early\_stop\_ablation.py} executa o rerun focal de FT-CUR
+e SAINT em CREDIT e BANK variando \texttt{early\_stop\_metric}, mantendo
+todos os outros hiperparâmetros tunados constantes. Isto permite isolar
+empiricamente o efeito do critério de checkpoint do efeito da seleção colnorm.
+
+\subsubsection*{Tabela de hipóteses testáveis}
+
+\begin{table}[H]
+\centering
+\caption{Três hipóteses sobre o colapso do FT-CUR em CREDIT/BANK e como testar
+cada uma. Cada experimento isola uma causa específica.}
+\label{tab:hipoteses_ftcur}
+\small
+\begin{tabular}{lp{4.5cm}p{4.5cm}}
+\toprule
+\textbf{Hipótese} & \textbf{Causa proposta} & \textbf{Teste experimental} \\
+\midrule
+H1: imbalanceamento
+  & Seleção colnorm de landmarks é geométrica; minoria
+    sub-representada nos $m$ landmarks
+  & Tier 2 balanceado (CREDIT\_BAL, BANK\_BAL, SHOPPERS\_BAL) via
+    random undersampling.
+    Script: \texttt{run\_tier2\_balanced.py} \\
+\addlinespace
+H2: critério de early stopping
+  & \texttt{val\_acc} favorece classe majoritária; o checkpoint
+    escolhido tem F1-macro baixo mesmo em datasets onde o modelo
+    aprende bem
+  & Rerun focal com \texttt{val\_loss} e \texttt{val\_f1\_macro};
+    mesmos hiperparâmetros e dados.
+    Script: \texttt{run\_early\_stop\_ablation.py} \\
+\addlinespace
+H3: limitação fundamental do CUR
+  & Compressão de baixo posto é incompatível com fronteiras de
+    decisão complexas em datasets imbalanceados,
+    independentemente de seleção e critério de checkpoint
+  & Confirmação \emph{por exclusão}: se H1 e H2 falharem em explicar,
+    H3 é a explicação remanescente \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsubsection*{Implicações para a dissertação}
 
 Este achado representa uma contribuição analítica importante: identifica
