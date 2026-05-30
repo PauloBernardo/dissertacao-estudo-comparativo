@@ -1017,6 +1017,16 @@ mantenha desempenho similar aos FT baselines em CREDIT/BANK, confirma-se
 que o colapso é estrutural à aproximação CUR + colnorm em dados
 imbalanceados, não à atenção inter-instâncias em si.
 
+Uma hipótese metodológica adicional surgiu da inspeção dos logs de treino.
+Na implementação atual, \textbf{FT-CUR} e \textbf{SAINT} usam
+\emph{early stopping} por \texttt{val\_acc}, enquanto os FT-Transformer
+baselines usam \texttt{val\_loss}. Em datasets desbalanceados,
+\texttt{val\_acc} pode favorecer checkpoints que acertam majoritariamente a
+classe dominante, mas ainda são ruins em F1-macro. Isso fornece uma
+explicação alternativa, ou complementar, para o colapso observado em
+\textbf{CREDIT} e \textbf{BANK}: parte da queda pode decorrer do critério de
+seleção do checkpoint, e não apenas da seleção \emph{colnorm} de landmarks.
+
 \subsubsection*{Implicações para a dissertação}
 
 Este achado representa uma contribuição analítica importante: identifica
@@ -1025,6 +1035,10 @@ e propostas concretas de trabalho futuro:
 \begin{itemize}
   \item \textbf{Landmark selection estratificada por classe} (garantir
         proporção mínima de cada classe entre os $m$ landmarks);
+  \item \textbf{Rerun metodológico em CREDIT e BANK} com \emph{early
+        stopping} por \texttt{val\_loss} (ou idealmente
+        \texttt{val\_f1\_macro}) para FT-CUR e SAINT, alinhando o checkpoint
+        à métrica principal do estudo;
   \item \textbf{Class-weighted loss} (pesos inversos à frequência de
         classes na função de custo);
   \item \textbf{Métricas alternativas} (F1-weighted, Average Precision)
@@ -1131,7 +1145,10 @@ feature-level}.
   \item \textbf{SAINT} ainda não rodado --- hipótese: \emph{não} colapsará
         em datasets imbalanceados (como o FT-CUR), pois usa atenção
         inter-instâncias densa. Se confirmado, isola a causa do colapso
-        do FT-CUR à seleção colnorm de landmarks.
+        do FT-CUR à seleção colnorm de landmarks. Um rerun focal em
+        CREDIT/BANK com \emph{early stopping} por \texttt{val\_loss} ou
+        \texttt{val\_f1\_macro} também é prioritário para separar efeito de
+        arquitetura de efeito do critério de checkpoint.
   \item \textbf{ADMM-Nesterov} (paper-base) e \textbf{ADMM-ElasticNet}
         (variante) ainda em tuning.
 \end{itemize}
