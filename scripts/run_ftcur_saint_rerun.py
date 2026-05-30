@@ -193,7 +193,9 @@ def main():
     parser.add_argument("--output-file", type=Path, required=True)
     parser.add_argument("--params-file", type=Path, required=True)
     parser.add_argument("--seeds", type=int, default=30)
-    parser.add_argument("--trials", type=int, default=15)
+    # Defaults idênticos ao Tier 2 N=5000 para garantir comparabilidade direta
+    # dos resultados FT-CUR/SAINT corrigidos (val_loss) com o restante do Tier 2.
+    parser.add_argument("--trials", type=int, default=20)
     parser.add_argument("--folds", type=int, default=3)
     parser.add_argument("--seed-tune", type=int, default=0)
     parser.add_argument("--skip-tuning", action="store_true")
