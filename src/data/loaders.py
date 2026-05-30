@@ -302,6 +302,62 @@ def _load_shoppers() -> tuple[NDArray, NDArray, dict]:
     return X, y, {"tier": 2}
 
 
+# ── Tier 2 balanceado: undersampling determinístico da classe majoritária ─────
+#
+# Hipótese metodológica: parte do colapso de modelos esparsos (FT-CUR, SAINT,
+# Pruning, FISTA) em CREDIT, BANK e SHOPPERS pode ser devido ao desbalanceamento
+# de classes. Balanceamento por undersampling random é prática padrão em data
+# analysis (Chawla 2002, He & Garcia 2009).
+#
+# Seed fixo (42) para reprodutibilidade: o dataset balanceado é determinístico,
+# enquanto as 30 seeds do experimento variam o train/test split.
+
+_BAL_SEED = 42
+
+
+def _balance_undersample(X: np.ndarray, y: np.ndarray,
+                          seed: int = _BAL_SEED) -> tuple[np.ndarray, np.ndarray]:
+    """Random undersampling da classe majoritária para igualar a minoritária.
+
+    Sem dados sintéticos. Resultado: |classe 0| == |classe 1|.
+    """
+    rng = np.random.RandomState(seed)
+    idx_pos = np.where(y == 1)[0]
+    idx_neg = np.where(y == 0)[0]
+    n_minor = min(len(idx_pos), len(idx_neg))
+    if len(idx_pos) > n_minor:
+        idx_pos = rng.choice(idx_pos, size=n_minor, replace=False)
+    if len(idx_neg) > n_minor:
+        idx_neg = rng.choice(idx_neg, size=n_minor, replace=False)
+    idx = np.concatenate([idx_pos, idx_neg])
+    idx = np.sort(idx)  # mantém ordem original (mais determinístico)
+    return X[idx], y[idx]
+
+
+@_register("CREDIT_BAL")
+def _load_credit_bal() -> tuple[NDArray, NDArray, dict]:
+    """CREDIT balanceado via random undersampling (50/50)."""
+    X, y, _ = _load_credit()
+    X_b, y_b = _balance_undersample(X, y)
+    return X_b, y_b, {"tier": 2, "balanced": True, "original": "CREDIT"}
+
+
+@_register("BANK_BAL")
+def _load_bank_bal() -> tuple[NDArray, NDArray, dict]:
+    """BANK balanceado via random undersampling (50/50)."""
+    X, y, _ = _load_bank()
+    X_b, y_b = _balance_undersample(X, y)
+    return X_b, y_b, {"tier": 2, "balanced": True, "original": "BANK"}
+
+
+@_register("SHOPPERS_BAL")
+def _load_shoppers_bal() -> tuple[NDArray, NDArray, dict]:
+    """SHOPPERS balanceado via random undersampling (50/50)."""
+    X, y, _ = _load_shoppers()
+    X_b, y_b = _balance_undersample(X, y)
+    return X_b, y_b, {"tier": 2, "balanced": True, "original": "SHOPPERS"}
+
+
 def _load_higgs_subset(n_rows: int, tier: int) -> tuple[NDArray, NDArray, dict]:
     """Load a subset of the HIGGS dataset — streamed from UCI gz file."""
     dest_parquet = _DATA_DIR / f"higgs_{n_rows}.parquet"
