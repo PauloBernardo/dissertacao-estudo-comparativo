@@ -1075,7 +1075,8 @@ H2: critério de early stopping
     escolhido tem F1-macro baixo mesmo em datasets onde o modelo
     aprende bem
   & Rerun focal com \texttt{val\_loss} e \texttt{val\_f1\_macro};
-    mesmos hiperparâmetros e dados.
+    mesmos dados, com retuning independente por métrica para
+    comparação justa.
     Script: \texttt{run\_early\_stop\_ablation.py} \\
 \addlinespace
 H3: limitação fundamental do CUR
@@ -1088,6 +1089,67 @@ H3: limitação fundamental do CUR
 \end{tabular}
 \end{table}
 
+\subsubsection*{Resultado da ablação H2: \texttt{val\_loss} corrige o colapso}
+
+O experimento focal da H2 foi concluído integralmente: 360 runs
+(2 modelos $\times$ 2 datasets $\times$ 3 métricas $\times$ 30 seeds),
+todos bem-sucedidos. A Tabela~\ref{tab:h2_results} resume o F1-macro médio
+dos reruns em CREDIT e BANK, comparando o critério original
+\texttt{val\_acc} com \texttt{val\_loss} e \texttt{val\_f1\_macro}. Para
+referência, a última coluna mostra o melhor FT baseline da
+Tabela~\ref{tab:f1_tier2_parcial}.
+
+\begin{table}[H]
+\centering
+\caption{Ablação H2: efeito do critério de early stopping em FT-CUR e SAINT
+nos datasets desbalanceados CREDIT e BANK (30 seeds).}
+\label{tab:h2_results}
+\begin{tabular}{llrrrrr}
+\toprule
+\textbf{Modelo} & \textbf{Dataset} & \textbf{val\_acc} & \textbf{val\_loss}
+                & \textbf{val\_f1} & \textbf{$\Delta$(loss-acc)}
+                & \textbf{Melhor FT baseline} \\
+\midrule
+FT-CUR & CREDIT & 0,438 & 0,657 & 0,610 & +0,219 & 0,682 (FT-Entmax) \\
+FT-CUR & BANK   & 0,507 & 0,714 & 0,473 & +0,207 & 0,720 (FT-Softmax) \\
+SAINT  & CREDIT & 0,439 & 0,684 & 0,467 & +0,245 & 0,682 (FT-Entmax) \\
+SAINT  & BANK   & 0,473 & 0,710 & 0,498 & +0,237 & 0,720 (FT-Softmax) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Leitura direta do resultado:}
+\begin{itemize}
+  \item \textbf{\texttt{val\_loss} foi superior em todos os quatro cenários.}
+        Os ganhos sobre \texttt{val\_acc} ficaram entre $+0{,}207$ e
+        $+0{,}245$ em F1-macro médio, magnitude grande demais para ser
+        atribuída a ruído experimental.
+  \item Em \textbf{BANK}, a troca para \texttt{val\_loss} elimina o
+        ``colapso'' dos modelos inter-instâncias: \textbf{FT-CUR} sobe para
+        $0{,}714$ e \textbf{SAINT} para $0{,}710$, ambos \emph{dentro da faixa}
+        dos FT baselines ($0{,}705$--$0{,}720$). Nesse dataset, os modelos
+        ficam essencialmente \textbf{equilibrados}.
+  \item Em \textbf{CREDIT}, a correção metodológica também é decisiva:
+        \textbf{SAINT} com \texttt{val\_loss} atinge $0{,}684$, ligeiramente
+        acima do melhor FT baseline ($0{,}682$, FT-Entmax), enquanto
+        \textbf{FT-CUR} sobe para $0{,}657$ --- ainda abaixo dos baselines,
+        mas muito distante do artefato anterior de $0{,}444$.
+  \item \textbf{\texttt{val\_f1\_macro} não foi a melhor escolha prática}
+        neste experimento: embora melhore CREDIT, ela perde para
+        \texttt{val\_loss} em todos os cenários e degrada fortemente o FT-CUR
+        em BANK.
+\end{itemize}
+
+\textbf{Conclusão revisada da H2.} O uso de \texttt{val\_acc} como critério
+de early stopping era, de fato, um \textbf{erro metodológico relevante} no
+protocolo anterior para FT-CUR e SAINT em dados desbalanceados. Em BANK, esse
+erro praticamente explica sozinho o comportamento anômalo observado. Em CREDIT,
+ele explica \textbf{grande parte} do problema, mas não tudo: SAINT se alinha
+aos baselines com \texttt{val\_loss}, enquanto FT-CUR ainda permanece alguns
+pontos abaixo. Assim, após a correção metodológica, a hipótese H3
+(``limitação fundamental do CUR'') fica \textbf{enfraquecida}, mas não
+totalmente descartada em CREDIT.
+
 \subsubsection*{Implicações para a dissertação}
 
 Este achado representa uma contribuição analítica importante: identifica
@@ -1096,10 +1158,9 @@ e propostas concretas de trabalho futuro:
 \begin{itemize}
   \item \textbf{Landmark selection estratificada por classe} (garantir
         proporção mínima de cada classe entre os $m$ landmarks);
-  \item \textbf{Rerun metodológico em CREDIT e BANK} com \emph{early
-        stopping} por \texttt{val\_loss} (ou idealmente
-        \texttt{val\_f1\_macro}) para FT-CUR e SAINT, alinhando o checkpoint
-        à métrica principal do estudo;
+  \item \textbf{Atualização do protocolo experimental}: para FT-CUR e SAINT
+        em datasets desbalanceados, o critério de early stopping deve ser
+        \texttt{val\_loss}, não \texttt{val\_acc};
   \item \textbf{Class-weighted loss} (pesos inversos à frequência de
         classes na função de custo);
   \item \textbf{Métricas alternativas} (F1-weighted, Average Precision)
