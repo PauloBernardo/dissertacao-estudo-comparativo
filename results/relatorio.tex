@@ -1150,6 +1150,30 @@ pontos abaixo. Assim, após a correção metodológica, a hipótese H3
 (``limitação fundamental do CUR'') fica \textbf{enfraquecida}, mas não
 totalmente descartada em CREDIT.
 
+\textbf{Validação estatística (Wilcoxon pareado, $H_a$: val\_loss $>$ val\_acc):}
+\begin{itemize}
+  \item FT-CUR/CREDIT: $p = 1{,}3 \times 10^{-6}$;
+  \item FT-CUR/BANK:   $p = 1{,}9 \times 10^{-9}$;
+  \item SAINT/CREDIT:  $p = 9{,}3 \times 10^{-10}$;
+  \item SAINT/BANK:    $p = 9{,}3 \times 10^{-10}$.
+\end{itemize}
+Todos os $p$-valores são muito inferiores a $0{,}001$ --- a superioridade de
+\texttt{val\_loss} não é ruído experimental. Adicionalmente, observa-se que
+\texttt{val\_acc} produz desvios padrão minúsculos ($0{,}001$--$0{,}012$)
+em CREDIT, evidência forte de que o modelo converge para o mesmo classificador
+trivial (classe majoritária) em todas as 30 sementes.
+
+\subsubsection*{Plano de revalidação do Tier 2}
+
+Dada a confirmação empírica da H2, os resultados do Tier 2 $N=5000$ para FT-CUR
+e SAINT obtidos no protocolo original (\texttt{val\_acc}) ficam metodologicamente
+comprometidos para datasets imbalanceados. O script
+\texttt{scripts/run\_ftcur\_saint\_rerun.py} foi criado para revalidar esses
+dois modelos com \texttt{val\_loss} em todos os 6 datasets do Tier 2, com
+retuning independente. O protocolo original (\texttt{val\_acc}) é mantido no
+relatório como \emph{registro histórico} da descoberta da limitação metodológica;
+a tabela final do Tier 2 apresentará os resultados corrigidos (\texttt{val\_loss}).
+
 \subsubsection*{Implicações para a dissertação}
 
 Este achado representa uma contribuição analítica importante: identifica
