@@ -1,161 +1,274 @@
 #!/usr/bin/env python3
+"""End-to-end benchmark de eficiência para os Transformers tabulares.
+
+Objetivo
+--------
+Medir custo computacional de uma *run real* no protocolo Tier 2:
+    1. carregar dataset real
+    2. subamostrar estratificadamente para um N alvo
+    3. split 70/30
+    4. preprocessar
+    5. treinar
+    6. predizer no teste
+
+Isso evita o viés do microbenchmark antigo (1 época em dados sintéticos),
+mantendo a comparação honesta como benchmark computacional de paradigmas
+distintos, não como "ranking único de esparsidade".
 """
-Benchmark computacional para mensurar uso bruto de memória RAM (Sistema) e VRAM (GPU)
-além do tempo (s) entre os modelos baseados em Transformers.
-"""
-import sys
-import time
-import numpy as np
-import torch
+
+from __future__ import annotations
+
+import argparse
 import gc
 import json
+import sys
 import threading
+import time
 from pathlib import Path
 
-# Adicionar root ao PYTHONPATH
+import numpy as np
+import torch
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from src.models.ft_transformer_saint_wrapper import SAINTColnorm
+from src.data.loaders import DatasetLoader
+from src.data.preprocessing import make_splits, preprocess
+from src.experiments.reproducibility import set_global_seed
+from src.metrics.performance import compute_performance
 from src.models.ft_transformer_cur_wrapper import FTTransformerCURColnorm
+from src.models.ft_transformer_saint_wrapper import SAINTColnorm
 from src.models.transformers.ft_transformer import FTTransformer
 
+
 class RamMonitor:
-    """Monitora o pico de RAM (VmRSS) via /proc/self/status em uma thread separada."""
-    def __init__(self):
+    """Monitora pico de RSS via /proc/self/status em thread separada."""
+
+    def __init__(self) -> None:
         self.keep_measuring = True
         self.peak_ram_kb = 0
         self.start_ram_kb = 0
         self._record_start()
 
-    def _read_rss(self):
+    def _read_rss(self) -> int:
         try:
-            with open('/proc/self/status') as f:
+            with open("/proc/self/status") as f:
                 for line in f:
-                    if line.startswith('VmRSS:'):
+                    if line.startswith("VmRSS:"):
                         return int(line.split()[1])
         except Exception:
             return 0
         return 0
 
-    def _record_start(self):
+    def _record_start(self) -> None:
         self.start_ram_kb = self._read_rss()
         self.peak_ram_kb = self.start_ram_kb
 
-    def measure(self):
+    def measure(self) -> None:
         while self.keep_measuring:
             current_ram = self._read_rss()
             if current_ram > self.peak_ram_kb:
                 self.peak_ram_kb = current_ram
             time.sleep(0.01)
 
-def get_best_params(variant, json_file, key_format):
-    path = Path(json_file)
+
+def _load_params(path: Path, key: str) -> dict:
     if not path.exists():
         return {}
-    with open(path, 'r') as f:
+    with path.open() as f:
         data = json.load(f)
-    key = key_format.format(variant=variant)
-    if key in data:
-        return data[key].get("best_params", {})
-    return {}
+    return dict(data.get(key, {}).get("best_params", {}))
 
-def measure_memory_and_time(model_factory, X, y):
-    gc.collect()
-    torch.cuda.empty_cache()
-    if torch.cuda.is_available():
-        torch.cuda.reset_peak_memory_stats()
-    
-    # Inicia monitoramento de RAM
-    monitor = RamMonitor()
-    thread = threading.Thread(target=monitor.measure)
-    thread.start()
-    
-    model = model_factory()
-    
-    t0 = time.perf_counter()
-    success = True
-    try:
-        model.fit(X, y)
-        t1 = time.perf_counter()
-    except RuntimeError as e:
-        if "out of memory" in str(e).lower() or "cublas" in str(e).lower():
-            t1 = time.perf_counter()
-            success = False
-        else:
-            raise e
-            
-    # Para o monitoramento de RAM
-    monitor.keep_measuring = False
-    thread.join()
-    
-    if torch.cuda.is_available():
-        peak_vram = torch.cuda.max_memory_allocated() / (1024**2) # in MB
-    else:
-        peak_vram = 0.0 # CPU mode
-        
-    # Pico real usado (Pico Total - Inicial)
-    peak_ram = max(0, monitor.peak_ram_kb - monitor.start_ram_kb) / 1024 # in MB
-        
-    return (t1 - t0), peak_ram, peak_vram, success
 
-def run_benchmark():
-    if not torch.cuda.is_available():
-        print("Aviso: CUDA não disponível. O benchmark de VRAM registrará 0MB.")
+def _resolve_model_params(dataset: str) -> list[tuple[str, dict, object]]:
+    gpu_tuning = Path("results/tuning/best_params_tier2_n5000_gpu.json")
+    valloss_tuning = Path("results/tuning/best_params_ftcur_saint_valloss.json")
 
-    sizes = [1000, 3000, 5000, 10000]
-    D = 14 # Features do ADULT
-    
-    # Carregar os parâmetros otimizados para o dataset ADULT
-    gpu_tuning = "results/tuning/best_params_tier2_n5000_gpu.json"
-    valloss_tuning = "results/tuning/best_params_ftcur_saint_valloss.json"
-    
-    params_softmax = get_best_params("FTTransformer_softmax", gpu_tuning, "{variant}__ADULT")
-    params_topk = get_best_params("FTTransformer_topk", gpu_tuning, "{variant}__ADULT")
-    params_entmax = get_best_params("FTTransformer_entmax", gpu_tuning, "{variant}__ADULT")
-    params_sparsemax = get_best_params("FTTransformer_sparsemax", gpu_tuning, "{variant}__ADULT")
-    
-    params_cur = get_best_params("FTTransformerCURColnorm", valloss_tuning, "{variant}__ADULT__val_loss")
-    params_saint = get_best_params("SAINTColnorm", valloss_tuning, "{variant}__ADULT__val_loss")
-    
-    # Forçar apenas 1 epoch para o benchmark de eficiência
-    for p in [params_softmax, params_topk, params_entmax, params_sparsemax]:
-        p["max_epochs"] = 1
-    for p in [params_cur, params_saint]:
-        p["epochs"] = 1
-        p["early_stop_metric"] = "val_loss"
-    
-    # Default para FT baselines caso o json não tenha a chave de attention_type salva
+    params_softmax = _load_params(gpu_tuning, f"FTTransformer_softmax__{dataset}")
+    params_topk = _load_params(gpu_tuning, f"FTTransformer_topk__{dataset}")
+    params_entmax = _load_params(gpu_tuning, f"FTTransformer_entmax__{dataset}")
+    params_sparsemax = _load_params(gpu_tuning, f"FTTransformer_sparsemax__{dataset}")
+    params_cur = _load_params(valloss_tuning, f"FTTransformerCURColnorm__{dataset}__val_loss")
+    params_saint = _load_params(valloss_tuning, f"SAINTColnorm__{dataset}__val_loss")
+
     params_topk.setdefault("attention_type", "topk")
     params_topk.setdefault("topk_ratio", 0.10)
     params_softmax.setdefault("attention_type", "softmax")
     params_entmax.setdefault("attention_type", "entmax")
     params_entmax.setdefault("alpha", 1.5)
     params_sparsemax.setdefault("attention_type", "sparsemax")
+    params_cur.setdefault("early_stop_metric", "val_loss")
+    params_saint.setdefault("early_stop_metric", "val_loss")
 
-    models = [
-        ("FT-Softmax", lambda: FTTransformer(**params_softmax)),
-        ("FT-TopK", lambda: FTTransformer(**params_topk)),
-        ("FT-Entmax", lambda: FTTransformer(**params_entmax)),
-        ("FT-Sparsemax", lambda: FTTransformer(**params_sparsemax)),
-        ("FT-CUR", lambda: FTTransformerCURColnorm(**params_cur)),
-        ("SAINT", lambda: SAINTColnorm(**params_saint))
+    return [
+        ("FT-Softmax", params_softmax, FTTransformer),
+        ("FT-TopK", params_topk, FTTransformer),
+        ("FT-Entmax", params_entmax, FTTransformer),
+        ("FT-Sparsemax", params_sparsemax, FTTransformer),
+        ("FT-CUR", params_cur, FTTransformerCURColnorm),
+        ("SAINT", params_saint, SAINTColnorm),
     ]
-    
-    print(f"{'Modelo':<15} | {'N':<6} | {'Tempo (s)':<10} | {'RAM CPU (MB)':<15} | {'VRAM GPU (MB)':<15}")
-    print("-" * 73)
-    
-    for name, factory in models:
-        for n in sizes:
-            np.random.seed(42)
-            X = np.random.randn(n, D).astype(np.float32)
-            y = np.random.randint(0, 2, size=n).astype(np.int64)
-            
-            t, ram_cpu, vram_gpu, success = measure_memory_and_time(factory, X, y)
-            if success:
-                print(f"{name:<15} | {n:<6} | {t:<10.2f} | {ram_cpu:<15.1f} | {vram_gpu:<15.1f}")
-            else:
-                print(f"{name:<15} | {n:<6} | {'OOM':<10} | {'OOM':<15} | {'OOM':<15}")
-                break # Pula para o próximo modelo se estourar memória
 
-if __name__ == '__main__':
-    run_benchmark()
+
+def _subsample(X: np.ndarray, y: np.ndarray, n_total: int, seed: int) -> tuple[np.ndarray, np.ndarray]:
+    if len(X) <= n_total:
+        return X, y
+    from sklearn.model_selection import StratifiedShuffleSplit
+
+    sss = StratifiedShuffleSplit(n_splits=1, train_size=n_total, random_state=seed)
+    idx_keep, _ = next(sss.split(X, y))
+    return X[idx_keep], y[idx_keep]
+
+
+def _measure_one_run(model_name: str, model_factory, X: np.ndarray, y: np.ndarray, seed: int) -> dict:
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+        torch.cuda.reset_peak_memory_stats()
+
+    monitor = RamMonitor()
+    thread = threading.Thread(target=monitor.measure)
+    thread.start()
+
+    t0 = time.perf_counter()
+    fit_s = predict_s = None
+    success = True
+    error_message = None
+
+    try:
+        X_train, X_test, y_train, y_test = make_splits(X, y, test_size=0.30, seed=seed)
+        X_train_p, X_test_p, y_train_p, y_test_p = preprocess(
+            X_train, X_test, y_train, y_test, label_format="binary"
+        )
+
+        model = model_factory()
+        fit_start = time.perf_counter()
+        model.fit(X_train_p, y_train_p)
+        fit_end = time.perf_counter()
+        fit_s = fit_end - fit_start
+
+        pred_start = time.perf_counter()
+        y_pred = model.predict(X_test_p)
+        y_proba = model.predict_proba(X_test_p) if hasattr(model, "predict_proba") else None
+        pred_end = time.perf_counter()
+        predict_s = pred_end - pred_start
+        metrics = compute_performance(y_test_p, y_pred, y_proba)
+    except RuntimeError as e:
+        if "out of memory" in str(e).lower() or "cublas" in str(e).lower():
+            success = False
+            metrics = {}
+            error_message = str(e)
+        else:
+            raise
+    finally:
+        total_s = time.perf_counter() - t0
+        monitor.keep_measuring = False
+        thread.join()
+
+    peak_vram = torch.cuda.max_memory_allocated() / (1024**2) if torch.cuda.is_available() else 0.0
+    peak_ram = max(0, monitor.peak_ram_kb - monitor.start_ram_kb) / 1024
+
+    return {
+        "model": model_name,
+        "n_total": len(X),
+        "n_train": int(round(len(X) * 0.70)),
+        "n_test": len(X) - int(round(len(X) * 0.70)),
+        "total_time_s": total_s,
+        "fit_time_s": fit_s,
+        "predict_time_s": predict_s,
+        "peak_ram_mb": peak_ram,
+        "peak_vram_mb": peak_vram,
+        "success": success,
+        "error_message": error_message,
+        **metrics,
+    }
+
+
+def _load_existing_results(output_file: Path | None) -> list[dict]:
+    if output_file is None or not output_file.exists():
+        return []
+    with output_file.open() as f:
+        data = json.load(f)
+    return list(data)
+
+
+def _save_results(output_file: Path | None, results: list[dict]) -> None:
+    if output_file is None:
+        return
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    output_file.write_text(json.dumps(results, indent=2, default=str))
+
+
+def run_benchmark(dataset: str, sizes: list[int], seed: int, output_file: Path | None) -> None:
+    if not torch.cuda.is_available():
+        print("Aviso: CUDA não disponível. O benchmark de VRAM registrará 0MB.")
+
+    set_global_seed(seed)
+    X_full, y_full, meta = DatasetLoader.load(dataset)
+    models = _resolve_model_params(dataset)
+    results = _load_existing_results(output_file)
+    done_keys = {
+        (r.get("dataset"), r.get("model"), r.get("n_total"), r.get("seed"))
+        for r in results
+    }
+
+    print(
+        f"{'Modelo':<15} | {'N':<6} | {'Tempo total (s)':<15} | "
+        f"{'Fit (s)':<10} | {'RAM CPU (MB)':<15} | {'VRAM GPU (MB)':<15} | {'F1':<8}"
+    )
+    print("-" * 108)
+    if results:
+        print(f"Retomando de {len(results)} medições já salvas em {output_file}")
+
+    for name, params, cls in models:
+        if not params:
+            print(f"{name:<15} | {'-':<6} | {'SKIP':<15} | {'-':<10} | {'-':<15} | {'-':<15} | sem params")
+            continue
+
+        for n_total in sizes:
+            run_key = (dataset, name, n_total, seed)
+            if run_key in done_keys:
+                print(f"{name:<15} | {n_total:<6} | {'SKIP':<15} | {'-':<10} | {'-':<15} | {'-':<15} | ja salvo")
+                continue
+
+            X, y = _subsample(X_full, y_full, n_total=n_total, seed=seed)
+            result = _measure_one_run(name, lambda p=params, c=cls: c(**p), X, y, seed)
+            result["dataset"] = dataset
+            result["seed"] = seed
+            results.append(result)
+            done_keys.add(run_key)
+            _save_results(output_file, results)
+
+            if result["success"]:
+                print(
+                    f"{name:<15} | {result['n_total']:<6} | {result['total_time_s']:<15.2f} | "
+                    f"{result['fit_time_s']:<10.2f} | {result['peak_ram_mb']:<15.1f} | "
+                    f"{result['peak_vram_mb']:<15.1f} | {result['f1_macro']:<8.4f}"
+                )
+            else:
+                print(
+                    f"{name:<15} | {result['n_total']:<6} | {'OOM':<15} | "
+                    f"{'OOM':<10} | {'OOM':<15} | {'OOM':<15} | {'OOM':<8}"
+                )
+                break
+
+    _save_results(output_file, results)
+    if output_file is not None:
+        print(f"\nSalvo em: {output_file}")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dataset", default="ADULT", help="Dataset real usado no benchmark")
+    parser.add_argument("--sizes", nargs="+", type=int, default=[1000, 3000, 5000, 7143])
+    parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument(
+        "--output-file",
+        type=Path,
+        default=Path("results/benchmark_transformers_efficiency.json"),
+    )
+    args = parser.parse_args()
+    run_benchmark(args.dataset, args.sizes, args.seed, args.output_file)
+
+
+if __name__ == "__main__":
+    main()
