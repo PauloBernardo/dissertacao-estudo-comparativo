@@ -1390,6 +1390,30 @@ Ablação C (MK5)    & 18 modelos, 3 sintéticos, 30 seeds         & 1620 & Nyst
   \item \textbf{Análise de complexidade temporal}: medição empírica do
         speedup do Nyström-SVM vs.\ LSSVM-Std em função de $n$, usando os
         dados de tempo coletados nas execuções Tier 2.
+  \item \textbf{Benchmark de eficiência computacional --- DualFISTA vs.\
+        família ADMM (paper-base e variantes)}: observação preliminar do
+        Tier 2 sugere que o tuning do ADMM-Nesterov requer $\sim$5--9h por
+        dataset (frequentemente atingindo $\texttt{max\_iter}=5000$ sem
+        convergência, $\texttt{converged}=\texttt{False}$), enquanto
+        DualFISTA tuna em $\sim$30--60\,min por dataset (\textbf{ordem de
+        magnitude mais rápido}). Hipótese a verificar: o ADMM-ElasticNet
+        ($\ell_1 + \ell_2$) deve convergir mais rápido que o ADMM-$\ell_1$
+        puro, devido à \textbf{fortemente convexa} introduzida pela penalidade
+        $\ell_2$ (Tikhonov), que melhora o condicionamento do subproblema
+        primal a cada iteração. Estudo formal proposto:
+        \begin{itemize}
+          \item Coletar dados de tempo por iteração e número de iterações
+                até convergência (já gravados em \texttt{train\_time\_s})
+                para todos os 4 métodos com $\ell_1$: ADMM-Nesterov,
+                ADMM-ElasticNet, FISTA-Nesterov, DualFISTA;
+          \item Plotar curva de convergência (loss vs.\ iteração) e
+                wall-clock time vs.\ qualidade de solução;
+          \item Reportar como uma das \textbf{contribuições centrais} da
+                dissertação: o DualFISTA não apenas atinge esparsidade
+                comparável ao paper-base (Marinho et al.), mas o faz com
+                eficiência computacional $1{-}2$ ordens de magnitude
+                superior.
+        \end{itemize}
 \end{enumerate}
 
 % ─────────────────────────────────────────────────────────────────────────────
