@@ -524,6 +524,35 @@ FT-CUR$^\star$ & 0,747 & --- & $79{,}3\%$ & Nyströmformer, $m/n{\approx}0{,}20$
         para superar as variantes esparsas no nível feature.
 \end{itemize}
 
+\subsection{Esparsidade nos Transformers --- Tier 2 ($N=5000$)}
+
+A transição para o Tier 2 ($N=5000$) permitiu analisar o comportamento de esparsidade dos Transformers em um regime de dados mais desafiador. A Tabela~\ref{tab:sparsity_ft_tier2} detalha a fração média de zeros na atenção inter-features (\texttt{mean\_zero\_fraction}) e a compressão de instâncias do FT-CUR.
+
+\begin{table}[H]
+\centering
+\caption{Esparsidade de atenção e compressão nos Transformers (Tier 2). Valores agregados dos experimentos N=5000 com \texttt{val\_loss}.}
+\label{tab:sparsity_ft_tier2}
+\begin{tabular}{lrll}
+\toprule
+\textbf{Modelo} & \textbf{F1-macro} & \textbf{Métrica de Esparsidade} & \textbf{Valor} \\
+\midrule
+FT-TopK & 0,720 & Atenção inter-features (zeros) & 89,2\% \\
+FT-Sparsemax & 0,723 & Atenção inter-features (zeros) & 75,2\% \\
+FT-Entmax & 0,723 & Atenção inter-features (zeros) & 18,5\% \\
+FT-Softmax & 0,724 & Atenção inter-features (zeros) & 2,5\% \\
+\midrule
+SAINT & 0,722 & Compressão inter-instâncias & 0,0\% (Denso) \\
+\textbf{FT-CUR$^\star$} & \textbf{0,713} & \textbf{Compressão inter-instâncias} & \textbf{89,4\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Análise:}
+\begin{itemize}
+  \item A métrica \texttt{mean\_zero\_fraction} revela que as variantes com indução de esparsidade (TopK e Sparsemax) conseguem zerar agressivamente os pesos de atenção para features não-informativas ($89{,}2\%$ e $75{,}2\%$, respectivamente), atuando como um forte seletor de features nativo sem degradar a performance preditiva ($F_1 \approx 0{,}72$).
+  \item O \textbf{FT-CUR} demonstra que a aproximação de Nyström na dimensão de instâncias atinge \textbf{89,4\% de compressão} da matriz de atenção, entregando um $F_1$ de $0{,}713$ (superior ao baseline do LSSVM denso). Isso consolida a eficácia do Nyström tanto para a família SVM (Nyström-LSSVM) quanto para a família Deep Learning (FT-CUR).
+\end{itemize}
+
 % ─────────────────────────────────────────────────────────────────────────────
 \section{Ablação A: Escalabilidade Amostral ($N=400 \to 2000$)}
 \label{sec:scaling}
