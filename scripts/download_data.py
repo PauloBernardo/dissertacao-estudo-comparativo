@@ -50,10 +50,17 @@ def main():
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--tier", type=int, choices=[1, 2, 3], help="Download a specific tier")
     group.add_argument("--all", action="store_true", help="Download all tiers + synthetic")
+    group.add_argument(
+        "--datasets",
+        nargs="+",
+        help="Download only the explicitly listed datasets (e.g. ADULT BANK)",
+    )
     args = parser.parse_args()
 
     if args.all:
         names = TIER1 + TIER2 + TIER3 + SYNTHETIC
+    elif args.datasets:
+        names = args.datasets
     elif args.tier == 1:
         names = TIER1 + SYNTHETIC
     elif args.tier == 2:
