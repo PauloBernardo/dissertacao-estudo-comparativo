@@ -21,6 +21,7 @@ from __future__ import annotations
 import argparse
 import gc
 import json
+import subprocess
 import sys
 import threading
 import time
@@ -109,6 +110,13 @@ def _resolve_model_params(dataset: str) -> list[tuple[str, dict, object]]:
     ]
 
 
+def _resolve_model_spec(dataset: str, model_name: str) -> tuple[dict, object]:
+    for name, params, cls in _resolve_model_params(dataset):
+        if name == model_name:
+            return params, cls
+    raise KeyError(f"Modelo desconhecido para benchmark: {model_name}")
+
+
 def _subsample(X: np.ndarray, y: np.ndarray, n_total: int, seed: int) -> tuple[np.ndarray, np.ndarray]:
     if len(X) <= n_total:
         return X, y
@@ -183,6 +191,42 @@ def _measure_one_run(model_name: str, model_factory, X: np.ndarray, y: np.ndarra
     }
 
 
+def _measure_in_subprocess(dataset: str, model_name: str, n_total: int, seed: int) -> dict:
+    cmd = [
+        sys.executable,
+        str(Path(__file__).resolve()),
+        "--worker-dataset", dataset,
+        "--worker-model", model_name,
+        "--worker-n-total", str(n_total),
+        "--worker-seed", str(seed),
+    ]
+    proc = subprocess.run(cmd, capture_output=True, text=True, check=False)
+
+    if proc.returncode != 0:
+        stderr = proc.stderr.strip() or proc.stdout.strip() or "worker failed"
+        return {
+            "model": model_name,
+            "dataset": dataset,
+            "n_total": n_total,
+            "seed": seed,
+            "success": False,
+            "error_message": stderr,
+        }
+
+    return json.loads(proc.stdout)
+
+
+def _run_worker(dataset: str, model_name: str, n_total: int, seed: int) -> dict:
+    set_global_seed(seed)
+    X_full, y_full, _ = DatasetLoader.load(dataset)
+    X, y = _subsample(X_full, y_full, n_total=n_total, seed=seed)
+    params, cls = _resolve_model_spec(dataset, model_name)
+    result = _measure_one_run(model_name, lambda: cls(**params), X, y, seed)
+    result["dataset"] = dataset
+    result["seed"] = seed
+    return result
+
+
 def _load_existing_results(output_file: Path | None) -> list[dict]:
     if output_file is None or not output_file.exists():
         return []
@@ -198,58 +242,61 @@ def _save_results(output_file: Path | None, results: list[dict]) -> None:
     output_file.write_text(json.dumps(results, indent=2, default=str))
 
 
-def run_benchmark(dataset: str, sizes: list[int], seed: int, output_file: Path | None) -> None:
+def _print_header(dataset: str, results_count: int, output_file: Path | None) -> None:
+    print(f"\n=== Dataset: {dataset} ===")
+    print(
+        f"{'Modelo':<15} | {'N':<6} | {'Tempo total (s)':<15} | "
+        f"{'Fit (s)':<10} | {'RAM CPU (MB)':<15} | {'VRAM GPU (MB)':<15} | {'F1':<8}"
+    )
+    print("-" * 108)
+    if results_count:
+        print(f"Retomando de {results_count} medições já salvas em {output_file}")
+
+
+def run_benchmark(datasets: list[str], sizes: list[int], seed: int, output_file: Path | None) -> None:
     if not torch.cuda.is_available():
         print("Aviso: CUDA não disponível. O benchmark de VRAM registrará 0MB.")
 
     set_global_seed(seed)
-    X_full, y_full, meta = DatasetLoader.load(dataset)
-    models = _resolve_model_params(dataset)
     results = _load_existing_results(output_file)
     done_keys = {
         (r.get("dataset"), r.get("model"), r.get("n_total"), r.get("seed"))
         for r in results
     }
 
-    print(
-        f"{'Modelo':<15} | {'N':<6} | {'Tempo total (s)':<15} | "
-        f"{'Fit (s)':<10} | {'RAM CPU (MB)':<15} | {'VRAM GPU (MB)':<15} | {'F1':<8}"
-    )
-    print("-" * 108)
-    if results:
-        print(f"Retomando de {len(results)} medições já salvas em {output_file}")
+    for dataset in datasets:
+        models = _resolve_model_params(dataset)
+        dataset_results_count = sum(1 for r in results if r.get("dataset") == dataset)
+        _print_header(dataset, dataset_results_count, output_file)
 
-    for name, params, cls in models:
-        if not params:
-            print(f"{name:<15} | {'-':<6} | {'SKIP':<15} | {'-':<10} | {'-':<15} | {'-':<15} | sem params")
-            continue
-
-        for n_total in sizes:
-            run_key = (dataset, name, n_total, seed)
-            if run_key in done_keys:
-                print(f"{name:<15} | {n_total:<6} | {'SKIP':<15} | {'-':<10} | {'-':<15} | {'-':<15} | ja salvo")
+        for name, params, cls in models:
+            if not params:
+                print(f"{name:<15} | {'-':<6} | {'SKIP':<15} | {'-':<10} | {'-':<15} | {'-':<15} | sem params")
                 continue
 
-            X, y = _subsample(X_full, y_full, n_total=n_total, seed=seed)
-            result = _measure_one_run(name, lambda p=params, c=cls: c(**p), X, y, seed)
-            result["dataset"] = dataset
-            result["seed"] = seed
-            results.append(result)
-            done_keys.add(run_key)
-            _save_results(output_file, results)
+            for n_total in sizes:
+                run_key = (dataset, name, n_total, seed)
+                if run_key in done_keys:
+                    print(f"{name:<15} | {n_total:<6} | {'SKIP':<15} | {'-':<10} | {'-':<15} | {'-':<15} | ja salvo")
+                    continue
 
-            if result["success"]:
-                print(
-                    f"{name:<15} | {result['n_total']:<6} | {result['total_time_s']:<15.2f} | "
-                    f"{result['fit_time_s']:<10.2f} | {result['peak_ram_mb']:<15.1f} | "
-                    f"{result['peak_vram_mb']:<15.1f} | {result['f1_macro']:<8.4f}"
-                )
-            else:
-                print(
-                    f"{name:<15} | {result['n_total']:<6} | {'OOM':<15} | "
-                    f"{'OOM':<10} | {'OOM':<15} | {'OOM':<15} | {'OOM':<8}"
-                )
-                break
+                result = _measure_in_subprocess(dataset, name, n_total, seed)
+                results.append(result)
+                done_keys.add(run_key)
+                _save_results(output_file, results)
+
+                if result["success"]:
+                    print(
+                        f"{name:<15} | {result['n_total']:<6} | {result['total_time_s']:<15.2f} | "
+                        f"{result['fit_time_s']:<10.2f} | {result['peak_ram_mb']:<15.1f} | "
+                        f"{result['peak_vram_mb']:<15.1f} | {result['f1_macro']:<8.4f}"
+                    )
+                else:
+                    print(
+                        f"{name:<15} | {result['n_total']:<6} | {'OOM':<15} | "
+                        f"{'OOM':<10} | {'OOM':<15} | {'OOM':<15} | {'OOM':<8}"
+                    )
+                    break
 
     _save_results(output_file, results)
     if output_file is not None:
@@ -258,16 +305,41 @@ def run_benchmark(dataset: str, sizes: list[int], seed: int, output_file: Path |
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset", default="ADULT", help="Dataset real usado no benchmark")
-    parser.add_argument("--sizes", nargs="+", type=int, default=[1000, 3000, 5000, 7143])
+    parser.add_argument(
+        "--datasets",
+        nargs="+",
+        default=["ADULT", "CREDIT", "HIGGS50K"],
+        help="Datasets reais usados no benchmark",
+    )
+    parser.add_argument(
+        "--sizes",
+        nargs="+",
+        type=int,
+        default=[1000, 3000, 5000, 10000, 15000, 20000, 30000, 48842],
+    )
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument(
         "--output-file",
         type=Path,
         default=Path("results/benchmark_transformers_efficiency.json"),
     )
+    parser.add_argument("--worker-dataset")
+    parser.add_argument("--worker-model")
+    parser.add_argument("--worker-n-total", type=int)
+    parser.add_argument("--worker-seed", type=int)
     args = parser.parse_args()
-    run_benchmark(args.dataset, args.sizes, args.seed, args.output_file)
+
+    if args.worker_dataset is not None:
+        result = _run_worker(
+            dataset=args.worker_dataset,
+            model_name=args.worker_model,
+            n_total=args.worker_n_total,
+            seed=args.worker_seed,
+        )
+        print(json.dumps(result))
+        return
+
+    run_benchmark(args.datasets, args.sizes, args.seed, args.output_file)
 
 
 if __name__ == "__main__":
