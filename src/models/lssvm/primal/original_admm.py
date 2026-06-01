@@ -43,6 +43,9 @@ class OriginalADMMNesterovLSSVM(BaseLSSVM):
     lambda_ : float or None
         L1 regularisation. If None, auto-set to sqrt(2 * log10(n))
         — exactly as in the original code.
+    lambda_ratio : float or None
+        Multiplier for the auto-set λ. Optuna should tune this (e.g. 1e-4 to 1.0)
+        instead of `lambda_`.
     rho : float or None
         ADMM penalty. If None, auto-set to 1/max|eigvals(AᵀA)|
         via np.linalg.eig — exactly as in the original.
@@ -60,6 +63,7 @@ class OriginalADMMNesterovLSSVM(BaseLSSVM):
         sigma: float = 1.0,
         tau: float = 1.0,
         lambda_: float | None = None,
+        lambda_ratio: float | None = None,
         rho: float | None = None,
         restart_eta: float = 0.999,
         tikhonov_reg: float = 0.01,
@@ -68,6 +72,7 @@ class OriginalADMMNesterovLSSVM(BaseLSSVM):
     ) -> None:
         super().__init__(sigma=sigma, tau=tau, max_iter=max_iter)
         self.lambda_ = lambda_
+        self.lambda_ratio = lambda_ratio
         self.rho = rho
         self.restart_eta = restart_eta
         self.tikhonov_reg = tikhonov_reg
@@ -115,6 +120,8 @@ class OriginalADMMNesterovLSSVM(BaseLSSVM):
         else:
             # Original: l = sqrt(2 * log(n, 10))  — log base 10
             lam = sqrt(2.0 * log(n, 10))
+            if getattr(self, "lambda_ratio", None) is not None:
+                lam *= self.lambda_ratio
 
         # Original threshold convention: Sthresh(v, l/rho) → gamma = l/rho
         # Combined with gamma/2 inside Sthresh → effective = l/(2*rho)

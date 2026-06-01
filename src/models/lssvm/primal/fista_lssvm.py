@@ -54,6 +54,9 @@ class FISTANesterovLSSVM(BaseLSSVM):
     lambda_ : float or None
         L1 regularisation. If None, auto-set to sqrt(2 log n) * ‖b‖∞
         (scale-adaptive, same fix as ADMMNesterovLSSVM).
+    lambda_ratio : float or None
+        Multiplier for the auto-set λ. Optuna should tune this (e.g. 1e-4 to 1.0)
+        instead of `lambda_`.
     tol : float
         Convergence tolerance on ‖x_k - x_{k-1}‖.
     max_iter : int
@@ -72,6 +75,7 @@ class FISTANesterovLSSVM(BaseLSSVM):
         sigma: float = 1.0,
         tau: float = 1.0,
         lambda_: float | None = None,
+        lambda_ratio: float | None = None,
         tol: float = 1e-6,
         max_iter: int = 5000,
         adaptive_restart: bool = True,
@@ -80,6 +84,7 @@ class FISTANesterovLSSVM(BaseLSSVM):
     ) -> None:
         super().__init__(sigma=sigma, tau=tau, tol=tol, max_iter=max_iter)
         self.lambda_ = lambda_
+        self.lambda_ratio = lambda_ratio
         self.adaptive_restart = adaptive_restart
         self.tikhonov_reg = tikhonov_reg
         self.estimate_bias = estimate_bias
@@ -117,6 +122,8 @@ class FISTANesterovLSSVM(BaseLSSVM):
             b_scale = float(np.abs(b_vec).max())
             b_scale = b_scale if b_scale > 0 else 1.0
             lam = sqrt(2.0 * log(n)) * b_scale
+            if getattr(self, "lambda_ratio", None) is not None:
+                lam *= self.lambda_ratio
 
         threshold = lam * step                           # λ/L for soft-threshold
 

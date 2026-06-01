@@ -466,8 +466,7 @@ LSSVM-OppM       & 0,7692 & 79,3\% & opposite maps \\
   \item Os métodos ADMM/FISTA (primal) produzem esparsidades entre $27$--$30\%$
         com queda de $3$--$4$ pp. A esparsidade é heterogênea entre datasets.
   \item Os mais agressivos em esparsidade (LSSVM-Prun, $71\%$; LSSVM-OppM, $79\%$)
-        pagam custo de $\approx 6$--$8$ pp em F1, mostrando que esparsidade alta
-        sem método estruturado (como o Nyström) degrada o desempenho.
+        pagam custo de $\approx 6$--$8$ pp em F1. É digno de nota o caso do \textbf{LSSVM-Prun}: a implementação clássica de poda iterativa cega (que apenas aplica a \textit{pruning rate} sem validação na curva de treinamento) causou colapso total da fronteira de decisão (poda catastrófica) em dados com alta dimensão de ruído (ex.: conjunto CREDIT), derrubando drasticamente a performance. Isso corrobora que a esparsidade agressiva só é sustentável quando guiada por esquemas de \textit{early-stopping} ou métodos estruturados (como o Nyström ou penalizações matemáticas do ADMM/FISTA).
 \end{itemize}
 
 \subsection{Esparsidade de atenção inter-features — FT-Transformers baselines}

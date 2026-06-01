@@ -69,6 +69,9 @@ class ADMMNesterovLSSVM(BaseLSSVM):
     lambda_ : float or None
         L1 regularisation — controls sparsity. If None, auto-set to
         √(2 log n) · ‖b‖∞  (scale-adaptive, avoids over-thresholding).
+    lambda_ratio : float or None
+        Multiplier for the auto-set λ. Optuna should tune this (e.g. 1e-4 to 1.0)
+        instead of `lambda_` to preserve the scale-adaptive property.
     lambda2_ : float
         L2 regularisation for Elastic Net. Injects strong convexity for
         unconditional Nesterov stability (Goldstein condition). Default 0.0
@@ -100,6 +103,7 @@ class ADMMNesterovLSSVM(BaseLSSVM):
         sigma: float = 1.0,
         tau: float = 1.0,
         lambda_: float | None = None,
+        lambda_ratio: float | None = None,
         lambda2_: float = 0.0,
         rho: float | None = None,
         tol: float = 1e-6,
@@ -112,6 +116,7 @@ class ADMMNesterovLSSVM(BaseLSSVM):
     ) -> None:
         super().__init__(sigma=sigma, tau=tau, tol=tol, max_iter=max_iter)
         self.lambda_ = lambda_
+        self.lambda_ratio = lambda_ratio
         self.lambda2_ = lambda2_
         self.rho = rho
         self.use_nesterov = use_nesterov
@@ -166,6 +171,8 @@ class ADMMNesterovLSSVM(BaseLSSVM):
             b_scale = float(np.abs(b_vec).max())
             b_scale = b_scale if b_scale > 0 else 1.0
             lam = sqrt(2.0 * log(n)) * b_scale
+            if self.lambda_ratio is not None:
+                lam *= self.lambda_ratio
 
         # Soft-threshold: reference uses λ/2 convention → threshold = λ/(2ρ)
         threshold = lam / (2.0 * rho)

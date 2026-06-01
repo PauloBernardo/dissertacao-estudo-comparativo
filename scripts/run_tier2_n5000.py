@@ -181,6 +181,12 @@ GROUPS = {
         ("NystromLSSVMColnorm",       "NystromLSSVMColnorm", {}),
         ("SAINTColnorm",              "SAINTColnorm",        {}),
     ],
+    "cpu_bugfix": [  # Apenas os modelos que precisaram de correção estrutural ou tuning fix
+        ("PruningLSSVM",              "PruningLSSVM",        {}),
+        ("FISTANesterovLSSVM",        "FISTANesterov",       {}),
+        ("ADMMNesterovLSSVM",         "ADMMNesterovLSSVM",   {}),
+        ("ADMMNesterovLSSVM",         "ADMMElasticNet",      {}),
+    ],
     "gpu_transformer": [  # GPU: FT-Transformer baselines + FT-CUR
         ("FTTransformer", "FTTransformer_softmax",   {"attention_type": "softmax"}),
         ("FTTransformer", "FTTransformer_topk",      {"attention_type": "topk", "topk_ratio": 0.10}),
@@ -360,7 +366,7 @@ def _obj_fista(trial, X, y, folds, seed):
     from src.models.lssvm.primal.fista_lssvm import FISTANesterovLSSVM
     p = {"sigma":   trial.suggest_float("sigma", 0.1, 50.0, log=True),
          "tau":     trial.suggest_float("tau",   0.01, 1000.0, log=True),
-         "lambda_": trial.suggest_float("lambda_", 1e-4, 1.0, log=True)}
+         "lambda_ratio": trial.suggest_float("lambda_ratio", 1e-4, 1.0, log=True)}
     return _cv_eval(lambda: FISTANesterovLSSVM(**p), X, y, folds, seed, signed=True)
 
 
@@ -369,17 +375,18 @@ def _obj_admm(trial, X, y, folds, seed):
     p = {"sigma":   trial.suggest_float("sigma", 0.1, 50.0, log=True),
          "tau":     trial.suggest_float("tau",   0.01, 1000.0, log=True),
          "rho":     trial.suggest_float("rho", 0.1, 10.0, log=True),
-         "lambda_": trial.suggest_float("lambda_", 1e-4, 1.0, log=True)}
+         "lambda_ratio": trial.suggest_float("lambda_ratio", 1e-4, 1.0, log=True)}
     return _cv_eval(lambda: ADMMNesterovLSSVM(**p), X, y, folds, seed, signed=True)
 
 
 def _obj_admm_en(trial, X, y, folds, seed):
-    from src.models.lssvm.primal.original_admm import OriginalADMMNesterovLSSVM
+    from src.models.lssvm.primal.admm_nesterov import ADMMNesterovLSSVM
     p = {"sigma":   trial.suggest_float("sigma", 0.1, 50.0, log=True),
          "tau":     trial.suggest_float("tau",   0.01, 1000.0, log=True),
          "rho":     trial.suggest_float("rho", 0.1, 10.0, log=True),
-         "lambda_": trial.suggest_float("lambda_", 1e-4, 1.0, log=True)}
-    return _cv_eval(lambda: OriginalADMMNesterovLSSVM(**p), X, y, folds, seed, signed=True)
+         "lambda_ratio": trial.suggest_float("lambda_ratio", 1e-4, 1.0, log=True),
+         "lambda2_": trial.suggest_float("lambda2_", 1e-4, 1.0, log=True)}
+    return _cv_eval(lambda: ADMMNesterovLSSVM(**p), X, y, folds, seed, signed=True)
 
 
 # ── FT-Transformer baselines (factory por attention_type) ────────────────────

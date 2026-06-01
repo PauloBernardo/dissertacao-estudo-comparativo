@@ -51,6 +51,9 @@ class PruningLSSVM(BaseLSSVM):
         CG convergence tolerance.
     max_iter : int
         Maximum CG iterations per solve.
+    drop_tolerance : float
+        Maximum allowed drop in training F1-score compared to the initial 
+        full model. If the score drops beyond this, pruning stops.
     """
 
     def __init__(
@@ -62,11 +65,13 @@ class PruningLSSVM(BaseLSSVM):
         min_sv_fraction: float = 0.02,
         tol: float = 1e-6,
         max_iter: int = 1000,
+        drop_tolerance: float = 0.05,
     ) -> None:
         super().__init__(sigma=sigma, tau=tau, tol=tol, max_iter=max_iter)
         self.pruning_rate = pruning_rate
         self.max_pruning_steps = max_pruning_steps
         self.min_sv_fraction = min_sv_fraction
+        self.drop_tolerance = drop_tolerance
 
     def _solve_on_subset(
         self, X_sub: NDArray, y_sub: NDArray
@@ -94,6 +99,8 @@ class PruningLSSVM(BaseLSSVM):
 
     def _solve(self, X: NDArray, y: NDArray) -> None:
         """Iterative pruning: train → prune smallest |αᵢ| → retrain."""
+        from sklearn.metrics import f1_score
+        
         n = len(y)
         min_sv = max(2, int(self.min_sv_fraction * n))
 
@@ -102,6 +109,16 @@ class PruningLSSVM(BaseLSSVM):
 
         # Initial full solve
         alpha_sub, bias = self._solve_on_subset(X[active], y[active])
+        
+        # Calculate baseline training performance
+        K_eval = self.kernel_matrix(X, X[active])
+        y_pred = np.sign(K_eval @ alpha_sub + bias)
+        y_pred[y_pred == 0] = 1
+        best_score = f1_score(y, y_pred, average="macro", zero_division=0)
+        
+        best_active = active.copy()
+        best_alpha = alpha_sub.copy()
+        best_bias = bias
 
         for step in range(self.max_pruning_steps):
             n_active = len(active)
@@ -122,6 +139,24 @@ class PruningLSSVM(BaseLSSVM):
 
             # Retrain on pruned subset
             alpha_sub, bias = self._solve_on_subset(X[active], y[active])
+            
+            # Evaluate current performance drop
+            K_eval = self.kernel_matrix(X, X[active])
+            y_pred = np.sign(K_eval @ alpha_sub + bias)
+            y_pred[y_pred == 0] = 1
+            current_score = f1_score(y, y_pred, average="macro", zero_division=0)
+            
+            if current_score < best_score - self.drop_tolerance:
+                logger.info(
+                    "Pruning stopped: training F1 dropped from %.4f to %.4f.", 
+                    best_score, current_score
+                )
+                break
+                
+            # If performance is acceptable, save it as the new fallback state
+            best_active = active.copy()
+            best_alpha = alpha_sub.copy()
+            best_bias = bias
 
             logger.debug(
                 "Pruning step %d: %d → %d support vectors.",
@@ -132,13 +167,13 @@ class PruningLSSVM(BaseLSSVM):
 
         # Store in full-N format (zeros for pruned samples)
         self.alpha_: NDArray = np.zeros(n)
-        self.alpha_[active] = alpha_sub
-        self.bias_: float = bias
-        self.support_indices_: NDArray = active
+        self.alpha_[best_active] = best_alpha
+        self.bias_: float = best_bias
+        self.support_indices_: NDArray = best_active
 
         logger.info(
             "PruningLSSVM solved — %d SVs / %d (%.1f%% sparse)",
-            len(active),
+            len(best_active),
             n,
             100.0 * self.sparsity_ratio_,
         )

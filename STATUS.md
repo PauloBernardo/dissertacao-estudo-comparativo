@@ -168,6 +168,10 @@ python scripts/run_ftcur_saint_rerun.py \
 - `notebooks/tier2_colab_cpu.ipynb` — XGBoost + Nyström-SVM em N completo (~3-5h)
 - `notebooks/tier2_colab_gpu.ipynb` — 4 FT + FT-CUR em N completo (~10-12h)
 
+### 4. Re-rodar Tier 1 (N=1000) para o grupo `cpu_bugfix`
+- O Tier 1 atual contém resultados subestimados para os métodos Primal (devido ao bug de escala do `lambda_`) e para o PruningLSSVM (ausência de early-stopping).
+- **Ação futura**: Após a conclusão do Tier 2, atualizar o script `run_tier1_n1000.py` com o uso de `lambda_ratio` nas funções Optuna e re-rodar os 4 modelos afetados para alinhar de forma justa a comparação metodológica.
+
 ---
 
 ## 🎯 Tarefas pendentes pós-experimentos
@@ -177,6 +181,11 @@ Quando todos os experimentos terminarem:
 1. **Merge dos arquivos JSON do Tier 2**:
    - `tier2_n5000_cpu.json` + `tier2_n5000_gpu.json` + `tier2_n5000_parallel.json` → `tier2_n5000_final.json`
    - Substituir FT-CUR/SAINT pelos resultados `val_loss` (manter `val_acc` como histórico)
+
+### 1. Modelos Clássicos (LSSVMs e Variantes Esparsas)
+- Todos rodam na GPU `NVIDIA MX350` via PyTorch, **exceto** quando estouram o limite de memória. 
+- Para **N=5000** (Tier 2), a MX350 estourou, então os LSSVMs foram movidos para a **CPU local** (Script A) usando o interpretador padrão.
+- **NOTA:** Durante o "Script A", detectamos um problema no algoritmo cego de poda do `PruningLSSVM`. O algoritmo não checava a queda de erro durante o processo interativo e colapsava a fronteira de decisão. O código foi corrigido (adicionando tolerância de queda de 5% no F1 de treino) e o `PruningLSSVM` precisará ser re-executado depois que o Script A terminar.
 
 2. **Atualizar `relatorio.tex`**:
    - Tabela final do Tier 2 N=5000 (18 modelos × 6 datasets) com val_loss para FT-CUR/SAINT
