@@ -112,6 +112,7 @@ def _measure_one_run(model_name: str, model_factory, X: np.ndarray, y: np.ndarra
     fit_s = predict_s = None
     success = True
     error_message = None
+    failure_type = None
 
     try:
         X_train, X_test, y_train, y_test = make_splits(X, y, test_size=0.30, seed=seed)
@@ -136,6 +137,7 @@ def _measure_one_run(model_name: str, model_factory, X: np.ndarray, y: np.ndarra
             success = False
             metrics = {}
             error_message = str(e)
+            failure_type = "oom"
         else:
             raise
 
@@ -156,6 +158,7 @@ def _measure_one_run(model_name: str, model_factory, X: np.ndarray, y: np.ndarra
         "peak_vram_mb": peak_vram,
         "success": success,
         "error_message": error_message,
+        "failure_type": failure_type,
         **metrics,
     }
 
@@ -173,6 +176,12 @@ def _measure_in_subprocess(dataset: str, model_name: str, n_total: int, seed: in
 
     if proc.returncode != 0:
         stderr = proc.stderr.strip() or proc.stdout.strip() or "worker failed"
+        failure_type = "worker_error"
+        if proc.returncode < 0:
+            signal_num = -proc.returncode
+            failure_type = f"signal_{signal_num}"
+        elif "out of memory" in stderr.lower() or "cublas" in stderr.lower():
+            failure_type = "oom"
         return {
             "model": model_name,
             "dataset": dataset,
@@ -180,6 +189,7 @@ def _measure_in_subprocess(dataset: str, model_name: str, n_total: int, seed: in
             "seed": seed,
             "success": False,
             "error_message": stderr,
+            "failure_type": failure_type,
         }
 
     return json.loads(proc.stdout)
@@ -202,6 +212,12 @@ def _load_existing_results(output_file: Path | None) -> list[dict]:
     with output_file.open() as f:
         data = json.load(f)
     return list(data)
+
+
+def _is_completed_result(result: dict) -> bool:
+    if bool(result.get("success")) and result.get("fit_time_s") is not None:
+        return True
+    return result.get("failure_type") == "oom"
 
 
 def _save_results(output_file: Path | None, results: list[dict]) -> None:
@@ -231,6 +247,7 @@ def run_benchmark(datasets: list[str], sizes: list[int], seed: int, output_file:
     done_keys = {
         (r.get("dataset"), r.get("model"), r.get("n_total"), r.get("seed"))
         for r in results
+        if _is_completed_result(r)
     }
 
     for dataset in datasets:
@@ -251,7 +268,8 @@ def run_benchmark(datasets: list[str], sizes: list[int], seed: int, output_file:
 
                 result = _measure_in_subprocess(dataset, name, n_total, seed)
                 results.append(result)
-                done_keys.add(run_key)
+                if _is_completed_result(result):
+                    done_keys.add(run_key)
                 _save_results(output_file, results)
 
                 if result["success"]:
