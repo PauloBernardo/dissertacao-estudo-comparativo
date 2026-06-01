@@ -21,9 +21,9 @@ from __future__ import annotations
 import argparse
 import gc
 import json
+import resource
 import subprocess
 import sys
-import threading
 import time
 from pathlib import Path
 
@@ -41,35 +41,10 @@ from src.models.ft_transformer_saint_wrapper import SAINTColnorm
 from src.models.transformers.ft_transformer import FTTransformer
 
 
-class RamMonitor:
-    """Monitora pico de RSS via /proc/self/status em thread separada."""
-
-    def __init__(self) -> None:
-        self.keep_measuring = True
-        self.peak_ram_kb = 0
-        self.start_ram_kb = 0
-        self._record_start()
-
-    def _read_rss(self) -> int:
-        try:
-            with open("/proc/self/status") as f:
-                for line in f:
-                    if line.startswith("VmRSS:"):
-                        return int(line.split()[1])
-        except Exception:
-            return 0
-        return 0
-
-    def _record_start(self) -> None:
-        self.start_ram_kb = self._read_rss()
-        self.peak_ram_kb = self.start_ram_kb
-
-    def measure(self) -> None:
-        while self.keep_measuring:
-            current_ram = self._read_rss()
-            if current_ram > self.peak_ram_kb:
-                self.peak_ram_kb = current_ram
-            time.sleep(0.01)
+def _peak_ram_mb() -> float:
+    """Return absolute peak RSS of the current worker process in MB."""
+    # ru_maxrss is reported in KiB on Linux, which is the target platform here.
+    return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
 
 
 def _load_params(path: Path, key: str) -> dict:
@@ -133,10 +108,6 @@ def _measure_one_run(model_name: str, model_factory, X: np.ndarray, y: np.ndarra
         torch.cuda.empty_cache()
         torch.cuda.reset_peak_memory_stats()
 
-    monitor = RamMonitor()
-    thread = threading.Thread(target=monitor.measure)
-    thread.start()
-
     t0 = time.perf_counter()
     fit_s = predict_s = None
     success = True
@@ -167,13 +138,11 @@ def _measure_one_run(model_name: str, model_factory, X: np.ndarray, y: np.ndarra
             error_message = str(e)
         else:
             raise
-    finally:
-        total_s = time.perf_counter() - t0
-        monitor.keep_measuring = False
-        thread.join()
+
+    total_s = time.perf_counter() - t0
 
     peak_vram = torch.cuda.max_memory_allocated() / (1024**2) if torch.cuda.is_available() else 0.0
-    peak_ram = max(0, monitor.peak_ram_kb - monitor.start_ram_kb) / 1024
+    peak_ram = _peak_ram_mb()
 
     return {
         "model": model_name,
