@@ -251,6 +251,8 @@ def run_benchmark(datasets: list[str], sizes: list[int], seed: int, output_file:
     }
 
     for dataset in datasets:
+        X_full, _, _ = DatasetLoader.load(dataset)
+        dataset_size = len(X_full)
         models = _resolve_model_params(dataset)
         dataset_results_count = sum(1 for r in results if r.get("dataset") == dataset)
         _print_header(dataset, dataset_results_count, output_file)
@@ -261,9 +263,13 @@ def run_benchmark(datasets: list[str], sizes: list[int], seed: int, output_file:
                 continue
 
             for n_total in sizes:
-                run_key = (dataset, name, n_total, seed)
+                effective_n_total = min(n_total, dataset_size)
+                run_key = (dataset, name, effective_n_total, seed)
                 if run_key in done_keys:
-                    print(f"{name:<15} | {n_total:<6} | {'SKIP':<15} | {'-':<10} | {'-':<15} | {'-':<15} | ja salvo")
+                    print(
+                        f"{name:<15} | {effective_n_total:<6} | {'SKIP':<15} | "
+                        f"{'-':<10} | {'-':<15} | {'-':<15} | ja salvo"
+                    )
                     continue
 
                 result = _measure_in_subprocess(dataset, name, n_total, seed)
