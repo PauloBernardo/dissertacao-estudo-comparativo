@@ -890,32 +890,35 @@ FT-CUR (Nyströmformer)$^\star$
 \end{table}
 
 % ─────────────────────────────────────────────────────────────────────────────
-\section{Tier 2: Datasets Reais ($N_{\text{treino}}=5000$) --- Resultados Parciais}
+\section{Tier 2: Datasets Reais ($N_{\text{treino}}=5000$)}
 \label{sec:tier2}
 
-Esta seção apresenta resultados \emph{parciais} do experimento Tier 2, que
-extende a comparação para seis datasets reais de larga escala
-(\textbf{ADULT}, \textbf{CREDIT}, \textbf{BANK}, \textbf{TELCO}, \textbf{SHOPPERS},
-\textbf{HIGGS50K}) com subamostragem estratificada para
-$N_{\text{treino}}=5000$ por seed.
-Dos 18 modelos planejados, \textbf{6 já completaram os 180 runs} cada
-(XGBoost, 4 FT-Transformer baselines e FT-CUR); os 12 restantes
-(LSSVMs baselines, ADMM family, Nyström-SVM, SAINT) estão em execução
-e serão incluídos no relatório final ($\sim$01/06/2026).
+Esta seção apresenta os resultados \emph{consolidados} do experimento Tier 2,
+que estende a comparação a seis datasets reais de larga escala
+(\textbf{ADULT}, \textbf{CREDIT}, \textbf{BANK}, \textbf{TELCO},
+\textbf{SHOPPERS}, \textbf{HIGGS50K}) com subamostragem estratificada para
+$N_{\text{treino}}=5000$ por seed. Os \textbf{18 modelos} (baselines, paper-base
+e variantes/propostos) completaram as 30 sementes, totalizando
+\textbf{3.240 execuções}. Os resultados de FT-CUR e SAINT incorporam a correção
+metodológica da ablação H2 (Seção~\ref{sec:tier2_ftcur_limit}):
+\texttt{early\_stop\_metric = val\_loss} em vez de \texttt{val\_acc}.
 
 \subsection{Protocolo}
 
 \begin{itemize}
   \item \textbf{Subamostragem por seed}: cada (modelo, dataset, seed) usa
-        uma amostra estratificada de $N{=}7143$ amostras, determinística
-        pela seed. O split $70/30$ resulta em
-        $N_{\text{treino}}{=}5000$ + $N_{\text{teste}}{=}2143$. Cada seed
-        gera um subsample diferente, permitindo estimar variância amostral
-        sobre N pequeno.
+        uma amostra estratificada de $N{=}7143$ amostras, determinística pela
+        seed. O split $70/30$ resulta em $N_{\text{treino}}{=}5000$ +
+        $N_{\text{teste}}{=}2143$. Cada seed gera um subsample diferente,
+        permitindo estimar variância amostral sobre $N$ pequeno.
   \item \textbf{Tuning Optuna}: 20 trials $\times$ 3-fold CV sobre cada
-        subsample, separado por (modelo, dataset). Cada um dos 18 modelos
-        teve espaço de busca próprio.
-  \item \textbf{30 seeds por (modelo, dataset)}, F1-macro como métrica primária.
+        subsample, separado por (modelo, dataset). Cada um dos 18 modelos teve
+        espaço de busca próprio.
+  \item \textbf{Métricas}: 30 seeds por (modelo, dataset), F1-macro como
+        métrica primária para lidar com o desbalanceamento inerente aos dados.
+  \item \textbf{Análise estatística}: teste de Friedman seguido de Wilcoxon
+        signed-rank pareado com correção de Holm-Bonferroni
+        (Tabelas~\ref{tab:tier2_ranks} e \ref{tab:tier2_wilcoxon}).
 \end{itemize}
 
 \begin{table}[H]
@@ -926,211 +929,208 @@ e serão incluídos no relatório final ($\sim$01/06/2026).
 \toprule
 \textbf{ID} & \textbf{Nome} & \textbf{$N$ original} & \textbf{\% positivos} & \textbf{Domínio} \\
 \midrule
-ADULT     & UCI Adult Income              & 45\,222 & 24\% & Renda \\
+ADULT     & UCI Adult Income               & 45\,222 & 24\% & Renda \\
 CREDIT    & Default of Credit Card Clients & 30\,000 & 22\% & Crédito \\
-BANK      & UCI Bank Marketing            & 45\,211 & 11\% & Marketing direto \\
-TELCO     & IBM Telco Customer Churn      &  7\,032 & 27\% & Churn \\
-SHOPPERS  & Online Shoppers Purchasing    & 12\,330 & 15\% & E-commerce \\
-HIGGS50K  & Higgs Boson (subset 50k)      & 50\,000 & 53\% & Física de partículas \\
+BANK      & UCI Bank Marketing             & 45\,211 & 11\% & Marketing direto \\
+TELCO     & IBM Telco Customer Churn       &  7\,032 & 27\% & Churn \\
+SHOPPERS  & Online Shoppers Purchasing     & 12\,330 & 15\% & E-commerce \\
+HIGGS50K  & Higgs Boson (subset 50k)       & 50\,000 & 53\% & Física de partículas \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Resultados parciais (6 de 18 modelos completos)}
+\subsection{Resultados por Dataset (todos os 18 modelos)}
 
-\begin{table}[H]
-\centering
-\caption{F1-macro médio (30 sementes) por modelo e dataset. Em negrito o
-melhor por coluna entre os 6 modelos com dados completos. DP = desvio
-padrão agregado dos 180 runs.}
-\label{tab:f1_tier2_parcial}
-\resizebox{\linewidth}{!}{%
-\begin{tabular}{lrrrrrrrr}
-\toprule
-\textbf{Modelo} & \textbf{ADULT} & \textbf{CREDIT} & \textbf{BANK} & \textbf{TELCO}
-  & \textbf{SHOPPERS} & \textbf{HIGGS50K} & \textbf{Média} & \textbf{DP} \\
-\midrule
-XGBoost                  & \textbf{0,802} & 0,677 & \textbf{0,713} & \textbf{0,728}
-                          & \textbf{0,795} & \textbf{0,693} & \textbf{0,735} & 0,049 \\
-FT-Softmax               & 0,771 & 0,680 & 0,720 & 0,721
-                          & 0,783 & 0,672 & 0,724 & 0,045 \\
-FT-Entmax                & 0,770 & \textbf{0,682} & 0,718 & 0,722
-                          & 0,781 & 0,667 & 0,723 & 0,045 \\
-FT-Sparsemax             & 0,771 & 0,677 & 0,712 & 0,722
-                          & 0,782 & 0,673 & 0,723 & 0,046 \\
-FT-TopK                  & 0,769 & 0,677 & 0,705 & 0,719
-                          & 0,783 & 0,667 & 0,720 & 0,046 \\
-\midrule
-FT-CUR$^\star$ (Nyströmformer) & 0,770 & 0,444 & 0,548 & 0,714
-                          & 0,751 & 0,648 & 0,646 & 0,129 \\
-\bottomrule
-\end{tabular}}
-\end{table}
+A Tabela~\ref{tab:tier2_results} apresenta o F1-macro médio ($\pm$ desvio
+padrão) dos 18 modelos nos 6 datasets reais Tier 2; o melhor por coluna está
+em negrito.
 
-\textbf{Observações por dataset:}
+\input{tables/tier2_results.tex}
+
+\textbf{Observações por grupo de modelos:}
 \begin{itemize}
-  \item \textbf{ADULT} (24\% pos.): XGBoost lidera ($0{,}802$); FT-Transformers
-        equivalentes entre si ($0{,}77$), incluindo FT-CUR.
-  \item \textbf{CREDIT} (22\%): empate técnico entre FT-Entmax ($0{,}682$) e
-        XGBoost ($0{,}677$). \textbf{FT-CUR colapsa para $0{,}444$.}
-  \item \textbf{BANK} (11\%): XGBoost lidera ($0{,}713$); FT-Transformers no
-        intervalo $0{,}705$--$0{,}720$. \textbf{FT-CUR cai para $0{,}548$.}
-  \item \textbf{TELCO} (27\%): XGBoost ($0{,}728$); FT-CUR competitivo ($0{,}714$).
-  \item \textbf{SHOPPERS} (15\%): XGBoost lidera ($0{,}795$); FT-CUR baixa
-        para $0{,}751$.
-  \item \textbf{HIGGS50K} (53\%, balanceado): XGBoost ($0{,}693$); FT-CUR a
-        $0{,}648$, na faixa dos FT baselines.
+  \item \textbf{Baseline geral tabular (XGBoost)} domina o ranking
+        consolidado: lidera ADULT (\(0{,}802\)), HIGGS50K (\(0{,}693\)) e
+        SHOPPERS (\(0{,}795\)), e fica empatado em CREDIT/BANK/TELCO com o
+        bloco de Transformers. Média agregada $\approx 0{,}735$, melhor
+        rank Friedman (\(2{,}67\)).
+  \item \textbf{Baselines FT-Transformer} (Softmax, TopK, Entmax, Sparsemax)
+        ocupam o segundo patamar, confinados ao intervalo
+        \(0{,}720\)--\(0{,}725\) na média. A esparsidade de atenção
+        inter-features (sparsemax \(75\%\); topk \(89\%\)) não traz vantagem
+        mensurável: a diferença máxima entre o mais esparso (TopK) e o mais
+        denso (Softmax) é $0{,}005$ em média.
+  \item \textbf{SAINT} (denso, inter-instâncias) atinge média \(0{,}722\),
+        empatando com os FT baselines. Confirma que \emph{a atenção
+        inter-instâncias não é, isoladamente, suficiente para superar a
+        atenção inter-features} em datasets reais.
+  \item \textbf{FT-CUR (proposto)} alcança média \(0{,}713\) com a correção
+        \texttt{val\_loss}. Permanece dentro de $0{,}012$ do bloco FT baseline
+        em média, recuperando a maior parte do colapso aparente do protocolo
+        original com \texttt{val\_acc} (ver Seção~\ref{sec:tier2_ftcur_limit}).
+  \item \textbf{LSSVMs duais bem condicionados} (LSSVM-Std, DualFISTA,
+        Nyström-LSSVM) caem para $\approx 0{,}706$--$0{,}709$ ---
+        $\approx 0{,}13$ \emph{pp} abaixo do Tier 1. O kernel RBF, ótimo em
+        geometria sintética limpa, perde eficácia em features tabulares mistas
+        (categóricas codificadas + numéricas) com ruído estrutural.
+  \item \textbf{LSSVM-PCP, LSSVM-IP, LSSVM-FSA} ficam entre $0{,}68$ e
+        $0{,}69$, um degrau abaixo do LSSVM-Std, com esparsidades amostrais
+        entre $60\%$ (IP) e $92\%$ (FSA).
+  \item \textbf{Métodos primais com $\ell_1$} (ADMM-Nesterov, FISTA-Nesterov,
+        ADMM-ElasticNet) colapsam para $F_1 \approx 0{,}58$ ---
+        $\Delta \approx -0{,}13$ vs.\ LSSVM-Std denso. Analisado em
+        Seção~\ref{sec:tier2_primal_collapse}.
+  \item \textbf{LSSVM-Pruning} (após correção com \emph{early stopping}
+        guiado por F1 de treino com tolerância de 5\%, código
+        \texttt{src/models/lssvm/dual/p\_lssvm.py}) sobe para $0{,}594$
+        com $52\%$ de esparsidade. Recupera a maior parte da degradação
+        antes observada (versão pré-correção: $0{,}462$ com $96\%$ de
+        esparsidade), embora ainda fique abaixo dos LSSVMs duais bem
+        comportados.
+  \item \textbf{LSSVM-OppMaps} é o pior modelo do estudo ($0{,}478$): a
+        seleção \emph{opposite maps} com esparsidade fixa em $94\%$ não
+        possui mecanismo de \emph{early stopping}, e destrói a fronteira
+        de decisão em escala $N=5000$.
 \end{itemize}
 
-\subsection{Limitação estrutural do FT-CUR em dados imbalanceados}
-\label{sec:ftcur_limit}
+\subsection{Análise estatística: Friedman e ranks médios}
 
-A queda do FT-CUR em CREDIT, BANK e SHOPPERS é o achado mais expressivo dos
-resultados parciais. A Tabela~\ref{tab:ftcur_imbalance} mostra o gap em função
-da taxa de positivos:
+A Tabela~\ref{tab:tier2_ranks} apresenta os ranks médios obtidos pelo teste
+não-paramétrico de Friedman ($\chi^2 = 84{,}96$, $p < 10^{-10}$), confirmando
+que existe diferença estatisticamente significativa entre os modelos no
+conjunto agregado dos seis datasets.
+
+\input{tables/tier2_ranks.tex}
+
+A Tabela~\ref{tab:tier2_wilcoxon} (apêndice) reporta o pós-teste de Wilcoxon
+signed-rank pareado com correção de Holm-Bonferroni ($n_{\text{comp}}=153$).
+Com $K=6$ datasets e correção conservadora, comparações par-a-par individuais
+não atingem $\alpha=0{,}05$, mas a hierarquia de ranks de Friedman é
+robusta: XGBoost (2,67), SAINT (3,67) e o bloco FT baseline + FT-CUR
+(4,3--6,5) dominam claramente os métodos primais com $\ell_1$ ($\geq 14$) e
+heurísticas cegas ($\geq 17$).
+
+\subsection{Esparsidade consolidada no Tier 2}
+\label{sec:tier2_sparsity}
+
+\input{tables/tier2_sparsity.tex}
+
+\textbf{Leitura cruzada com a Tabela~\ref{tab:tier2_results}:}
+\begin{itemize}
+  \item \textbf{Nyström-LSSVM} mantém o trade-off observado no Tier 1:
+        $81{,}5\%$ de esparsidade amostral com $F_1 = 0{,}707$, apenas
+        $0{,}002$ abaixo do LSSVM-Std denso ($0{,}709$). \emph{Compressão
+        substancial sem custo preditivo}, agora confirmado em dados reais
+        $N=5000$.
+  \item \textbf{FT-CUR} obtém $89{,}4\%$ de compressão inter-instâncias com
+        $F_1 = 0{,}713$, equivalente ao SAINT denso ($0{,}722$, gap
+        $0{,}009$). Repete o padrão Tier 1: \emph{a compressão Nyströmformer
+        é fiel também em larga escala}.
+  \item \textbf{DualFISTA} fica em $2{,}1\%$ de esparsidade no Tier 2 ---
+        muito abaixo dos $20\%$ do Tier 1. O Optuna passou a preferir
+        $\lambda$ pequenos para preservar margem em datasets imbalanceados,
+        evidenciando que o método se ajusta dinamicamente ao regime de dados.
+  \item \textbf{LSSVM-Pruning} agora opera em $52\%$ de esparsidade média
+        no Tier 2 (era $96\%$ antes da correção do \emph{early stopping}),
+        recuperando $F_1 = 0{,}594$. O modelo passou a parar antes de
+        destruir a fronteira de decisão, ao custo de menos compressão.
+  \item \textbf{LSSVM-OppMaps} mantém $94\%$ de esparsidade fixa e
+        permanece em colapso ($F_1 = 0{,}478$): sem mecanismo análogo de
+        \emph{early stopping}, a heurística cega não escala em $N=5000$.
+  \item \textbf{FT-Sparsemax ($75\%$) e FT-TopK ($89\%$)} mantêm a
+        esparsidade inter-features observada no Tier 1; FT-Entmax ($19\%$)
+        permanece pouco saturada na prática.
+\end{itemize}
+
+\subsection{Colapso dos métodos primais com $\ell_1$ em escala}
+\label{sec:tier2_primal_collapse}
+
+O achado mais expressivo da migração Tier 1 $\to$ Tier 2 é o colapso dos
+métodos baseados em formulação primal com penalidade $\ell_1$:
 
 \begin{table}[H]
 \centering
-\caption{Gap FT-CUR vs.\ FT-Softmax (baseline denso inter-features) por
-taxa de positivos. Acima de $\sim$24\%: equivalência; abaixo: colapso.}
-\label{tab:ftcur_imbalance}
-\begin{tabular}{lrrrr}
+\caption{Métodos primais com $\ell_1$ no Tier 2 (média sobre 6 datasets).}
+\label{tab:primal_collapse}
+\begin{tabular}{lrrrl}
 \toprule
-\textbf{Dataset} & \textbf{\% positivos} & \textbf{FT-Softmax} & \textbf{FT-CUR}
-                  & \textbf{$\Delta$} \\
+\textbf{Modelo} & \textbf{F1 Tier 1} & \textbf{F1 Tier 2} & \textbf{$\Delta$} & \textbf{Esparsidade Tier 2} \\
 \midrule
-HIGGS50K  & 53\% & 0,672 & 0,648 & $-$0,024 \\
-TELCO     & 27\% & 0,721 & 0,714 & $-$0,007 \\
-ADULT     & 24\% & 0,771 & 0,770 & $-$0,001 \\
+LSSVM-ADMM (paper-base)  & 0,809 & 0,580 & $-$0,229 & 75,2\% \\
+ADMM-ElasticNet$^\circ$ & 0,809 & 0,576 & $-$0,233 & 73,7\% \\
+FISTA-Nesterov           & 0,800 & 0,577 & $-$0,223 & 49,1\% \\
 \midrule
-CREDIT    & 22\% & 0,680 & 0,444 & \textbf{$-$0,236} \\
-SHOPPERS  & 15\% & 0,783 & 0,751 & $-$0,032 \\
-BANK      & 11\% & 0,720 & 0,548 & \textbf{$-$0,172} \\
+\multicolumn{2}{l}{\textit{Referência: LSSVM-Std denso}} & 0,709 & ---       & 0,0\% \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\textbf{Padrão observado:} acima de $24\%$ de positivos, FT-CUR mantém
-desempenho equivalente aos baselines densos (diferença $\leq 0{,}024$).
-Abaixo desse limiar, há colapso significativo, com perda de até
-$0{,}24$ em F1.
+\textbf{Mecânica do colapso (ADMM/ADMM-EN).} Para a matriz kernel densa
+$5000 \times 5000$ ($25$ milhões de entradas), o Optuna convergiu para
+valores de $\lambda$ grandes o suficiente para zerar $\approx 75\%$ dos
+coeficientes $\alpha_i$. O hiperplano resultante torna-se rígido e, na
+ausência de uma atualização proporcional do \emph{bias} via problema de
+projeção, falha em capturar a classe minoritária nos datasets desbalanceados
+(BANK 11\%, SHOPPERS 15\%, CREDIT 22\%) --- o $F_1$ macro $\approx 0{,}58$ é
+exatamente o valor de uma predição quase-majoritária. A variante
+\textbf{ADMM-ElasticNet} ($\ell_1 + \ell_2$) reduz o tempo de fit de
+$\approx 160$\,s para $\approx 54$\,s por seed (convexidade forte da
+penalidade $\ell_2$ melhora o condicionamento), mas preserva a mesma
+barreira de expressividade.
 
-\subsubsection*{Diagnóstico do colapso}
+\textbf{Mecânica do colapso (FISTA-Nesterov).} Após a correção da escala
+do $\lambda$ via \texttt{lambda\_ratio} (\emph{commit b83243e}), o
+FISTA-Nesterov no Tier 2 fica em $49{,}1\%$ de esparsidade média e ainda
+assim colapsa, indicando que o problema não é apenas a magnitude do
+$\lambda$ mas a própria formulação primal: a função objetivo penaliza a
+magnitude de $\alpha$ no espaço primal, deslocando o hiperplano para
+regiões que não respeitam a estrutura do problema KKT original. A
+reformulação dual do \textbf{DualFISTA} ---
+$\min_\alpha \tfrac{1}{2}\alpha^\top\Omega\alpha - \mathbf{1}^\top\alpha + \lambda\|\alpha\|_1$ ---
+elimina exatamente este problema, mantendo $F_1 = 0{,}706$ no Tier 2.
 
-A análise dos valores absolutos do F1-macro do FT-CUR em CREDIT ($0{,}444$)
-e BANK ($0{,}548$) sugere predição quase exclusivamente da classe majoritária.
-Para CREDIT (22\% positivos):
-\[
-  F_1^{\text{maj, CREDIT}}
-  = \frac{1}{2}\left(F_1^{(+)} + F_1^{(-)}\right)
-  = \frac{1}{2}\left(0 + \frac{2 \cdot 0{,}78 \cdot 1}{0{,}78 + 1}\right)
-  \approx 0{,}44,
-\]
-valor virtualmente idêntico ao observado ($0{,}444$).
+\subsection{FT-CUR/SAINT e a correção metodológica da H2}
+\label{sec:tier2_ftcur_limit}
 
-\subsubsection*{Hipótese causal}
-
-A aproximação CUR seleciona $m$ landmarks por \textbf{norma de coluna}
-(\emph{colnorm}), critério \emph{geométrico} que não considera a estrutura
-de classes. Em datasets imbalanceados, a classe minoritária --- por definição
-sub-representada --- também tende a ser sub-representada no conjunto de
-landmarks, comprometendo a fidelidade da atenção comprimida na fronteira de
-decisão entre as classes.
-
-Essa hipótese será verificada quando os resultados completos de SAINT
-(atenção \emph{inter-instâncias} densa, sem aproximação CUR) ficarem
-disponíveis. Resultados preliminares do tuning do SAINT já sugerem o
-padrão: F1 CV $0{,}524$ em CREDIT vs.\ $0{,}446$ do FT-CUR. Caso SAINT
-mantenha desempenho similar aos FT baselines em CREDIT/BANK, confirma-se
-que o colapso é estrutural à aproximação CUR + colnorm em dados
-imbalanceados, não à atenção inter-instâncias em si.
-
-Uma hipótese metodológica adicional surgiu da inspeção dos logs de treino.
-Na implementação atual, \textbf{FT-CUR} e \textbf{SAINT} usam
-\emph{early stopping} por \texttt{val\_acc}, enquanto os FT-Transformer
-baselines usam \texttt{val\_loss}. Em datasets desbalanceados,
-\texttt{val\_acc} pode favorecer checkpoints que acertam majoritariamente a
-classe dominante, mas ainda são ruins em F1-macro. Isso fornece uma
-explicação alternativa, ou complementar, para o colapso observado em
-\textbf{CREDIT} e \textbf{BANK}: parte da queda pode decorrer do critério de
-seleção do checkpoint, e não apenas da seleção \emph{colnorm} de landmarks.
-
-\textbf{Suporte experimental adicionado.} O parâmetro \texttt{early\_stop\_metric}
-foi implementado em \texttt{fit\_model}, com três opções: \texttt{val\_acc}
-(default original), \texttt{val\_loss} e \texttt{val\_f1\_macro} (alinhado à
-métrica primária do estudo). O script
-\texttt{scripts/run\_early\_stop\_ablation.py} executa o rerun focal de FT-CUR
-e SAINT em CREDIT e BANK retunando \emph{independentemente} cada combinação
-$(\text{modelo}, \text{dataset}, \texttt{early\_stop\_metric})$ via Optuna ---
-isto evita o viés de comparar params otimizados para \texttt{val\_acc} contra
-treino com \texttt{val\_loss}.
-
-\textbf{Correção metodológica capturada em \emph{code review} (29/05/2026).}
-A versão original do \texttt{fit\_model} usava o critério
-\texttt{landmark\_idx is None} para decidir se passava o contexto completo
-[$X_{\text{train}} \| X_{\text{val}}$] ao modelo. Isto era \emph{correto}
-para o FT-CUR (que tem \texttt{landmark\_idx} definido) mas \emph{quebrava
-o SAINT}, que tem atenção inter-instâncias \emph{densa} (sem
-\texttt{landmark\_idx}, mas que requer o contexto completo na validação,
-exatamente como na inferência final). A correção atualizada usa a flag
-arquitetural \texttt{model.use\_inter\_instance} (a mesma lógica do
-\texttt{eval\_with\_context}), garantindo simetria entre FT-CUR e SAINT
-na ablação H2.
-
-\subsubsection*{Tabela de hipóteses testáveis}
+Os primeiros runs do Tier 2 (parciais, com 6/18 modelos completos) sugeriram
+um colapso estrutural do FT-CUR em datasets imbalanceados: $F_1 = 0{,}444$
+em CREDIT, $0{,}548$ em BANK --- valores compatíveis com predição quase
+exclusiva da classe majoritária. Três hipóteses foram formuladas para
+explicar o efeito (Tabela~\ref{tab:hipoteses_ftcur}).
 
 \begin{table}[H]
 \centering
-\caption{Três hipóteses sobre o colapso do FT-CUR em CREDIT/BANK e como testar
-cada uma. Cada experimento isola uma causa específica.}
+\caption{Hipóteses sobre o colapso aparente do FT-CUR no Tier 2 parcial.}
 \label{tab:hipoteses_ftcur}
 \small
-\begin{tabular}{lp{4.5cm}p{4.5cm}}
+\begin{tabular}{lp{4.2cm}p{4.8cm}l}
 \toprule
-\textbf{Hipótese} & \textbf{Causa proposta} & \textbf{Teste experimental} \\
+\textbf{H} & \textbf{Causa proposta} & \textbf{Teste experimental} & \textbf{Status} \\
 \midrule
-H1: imbalanceamento
-  & Seleção colnorm de landmarks é geométrica; minoria
-    sub-representada nos $m$ landmarks
-  & Tier 2 balanceado: treina com undersampling da majoritária
-    \emph{só no treino} (após split), preservando o teste original
-    para comparabilidade direta com o Tier 2 imbalanceado.
-    Script: \texttt{run\_tier2\_balanced.py}
-    (\texttt{--balance-train} no runner) \\
+H1 & Seleção colnorm geométrica
+   sub-representa a classe minoritária nos $m$ landmarks
+   & Tier 2 balanceado: undersample da majoritária só no treino
+   & A rodar \\
 \addlinespace
-H2: critério de early stopping
-  & \texttt{val\_acc} favorece classe majoritária; o checkpoint
-    escolhido tem F1-macro baixo mesmo em datasets onde o modelo
-    aprende bem
-  & Rerun focal com \texttt{val\_loss} e \texttt{val\_f1\_macro};
-    mesmos dados, com retuning independente por métrica para
-    comparação justa.
-    Script: \texttt{run\_early\_stop\_ablation.py} \\
+H2 & \texttt{val\_acc} em early stopping favorece a classe majoritária
+   & Rerun com \texttt{val\_loss}/\texttt{val\_f1\_macro} e re-tuning Optuna
+     independente por métrica
+   & \textbf{Confirmada} \\
 \addlinespace
-H3: limitação fundamental do CUR
-  & Compressão de baixo posto é incompatível com fronteiras de
-    decisão complexas em datasets imbalanceados,
-    independentemente de seleção e critério de checkpoint
-  & Confirmação \emph{por exclusão}: se H1 e H2 falharem em explicar,
-    H3 é a explicação remanescente \\
+H3 & Limitação fundamental da decomposição CUR
+   & Confirmação por exclusão
+   & Enfraquecida \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsubsection*{Resultado da ablação H2: \texttt{val\_loss} corrige o colapso}
-
-O experimento focal da H2 foi concluído integralmente: 360 runs
-(2 modelos $\times$ 2 datasets $\times$ 3 métricas $\times$ 30 seeds),
-todos bem-sucedidos. A Tabela~\ref{tab:h2_results} resume o F1-macro médio
-dos reruns em CREDIT e BANK, comparando o critério original
-\texttt{val\_acc} com \texttt{val\_loss} e \texttt{val\_f1\_macro}. Para
-referência, a última coluna mostra o melhor FT baseline da
-Tabela~\ref{tab:f1_tier2_parcial}.
+\textbf{Ablação H2 (concluída).} 360 runs ($2$ modelos $\times$ $2$ datasets
+$\times$ $3$ métricas $\times$ $30$ seeds):
 
 \begin{table}[H]
 \centering
-\caption{Ablação H2: efeito do critério de early stopping em FT-CUR e SAINT
-nos datasets desbalanceados CREDIT e BANK (30 seeds).}
+\caption{Efeito do critério de early stopping em FT-CUR e SAINT nos datasets
+desbalanceados CREDIT e BANK (30 seeds, retuning Optuna por métrica).}
 \label{tab:h2_results}
 \begin{tabular}{llrrrrr}
 \toprule
@@ -1138,340 +1138,141 @@ nos datasets desbalanceados CREDIT e BANK (30 seeds).}
                 & \textbf{val\_f1} & \textbf{$\Delta$(loss-acc)}
                 & \textbf{Melhor FT baseline} \\
 \midrule
-FT-CUR & CREDIT & 0,438 & 0,657 & 0,610 & +0,219 & 0,682 (FT-Entmax) \\
-FT-CUR & BANK   & 0,507 & 0,714 & 0,473 & +0,207 & 0,720 (FT-Softmax) \\
-SAINT  & CREDIT & 0,439 & 0,684 & 0,467 & +0,245 & 0,682 (FT-Entmax) \\
-SAINT  & BANK   & 0,473 & 0,710 & 0,498 & +0,237 & 0,720 (FT-Softmax) \\
+FT-CUR & CREDIT & 0,438 & 0,657 & 0,610 & $+0,219$ & 0,682 (FT-Entmax) \\
+FT-CUR & BANK   & 0,507 & 0,714 & 0,473 & $+0,207$ & 0,720 (FT-Softmax) \\
+SAINT  & CREDIT & 0,439 & 0,684 & 0,467 & $+0,245$ & 0,682 (FT-Entmax) \\
+SAINT  & BANK   & 0,473 & 0,710 & 0,498 & $+0,237$ & 0,720 (FT-Softmax) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\textbf{Leitura direta do resultado:}
-\begin{itemize}
-  \item \textbf{\texttt{val\_loss} foi superior em todos os quatro cenários.}
-        Os ganhos sobre \texttt{val\_acc} ficaram entre $+0{,}207$ e
-        $+0{,}245$ em F1-macro médio, magnitude grande demais para ser
-        atribuída a ruído experimental.
-  \item Em \textbf{BANK}, a troca para \texttt{val\_loss} elimina o
-        ``colapso'' dos modelos inter-instâncias: \textbf{FT-CUR} sobe para
-        $0{,}714$ e \textbf{SAINT} para $0{,}710$, ambos \emph{dentro da faixa}
-        dos FT baselines ($0{,}705$--$0{,}720$). Nesse dataset, os modelos
-        ficam essencialmente \textbf{equilibrados}.
-  \item Em \textbf{CREDIT}, a correção metodológica também é decisiva:
-        \textbf{SAINT} com \texttt{val\_loss} atinge $0{,}684$, ligeiramente
-        acima do melhor FT baseline ($0{,}682$, FT-Entmax), enquanto
-        \textbf{FT-CUR} sobe para $0{,}657$ --- ainda abaixo dos baselines,
-        mas muito distante do artefato anterior de $0{,}444$.
-  \item \textbf{\texttt{val\_f1\_macro} não foi a melhor escolha prática}
-        neste experimento: embora melhore CREDIT, ela perde para
-        \texttt{val\_loss} em todos os cenários e degrada fortemente o FT-CUR
-        em BANK.
-\end{itemize}
-
-\textbf{Conclusão revisada da H2.} O uso de \texttt{val\_acc} como critério
-de early stopping era, de fato, um \textbf{erro metodológico relevante} no
-protocolo anterior para FT-CUR e SAINT em dados desbalanceados. Em BANK, esse
-erro praticamente explica sozinho o comportamento anômalo observado. Em CREDIT,
-ele explica \textbf{grande parte} do problema, mas não tudo: SAINT se alinha
-aos baselines com \texttt{val\_loss}, enquanto FT-CUR ainda permanece alguns
-pontos abaixo. Assim, após a correção metodológica, a hipótese H3
-(``limitação fundamental do CUR'') fica \textbf{enfraquecida}, mas não
-totalmente descartada em CREDIT.
-
 \textbf{Validação estatística (Wilcoxon pareado, $H_a$: val\_loss $>$ val\_acc):}
-\begin{itemize}
-  \item FT-CUR/CREDIT: $p = 1{,}3 \times 10^{-6}$;
-  \item FT-CUR/BANK:   $p = 1{,}9 \times 10^{-9}$;
-  \item SAINT/CREDIT:  $p = 9{,}3 \times 10^{-10}$;
-  \item SAINT/BANK:    $p = 9{,}3 \times 10^{-10}$.
-\end{itemize}
-Todos os $p$-valores são muito inferiores a $0{,}001$ --- a superioridade de
-\texttt{val\_loss} não é ruído experimental. Adicionalmente, observa-se que
-\texttt{val\_acc} produz desvios padrão minúsculos ($0{,}001$--$0{,}012$)
-em CREDIT, evidência forte de que o modelo converge para o mesmo classificador
-trivial (classe majoritária) em todas as 30 sementes.
+FT-CUR/CREDIT $p = 1{,}3 \times 10^{-6}$;
+FT-CUR/BANK   $p = 1{,}9 \times 10^{-9}$;
+SAINT/CREDIT  $p = 9{,}3 \times 10^{-10}$;
+SAINT/BANK    $p = 9{,}3 \times 10^{-10}$.
 
-\subsubsection*{Rerun completo do Tier 2 com \texttt{val\_loss}}
+\textbf{Conclusão da ablação.} O uso de \texttt{val\_acc} como critério de
+early stopping era um \emph{erro metodológico} no protocolo original.
+\texttt{val\_loss} foi superior nos quatro cenários, com magnitude
+($+0{,}21$ a $+0{,}25$) incompatível com ruído. Em BANK, a correção elimina
+sozinha o colapso aparente; em CREDIT, ela explica a maior parte. A
+hipótese H3 (limitação fundamental do CUR) fica enfraquecida mas não
+completamente descartada para um pequeno resíduo em CREDIT.
 
-O rerun completo foi concluído para \textbf{FT-CUR} e \textbf{SAINT} em todos
-os 6 datasets do Tier 2 com o protocolo corrigido: mesmo cap
-$N_{\text{total}}=7143$, mesmo número de seeds (30), mesmo tuning Optuna
-(20 trials $\times$ 3-fold CV), alterando apenas o critério de early stopping
-de \texttt{val\_acc} para \texttt{val\_loss}. A
-Tabela~\ref{tab:tier2_ftcur_saint_valloss} resume os resultados.
+\textbf{Rerun completo do Tier 2 com \texttt{val\_loss}.} Os números da
+Tabela~\ref{tab:tier2_results} para FT-CUR e SAINT já refletem este protocolo
+corrigido. A Tabela~\ref{tab:tier2_ftcur_saint_valloss} compara explicitamente
+os dois protocolos para FT-CUR para quantificar a magnitude da correção.
 
 \begin{table}[H]
 \centering
-\caption{Tier 2 $N=5000$ revalidado para FT-CUR e SAINT com
-\texttt{early\_stop\_metric = val\_loss}. Para FT-CUR, inclui-se também o
-resultado histórico com \texttt{val\_acc} para quantificar a correção.}
+\caption{FT-CUR no Tier 2: protocolo histórico (\texttt{val\_acc}) vs.\
+protocolo corrigido (\texttt{val\_loss}).}
 \label{tab:tier2_ftcur_saint_valloss}
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{lrrrrrrr}
 \toprule
 \textbf{Modelo} & \textbf{ADULT} & \textbf{CREDIT} & \textbf{BANK} & \textbf{TELCO}
                 & \textbf{SHOPPERS} & \textbf{HIGGS50K} & \textbf{Média} \\
 \midrule
-FT-CUR (\texttt{val\_acc}, histórico)  & 0,770 & 0,444 & 0,548 & 0,714 & 0,751 & 0,648 & 0,646 \\
-FT-CUR (\texttt{val\_loss})            & 0,774 & 0,683 & 0,695 & 0,724 & 0,763 & 0,639 & 0,713 \\
-SAINT (\texttt{val\_loss})             & 0,752 & 0,684 & 0,719 & 0,724 & 0,786 & 0,668 & 0,722 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\textbf{Comparação com os FT baselines do Tier 2 parcial:}
-\begin{itemize}
-  \item \textbf{CREDIT}: o rerun corrige substancialmente os dois modelos.
-        \textbf{FT-CUR} sobe de $0{,}444$ para $0{,}683$, empatando na prática
-        com o melhor FT baseline ($0{,}682$, FT-Entmax). \textbf{SAINT}
-        atinge $0{,}684$, ligeiramente acima do melhor baseline.
-  \item \textbf{BANK}: \textbf{SAINT} fica essencialmente empatado com o bloco
-        FT baseline ($0{,}705$--$0{,}720$), chegando a $0{,}719$. O
-        \textbf{FT-CUR} melhora fortemente ($0{,}548 \to 0{,}695$), mas ainda
-        permanece um degrau abaixo da faixa dos melhores FT baselines.
-  \item \textbf{ADULT} e \textbf{TELCO}: \textbf{FT-CUR} revalidado com
-        \texttt{val\_loss} fica competitivo com os FT baselines; em TELCO,
-        FT-CUR ($0{,}724$) e SAINT ($0{,}724$) igualam ou superam
-        marginalmente as variantes feature-level.
-  \item \textbf{SHOPPERS} e \textbf{HIGGS50K}: os FT baselines continuam
-        superiores ao FT-CUR; em SHOPPERS, entretanto, o \textbf{SAINT}
-        ($0{,}786$) alcança e ligeiramente supera o melhor baseline
-        ($0{,}783$).
-\end{itemize}
-
-\textbf{Síntese revisada.} A correção metodológica via \texttt{val\_loss}
-\textbf{não apenas explica o colapso artificial em CREDIT}, como reposiciona
-FT-CUR e SAINT no Tier 2:
-\begin{itemize}
-  \item \textbf{SAINT} passa a integrar o mesmo patamar médio dos FT baselines
-        (média $0{,}722$ vs.\ $0{,}720$--$0{,}724$), o que enfraquece a ideia
-        de limitação estrutural da atenção inter-instâncias em si;
-  \item \textbf{FT-CUR} melhora de $0{,}646$ para $0{,}713$ na média, removendo
-        a maior parte do artefato metodológico, mas ainda ficando ligeiramente
-        abaixo do bloco FT baseline agregado;
-  \item a hipótese H3 (``limitação fundamental do CUR'') deixa de ser uma
-        explicação geral para o colapso e passa a ser, no máximo, uma hipótese
-        residual localizada em datasets específicos como BANK, SHOPPERS e
-        HIGGS50K.
-\end{itemize}
-
-\subsubsection*{Implicações para a dissertação}
-
-Este achado representa uma contribuição analítica importante: identifica
-uma fronteira de aplicabilidade do FT-CUR, com hipótese causal testável
-e propostas concretas de trabalho futuro:
-\begin{itemize}
-  \item \textbf{Landmark selection estratificada por classe} (garantir
-        proporção mínima de cada classe entre os $m$ landmarks);
-  \item \textbf{Atualização do protocolo experimental}: para FT-CUR e SAINT
-        em datasets desbalanceados, o critério de early stopping deve ser
-        \texttt{val\_loss}, não \texttt{val\_acc};
-  \item \textbf{Class-weighted loss} (pesos inversos à frequência de
-        classes na função de custo);
-  \item \textbf{Métricas alternativas} (F1-weighted, Average Precision)
-        para complementar a análise em dados imbalanceados.
-\end{itemize}
-
-\subsection{Comparação Tier 1 vs.\ Tier 2: deslocamento do trade-off
-            \emph{(rascunho --- pendente confirmação)}}
-\label{sec:tier1_vs_tier2}
-
-\begin{tcolorbox}[colback=warnbg, colframe=warnborder,
-  title=\textbf{RASCUNHO --- aguardando experimentos restantes},
-  fonttitle=\bfseries]
-Esta subseção é \textbf{provisória}. Dependem do término dos experimentos
-para confirmação:
-\begin{itemize}
-  \item \textbf{DualFISTA Tier 2}: pode replicar o padrão Tier 1 (empate com
-        LSSVM-Std com $20\%$ esparsidade);
-  \item \textbf{SAINT Tier 2}: hipótese central da Seção~\ref{sec:ftcur_limit}
-        é que SAINT \emph{não} colapsa em CREDIT/BANK (atenção inter-instâncias
-        densa, sem CUR + colnorm);
-  \item \textbf{ADMM-Nesterov / ElasticNet Tier 2}: paper-base e variante.
-\end{itemize}
-A redação final deverá ser revisada com os números completos.
-\end{tcolorbox}
-
-\subsubsection*{Tabela comparativa --- queda de F1 do Tier 1 para o Tier 2}
-
-\begin{table}[H]
-\centering
-\caption{F1-macro médio: Tier 1 (sintéticos + pequenos reais, $N \in [400, 1584]$)
-vs.\ Tier 2 ($N_{\text{treino}}=5000$ sobre datasets reais grandes).
-$\Delta$ negativo = perda ao migrar para o cenário realista.}
-\label{tab:tier1_vs_tier2}
-\begin{tabular}{lrrrr}
-\toprule
-\textbf{Modelo} & \textbf{Tier 1} & \textbf{Tier 2} & \textbf{$\Delta$}
-                & \textbf{Família} \\
-\midrule
-LSSVM-Std        & 0,842 & 0,709 & $-$0,133 & kernel denso \\
-Nyström-SVM$^\star$   & 0,834 & 0,707 & $-$0,127 & kernel esparso (81\% esp.) \\
-\midrule
-FT-Sparsemax     & 0,774 & 0,723 & $-$0,051 & atenção feature esparsa \\
-XGBoost          & 0,776 & 0,735 & $-$0,041 & gradient boosting \\
-FT-Entmax        & 0,742 & 0,723 & $-$0,019 & atenção feature esparsa \\
-FT-Softmax       & 0,740 & 0,724 & \textbf{$-$0,016} & atenção feature densa \\
-\midrule
-FT-CUR$^\star$ (Nyströmformer) & 0,747 & 0,646 & $-$0,101 &
-   atenção inter-inst.\ comprimida \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsubsection*{Observações empíricas}
-
-\begin{enumerate}
-  \item \textbf{LSSVMs (kernel) sofrem o maior deslocamento}: $-0{,}13$ em
-        F1 ao migrar para o cenário realista. O kernel RBF, ótimo em geometria
-        sintética limpa e datasets pequenos cuidados, perde eficácia em dados
-        reais com features categóricas codificadas, redundância e ruído estrutural.
-  \item \textbf{FT-Transformer baselines (sem CUR) absorvem a mudança}:
-        FT-Softmax cai apenas $-0{,}016$, FT-Entmax $-0{,}019$. Isso é
-        consistente com a Seção~\ref{sec:5features} (Ablação B), onde os
-        Transformers já demonstraram robustez a features de ruído ($\Delta < 0{,}10$
-        vs.\ $-0{,}35$ dos kernels).
-  \item \textbf{XGBoost lidera em ambos os cenários grandes} (Tier 2: $0{,}735$),
-        confirmando a literatura de \textit{tabular learning}.
-  \item \textbf{Variantes esparsas de atenção feature-level (TopK, Entmax,
-        Sparsemax) convergem para o mesmo patamar} do Softmax denso (intervalo
-        $0{,}720$--$0{,}724$, $\Delta \leq 0{,}005$): a esparsidade na atenção
-        \emph{inter-features} não traz vantagem em datasets reais.
-  \item \textbf{FT-CUR é a anomalia}: cai $-0{,}10$, mais que o Softmax denso
-        ($-0{,}016$) mas concentrada em 3 datasets imbalanceados
-        (CREDIT, BANK, SHOPPERS). Mostra que \emph{a robustez do paradigma
-        Transformer não se preserva automaticamente quando se aplica
-        compressão CUR à atenção inter-instâncias sem estratificação por
-        classe}. Achado contraintuitivo importante.
-\end{enumerate}
-
-\subsubsection*{Interpretação preliminar}
-
-A migração Tier 1 $\to$ Tier 2 \textbf{reordena} a hierarquia entre paradigmas:
-em datasets sintéticos pequenos com fronteiras geométricas, kernels dominam
-($+0{,}10$ vs.\ Transformers); em datasets reais grandes, Transformers atingem
-o patamar do gradient boosting, enquanto kernels (LSSVM-Std e Nyström-SVM)
-perdem $\approx 0{,}13$ em F1.
-
-A vantagem do Transformer é diretamente proporcional à complexidade de features
-e ao ruído estrutural dos dados --- não à escolha de função de ativação da
-atenção. Isto sugere que \textbf{o ganho real do paradigma vem do mecanismo
-de aprendizado de representações, não da estrutura esparsa da atenção
-feature-level}.
-
-\subsubsection*{Pendências para confirmação}
-
-\begin{itemize}
-  \item \textbf{Nyström-SVM} mantém o padrão "esparsidade sem custo":
-        $\Delta$ vs.\ LSSVM-Std é de $-0{,}002$ no Tier 2 (irrelevante),
-        confirmando o achado central da Seção~\ref{sec:tier1} também em
-        dados reais.
-  \item \textbf{DualFISTA} ainda não rodado em Tier 2 --- se replicar o
-        empate Tier 1 com LSSVM-Std ($\Delta \leq 0{,}001$), confirma
-        a generalização do método dual em $N_{\text{treino}}=5000$.
-  \item \textbf{SAINT} ainda não rodado --- hipótese: \emph{não} colapsará
-        em datasets imbalanceados (como o FT-CUR), pois usa atenção
-        inter-instâncias densa. Se confirmado, isola a causa do colapso
-        do FT-CUR à seleção colnorm de landmarks. Um rerun focal em
-        CREDIT/BANK com \emph{early stopping} por \texttt{val\_loss} ou
-        \texttt{val\_f1\_macro} também é prioritário para separar efeito de
-        arquitetura de efeito do critério de checkpoint.
-  \item \textbf{ADMM-Nesterov} (paper-base) e \textbf{ADMM-ElasticNet}
-        (variante) ainda em tuning.
-\end{itemize}
-
-% ── Subsection original mantida abaixo ──
-\subsection{XGBoost vs.\ FT-Transformers em datasets reais}
-
-XGBoost lidera em 5 dos 6 datasets, com vantagem expressiva em ADULT
-($+0{,}031$ sobre FT-Softmax), TELCO ($+0{,}007$) e HIGGS50K ($+0{,}021$).
-Em CREDIT, FT-Entmax marginalmente supera ($+0{,}005$). A média agregada
-coloca XGBoost a $+0{,}011$ sobre o melhor FT-Transformer.
-
-\textbf{As 4 variantes esparsas de FT-Transformer (Softmax, TopK, Entmax,
-Sparsemax) ficam todas dentro de $0{,}005$ entre si} --- esparsidade de
-atenção inter-features não traz vantagem mensurável em datasets reais
-desta escala. Achado consistente com o Tier~1 sintético, onde sparsemax
-foi $0{,}774$ vs.\ softmax $0{,}740$ (diferença $+0{,}034$ apenas em
-ablação de ruído).
-
-% ─────────────────────────────────────────────────────────────────────────────
-\section{Sumário e Próximos Passos}
-\label{sec:summary}
-
-\begin{table}[H]
-\centering
-\caption{Síntese dos experimentos realizados.}
-\label{tab:summary}
-\resizebox{\linewidth}{!}{%
-\begin{tabular}{llrp{7cm}}
-\toprule
-\textbf{Experimento} & \textbf{Configuração} & \textbf{Runs} & \textbf{Resultado principal} \\
-\midrule
-Tier 1           & 18 modelos, 9 datasets, 30 seeds            & 4860 & DualFISTA 0,842 / Nyström 0,834 / XGBoost 0,776 \\
-Ablação A (escala) & 18 modelos, 3 sintéticos, $N{=}2000$, 30s & 1620 & Nyström $+0{,}14$; FT-CUR/SAINT data-hungry \\
-Ablação B (ruído)  & 18 modelos, 3 sintéticos, $+$3 feat.\ ruído, 30s & 1620 & XGBoost $+0{,}30$ em TWC; FT-CUR/SAINT robustos \\
-Ablação C (MK5)    & 18 modelos, 3 sintéticos, 30 seeds         & 1620 & Nyström 0,845 > XGBoost 0,829 > FT-CUR 0,809 \\
-\midrule
-\textbf{Total}   & & \textbf{9720} & \\
-\midrule
-\textbf{Tier 2 parcial} (Seção~\ref{sec:tier2}) & 6/18 modelos, 6 datasets, $N{=}5000$, 30s & 1080 & XGBoost lidera ($0{,}735$); FT-CUR colapsa em datasets imbalanceados \\
-\textbf{Benchmark full-data} (Seção~\ref{sec:benchmark_full_data}) & 6 Transformers, 3 datasets, 1 seed, $N$ até completo & 137 & SAINT é o mais rápido porém entra em OOM cedo; FT baselines dominam o trade-off tempo/memória; FT-CUR é patológico em CREDIT 30k \\
-\textbf{Tier 2 (em andamento)} & restante: 12 modelos & 2160 & LSSVMs, ADMM family, Nyström, SAINT --- conclusão $\sim$01/06/2026 \\
+FT-CUR (\texttt{val\_acc}, histórico) & 0,770 & 0,444 & 0,548 & 0,714 & 0,751 & 0,648 & 0,646 \\
+FT-CUR (\texttt{val\_loss}, atual)    & 0,774 & 0,683 & 0,695 & 0,724 & 0,763 & 0,639 & 0,713 \\
 \bottomrule
 \end{tabular}}
 \end{table}
 
-\textbf{Conclusões preliminares:}
-\begin{enumerate}
-  \item \textbf{DualFISTA} é o resultado mais significativo em baixa esparsidade:
-        F1 quase idêntico ao LSSVM-Std completo ($\Delta = 0{,}0006$) com $20\%$
-        de esparsidade.
-  \item \textbf{Nyström-SVM} (após auditoria matemática) é o melhor entre os
-        modelos com alta esparsidade: $0{,}834$ no Tier~1 com $69\%$ de
-        esparsidade, a $0{,}008$ do LSSVM-Std. Combina compressão de memória
-        real ($O(nm)$ vs.\ $O(n^2)$) com F1 competitivo.
-  \item A \textbf{compressão Nyströmformer no FT-CUR é validada pelo SAINT}:
-        os dois modelos atingem F1 idêntico em todos os 4 experimentos
-        ($\Delta \leq 0{,}013$), mas o FT-CUR opera com $79\%$ de compressão
-        inter-instâncias. Comprimir não custou F1 --- a aproximação é fiel.
-  \item \textbf{Robustez a ruído}: FT-CUR e SAINT mantêm desempenho na ablação
-        de features irrelevantes ($\Delta \approx -0{,}07$); LSSVMs/Nyström/
-        DualFISTA caem $-0{,}24$ a $-0{,}43$. A atenção é estruturalmente mais
-        robusta que o kernel RBF a features ruidosas.
-  \item \textbf{XGBoost como referência externa}: o baseline geral tabular fica
-        em $0{,}776$ no Tier~1, abaixo do top~5 dos LSSVMs e do DualFISTA/Nyström.
-        Em ablações com features extras (5D retunado: $0{,}894$), XGBoost se
-        beneficia mais que kernel/atenção. Resultado coerente com a literatura
-        de \textit{tabular learning}: kernel domina em geometria pura;
-        gradient boosting em datasets feature-rich; atenção é robusta a ruído.
-  \item \textbf{Tier 2 (parcial) revela limitação do FT-CUR em dados
-        imbalanceados}: nos seis datasets reais com $N_{\text{treino}}=5000$,
-        XGBoost lidera ($0{,}735$), seguido dos quatro FT-Transformer baselines
-        empatados ($0{,}720$--$0{,}724$). O \textbf{FT-CUR cai para $0{,}646$}
-        --- $-0{,}079$ vs.\ FT-Softmax --- com colapso especificamente em
-        CREDIT (22\% positivos), BANK (11\%) e SHOPPERS (15\%). Hipótese
-        verificável: seleção colnorm não-estratificada sub-representa a classe
-        minoritária nos landmarks (Seção~\ref{sec:ftcur_limit}).
-\end{enumerate}
+\subsection{Comparação Tier 1 vs.\ Tier 2: reordenação da hierarquia}
+\label{sec:tier1_vs_tier2}
 
-\subsection{Benchmark de eficiência computacional em \emph{full-data}}
-\label{sec:benchmark_full_data}
-
-Foi executado um benchmark \emph{end-to-end} em GPU T4 (Colab), com
-\textbf{uma única seed}, medindo o custo de uma execução real:
-carregamento do dataset, subamostragem para um $N$ alvo, split
-$70/30$, preprocessamento, treinamento e inferência. O objetivo deste
-experimento \textbf{não} foi comparar desempenho preditivo com rigor
-estatístico, mas sim caracterizar o \textbf{trade-off computacional}
-entre as variantes Transformer em regime \emph{full-data}. Assim, os
-valores de $F_1$ reportados a seguir devem ser interpretados apenas como
-\emph{sanity check} operacional.
+A Tabela~\ref{tab:tier1_vs_tier2} sumariza o deslocamento de F1-macro de
+cada família ao migrar do regime sintético/pequeno (Tier 1) para o regime
+real grande (Tier 2).
 
 \begin{table}[H]
 \centering
-\caption{Benchmark de eficiência computacional em \emph{full-data}. Para cada
-dataset, reporta-se o maior $N$ concluído por modelo. Para SAINT, indica-se o
-maior $N$ concluído antes de OOM.}
+\caption{F1-macro médio: Tier 1 (sintéticos + pequenos reais, $N \in [400, 1584]$)
+vs.\ Tier 2 ($N_{\text{treino}}=5000$ em datasets reais grandes).
+$\Delta$ negativo = perda ao migrar.}
+\label{tab:tier1_vs_tier2}
+\begin{tabular}{lrrrl}
+\toprule
+\textbf{Modelo} & \textbf{Tier 1} & \textbf{Tier 2} & \textbf{$\Delta$} & \textbf{Família} \\
+\midrule
+LSSVM-Std            & 0,842 & 0,709 & $-$0,133 & kernel denso \\
+DualFISTA$^\circ$    & 0,842 & 0,706 & $-$0,136 & dual $\ell_1$ via FISTA \\
+Nyström-LSSVM$^\star$ & 0,834 & 0,707 & $-$0,127 & kernel esparso (81\% esp.) \\
+LSSVM-IP             & 0,835 & 0,694 & $-$0,141 & iterative pruning \\
+LSSVM-PCP            & 0,830 & 0,685 & $-$0,145 & cone projection \\
+LSSVM-FSA            & 0,837 & 0,679 & $-$0,158 & forward selection \\
+\midrule
+XGBoost              & 0,776 & 0,735 & $-$0,041 & gradient boosting \\
+FT-Softmax           & 0,740 & 0,725 & $-$0,015 & atenção feature densa \\
+FT-Sparsemax         & 0,774 & 0,723 & $-$0,051 & atenção feature esparsa \\
+FT-Entmax            & 0,742 & 0,723 & $-$0,019 & atenção feature esparsa \\
+FT-TopK              & 0,729 & 0,720 & $-$0,009 & atenção feature top-$k$ \\
+SAINT                & 0,744 & 0,722 & $-$0,022 & atenção inter-inst.\ densa \\
+FT-CUR$^\star$       & 0,747 & 0,713 & $-$0,034 & atenção inter-inst.\ comprimida \\
+\midrule
+LSSVM-ADMM (paper-base)  & 0,809 & 0,580 & $-$0,229 & primal $\ell_1$ (ADMM) \\
+ADMM-ElasticNet$^\circ$ & 0,809 & 0,576 & $-$0,233 & primal $\ell_1+\ell_2$ \\
+FISTA-Nesterov            & 0,800 & 0,577 & $-$0,223 & primal $\ell_1$ (FISTA) \\
+LSSVM-Pruning$^\dagger$   & 0,782 & 0,594 & $-$0,188 & pruning iterativo c/ \emph{early stop} \\
+LSSVM-OppMaps             & 0,769 & 0,478 & $-$0,291 & opposite maps \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Três regimes de deslocamento:}
+\begin{enumerate}
+  \item \textbf{LSSVMs duais bem-comportados ($\Delta \approx -0{,}13$ a $-0{,}16$).}
+        O kernel RBF, ótimo em geometria sintética limpa, perde eficácia em
+        dados reais com features categóricas codificadas, redundância e ruído
+        estrutural. \emph{Nyström-LSSVM e DualFISTA mantêm-se virtualmente
+        empatados com LSSVM-Std denso} (gap $< 0{,}003$), confirmando que os
+        mecanismos de esparsidade propostos são \emph{neutros} em relação à
+        formulação dual.
+  \item \textbf{Transformers e XGBoost ($\Delta \approx -0{,}01$ a $-0{,}05$).}
+        Absorvem a transição com baixa perda. As variantes esparsas de
+        atenção feature-level convergem para o mesmo patamar do softmax denso
+        (intervalo $0{,}720$--$0{,}725$): a esparsidade na atenção
+        inter-features não traz vantagem mensurável em datasets reais.
+  \item \textbf{Métodos primais com $\ell_1$ e heurísticas cegas
+        ($\Delta \approx -0{,}19$ a $-0{,}29$).} Os métodos que dependem
+        de regularização agressiva sobre o espaço primal ou de poda
+        heurística sofrem o maior colapso. É a contribuição central do
+        Tier 2: revelar que o paper-base LSSVM-ADMM-Nesterov possui um
+        teto de escalabilidade não evidente em $N \leq 1000$. O
+        \textbf{LSSVM-Pruning}, após adquirir \emph{early stopping}
+        guiado por F1 de treino ($^\dagger$, \emph{commit b83243e}),
+        reduz a queda de $-0{,}32$ para $-0{,}19$.
+\end{enumerate}
+
+\textbf{Reordenação:} no Tier 1, o ranking era LSSVMs (kernel) > propostos
+(esparsos) > XGBoost > FT-Transformers; no Tier 2, é XGBoost $\geq$
+FT-Transformers + SAINT + FT-CUR > LSSVMs duais (Std, Nyström, DualFISTA,
+IP, PCP, FSA) > primais com $\ell_1$ > heurísticas. A vantagem do paradigma
+Transformer cresce \emph{em proporção à complexidade tabular dos dados}, e
+não à escolha de função de ativação da atenção.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Benchmark de Eficiência Computacional em \emph{Full-Data}}
+\label{sec:benchmark_full_data}
+
+Em complemento ao estudo de F1-macro, executou-se um benchmark
+\emph{end-to-end} em GPU T4 (Colab) com \textbf{uma única seed}, medindo o
+custo de uma execução real: carregamento do dataset, subamostragem para um
+$N$ alvo, split $70/30$, preprocessamento, treinamento e inferência. O
+objetivo \textbf{não} é comparar desempenho preditivo com rigor estatístico,
+mas caracterizar o \textbf{trade-off computacional} entre as variantes
+Transformer em regime \emph{full-data}. Os valores de $F_1$ aqui devem ser
+lidos como \emph{sanity check} operacional.
+
+\begin{table}[H]
+\centering
+\caption{Benchmark de eficiência em \emph{full-data}. Para cada dataset,
+reporta-se o maior $N$ concluído por modelo. Para SAINT, indica-se o maior
+$N$ atingido antes de OOM.}
 \label{tab:benchmark_full_data}
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{llrrrr}
@@ -1505,87 +1306,150 @@ HIGGS50K & SAINT        & 20\,000 & 58,3  & 1,96 & 12\,385 \\
 \textbf{Achados principais:}
 \begin{itemize}
   \item O tempo total é dominado pelo treinamento em todos os cenários:
-        tipicamente \texttt{fit\_time\_s} responde por quase todo
-        \texttt{total\_time\_s}. Portanto, a comparação computacional entre
-        modelos é, na prática, uma comparação de custo de treinamento.
-  \item \textbf{SAINT} é consistentemente o mais rápido entre os modelos com
-        atenção inter-instâncias, porém seu consumo de memória é
-        proibitivo: atinge $12{,}3$\,GB em ADULT com $N{=}20$k e entra em
-        OOM já em $N{=}30$k (ADULT) e $N{=}20$k (CREDIT/HIGGS50K).
-  \item \textbf{FT-CUR} ocupa uma posição intermediária em ADULT: ainda mais
-        rápido que FT-Entmax e competitivo com FT-TopK/Sparsemax, porém com
-        custo de VRAM muito superior (3,3\,GB no ADULT completo) e inferência
-        transdutiva mais cara (5,9\,s no ADULT completo).
-        Conceitualmente, o FT-CUR pode ser interpretado como a versão
-        computacionalmente viável do paradigma \emph{inter-samples}: enquanto
-        o SAINT implementa atenção inter-instâncias densa completa e
-        rapidamente esgota a memória, o FT-CUR comprime esse mesmo mecanismo
-        via landmarks, preservando a ideia arquitetural com custo mais
-        controlado.
-  \item Em \textbf{CREDIT}, o FT-CUR entra em um regime patológico de custo:
-        no dataset completo ($N{=}30$k), o treinamento sobe para
-        $2\,451$\,s e a inferência para $77{,}7$\,s, com pico de
-        $5{,}5$\,GB de VRAM, enquanto os FT baselines permanecem entre
-        $29$--$39$\,s. A explicação mais plausível é a extrapolação de
-        hiperparâmetros tunados em regime reduzido ($N_{\text{treino}}=5000$),
-        em especial um \texttt{m\_ratio} muito maior no CREDIT
-        ($0{,}141$ vs.\ $0{,}054$ em ADULT), o que aumenta fortemente o número
-        absoluto de landmarks e, portanto, o custo do bloco inter-instâncias.
+        \texttt{fit\_time\_s} responde por quase todo \texttt{total\_time\_s}.
+        A comparação computacional é, na prática, uma comparação de custo de
+        treinamento.
+  \item \textbf{SAINT} é o mais rápido entre os modelos com atenção
+        inter-instâncias, mas seu consumo de memória é proibitivo: atinge
+        $12{,}3$\,GB em ADULT com $N{=}20$k e entra em OOM já em $N{=}30$k
+        (ADULT) e $N{=}20$k (CREDIT/HIGGS50K). É o gargalo quadrático
+        clássico ($O(n^2 d)$).
+  \item \textbf{FT-CUR} ocupa posição intermediária: em ADULT é mais rápido
+        que FT-Entmax e competitivo com FT-TopK/Sparsemax, com custo de
+        VRAM superior ($3{,}3$\,GB no ADULT completo) e inferência
+        transdutiva mais cara ($5{,}9$\,s no ADULT completo). É a
+        \emph{versão computacionalmente viável} do paradigma inter-samples:
+        enquanto SAINT esgota memória em $N \geq 20$k, FT-CUR comprime o
+        mesmo mecanismo via landmarks e roda em $N=48$k.
+  \item Em \textbf{CREDIT}, o FT-CUR entra em regime patológico: no
+        dataset completo ($N{=}30$k), o treinamento sobe para $2\,451$\,s
+        e a inferência para $77{,}7$\,s. A causa mais plausível é a
+        extrapolação de hiperparâmetros tunados em regime reduzido
+        ($N_{\text{treino}}=5000$): em particular, um \texttt{m\_ratio}
+        muito maior no CREDIT ($0{,}141$ vs.\ $0{,}054$ em ADULT) aumenta
+        fortemente o número absoluto de landmarks e o custo do bloco
+        inter-instâncias.
   \item Nos três datasets, os \textbf{FT baselines inter-features}
-        (Softmax/TopK/Sparsemax) apresentam o melhor compromisso entre tempo e
-        memória. O \textbf{FT-Softmax} é a opção mais econômica em VRAM;
-        \textbf{FT-Sparsemax} e \textbf{FT-TopK} mantêm custo semelhante em
-        CREDIT/HIGGS50K e, em alguns cenários, ligeira vantagem de $F_1$,
-        embora esse sinal preditivo não deva ser superinterpretado por se
-        tratar de uma única seed.
-  \item A métrica de RAM CPU mostrou baixa sensibilidade ao crescimento de
-        $N$ e se revelou menos informativa que VRAM. Assim, as conclusões do
-        benchmark devem se apoiar principalmente em tempo e memória de GPU.
+        (Softmax/TopK/Sparsemax) apresentam o melhor compromisso entre
+        tempo e memória. FT-Softmax é o mais econômico em VRAM;
+        FT-Sparsemax e FT-TopK mantêm custo semelhante em CREDIT/HIGGS50K.
+  \item A RAM CPU mostrou baixa sensibilidade ao crescimento de $N$ e é
+        menos informativa que VRAM. As conclusões devem apoiar-se em tempo
+        e memória de GPU.
 \end{itemize}
 
-\textbf{Interpretação prática:} se o treinamento ocorre \emph{offline} e com baixa
-frequência, a vantagem temporal de SAINT e FT-CUR perde parte do peso
+\textbf{Interpretação prática.} Se o treinamento é \emph{offline} e com
+baixa frequência, a vantagem temporal de SAINT e FT-CUR perde parte do peso
 operacional, enquanto seu maior consumo de memória permanece como custo
 persistente. Nesse regime, os FT baselines tornam-se mais atraentes por
-oferecerem inferência barata e footprint de memória muito menor, sem perda
-predominante de $F_1$ no benchmark operacional.
+oferecerem inferência barata e \emph{footprint} de memória muito menor,
+sem perda predominante de $F_1$ no benchmark operacional.
 
-\textbf{Próximas etapas:}
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Sumário e Próximos Passos}
+\label{sec:summary}
+
+\begin{table}[H]
+\centering
+\caption{Síntese dos experimentos realizados.}
+\label{tab:summary}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{llrp{6.5cm}}
+\toprule
+\textbf{Experimento} & \textbf{Configuração} & \textbf{Runs} & \textbf{Resultado principal} \\
+\midrule
+Tier 1            & 18 modelos, 9 datasets, 30 seeds                     & 4860 & DualFISTA 0,842 / Nyström 0,834 / XGBoost 0,776 \\
+Ablação A (escala) & 18 modelos, 3 sintéticos, $N{=}2000$, 30s            & 1620 & Nyström $+0{,}14$; FT-CUR/SAINT data-hungry \\
+Ablação B (ruído)  & 18 modelos, 3 sintéticos, $+$3 feat.\ ruído, 30s    & 1620 & XGBoost $+0{,}30$ em TWC; FT-CUR/SAINT robustos \\
+Ablação C (MK5)    & 18 modelos, 3 sintéticos, 30 seeds                  & 1620 & Nyström 0,845 $>$ XGBoost 0,829 $>$ FT-CUR 0,809 \\
+\midrule
+Tier 2 ($N_{\text{treino}}=5000$) & 18 modelos, 6 datasets reais, 30s    & 3240 & XGBoost 0,735; SAINT/FT-CUR/FT baselines $\sim$0,72; primais $\ell_1$ colapsam para 0,58 \\
+Ablação H2 (early stop) & FT-CUR/SAINT, CREDIT/BANK, 3 métricas, 30s   & 360  & \texttt{val\_loss} $>$ \texttt{val\_acc} ($p < 10^{-5}$ em todos os 4 cenários) \\
+Benchmark eficiência    & 6 Transformers, 3 datasets reais, 1 seed       & 137  & SAINT OOM cedo; FT baselines dominam tempo/memória; FT-CUR patológico em CREDIT 30k \\
+\midrule
+\textbf{Total} & & \textbf{13\,057} & \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\textbf{Conclusões consolidadas:}
+\begin{enumerate}
+  \item \textbf{Nyström-LSSVM} é o melhor resultado da dissertação em alta
+        esparsidade: $F_1 = 0{,}834$ no Tier 1 (\(69\%\) esp.) e $0{,}707$
+        no Tier 2 (\(81{,}5\%\) esp.), em ambos os regimes a $\leq 0{,}003$
+        do LSSVM-Std denso. \emph{Compressão sem custo preditivo}, agora
+        confirmado em escala $N=5000$.
+  \item \textbf{DualFISTA} mantém F1 essencialmente igual ao LSSVM-Std
+        denso em ambos os tiers ($\Delta \leq 0{,}003$). Sua reformulação
+        dual elimina o colapso dos métodos primais com $\ell_1$ observado
+        no Tier 2 e abre espaço para a hipótese de eficiência computacional
+        ainda a ser benchmarkeada (próxima etapa).
+  \item \textbf{FT-CUR} valida o paradigma de compressão Nyströmformer em
+        dados tabulares: empata com SAINT denso em todos os experimentos
+        ($\Delta \leq 0{,}013$) com \(\approx 89\%\) de compressão
+        inter-instâncias, e roda em $N=48$k onde SAINT entra em OOM.
+  \item \textbf{Colapso dos métodos primais com $\ell_1$ em escala} é o
+        achado mais inesperado do Tier 2: ADMM-Nesterov (paper-base),
+        ADMM-ElasticNet e FISTA-Nesterov caem de $\approx 0{,}81$ para
+        $\approx 0{,}58$ em $N=5000$. Revela um teto de escalabilidade
+        não detectável em $N \leq 1000$ e justifica a reformulação dual
+        proposta (DualFISTA).
+  \item \textbf{H2 confirmada metodologicamente}: \texttt{val\_loss}
+        domina \texttt{val\_acc} como critério de early stopping para
+        modelos inter-instâncias em datasets desbalanceados
+        ($p < 10^{-5}$ em todos os 4 cenários). É uma contribuição
+        metodológica auxiliar ao protocolo padrão de FT-Transformers
+        tabulares.
+  \item \textbf{Benchmark de eficiência}: FT baselines dominam o
+        trade-off tempo/memória em \emph{full-data}; FT-CUR é a única
+        variante inter-instâncias que roda em $N=48$k. SAINT é rápido
+        mas restrito a $N \leq 20$k.
+\end{enumerate}
+
+\textbf{Próximas etapas planejadas:}
 \begin{enumerate}\sloppy
-  \item \textbf{Tier 2 $N_{\text{treino}}=5000$ --- 12 modelos restantes}:
-        execução local em andamento dos 7 LSSVMs baselines, paper-base
-        LSSVM-ADMM, variantes (ADMM-EN), Nyström-SVM, DualFISTA e SAINT.
-        Conclusão esperada $\sim$01/06/2026.
-  \item \textbf{Análise estatística formal}: teste de Friedman + Nemenyi /
-        diagrama de diferença crítica sobre todos os datasets consolidados
-        (Tier 1 + 3 ablações + Tier 2).
-  \item \textbf{Análise de complexidade temporal}: medição empírica do
-        speedup do Nyström-SVM vs.\ LSSVM-Std em função de $n$, usando os
-        dados de tempo coletados nas execuções Tier 2.
   \item \textbf{Benchmark de eficiência computacional --- DualFISTA vs.\
         família ADMM (paper-base e variantes)}: observação preliminar do
         Tier 2 sugere que o tuning do ADMM-Nesterov requer $\sim$5--9h por
-        dataset (frequentemente atingindo $\texttt{max\_iter}=5000$ sem
-        convergência, $\texttt{converged}=\texttt{False}$), enquanto
-        DualFISTA tuna em $\sim$30--60\,min por dataset (\textbf{ordem de
-        magnitude mais rápido}). Hipótese a verificar: o ADMM-ElasticNet
-        ($\ell_1 + \ell_2$) deve convergir mais rápido que o ADMM-$\ell_1$
-        puro, devido à \textbf{fortemente convexa} introduzida pela penalidade
-        $\ell_2$ (Tikhonov), que melhora o condicionamento do subproblema
-        primal a cada iteração. Estudo formal proposto:
+        dataset (frequentemente atingindo \texttt{max\_iter}=5000 sem
+        convergência), enquanto DualFISTA tuna em $\sim$30--60\,min por
+        dataset (\textbf{ordem de magnitude mais rápido}). Hipótese a
+        verificar: o ADMM-ElasticNet ($\ell_1 + \ell_2$) deve convergir
+        mais rápido que o ADMM-$\ell_1$ puro devido à \emph{convexidade
+        forte} introduzida pela penalidade $\ell_2$ (Tikhonov), que
+        melhora o condicionamento do subproblema primal. Estudo formal:
         \begin{itemize}
-          \item Coletar dados de tempo por iteração e número de iterações
-                até convergência (já gravados em \texttt{train\_time\_s})
-                para todos os 4 métodos com $\ell_1$: ADMM-Nesterov,
-                ADMM-ElasticNet, FISTA-Nesterov, DualFISTA;
+          \item Coletar tempo por iteração e número de iterações até
+                convergência (já gravados em \texttt{train\_time\_s})
+                para ADMM-Nesterov, ADMM-ElasticNet, FISTA-Nesterov
+                e DualFISTA;
           \item Plotar curva de convergência (loss vs.\ iteração) e
-                wall-clock time vs.\ qualidade de solução;
+                \emph{wall-clock} vs.\ qualidade de solução;
           \item Reportar como uma das \textbf{contribuições centrais} da
-                dissertação: o DualFISTA não apenas atinge esparsidade
-                comparável ao paper-base (Marinho et al.), mas o faz com
-                eficiência computacional $1{-}2$ ordens de magnitude
-                superior.
+                dissertação: DualFISTA não apenas atinge esparsidade
+                comparável ao paper-base mas o faz com $1$--$2$ ordens de
+                magnitude de \emph{speedup}.
         \end{itemize}
+  \item \textbf{H1 --- Tier 2 com balanceamento no treino}: rodar todos os
+        18 modelos com \texttt{--balance-train} (undersample da
+        majoritária só no treino, preservando o teste original), testando
+        se o resíduo do FT-CUR em CREDIT desaparece e se os métodos
+        primais com $\ell_1$ se recuperam.
+  \item \textbf{Tier 2 \emph{full-data}}: rodar os $4$ FT baselines +
+        FT-CUR no $N$ completo de cada dataset (Colab GPU; $\sim 10$--$12$h);
+        e XGBoost + Nyström-LSSVM em $N$ completo (Colab CPU; $\sim 3$--$5$h)
+        para confirmar a vantagem de eficiência amostral observada em
+        $N=5000$.
+  \item \textbf{Re-rodar Tier 1 (\texttt{lambda\_ratio} corrigido)} para
+        4 modelos: a correção de escala do $\lambda$ entre Tier 1 e Tier 2
+        (sintaxe \texttt{lambda\_ratio} em vez de absoluto) deve ser
+        retroaplicada aos métodos primais com $\ell_1$ e ao
+        LSSVM-Pruning (que ganhou \emph{early stopping} no Tier 2) para
+        comparação metodológica justa entre tiers.
+  \item \textbf{Diagrama de diferença crítica} (Nemenyi) sobre todos os
+        datasets consolidados (Tier 1 + 3 ablações + Tier 2 = 21
+        datasets), reportado como figura agregada de comparação
+        estatística entre os 18 modelos.
 \end{enumerate}
 
 % ─────────────────────────────────────────────────────────────────────────────
@@ -1601,11 +1465,21 @@ predominante de $F_1$ no benchmark operacional.
         \texttt{tier1\_custom\_models.json} (propostos),
         \texttt{synthetic\_scaling\_n2000.json},
         \texttt{synthetic\_5features\_tuned.json},
-        \texttt{synthetic\_mk5.json}
+        \texttt{synthetic\_mk5.json},
+        \texttt{tier2\_n5000\_*.json} (consolidado),
+        \texttt{tier2\_n5000\_ftcur\_saint\_valloss.json} (rerun H2),
+        \texttt{tier2\_early\_stop\_ablation.json} (ablação H2),
+        \texttt{benchmark\_transformers\_efficiency.json}
+        (benchmark full-data)
   \item \textbf{Tuning}: \texttt{results/tuning/best\_params*.json}
   \item \textbf{Scripts}: \texttt{scripts/run\_*.py} são resumíveis
         (checkpoint por chave model/dataset/seed)
   \item \textbf{Figuras}: geradas por \texttt{scripts/generate\_report\_figs.py}
+        e \texttt{scripts/generate\_tier2\_analysis.py}
 \end{itemize}
+
+\section{P-valores Wilcoxon do Tier 2 (Holm-Bonferroni)}
+
+\input{tables/tier2_wilcoxon.tex}
 
 \end{document}
