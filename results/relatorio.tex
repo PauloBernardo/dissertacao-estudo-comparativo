@@ -1516,6 +1516,12 @@ HIGGS50K & SAINT        & 20\,000 & 58,3  & 1,96 & 12\,385 \\
         rápido que FT-Entmax e competitivo com FT-TopK/Sparsemax, porém com
         custo de VRAM muito superior (3,3\,GB no ADULT completo) e inferência
         transdutiva mais cara (5,9\,s no ADULT completo).
+        Conceitualmente, o FT-CUR pode ser interpretado como a versão
+        computacionalmente viável do paradigma \emph{inter-samples}: enquanto
+        o SAINT implementa atenção inter-instâncias densa completa e
+        rapidamente esgota a memória, o FT-CUR comprime esse mesmo mecanismo
+        via landmarks, preservando a ideia arquitetural com custo mais
+        controlado.
   \item Em \textbf{CREDIT}, o FT-CUR entra em um regime patológico de custo:
         no dataset completo ($N{=}30$k), o treinamento sobe para
         $2\,451$\,s e a inferência para $77{,}7$\,s, com pico de
