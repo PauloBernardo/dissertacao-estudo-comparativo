@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LSSVM: Primal e Dual</title>
+  <style>
+    :root {
+      --bg: #f6f3ea;
+      --card: #fffdf8;
+      --ink: #1f2937;
+      --muted: #5b6472;
+      --line: #d8cfbf;
+      --accent: #9a3412;
+      --accent-2: #0f766e;
+      --accent-3: #4338ca;
+    }
+    body {
+      margin: 0;
+      font: 16px/1.5 Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, #efe7d8, var(--bg));
+    }
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    h1, h2, h3 {
+      line-height: 1.2;
+      margin: 0 0 12px;
+    }
+    h1 {
+      font-size: 2.2rem;
+      color: var(--accent);
+    }
+    h2 {
+      margin-top: 28px;
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 6px;
+    }
+    .lead {
+      color: var(--muted);
+      max-width: 780px;
+    }
+    .grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      margin-top: 16px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,.05);
+    }
+    .tag {
+      display: inline-block;
+      font-size: .82rem;
+      padding: 4px 8px;
+      border-radius: 999px;
+      margin-bottom: 8px;
+      color: white;
+    }
+    .primal { background: var(--accent-2); }
+    .dual { background: var(--accent-3); }
+    .eq {
+      font-family: "Courier New", monospace;
+      background: #f7f7f7;
+      border-left: 4px solid var(--line);
+      padding: 10px 12px;
+      overflow-x: auto;
+      margin: 10px 0;
+      white-space: pre-wrap;
+    }
+    .flow {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .step {
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+    }
+    .arrow {
+      text-align: center;
+      color: var(--muted);
+      font-size: 1.2rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      background: #fff;
+    }
+    th, td {
+      text-align: left;
+      border: 1px solid var(--line);
+      padding: 10px;
+      vertical-align: top;
+    }
+    th {
+      background: #f1eadb;
+    }
+    .small {
+      color: var(--muted);
+      font-size: .95rem;
+    }
+    .good {
+      color: var(--accent-2);
+      font-weight: bold;
+    }
+    .note {
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-left: 4px solid var(--accent);
+      background: #fff7ed;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>LSSVM Padrão: Primal e Dual</h1>
+    <p class="lead">
+      A ideia aqui é simples: o <strong>primal</strong> pensa em "aprender o classificador diretamente",
+      enquanto o <strong>dual</strong> pensa em "aprender quanto cada amostra de treino contribui para o classificador".
+    </p>
+
+    <h2>1. A função que queremos aprender</h2>
+    <div class="card">
+      <div class="eq">f(x) = w^T phi(x) + b</div>
+      <p><strong>Tradução humana:</strong> para classificar um novo ponto <code>x</code>, o modelo calcula uma pontuação <code>f(x)</code>.</p>
+      <table>
+        <tr><th>Símbolo</th><th>Significado simples</th></tr>
+        <tr><td><code>x</code></td><td>Um exemplo de entrada. Ex.: uma linha da tabela com as features.</td></tr>
+        <tr><td><code>f(x)</code></td><td>A pontuação final do modelo para o ponto <code>x</code>.</td></tr>
+        <tr><td><code>w</code></td><td>O vetor de pesos do classificador. É o "miolo" da reta/plano de decisão.</td></tr>
+        <tr><td><code>w^T</code></td><td>É só uma forma de escrever produto interno. Pode ler como "w combinado com".</td></tr>
+        <tr><td><code>phi(x)</code></td><td>Uma versão transformada de <code>x</code>. O kernel finge que existe essa transformação sem calcular tudo explicitamente.</td></tr>
+        <tr><td><code>b</code></td><td>Bias/intercepto. Um ajuste constante somado no final.</td></tr>
+      </table>
+    </div>
+
+    <h2>2. Onde está o primal</h2>
+    <div class="grid">
+      <div class="card">
+        <span class="tag primal">Primal</span>
+        <p>No primal, as variáveis principais são:</p>
+        <div class="eq">w, b, e</div>
+        <p>Ou seja, o problema original tenta encontrar:</p>
+        <ul>
+          <li><code>w</code>: os pesos do classificador</li>
+          <li><code>b</code>: o bias</li>
+          <li><code>e_i</code>: os erros/slacks de cada amostra</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="tag primal">Primal</span>
+        <div class="eq">min  1/2 ||w||² + (gamma/2) sum e_i²</div>
+        <p><strong>Tradução:</strong></p>
+        <ul>
+          <li><code>min</code> = queremos minimizar</li>
+          <li><code>||w||²</code> = tamanho de <code>w</code>; o modelo prefere pesos menores</li>
+          <li><code>gamma</code> = controla o peso dado aos erros</li>
+          <li><code>sum e_i²</code> = soma dos erros ao quadrado</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>3. As restrições do primal</h2>
+    <div class="card">
+      <div class="eq">y_i ( w^T phi(x_i) + b ) = 1 - e_i</div>
+      <table>
+        <tr><th>Símbolo</th><th>Significado simples</th></tr>
+        <tr><td><code>x_i</code></td><td>A i-ésima amostra de treino.</td></tr>
+        <tr><td><code>y_i</code></td><td>O rótulo da i-ésima amostra, normalmente <code>-1</code> ou <code>+1</code>.</td></tr>
+        <tr><td><code>e_i</code></td><td>Erro da amostra <code>i</code>.</td></tr>
+        <tr><td><code>i</code></td><td>Índice da amostra. Se houver 3 pontos, então <code>i=1,2,3</code>.</td></tr>
+      </table>
+      <p class="small">
+        A ideia é: cada ponto de treino deveria ficar do lado certo da fronteira. Se não ficar, entra um erro <code>e_i</code>.
+      </p>
+    </div>
+
+    <h2>4. Onde nasce o dual</h2>
+    <div class="card">
+      <p>Para lidar com as restrições, introduzimos um multiplicador de Lagrange para cada amostra:</p>
+      <div class="eq">alpha_1, alpha_2, alpha_3, ..., alpha_n</div>
+      <p>Esses <code>alpha_i</code> são os pesos das amostras no dual.</p>
+      <div class="note">
+        Intuição: no primal você aprende <code>w</code>. No dual você aprende "quanto cada exemplo de treino entra na construção de <code>w</code>".
+      </div>
+    </div>
+
+    <h2>5. A virada principal</h2>
+    <div class="card">
+      <p>Quando resolvemos as condições do problema, aparece a relação:</p>
+      <div class="eq">w = sum alpha_i y_i phi(x_i)</div>
+      <p>Isso significa:</p>
+      <ul>
+        <li><code>w</code> não precisa mais ser achado diretamente</li>
+        <li><code>w</code> vira uma combinação das amostras de treino</li>
+        <li>agora basta descobrir os <code>alpha_i</code></li>
+      </ul>
+    </div>
+
+    <h2>6. O kernel entra aqui</h2>
+    <div class="card">
+      <p>No dual, aparecem produtos entre pontos transformados:</p>
+      <div class="eq">K(x_i, x_j) = phi(x_i)^T phi(x_j)</div>
+      <table>
+        <tr><th>Símbolo</th><th>Significado simples</th></tr>
+        <tr><td><code>K(x_i, x_j)</code></td><td>Medida de semelhança entre as amostras <code>x_i</code> e <code>x_j</code>.</td></tr>
+        <tr><td><code>K</code></td><td>Matriz kernel inteira, contendo as semelhanças de todos contra todos.</td></tr>
+      </table>
+      <div class="eq">
+K =
+[ K(x1,x1)  K(x1,x2)  K(x1,x3) ]
+[ K(x2,x1)  K(x2,x2)  K(x2,x3) ]
+[ K(x3,x1)  K(x3,x2)  K(x3,x3) ]
+      </div>
+    </div>
+
+    <h2>7. Onde está o dual no LSSVM padrão</h2>
+    <div class="card">
+      <span class="tag dual">Dual</span>
+      <p>No LSSVM padrão, o solver costuma resolver um sistema linear em <code>alpha</code> e <code>b</code>.</p>
+      <div class="eq">resolver: alpha e b</div>
+      <p>Ou seja:</p>
+      <ul>
+        <li>o problema começou no primal</li>
+        <li>mas a solução prática é obtida no dual</li>
+      </ul>
+    </div>
+
+    <h2>8. Predição no dual</h2>
+    <div class="card">
+      <div class="eq">f(x) = sum alpha_i y_i K(x_i, x) + b</div>
+      <p><strong>Tradução:</strong> para classificar um novo ponto <code>x</code>, o modelo:</p>
+      <ol>
+        <li>compara <code>x</code> com cada ponto de treino via kernel</li>
+        <li>multiplica cada comparação por <code>alpha_i y_i</code></li>
+        <li>soma tudo</li>
+        <li>adiciona <code>b</code></li>
+      </ol>
+    </div>
+
+    <h2>9. Fluxo completo</h2>
+    <div class="flow">
+      <div class="step"><strong>Fase 1:</strong> definir o modelo: <code>f(x) = w^T phi(x) + b</code></div>
+      <div class="arrow">↓</div>
+      <div class="step"><strong>Fase 2:</strong> escrever o problema original em <code>w, b, e</code> → isso é o <span class="good">primal</span></div>
+      <div class="arrow">↓</div>
+      <div class="step"><strong>Fase 3:</strong> introduzir multiplicadores <code>alpha_i</code></div>
+      <div class="arrow">↓</div>
+      <div class="step"><strong>Fase 4:</strong> eliminar <code>w</code> e reescrever tudo em termos de kernel e <code>alpha</code></div>
+      <div class="arrow">↓</div>
+      <div class="step"><strong>Fase 5:</strong> resolver o sistema em <code>alpha, b</code> → isso é o <span class="good">dual</span></div>
+      <div class="arrow">↓</div>
+      <div class="step"><strong>Fase 6:</strong> prever com <code>f(x) = sum alpha_i y_i K(x_i,x) + b</code></div>
+    </div>
+
+    <h2>10. Frase para guardar</h2>
+    <div class="card">
+      <p><strong>Primal:</strong> aprende o classificador pelos pesos <code>w</code>.</p>
+      <p><strong>Dual:</strong> aprende o classificador pelos pesos das amostras, <code>alpha_i</code>.</p>
+    </div>
+  </div>
+</body>
+</html>
