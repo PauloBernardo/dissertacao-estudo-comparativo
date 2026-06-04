@@ -1,0 +1,74 @@
+{
+  "FTTransformerCURColnorm__TWS_5f": {
+    "best_params": {
+      "d_model": 32,
+      "n_heads": 4,
+      "n_layers": 3,
+      "m_ratio": 0.16536984056323295,
+      "lr": 0.0036396393567863887,
+      "epochs": 200,
+      "patience": 20
+    },
+    "best_value": 0.6286789750595104,
+    "metric": "f1_macro",
+    "n_trials": 20
+  },
+  "FTTransformerCURColnorm__TWM_5f": {
+    "best_params": {
+      "d_model": 32,
+      "n_heads": 4,
+      "n_layers": 3,
+      "m_ratio": 0.16536984056323295,
+      "lr": 0.0036396393567863887,
+      "epochs": 200,
+      "patience": 20
+    },
+    "best_value": 0.8997029500537543,
+    "metric": "f1_macro",
+    "n_trials": 20
+  },
+  "FTTransformerCURColnorm__TWC_5f": {
+    "best_params": {
+      "d_model": 32,
+      "n_heads": 2,
+      "n_layers": 2,
+      "m_ratio": 0.28593701962865603,
+      "lr": 0.0023101522250182378,
+      "epochs": 200,
+      "patience": 20
+    },
+    "best_value": 0.536800309970698,
+    "metric": "f1_macro",
+    "n_trials": 20
+  },
+  "NystromLSSVMColnorm__TWS_5f": {
+    "best_params": {
+      "sigma": 0.6076172029402389,
+      "gamma": 377.12854520522166,
+      "m_ratio": 0.47103580934749306
+    },
+    "best_value": 0.6184794625847388,
+    "metric": "f1_macro",
+    "n_trials": 50
+  },
+  "NystromLSSVMColnorm__TWM_5f": {
+    "best_params": {
+      "sigma": 3.762090194783682,
+      "gamma": 973.5492188409318,
+      "m_ratio": 0.3031671916651073
+    },
+    "best_value": 0.9674831931701335,
+    "metric": "f1_macro",
+    "n_trials": 50
+  },
+  "NystromLSSVMColnorm__TWC_5f": {
+    "best_params": {
+      "sigma": 28.78729786955582,
+      "gamma": 231.79145795363496,
+      "m_ratio": 0.28262671680638596
+    },
+    "best_value": 0.5311464935306281,
+    "metric": "f1_macro",
+    "n_trials": 50
+  }
+}

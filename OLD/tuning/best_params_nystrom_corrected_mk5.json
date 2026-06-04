@@ -1,0 +1,32 @@
+{
+  "NystromLSSVMColnorm__MKE": {
+    "best_params": {
+      "sigma": 1.698022353411915,
+      "gamma": 788.3001882596182,
+      "m_ratio": 0.35693383729164746
+    },
+    "best_value": 0.9874988279418659,
+    "metric": "f1_macro_cv_corrected",
+    "n_trials": 50
+  },
+  "NystromLSSVMColnorm__MKM": {
+    "best_params": {
+      "sigma": 1.3355830456041307,
+      "gamma": 120.85165753543289,
+      "m_ratio": 0.3737858414686063
+    },
+    "best_value": 0.8499554456650268,
+    "metric": "f1_macro_cv_corrected",
+    "n_trials": 50
+  },
+  "NystromLSSVMColnorm__MKH": {
+    "best_params": {
+      "sigma": 1.5119336467641016,
+      "gamma": 1.3130280280658586,
+      "m_ratio": 0.34065235087999524
+    },
+    "best_value": 0.7287658138716192,
+    "metric": "f1_macro_cv_corrected",
+    "n_trials": 50
+  }
+}

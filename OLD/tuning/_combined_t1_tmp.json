@@ -1,0 +1,254 @@
+{
+  "FTTransformerCURColnorm__BCW": {
+    "best_params": {
+      "d_model": 32,
+      "n_heads": 2,
+      "n_layers": 2,
+      "m_ratio": 0.1509763786124473,
+      "lr": 0.009723854130471919,
+      "epochs": 200,
+      "patience": 20
+    }
+  },
+  "FTTransformerCURColnorm__PID": {
+    "best_params": {
+      "d_model": 32,
+      "n_heads": 4,
+      "n_layers": 3,
+      "m_ratio": 0.16536984056323295,
+      "lr": 0.0036396393567863887,
+      "epochs": 200,
+      "patience": 20
+    }
+  },
+  "FTTransformerCURColnorm__HAB": {
+    "best_params": {
+      "d_model": 64,
+      "n_heads": 4,
+      "n_layers": 2,
+      "m_ratio": 0.13826424976692045,
+      "lr": 0.0001080135425309855,
+      "epochs": 200,
+      "patience": 20
+    }
+  },
+  "FTTransformerCURColnorm__VCP": {
+    "best_params": {
+      "d_model": 32,
+      "n_heads": 2,
+      "n_layers": 2,
+      "m_ratio": 0.28593701962865603,
+      "lr": 0.0023101522250182378,
+      "epochs": 200,
+      "patience": 20
+    }
+  },
+  "FTTransformerCURColnorm__GCR": {
+    "best_params": {
+      "d_model": 64,
+      "n_heads": 4,
+      "n_layers": 1,
+      "m_ratio": 0.2941148662533489,
+      "lr": 0.0008655704137361819,
+      "epochs": 200,
+      "patience": 20
+    }
+  },
+  "FTTransformerCURColnorm__AUS": {
+    "best_params": {
+      "d_model": 32,
+      "n_heads": 2,
+      "n_layers": 2,
+      "m_ratio": 0.23064520564966523,
+      "lr": 0.0010402986851155676,
+      "epochs": 200,
+      "patience": 20
+    }
+  },
+  "FTTransformerCURColnorm__TWS": {
+    "best_params": {
+      "d_model": 32,
+      "n_heads": 2,
+      "n_layers": 2,
+      "m_ratio": 0.28593701962865603,
+      "lr": 0.0023101522250182378,
+      "epochs": 200,
+      "patience": 20
+    }
+  },
+  "FTTransformerCURColnorm__TWM": {
+    "best_params": {
+      "d_model": 32,
+      "n_heads": 2,
+      "n_layers": 2,
+      "m_ratio": 0.21353904886952962,
+      "lr": 0.003819934532818564,
+      "epochs": 200,
+      "patience": 20
+    }
+  },
+  "FTTransformerCURColnorm__TWC": {
+    "best_params": {
+      "d_model": 32,
+      "n_heads": 2,
+      "n_layers": 3,
+      "m_ratio": 0.0957961735651858,
+      "lr": 0.00047066133478830075,
+      "epochs": 200,
+      "patience": 20
+    }
+  },
+  "NystromLSSVMColnorm__BCW": {
+    "best_params": {
+      "sigma": 7.096219613195673,
+      "gamma": 6.79075447819343,
+      "m_ratio": 0.20354120777694013
+    }
+  },
+  "NystromLSSVMColnorm__PID": {
+    "best_params": {
+      "sigma": 1.871450068624068,
+      "gamma": 424.6031301768206,
+      "m_ratio": 0.08196622618904913
+    }
+  },
+  "NystromLSSVMColnorm__HAB": {
+    "best_params": {
+      "sigma": 4.089536502332509,
+      "gamma": 433.82759734456965,
+      "m_ratio": 0.351328261020775
+    }
+  },
+  "NystromLSSVMColnorm__VCP": {
+    "best_params": {
+      "sigma": 2.4685995093773574,
+      "gamma": 962.545162158401,
+      "m_ratio": 0.3096204392272626
+    }
+  },
+  "NystromLSSVMColnorm__GCR": {
+    "best_params": {
+      "sigma": 10.391297662438095,
+      "gamma": 482.23689987299974,
+      "m_ratio": 0.1230365486073784
+    }
+  },
+  "NystromLSSVMColnorm__AUS": {
+    "best_params": {
+      "sigma": 4.244630655189862,
+      "gamma": 1.4390431453133283,
+      "m_ratio": 0.45445808423958867
+    }
+  },
+  "NystromLSSVMColnorm__TWS": {
+    "best_params": {
+      "sigma": 0.468430493458945,
+      "gamma": 107.46978212143527,
+      "m_ratio": 0.28861651396647364
+    }
+  },
+  "NystromLSSVMColnorm__TWM": {
+    "best_params": {
+      "sigma": 0.5627932047415171,
+      "gamma": 287.6504143254693,
+      "m_ratio": 0.48364824222546315
+    }
+  },
+  "NystromLSSVMColnorm__TWC": {
+    "best_params": {
+      "sigma": 0.1879382335459628,
+      "gamma": 761.0952267624745,
+      "m_ratio": 0.4953544303527978
+    }
+  },
+  "SAINTColnorm__BCW": {
+    "best_params": {
+      "d_model": 64,
+      "n_heads": 4,
+      "n_layers": 3,
+      "lr": 0.003221403715224354,
+      "epochs": 200,
+      "patience": 20
+    }
+  },
+  "SAINTColnorm__PID": {
+    "best_params": {
+      "d_model": 64,
+      "n_heads": 4,
+      "n_layers": 3,
+      "lr": 0.002788819177045116,
+      "epochs": 200,
+      "patience": 20
+    }
+  },
+  "SAINTColnorm__HAB": {
+    "best_params": {
+      "d_model": 64,
+      "n_heads": 4,
+      "n_layers": 3,
+      "lr": 0.00451223643684819,
+      "epochs": 200,
+      "patience": 20
+    }
+  },
+  "SAINTColnorm__VCP": {
+    "best_params": {
+      "d_model": 16,
+      "n_heads": 4,
+      "n_layers": 1,
+      "lr": 0.001591677008618784,
+      "epochs": 200,
+      "patience": 20
+    }
+  },
+  "SAINTColnorm__GCR": {
+    "best_params": {
+      "d_model": 64,
+      "n_heads": 4,
+      "n_layers": 2,
+      "lr": 0.003559333970116141,
+      "epochs": 200,
+      "patience": 20
+    }
+  },
+  "SAINTColnorm__AUS": {
+    "best_params": {
+      "d_model": 64,
+      "n_heads": 2,
+      "n_layers": 3,
+      "lr": 0.002934023687285842,
+      "epochs": 200,
+      "patience": 20
+    }
+  },
+  "SAINTColnorm__TWS": {
+    "best_params": {
+      "d_model": 64,
+      "n_heads": 4,
+      "n_layers": 2,
+      "lr": 0.004203551089336017,
+      "epochs": 200,
+      "patience": 20
+    }
+  },
+  "SAINTColnorm__TWM": {
+    "best_params": {
+      "d_model": 32,
+      "n_heads": 2,
+      "n_layers": 2,
+      "lr": 0.004961269908250384,
+      "epochs": 200,
+      "patience": 20
+    }
+  },
+  "SAINTColnorm__TWC": {
+    "best_params": {
+      "d_model": 64,
+      "n_heads": 4,
+      "n_layers": 1,
+      "lr": 0.002788819177045116,
+      "epochs": 200,
+      "patience": 20
+    }
+  }
+}
