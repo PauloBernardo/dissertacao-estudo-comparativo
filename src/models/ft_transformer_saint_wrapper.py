@@ -22,6 +22,7 @@ Esparsidade
 
 import numpy as np
 import torch
+from sklearn.base import BaseEstimator, ClassifierMixin
 
 from src.models.ft_transformer_model import SAINTClassifier, fit_model
 
@@ -41,7 +42,7 @@ def _pick_device():
 DEVICE = _pick_device()
 
 
-class SAINTColnorm:
+class SAINTColnorm(BaseEstimator, ClassifierMixin):
     """
     SAINT para classificação binária — baseline de atenção inter-instâncias completa.
 

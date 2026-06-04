@@ -14,9 +14,10 @@ Esparsidade
 
 import numpy as np
 import xgboost as xgb
+from sklearn.base import BaseEstimator, ClassifierMixin
 
 
-class XGBoostBaseline:
+class XGBoostBaseline(BaseEstimator, ClassifierMixin):
     """
     XGBoost para classificação binária.
 

@@ -19,6 +19,7 @@ Nota transductiva
 
 import numpy as np
 import torch
+from sklearn.base import BaseEstimator, ClassifierMixin
 
 from src.models.landmark_selection import ColumnNormSelector
 from src.models.ft_transformer_model import FTTransformerClassifier, fit_model
@@ -27,7 +28,7 @@ from src.models.ft_transformer_model import FTTransformerClassifier, fit_model
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-class FTTransformerCURColnorm:
+class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
     """
     FT-Transformer com atenção inter-instâncias aproximada por CUR (colnorm).
 

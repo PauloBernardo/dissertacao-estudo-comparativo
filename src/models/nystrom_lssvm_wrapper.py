@@ -20,11 +20,12 @@ Uso mínimo
 """
 
 import numpy as np
+from sklearn.base import BaseEstimator, ClassifierMixin
 
 from src.models.nystrom import NystromLSSVM, RBFKernel
 
 
-class NystromLSSVMColnorm:
+class NystromLSSVMColnorm(BaseEstimator, ClassifierMixin):
     """
     LSSVM + Nyström com seleção de landmarks por norma de coluna (colnorm).
 

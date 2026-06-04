@@ -52,6 +52,7 @@ from src.data.loaders import DatasetLoader
 from src.data.preprocessing import _convert_labels, make_splits
 from src.experiments.reproducibility import set_global_seed
 from src.experiments.runner import _build_model
+from src.metrics.sparsity import transformer_sparsity
 from src.tuning.grids import GRIDS, grid_size
 
 
@@ -169,6 +170,34 @@ def _compute_test_metrics(
     return metrics
 
 
+def _collect_sparsity_metrics(estimator, X_test) -> dict[str, float]:
+    """Collect model-specific sparsity metrics from the fitted pipeline clf."""
+    metrics: dict[str, float] = {}
+
+    if hasattr(estimator, "n_support_"):
+        try:
+            metrics["n_support_vectors"] = int(estimator.n_support_)
+        except Exception:
+            pass
+
+    if hasattr(estimator, "sparsity_ratio_"):
+        try:
+            metrics["sparsity_ratio"] = float(estimator.sparsity_ratio_)
+        except Exception:
+            pass
+
+    # FTTransformer attention sparsity is distinct from support-vector sparsity:
+    # it measures zeros / entropy in attention weights, not sample selection.
+    if hasattr(estimator, "attention_sparsity"):
+        try:
+            estimator.predict_proba(X_test[: min(32, len(X_test))])
+            metrics.update(transformer_sparsity(estimator))
+        except Exception:
+            pass
+
+    return metrics
+
+
 # ── Single (variant, dataset, seed) run ─────────────────────────────────────
 
 def run_one(variant: str, dataset: str, seed: int) -> dict[str, Any]:
@@ -229,19 +258,9 @@ def run_one(variant: str, dataset: str, seed: int) -> dict[str, Any]:
             search.best_estimator_, X_test, y_test, label_format)
         predict_time = time.perf_counter() - t0
 
-        # 5. Inspect support-vector sparsity if exposed by the underlying clf.
+        # 5. Collect support-vector or attention sparsity, depending on model.
         clf = search.best_estimator_.named_steps["clf"]
-        sparsity = {}
-        if hasattr(clf, "n_support_"):
-            try:
-                sparsity["n_support_vectors"] = int(clf.n_support_)
-            except Exception:
-                pass
-        if hasattr(clf, "sparsity_ratio_"):
-            try:
-                sparsity["sparsity_ratio"] = float(clf.sparsity_ratio_)
-            except Exception:
-                pass
+        sparsity = _collect_sparsity_metrics(clf, X_test)
 
         # 6. Strip the clf__ prefix from best params for readability.
         best_params = {k.replace("clf__", ""): v for k, v in search.best_params_.items()}

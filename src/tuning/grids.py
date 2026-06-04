@@ -105,7 +105,7 @@ GRIDS: dict[str, dict] = {
             "tau":     [0.005, 0.05, 0.5, 5.0, 50.0],
             "lambda_": [0.01, 0.1, 1.0, 10.0],
         },
-        "fixed": {"rho": None},  # auto: 1 / λ_max(AᵀA)
+        "fixed": {"rho": None, "max_iter": 500},  # auto: 1 / λ_max(AᵀA)
         "needs_gpu": False,
     },
 
@@ -118,7 +118,7 @@ GRIDS: dict[str, dict] = {
             "lambda_":  [0.01, 0.1, 1.0, 10.0],
             "lambda2_": [0.01, 0.1],
         },
-        "fixed": {"rho": None},
+        "fixed": {"rho": None, "max_iter": 500},
         "needs_gpu": False,
     },
 
@@ -148,7 +148,7 @@ GRIDS: dict[str, dict] = {
         "model_name": "NystromLSSVMColnorm",
         "grid": {
             "sigma":   [0.1, 0.5, 2.0, 8.0],
-            "tau":     [0.1, 1.0, 10.0],
+            "gamma":   [0.1, 1.0, 10.0],
             "m_ratio": [0.05, 0.10, 0.20],
         },
         "fixed": {},
