@@ -49,9 +49,6 @@ def _build_model(model_name: str, model_params: dict[str, Any], label_format: st
     elif model_name == "ADMMNesterovLSSVM":
         from src.models.lssvm.primal.admm_nesterov import ADMMNesterovLSSVM
         return ADMMNesterovLSSVM(**model_params), label_format
-    elif model_name == "OriginalADMMNesterovLSSVM":
-        from src.models.lssvm.primal.original_admm import OriginalADMMNesterovLSSVM
-        return OriginalADMMNesterovLSSVM(**model_params), label_format
     elif model_name == "FISTANesterovLSSVM":
         from src.models.lssvm.primal.fista_lssvm import FISTANesterovLSSVM
         return FISTANesterovLSSVM(**model_params), label_format
@@ -93,7 +90,7 @@ def _build_model(model_name: str, model_params: dict[str, Any], label_format: st
 
 
 _LSSVM_MODELS = {
-    "StandardLSSVM", "ADMMNesterovLSSVM", "OriginalADMMNesterovLSSVM",
+    "StandardLSSVM", "ADMMNesterovLSSVM",
     "FISTANesterovLSSVM", "DualFISTALSSVM", "PCPLSSVm", "FSALSSVm",
     "PruningLSSVM", "IPLSSVm", "OppositeMapsLSSVM", "NystromLSSVMColnorm",
 }

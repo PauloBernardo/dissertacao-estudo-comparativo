@@ -117,12 +117,30 @@ class BaseLSSVM(ABC, BaseEstimator, ClassifierMixin):
         ``self.support_vectors_`` with ``self.support_indices_``.
         """
 
+    # Threshold for treating an α coefficient as zero (drops it from predict).
+    # Must match the threshold used by ``n_support_`` so that reported
+    # sparsity and inference cost stay consistent.
+    _ALPHA_ZERO_TOL: float = 1e-6
+
+    def _kernel_predict(self, X: NDArray, coef: NDArray) -> NDArray:
+        """Compute K(X, X_sv) @ coef_sv + bias, skipping α=0 columns.
+
+        Subclasses call this from their ``decision_function`` with the
+        appropriate coefficient vector (``α·y`` for dual form, ``α`` for
+        primal form where the label is already absorbed).
+        """
+        nz = np.abs(self.alpha_) > self._ALPHA_ZERO_TOL
+        if nz.all():
+            K = self.kernel_matrix(X, self.X_train_)
+            return K @ coef + self.bias_
+        K = self.kernel_matrix(X, self.X_train_[nz])
+        return K @ coef[nz] + self.bias_
+
     def decision_function(self, X: NDArray) -> NDArray:
         """Compute raw decision scores f(x) = Σ αᵢ yᵢ K(xᵢ, x) + b."""
         check_is_fitted(self, ["alpha_", "bias_", "X_train_", "y_train_"])
         X = check_array(X)
-        K = self.kernel_matrix(X, self.X_train_)
-        return K @ (self.alpha_ * self.y_train_) + self.bias_
+        return self._kernel_predict(X, self.alpha_ * self.y_train_)
 
     def predict(self, X: NDArray) -> NDArray:
         """Return predicted class labels in the original label space."""

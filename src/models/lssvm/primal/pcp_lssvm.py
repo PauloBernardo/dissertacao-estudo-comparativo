@@ -128,5 +128,4 @@ class PCPLSSVm(BaseLSSVM):
         """f(x) = K(x, X_train) @ α + b  (primal formulation)."""
         check_is_fitted(self, ["alpha_", "bias_", "X_train_"])
         X = check_array(X)
-        K = self.kernel_matrix(X, self.X_train_)
-        return K @ self.alpha_ + self.bias_
+        return self._kernel_predict(X, self.alpha_)

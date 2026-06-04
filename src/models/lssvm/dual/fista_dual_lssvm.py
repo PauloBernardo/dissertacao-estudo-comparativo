@@ -163,5 +163,4 @@ class DualFISTALSSVM(BaseLSSVM):
     def decision_function(self, X: NDArray) -> NDArray:
         check_is_fitted(self, ["alpha_", "bias_", "X_train_"])
         X = check_array(X)
-        K = self.kernel_matrix(X, self.X_train_)
-        return K @ self.alpha_ + self.bias_
+        return self._kernel_predict(X, self.alpha_)
