@@ -71,6 +71,7 @@ class NystromLSSVMColnorm(BaseEstimator, ClassifierMixin):
             random_state=self.random_state,
         )
         self._model.fit(X, y.astype(float))
+        self.is_fitted_ = True
         return self
 
     def predict(self, X: np.ndarray) -> np.ndarray:
