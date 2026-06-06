@@ -1,0 +1,30 @@
+\begin{table}[ht]
+  \centering
+  \caption{P-valores brutos do teste de Wilcoxon signed-rank (sem correção; negrito = $p<0{,}05$).}
+  \label{tab:tier2_wilcoxon_raw}
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{lrrrrrrrrrrrrrrrrrr}
+    \toprule
+     & ADMM-ElasticNet & LSSVM-ADMM & DualFISTA & FISTANesterov & LSSVM-FSA & FT-CUR & FT-Entmax & FT-Softmax & FT-Sparsemax & FT-TopK & LSSVM-IP & Nyström-LSSVM & LSSVM-OppMaps & LSSVM-PCP & LSSVM-Pruning & SAINT & LSSVM (Standard) & XGBoost \\
+    \midrule
+    ADMM-ElasticNet & -- & 0.156 & \textbf{0.031} & 0.438 & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & 0.562 & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} \\
+LSSVM-ADMM & 0.156 & -- & \textbf{0.031} & 0.688 & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & 0.562 & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} \\
+DualFISTA & \textbf{0.031} & \textbf{0.031} & -- & \textbf{0.031} & 0.062 & 0.094 & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & 0.156 & 0.156 & \textbf{0.031} & 0.156 & \textbf{0.031} & 0.094 & \textbf{0.031} & \textbf{0.031} \\
+FISTANesterov & 0.438 & 0.688 & \textbf{0.031} & -- & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & 0.562 & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} \\
+LSSVM-FSA & \textbf{0.031} & \textbf{0.031} & 0.062 & \textbf{0.031} & -- & \textbf{0.031} & 0.062 & 0.062 & 0.062 & 0.062 & 0.062 & 0.062 & \textbf{0.031} & 0.438 & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} \\
+FT-CUR & \textbf{0.031} & \textbf{0.031} & 0.094 & \textbf{0.031} & \textbf{0.031} & -- & 0.438 & 0.438 & 0.438 & 0.438 & \textbf{0.031} & 0.156 & \textbf{0.031} & 0.094 & \textbf{0.031} & 0.156 & 0.312 & 0.094 \\
+FT-Entmax & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & 0.062 & 0.438 & -- & 0.312 & 0.844 & 0.312 & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & 0.156 & \textbf{0.031} & 0.438 & 0.062 & 0.156 \\
+FT-Softmax & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & 0.062 & 0.438 & 0.312 & -- & 0.844 & 0.062 & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & 0.156 & \textbf{0.031} & 1.000 & 0.062 & 0.219 \\
+FT-Sparsemax & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & 0.062 & 0.438 & 0.844 & 0.844 & -- & 0.094 & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & 0.156 & \textbf{0.031} & 0.844 & 0.062 & 0.062 \\
+FT-TopK & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & 0.062 & 0.438 & 0.312 & 0.062 & 0.094 & -- & 0.062 & \textbf{0.031} & \textbf{0.031} & 0.156 & \textbf{0.031} & 0.438 & 0.062 & \textbf{0.031} \\
+LSSVM-IP & \textbf{0.031} & \textbf{0.031} & 0.156 & \textbf{0.031} & 0.062 & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & 0.062 & -- & 0.094 & \textbf{0.031} & 0.438 & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} \\
+Nyström-LSSVM & \textbf{0.031} & \textbf{0.031} & 0.156 & \textbf{0.031} & 0.062 & 0.156 & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & 0.094 & -- & \textbf{0.031} & 0.156 & \textbf{0.031} & 0.094 & 0.094 & \textbf{0.031} \\
+LSSVM-OppMaps & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & -- & \textbf{0.031} & 0.062 & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} \\
+LSSVM-PCP & \textbf{0.031} & \textbf{0.031} & 0.156 & \textbf{0.031} & 0.438 & 0.094 & 0.156 & 0.156 & 0.156 & 0.156 & 0.438 & 0.156 & \textbf{0.031} & -- & \textbf{0.031} & 0.094 & 0.156 & 0.156 \\
+LSSVM-Pruning & 0.562 & 0.562 & \textbf{0.031} & 0.562 & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & 0.062 & \textbf{0.031} & -- & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} \\
+SAINT & \textbf{0.031} & \textbf{0.031} & 0.094 & \textbf{0.031} & \textbf{0.031} & 0.156 & 0.438 & 1.000 & 0.844 & 0.438 & \textbf{0.031} & 0.094 & \textbf{0.031} & 0.094 & \textbf{0.031} & -- & 0.094 & 0.312 \\
+LSSVM (Standard) & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & 0.312 & 0.062 & 0.062 & 0.062 & 0.062 & \textbf{0.031} & 0.094 & \textbf{0.031} & 0.156 & \textbf{0.031} & 0.094 & -- & \textbf{0.031} \\
+XGBoost & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & 0.094 & 0.156 & 0.219 & 0.062 & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & \textbf{0.031} & 0.156 & \textbf{0.031} & 0.312 & \textbf{0.031} & -- \\
+    \bottomrule
+  \end{tabular}}
+\end{table}

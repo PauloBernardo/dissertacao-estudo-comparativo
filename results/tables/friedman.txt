@@ -1,3 +1,3 @@
 Friedman test
-Statistic: 45.4920
-p-value:   0.000004
+Statistic: 48.8157
+p-value:   0.000001
