@@ -298,10 +298,11 @@ def main() -> int:
     args = p.parse_args()
 
     logging.basicConfig(
-        level=args.log_level,
+        level=logging.WARNING,
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
         datefmt="%H:%M:%S",
     )
+    logging.getLogger("tier1").setLevel(args.log_level)
 
     # Resume support.
     records = json.loads(args.output.read_text()) if args.output.exists() else []
