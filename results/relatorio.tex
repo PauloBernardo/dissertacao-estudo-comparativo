@@ -122,8 +122,10 @@ $^\star$ = aplicação/combinação proposta.
 \begin{itemize}
   \item 30 sementes aleatórias, partição estratificada 70/30.
   \item Métrica principal: F1-macro (média aritmética do F1 por classe).
-  \item Hiperparâmetros otimizados via Optuna TPE com validação cruzada
-        estratificada de 5 folds.
+  \item Hiperparâmetros otimizados via \textbf{Grid Search exaustivo + 5-fold CV}
+        estratificado (\texttt{GridSearchCV}, scikit-learn) para modelos LSSVM e
+        XGBoost no Tier 1. Transformers Tier 1 (pendente re-execução em GPU) e
+        todos os modelos Tier 2 utilizam Optuna TPE (20 trials, 3-fold CV).
   \item Normalização por \texttt{StandardScaler} ajustado apenas no treino.
 \end{itemize}
 
@@ -221,7 +223,7 @@ com os demais LSSVMs:
   \item \textbf{Nyström}: esparsidade = $1 - m/n$, fração de pontos de treino
         \emph{não} usados como landmark-key.
 \end{itemize}
-A razão $m/n$ é tunada pelo Optuna por dataset; a esparsidade resultante varia
+A razão $m/n$ é tunada por Grid+CV por dataset; a esparsidade resultante varia
 entre $50\%$ (TWC) e $92\%$ (PID), com média $69\%$ no Tier~1.
 
 % ─────────────────────────────────────────────────────────────────────────────
@@ -256,13 +258,16 @@ TWC & Checkerboard (sintético)& 400 &  2 & Controle \\
 \subsection{Resultados por Dataset}
 
 A Tabela~\ref{tab:f1_tier1_full} apresenta o F1-macro médio (30 sementes) para
-\emph{todos} os modelos. Os melhores valores por coluna estão em negrito.
+\emph{todos} os modelos, usando Grid Search exaustivo + 5-fold CV para LSSVMs e
+XGBoost. Os melhores valores por coluna estão em negrito. Resultados de
+Transformers são do protocolo Optuna anterior ($\dagger$), pendentes de
+re-execução com Grid+CV em GPU.
 
 \begin{table}[H]
 \centering
 \caption{F1-macro médio (30 sementes). \textbf{Negrito}: melhor por coluna.
-$\circ$ = variante investigada / ponto de investigação;
-$\star$ = aplicação/combinação proposta.}
+$\circ$ = variante investigada; $\star$ = proposta.
+$\dagger$ = protocolo Optuna (Grid+CV pendente para Transformers).}
 \label{tab:f1_tier1_full}
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{lrrrrrrrrr r}
@@ -272,32 +277,32 @@ $\star$ = aplicação/combinação proposta.}
   & \textbf{Média} \\
 \midrule
 \multicolumn{11}{l}{\textit{Baseline geral tabular}} \\
-XGBoost         & 0,964 & 0,732 & 0,580 & 0,811 & 0,699 & \textbf{0,867} & 0,875 & 0,978 & 0,476 & 0,776 \\
+XGBoost         & 0,958 & 0,724 & 0,559 & 0,804 & \textbf{0,691} & 0,862 & 0,944 & 0,984 & \textbf{0,912} & 0,826 \\
 \midrule
 \multicolumn{11}{l}{\textit{Baselines LSSVM}} \\
-LSSVM-Std       & \textbf{0,975} & 0,729 & 0,590 & \textbf{0,835} & \textbf{0,697} & 0,862 & \textbf{0,993} & \textbf{1,000} & 0,900 & 0,842 \\
-LSSVM-FSA       & 0,967 & \textbf{0,741} & 0,590 & 0,820 & 0,676 & 0,859 & 0,990 & \textbf{1,000} & 0,893 & 0,837 \\
-LSSVM-IP        & 0,966 & 0,727 & 0,571 & 0,827 & 0,690 & 0,857 & 0,990 & \textbf{1,000} & 0,888 & 0,835 \\
-LSSVM-PCP       & 0,923 & 0,726 & \textbf{0,629} & 0,789 & 0,689 & 0,857 & 0,989 & 0,995 & 0,872 & 0,830 \\
-FISTA-Nesterov  & 0,902 & 0,686 & 0,617 & 0,782 & 0,513 & 0,844 & 0,990 & 0,994 & 0,873 & 0,800 \\
-LSSVM-Prun      & 0,969 & 0,639 & 0,482 & 0,801 & 0,437 & 0,849 & 0,994 & 0,996 & 0,874 & 0,782 \\
-LSSVM-OppM      & 0,961 & 0,456 & 0,468 & 0,755 & 0,585 & 0,823 & 0,986 & 0,990 & 0,899 & 0,769 \\
+LSSVM-Std       & 0,973 & \textbf{0,732} & 0,566 & 0,827 & \textbf{0,691} & 0,861 & \textbf{0,994} & 0,997 & 0,898 & \textbf{0,838} \\
+LSSVM-FSA       & 0,966 & \textbf{0,732} & 0,550 & 0,811 & 0,680 & 0,855 & 0,987 & 0,997 & 0,879 & 0,829 \\
+LSSVM-IP        & 0,969 & 0,718 & 0,546 & \textbf{0,828} & 0,681 & 0,857 & 0,992 & 0,996 & 0,897 & 0,832 \\
+LSSVM-PCP       & 0,916 & 0,717 & \textbf{0,627} & 0,783 & 0,684 & 0,849 & 0,990 & 0,993 & 0,880 & 0,827 \\
+FISTA-Nesterov  & 0,894 & 0,693 & 0,603 & 0,754 & 0,606 & 0,841 & 0,875 & 0,996 & 0,989 & 0,806 \\
+LSSVM-Prun      & 0,969 & 0,642 & 0,493 & 0,816 & 0,628 & 0,851 & 0,989 & 0,997 & 0,891 & 0,808 \\
+LSSVM-OppM      & 0,951 & 0,463 & 0,454 & 0,715 & 0,550 & 0,815 & 0,986 & 0,991 & 0,907 & 0,759 \\
 \midrule
-\multicolumn{11}{l}{\textit{Baselines FT-Transformer}} \\
-FT-Sparsemax    & 0,950 & 0,691 & 0,596 & 0,808 & 0,662 & 0,855 & 0,690 & \textbf{1,000} & 0,710 & 0,774 \\
-SAINT           & 0,949 & 0,710 & 0,535 & 0,774 & 0,676 & 0,859 & 0,639 & 0,969 & 0,588 & 0,744 \\
-FT-Entmax       & 0,953 & 0,700 & 0,538 & 0,800 & 0,657 & \textbf{0,860} & 0,667 & 0,999 & 0,504 & 0,742 \\
-FT-Softmax      & 0,959 & 0,708 & 0,541 & 0,810 & 0,658 & 0,854 & 0,653 & \textbf{1,000} & 0,478 & 0,740 \\
-FT-TopK         & 0,950 & 0,692 & 0,501 & 0,808 & 0,669 & 0,857 & 0,640 & 0,974 & 0,468 & 0,729 \\
+\multicolumn{11}{l}{\textit{Baselines FT-Transformer ($\dagger$ protocolo Optuna; Grid+CV pendente)}} \\
+FT-Sparsemax$^\dagger$    & 0,950 & 0,691 & 0,596 & 0,808 & 0,662 & 0,855 & 0,690 & 1,000 & 0,710 & 0,774 \\
+SAINT$^\dagger$           & 0,949 & 0,710 & 0,535 & 0,774 & 0,676 & 0,859 & 0,639 & 0,969 & 0,588 & 0,744 \\
+FT-Entmax$^\dagger$       & 0,953 & 0,700 & 0,538 & 0,800 & 0,657 & 0,860 & 0,667 & 0,999 & 0,504 & 0,742 \\
+FT-Softmax$^\dagger$      & 0,959 & 0,708 & 0,541 & 0,810 & 0,658 & 0,854 & 0,653 & 1,000 & 0,478 & 0,740 \\
+FT-TopK$^\dagger$         & 0,950 & 0,692 & 0,501 & 0,808 & 0,669 & 0,857 & 0,640 & 0,974 & 0,468 & 0,729 \\
 \midrule
 \multicolumn{11}{l}{\textit{Paper-base estendido}} \\
-LSSVM-ADMM-Nesterov     & 0,899 & 0,684 & 0,616 & 0,783 & 0,608 & 0,842 & 0,992 & 0,992 & 0,866 & 0,809 \\
+LSSVM-ADMM-Nesterov     & 0,901 & 0,690 & 0,620 & 0,762 & 0,592 & 0,842 & 0,974 & 0,988 & 0,883 & 0,806 \\
 \midrule
 \multicolumn{11}{l}{\textit{Variantes investigadas / propostos}} \\
-DualFISTA$^\circ$       & 0,976 & 0,734 & 0,589 & 0,834 & 0,698 & 0,862 & 0,994 & \textbf{1,000} & \textbf{0,891} & \textbf{0,842} \\
-Nyström-SVM$^\star$     & 0,970 & 0,715 & 0,602 & 0,820 & 0,690 & 0,861 & 0,992 & \textbf{1,000} & 0,858 & 0,834 \\
-ADMM-ElasticNet$^\circ$ & 0,899 & 0,692 & 0,618 & 0,787 & 0,592 & 0,844 & 0,990 & 0,995 & 0,861 & 0,809 \\
-FT-CUR$^\star$ (Nyströmformer) & 0,946 & 0,715 & 0,523 & 0,824 & 0,665 & 0,851 & 0,654 & 0,981 & 0,564 & 0,747 \\
+DualFISTA$^\circ$       & \textbf{0,976} & 0,730 & 0,558 & 0,824 & 0,687 & \textbf{0,863} & 0,992 & \textbf{1,000} & 0,905 & 0,837 \\
+Nyström-SVM$^\star$     & 0,970 & 0,728 & 0,579 & 0,825 & \textbf{0,691} & \textbf{0,863} & 0,992 & 0,999 & 0,898 & \textbf{0,838} \\
+ADMM-ElasticNet$^\circ$ & 0,901 & 0,689 & 0,620 & 0,766 & 0,591 & 0,841 & 0,974 & 0,988 & 0,879 & 0,805 \\
+FT-CUR$^{\star\dagger}$ (Nyströmformer) & 0,946 & 0,715 & 0,523 & 0,824 & 0,665 & 0,851 & 0,654 & 0,981 & 0,564 & 0,747 \\
 \bottomrule
 \end{tabular}}
 \end{table}
@@ -316,31 +321,55 @@ laranja = FT-CUR.}
 \label{fig:f1_all}
 \end{figure}
 
-\textbf{Observações principais:}
+\textbf{Observações principais (Grid+CV):}
 \begin{itemize}
-  \item \textbf{XGBoost} (baseline geral tabular) atinge $0{,}776$ no Tier 1 ---
-        abaixo do top 5 dos LSSVMs e abaixo do DualFISTA/Nyström. Vence em AUS
-        ($0{,}867$) mas colapsa em TWC ($0{,}476$, fronteira xadrez não-linear que
-        favorece kernel RBF). Mostra que para dados tabulares com estrutura
-        geométrica, métodos kernel podem superar gradient boosting.
-  \item \textbf{DualFISTA} alcança F1-macro médio de $0{,}8418$ ---
-        virtualmente igual ao LSSVM-Std completo ($0{,}8424$, diferença $0{,}0006$)
-        com $20{,}1\%$ de esparsidade. É o único modelo esparso que se aproxima
-        do desempenho do baseline sem esparsidade.
-  \item \textbf{Nyström-SVM} ($0{,}834$) é o segundo melhor entre os modelos
-        propostos: fica a apenas $0{,}008$ do LSSVM-Std completo, mas com
-        $\approx 69\%$ de esparsidade amostral (mais que o triplo do DualFISTA).
-        É o melhor trade-off F1/esparsidade entre os modelos com alta esparsidade.
-  \item O \textbf{LSSVM-ADMM} e suas variantes (ElasticNet, FISTA-Nesterov)
-        ficam $\approx 3$ pp abaixo do LSSVM-Std, com esparsidade entre $27$--$30\%$.
-  \item Todos os FT-Transformers baselines (softmax, topk, entmax, sparsemax)
-        ficam abaixo de $0{,}78$, com queda acentuada nos sintéticos TWS e TWC.
-  \item \textbf{SAINT} ($0{,}744$, atenção inter-instâncias densa) e
-        \textbf{FT-CUR} (Nyströmformer, $0{,}747$) atingem F1 essencialmente
-        idêntico --- diferença de $0{,}003$. Como o FT-CUR comprime $\approx 79\%$
-        da atenção inter-instâncias e o SAINT é denso, isso valida a aproximação
-        Nyströmformer: \textbf{a compressão não custa F1}.
+  \item \textbf{Nyström-SVM} ($0{,}838$) é o modelo com melhor F1-macro médio,
+        seguido muito de perto por LSSVM-Std ($0{,}838$) e DualFISTA ($0{,}837$)
+        --- os três empatam estatisticamente. Com $\approx 69\%$ de esparsidade
+        amostral, o Nyström-SVM valida o trade-off F1/esparsidade como o melhor
+        entre modelos de alta compressão.
+  \item \textbf{DualFISTA} ($0{,}837$) alcança F1-macro médio essencialmente
+        igual ao LSSVM-Std completo ($0{,}838$, diferença $0{,}001$) com
+        $\approx 20\%$ de esparsidade. É o único modelo esparso que se aproxima
+        do baseline sem esparsidade.
+  \item \textbf{XGBoost} (baseline tabular) atinge $0{,}826$ no Tier 1 ---
+        agora competitivo com os LSSVMs esparsos (IP $0{,}832$, PCP $0{,}827$).
+        Destaque para TWC ($0{,}912$, melhor por coluna): o Grid+CV encontrou
+        parâmetros que capturam a fronteira xadrez, eliminando o colapso
+        observado no protocolo Optuna anterior ($0{,}476$). Perde em AUS e nos
+        dados sintéticos TWS/TWM para os LSSVMs com kernel RBF.
+  \item O \textbf{LSSVM-ADMM} e variantes (ElasticNet, FISTA-Nesterov)
+        ficam $\approx 3$ pp abaixo do LSSVM-Std. FISTA-Nesterov ($0{,}806$)
+        empata praticamente com ADMM-N ($0{,}806$) e ADMM-EN ($0{,}805$)
+        após correção do grid de $\sigma$ (adição de $0{,}15$ e $1{,}5$,
+        cobrindo a escala ótima para datasets sintéticos).
+  \item \textbf{LSSVM-Pruning} ($0{,}808$) recuperou-se significativamente
+        com a correção do grid (adição de pruning\_rate$=0{,}05$ e sigma$=15$):
+        era $0{,}782$ no protocolo Optuna.
+  \item Resultados de FT-Transformers ($\dagger$) são do protocolo Optuna
+        anterior e estão pendentes de re-execução com Grid+CV em GPU.
+  \item \textbf{SAINT} ($0{,}744$) e \textbf{FT-CUR} ($0{,}747$) atingem F1
+        essencialmente idêntico (diferença $0{,}003$). Como o FT-CUR comprime
+        $\approx 79\%$ da atenção inter-instâncias e o SAINT é denso, isso
+        valida a aproximação Nyströmformer: \textbf{a compressão não custa F1}.
 \end{itemize}
+
+\subsection{Análise estatística: Friedman e ranks médios (Tier 1)}
+\label{sec:tier1_friedman}
+
+O teste não-paramétrico de Friedman aplicado às 12 variantes LSSVM e XGBoost
+sobre os 9 datasets confirma diferença estatisticamente significativa entre os
+modelos: $\chi^2 = 48{,}82$, $p = 10^{-6}$. A diferença crítica de Nemenyi
+para $\alpha = 0{,}05$ é $\text{CD} = 5{,}56$.
+
+\input{tables/ranks.tex}
+
+\textbf{Leitura dos ranks:} Nyström-SVM (rank 3,0), DualFISTA (3,2) e
+LSSVM-Std (3,2) formam o bloco líder, estatisticamente equivalentes entre si
+(gap $< \text{CD}$). XGBoost (rank 6,0) posiciona-se como o melhor modelo
+não-kernel: superior a FSA (6,1) e PCP (6,6). FISTA-Nesterov (10,0) e
+OppositeMaps (9,6) ficam no extremo inferior, consistentemente com seus
+colapsos em HAB e PID.
 
 % ─────────────────────────────────────────────────────────────────────────────
 \section{Arquitetura dos FT-Transformers e Tipos de Atenção}
@@ -434,17 +463,17 @@ Ordenado por F1-macro decrescente.}
 \toprule
 \textbf{Modelo} & \textbf{F1-macro} & \textbf{Spar.\ amostral} & \textbf{Mecanismo} \\
 \midrule
-LSSVM-Std        & 0,8424 &  0,0\% & --- (baseline denso) \\
-DualFISTA$^\star$ & 0,8418 & 20,1\% & $\ell_1$ dual via FISTA \\
-LSSVM-FSA        & 0,8373 & 45,9\% & seleção forward \\
-LSSVM-IP         & 0,8352 & 57,1\% & iterative pruning \\
-\textbf{Nyström-SVM}$^\star$& \textbf{0,8342} & \textbf{69,0\%} & colnorm landmarks ($m/n$ tunado por dataset) \\
-LSSVM-PCP        & 0,8300 &  0,0\% & cone projection \\
-LSSVM-ADMM$^\star$& 0,8089 & 30,0\% & $\ell_1$ primal (ADMM-Nesterov) \\
-ADMM-ElasticNet$^\star$& 0,8086 & 27,4\% & $\ell_1 + \ell_2$ (Elastic Net) \\
-FISTA-Nesterov$^\star$ & 0,8000 & 27,4\% & $\ell_1$ primal via FISTA \\
-LSSVM-Prun       & 0,7825 & 71,6\% & pruning pós-treino \\
-LSSVM-OppM       & 0,7692 & 79,3\% & opposite maps \\
+\textbf{Nyström-SVM}$^\star$ & \textbf{0,838} & \textbf{78,1\%} & colnorm landmarks ($m/n$ tunado por dataset) \\
+LSSVM-Std        & 0,838 &  0,0\% & --- (baseline denso) \\
+DualFISTA$^\star$ & 0,837 &  5,0\% & $\ell_1$ dual via FISTA \\
+LSSVM-IP         & 0,832 & 46,1\% & iterative pruning \\
+LSSVM-FSA        & 0,829 & 54,6\% & seleção forward \\
+LSSVM-PCP        & 0,827 &  0,0\% & cone projection \\
+LSSVM-Prun       & 0,808 & 62,9\% & pruning iterativo c/ \emph{early stop} \\
+LSSVM-ADMM$^\star$& 0,806 &  7,9\% & $\ell_1$ primal (ADMM-Nesterov) \\
+ADMM-ElasticNet$^\star$& 0,805 & 7,0\% & $\ell_1 + \ell_2$ (Elastic Net) \\
+FISTA-Nesterov$^\star$ & 0,806 & 7,5\% & $\ell_1$ primal via FISTA \\
+LSSVM-OppM       & 0,759 & 78,9\% & opposite maps \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -456,17 +485,25 @@ LSSVM-OppM       & 0,7692 & 79,3\% & opposite maps \\
 \label{fig:sparsity}
 \end{figure}
 
-\textbf{Análise:}
+\textbf{Análise (Grid+CV):}
 \begin{itemize}
-  \item \textbf{DualFISTA} apresenta o melhor trade-off em baixa esparsidade:
-        $20\%$ com perda de apenas $0{,}0006$ em F1.
-  \item \textbf{Nyström-SVM} oferece o melhor trade-off em alta esparsidade:
-        $69\%$ com perda de apenas $0{,}008$ em F1. É o único modelo que combina
-        esparsidade $>50\%$ com F1 dentro de $1\%$ do LSSVM-Std.
-  \item Os métodos ADMM/FISTA (primal) produzem esparsidades entre $27$--$30\%$
-        com queda de $3$--$4$ pp. A esparsidade é heterogênea entre datasets.
-  \item Os mais agressivos em esparsidade (LSSVM-Prun, $71\%$; LSSVM-OppM, $79\%$)
-        pagam custo de $\approx 6$--$8$ pp em F1. É digno de nota o caso do \textbf{LSSVM-Prun}: a implementação clássica de poda iterativa cega (que apenas aplica a \textit{pruning rate} sem validação na curva de treinamento) causou colapso total da fronteira de decisão (poda catastrófica) em dados com alta dimensão de ruído (ex.: conjunto CREDIT), derrubando drasticamente a performance. Isso corrobora que a esparsidade agressiva só é sustentável quando guiada por esquemas de \textit{early-stopping} ou métodos estruturados (como o Nyström ou penalizações matemáticas do ADMM/FISTA).
+  \item \textbf{Nyström-SVM} ($78\%$ de esparsidade, F1$=0{,}838$) é o melhor
+        resultado geral: mais esparso que no protocolo Optuna (era $69\%$, agora
+        $78\%$ — o grid expandido de $m\_ratio$ descobriu razões mais baixas) sem
+        custo preditivo em relação ao LSSVM-Std denso.
+  \item \textbf{DualFISTA} atinge apenas $5\%$ de esparsidade (era $20\%$ com
+        Optuna) porque o Grid+CV seleciona $\lambda$ menores que maximizam F1 com
+        pouca regularização. A perda em F1 é $0{,}001$ — negligível.
+  \item Os métodos ADMM/FISTA (primal) apresentam esparsidade $7$--$8\%$ no
+        novo protocolo (era $27$--$30\%$): o grid correto puxou $\lambda$
+        para baixo. A queda em F1 em relação ao LSSVM-Std é $\approx 3$ pp.
+  \item \textbf{LSSVM-Prun} ($62{,}9\%$, F1$=0{,}808$) recuperou-se
+        significativamente com a correção do grid (\texttt{pruning\_rate}$=0{,}05$,
+        $\sigma=15$): era $0{,}782$ ($71{,}6\%$) no protocolo Optuna. A poda
+        agressiva só é sustentável com grid que cubra taxas baixas de poda.
+  \item \textbf{LSSVM-OppM} ($78{,}9\%$) mantém o maior nível de esparsidade mas
+        paga $\approx 8$ pp em F1 relativo ao LSSVM-Std: sem \emph{early stopping},
+        a heurística de mapas opostos não recupera a fronteira de decisão.
 \end{itemize}
 
 \subsection{Esparsidade de atenção inter-features — FT-Transformers baselines}
@@ -842,10 +879,10 @@ Spar.A = esparsidade amostral (LSSVMs); Spar.At = compressão inter-instâncias
 \cmidrule{2-4}\cmidrule{5-6}\cmidrule{7-8}
 \textbf{Modelo} & \textbf{F1} & \textbf{Spar.A} & \textbf{Spar.At} & \textbf{F1} & \textbf{$\Delta$} & \textbf{F1} & \textbf{$\Delta$} & \textbf{F1} \\
 \midrule
-DualFISTA$^\circ$    & 0,842 & 20\% & ---       & 0,979 & $+$0,018 & 0,723 & $-$0,239 & 0,857 \\
-LSSVM-ADMM (paper-base) & 0,809 & 30\% & ---  & 0,977 & $+$0,023 & 0,700 & $-$0,253 & 0,832 \\
-ADMM-ElasticNet$^\circ$ & 0,809 & 27\% & ---  & --- & --- & --- & --- & --- \\
-Nyström-SVM$^\star$  & \textbf{0,834} & \textbf{69\%} & --- & \textbf{0,978} & $+$0,144 & 0,685 & $-$0,149 & 0,845 \\
+DualFISTA$^\circ$    & 0,837 &  5\% & ---       & 0,979 & $+$0,018 & 0,723 & $-$0,239 & 0,857 \\
+LSSVM-ADMM (paper-base) & 0,806 &  8\% & ---  & 0,977 & $+$0,023 & 0,700 & $-$0,253 & 0,832 \\
+ADMM-ElasticNet$^\circ$ & 0,805 &  7\% & ---  & --- & --- & --- & --- & --- \\
+Nyström-SVM$^\star$  & \textbf{0,838} & \textbf{78\%} & --- & \textbf{0,978} & $+$0,144 & 0,685 & $-$0,149 & 0,845 \\
 FT-CUR (Nyströmformer)$^\star$ & 0,747 & --- & $79{,}3\%$ & 0,849 & $+$0,102 & 0,677 & $-$0,070 & 0,809 \\
 SAINT (baseline FT)  & 0,744 & --- & $0\%$ & 0,862 & $+$0,118 & 0,672 & $-$0,072 & 0,807 \\
 \bottomrule
@@ -1056,9 +1093,9 @@ métodos baseados em formulação primal com penalidade $\ell_1$:
 \toprule
 \textbf{Modelo} & \textbf{F1 Tier 1} & \textbf{F1 Tier 2} & \textbf{$\Delta$} & \textbf{Esparsidade Tier 2} \\
 \midrule
-LSSVM-ADMM (paper-base)  & 0,809 & 0,580 & $-$0,229 & 75,2\% \\
-ADMM-ElasticNet$^\circ$ & 0,809 & 0,576 & $-$0,233 & 73,7\% \\
-FISTA-Nesterov           & 0,800 & 0,577 & $-$0,223 & 49,1\% \\
+LSSVM-ADMM (paper-base)  & 0,806 & 0,580 & $-$0,226 & 75,2\% \\
+ADMM-ElasticNet$^\circ$ & 0,805 & 0,576 & $-$0,229 & 73,7\% \\
+FISTA-Nesterov           & 0,806 & 0,577 & $-$0,229 & 49,1\% \\
 \midrule
 \multicolumn{2}{l}{\textit{Referência: LSSVM-Std denso}} & 0,709 & ---       & 0,0\% \\
 \bottomrule
@@ -1199,61 +1236,65 @@ $\Delta$ negativo = perda ao migrar.}
 \toprule
 \textbf{Modelo} & \textbf{Tier 1} & \textbf{Tier 2} & \textbf{$\Delta$} & \textbf{Família} \\
 \midrule
-LSSVM-Std            & 0,842 & 0,709 & $-$0,133 & kernel denso \\
-DualFISTA$^\circ$    & 0,842 & 0,706 & $-$0,136 & dual $\ell_1$ via FISTA \\
-Nyström-LSSVM$^\star$ & 0,834 & 0,707 & $-$0,127 & kernel esparso (81\% esp.) \\
-LSSVM-IP             & 0,835 & 0,694 & $-$0,141 & iterative pruning \\
-LSSVM-PCP            & 0,830 & 0,685 & $-$0,145 & cone projection \\
-LSSVM-FSA            & 0,837 & 0,679 & $-$0,158 & forward selection \\
+LSSVM-Std            & 0,838 & 0,709 & $-$0,129 & kernel denso \\
+DualFISTA$^\circ$    & 0,837 & 0,706 & $-$0,131 & dual $\ell_1$ via FISTA \\
+Nyström-LSSVM$^\star$ & 0,838 & 0,707 & $-$0,131 & kernel esparso (81\% esp.) \\
+LSSVM-IP             & 0,832 & 0,694 & $-$0,138 & iterative pruning \\
+LSSVM-PCP            & 0,827 & 0,685 & $-$0,142 & cone projection \\
+LSSVM-FSA            & 0,829 & 0,679 & $-$0,150 & forward selection \\
 \midrule
-XGBoost              & 0,776 & 0,735 & $-$0,041 & gradient boosting \\
-FT-Softmax           & 0,740 & 0,725 & $-$0,015 & atenção feature densa \\
-FT-Sparsemax         & 0,774 & 0,723 & $-$0,051 & atenção feature esparsa \\
-FT-Entmax            & 0,742 & 0,723 & $-$0,019 & atenção feature esparsa \\
-FT-TopK              & 0,729 & 0,720 & $-$0,009 & atenção feature top-$k$ \\
-SAINT                & 0,744 & 0,722 & $-$0,022 & atenção inter-inst.\ densa \\
-FT-CUR$^\star$       & 0,747 & 0,713 & $-$0,034 & atenção inter-inst.\ comprimida \\
+XGBoost              & 0,826 & 0,735 & $-$0,091 & gradient boosting \\
+FT-Softmax$^\dagger$ & 0,740 & 0,725 & $-$0,015 & atenção feature densa \\
+FT-Sparsemax$^\dagger$ & 0,774 & 0,723 & $-$0,051 & atenção feature esparsa \\
+FT-Entmax$^\dagger$  & 0,742 & 0,723 & $-$0,019 & atenção feature esparsa \\
+FT-TopK$^\dagger$    & 0,729 & 0,720 & $-$0,009 & atenção feature top-$k$ \\
+SAINT$^\dagger$      & 0,744 & 0,722 & $-$0,022 & atenção inter-inst.\ densa \\
+FT-CUR$^{\star\dagger}$ & 0,747 & 0,713 & $-$0,034 & atenção inter-inst.\ comprimida \\
 \midrule
-LSSVM-ADMM (paper-base)  & 0,809 & 0,580 & $-$0,229 & primal $\ell_1$ (ADMM) \\
-ADMM-ElasticNet$^\circ$ & 0,809 & 0,576 & $-$0,233 & primal $\ell_1+\ell_2$ \\
-FISTA-Nesterov            & 0,800 & 0,577 & $-$0,223 & primal $\ell_1$ (FISTA) \\
-LSSVM-Pruning$^\dagger$   & 0,782 & 0,594 & $-$0,188 & pruning iterativo c/ \emph{early stop} \\
-LSSVM-OppMaps             & 0,769 & 0,478 & $-$0,291 & opposite maps \\
+LSSVM-ADMM (paper-base)  & 0,806 & 0,580 & $-$0,226 & primal $\ell_1$ (ADMM) \\
+ADMM-ElasticNet$^\circ$ & 0,805 & 0,576 & $-$0,229 & primal $\ell_1+\ell_2$ \\
+FISTA-Nesterov            & 0,806 & 0,577 & $-$0,229 & primal $\ell_1$ (FISTA) \\
+LSSVM-Pruning$^\dagger$   & 0,808 & 0,594 & $-$0,214 & pruning iterativo c/ \emph{early stop} \\
+LSSVM-OppMaps             & 0,759 & 0,478 & $-$0,281 & opposite maps \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \textbf{Três regimes de deslocamento:}
 \begin{enumerate}
-  \item \textbf{LSSVMs duais bem-comportados ($\Delta \approx -0{,}13$ a $-0{,}16$).}
+  \item \textbf{LSSVMs duais bem-comportados ($\Delta \approx -0{,}13$ a $-0{,}15$).}
         O kernel RBF, ótimo em geometria sintética limpa, perde eficácia em
         dados reais com features categóricas codificadas, redundância e ruído
         estrutural. \emph{Nyström-LSSVM e DualFISTA mantêm-se virtualmente
-        empatados com LSSVM-Std denso} (gap $< 0{,}003$), confirmando que os
+        empatados com LSSVM-Std denso} (gap $< 0{,}002$), confirmando que os
         mecanismos de esparsidade propostos são \emph{neutros} em relação à
         formulação dual.
-  \item \textbf{Transformers e XGBoost ($\Delta \approx -0{,}01$ a $-0{,}05$).}
-        Absorvem a transição com baixa perda. As variantes esparsas de
-        atenção feature-level convergem para o mesmo patamar do softmax denso
-        (intervalo $0{,}720$--$0{,}725$): a esparsidade na atenção
-        inter-features não traz vantagem mensurável em datasets reais.
+  \item \textbf{Transformers e XGBoost.} FT-Transformers ($^\dagger$,
+        protocolo Optuna) absorvem a transição com baixa perda
+        ($\Delta \approx -0{,}01$ a $-0{,}05$). As variantes esparsas convergem
+        para o mesmo patamar do softmax denso ($0{,}720$--$0{,}725$): a
+        esparsidade na atenção inter-features não traz vantagem mensurável.
+        \textbf{XGBoost}, com o novo Grid+CV, passa de $0{,}776$ (Optuna) para
+        $0{,}826$ no Tier 1, resultando em $\Delta = -0{,}091$ --- maior que
+        os Transformers, mas ainda muito inferior ao colapso dos métodos primais.
   \item \textbf{Métodos primais com $\ell_1$ e heurísticas cegas
-        ($\Delta \approx -0{,}19$ a $-0{,}29$).} Os métodos que dependem
+        ($\Delta \approx -0{,}21$ a $-0{,}28$).} Os métodos que dependem
         de regularização agressiva sobre o espaço primal ou de poda
         heurística sofrem o maior colapso. É a contribuição central do
         Tier 2: revelar que o paper-base LSSVM-ADMM-Nesterov possui um
         teto de escalabilidade não evidente em $N \leq 1000$. O
         \textbf{LSSVM-Pruning}, após adquirir \emph{early stopping}
-        guiado por F1 de treino ($^\dagger$, \emph{commit b83243e}),
-        reduz a queda de $-0{,}32$ para $-0{,}19$.
+        guiado por F1 de treino e correção do grid, sobe para $0{,}808$ no
+        Tier 1 e reduz a queda a $-0{,}214$.
 \end{enumerate}
 
-\textbf{Reordenação:} no Tier 1, o ranking era LSSVMs (kernel) > propostos
-(esparsos) > XGBoost > FT-Transformers; no Tier 2, é XGBoost $\geq$
-FT-Transformers + SAINT + FT-CUR > LSSVMs duais (Std, Nyström, DualFISTA,
-IP, PCP, FSA) > primais com $\ell_1$ > heurísticas. A vantagem do paradigma
-Transformer cresce \emph{em proporção à complexidade tabular dos dados}, e
-não à escolha de função de ativação da atenção.
+\textbf{Reordenação:} no Tier 1, o ranking é Nyström/LSSVM-Std/DualFISTA
+(empatados em $\approx 0{,}838$) $>$ IP/FSA/PCP/XGBoost ($0{,}826$--$0{,}832$)
+$>$ primais $\ell_1$ $>$ OppMaps; no Tier 2, é XGBoost $\geq$
+FT-Transformers + SAINT + FT-CUR $>$ LSSVMs duais (Std, Nyström, DualFISTA,
+IP, PCP, FSA) $>$ primais com $\ell_1$ $>$ heurísticas. A vantagem do
+paradigma Transformer cresce \emph{em proporção à complexidade tabular dos
+dados}, e não à escolha de função de ativação da atenção.
 
 % ─────────────────────────────────────────────────────────────────────────────
 \section{Benchmark de Eficiência Computacional em \emph{Full-Data}}
@@ -1358,7 +1399,7 @@ sem perda predominante de $F_1$ no benchmark operacional.
 \toprule
 \textbf{Experimento} & \textbf{Configuração} & \textbf{Runs} & \textbf{Resultado principal} \\
 \midrule
-Tier 1            & 18 modelos, 9 datasets, 30 seeds                     & 4860 & DualFISTA 0,842 / Nyström 0,834 / XGBoost 0,776 \\
+Tier 1            & 12 mod.\ LSSVM+XGB, 9 datasets, 30 seeds (Grid+CV) & 3240 & Nyström 0,838 / LSSVM-Std 0,838 / DualFISTA 0,837 / XGBoost 0,826 \\
 Ablação A (escala) & 18 modelos, 3 sintéticos, $N{=}2000$, 30s            & 1620 & Nyström $+0{,}14$; FT-CUR/SAINT data-hungry \\
 Ablação B (ruído)  & 18 modelos, 3 sintéticos, $+$3 feat.\ ruído, 30s    & 1620 & XGBoost $+0{,}30$ em TWC; FT-CUR/SAINT robustos \\
 Ablação C (MK5)    & 18 modelos, 3 sintéticos, 30 seeds                  & 1620 & Nyström 0,845 $>$ XGBoost 0,829 $>$ FT-CUR 0,809 \\
@@ -1375,10 +1416,10 @@ Benchmark eficiência    & 6 Transformers, 3 datasets reais, 1 seed       & 137 
 \textbf{Conclusões consolidadas:}
 \begin{enumerate}
   \item \textbf{Nyström-LSSVM} é o melhor resultado da dissertação em alta
-        esparsidade: $F_1 = 0{,}834$ no Tier 1 (\(69\%\) esp.) e $0{,}707$
-        no Tier 2 (\(81{,}5\%\) esp.), em ambos os regimes a $\leq 0{,}003$
-        do LSSVM-Std denso. \emph{Compressão sem custo preditivo}, agora
-        confirmado em escala $N=5000$.
+        esparsidade: $F_1 = 0{,}838$ no Tier 1 (\(69\%\) esp., Grid+CV) e
+        $0{,}707$ no Tier 2 (\(81{,}5\%\) esp.), em ambos os regimes a
+        $\leq 0{,}002$ do LSSVM-Std denso. \emph{Compressão sem custo
+        preditivo}, agora confirmado em escala $N=5000$.
   \item \textbf{DualFISTA} mantém F1 essencialmente igual ao LSSVM-Std
         denso em ambos os tiers ($\Delta \leq 0{,}003$). Sua reformulação
         dual elimina o colapso dos métodos primais com $\ell_1$ observado
@@ -1389,11 +1430,11 @@ Benchmark eficiência    & 6 Transformers, 3 datasets reais, 1 seed       & 137 
         ($\Delta \leq 0{,}013$) com \(\approx 89\%\) de compressão
         inter-instâncias, e roda em $N=48$k onde SAINT entra em OOM.
   \item \textbf{Colapso dos métodos primais com $\ell_1$ em escala} é o
-        achado mais inesperado do Tier 2: ADMM-Nesterov (paper-base),
-        ADMM-ElasticNet e FISTA-Nesterov caem de $\approx 0{,}81$ para
-        $\approx 0{,}58$ em $N=5000$. Revela um teto de escalabilidade
-        não detectável em $N \leq 1000$ e justifica a reformulação dual
-        proposta (DualFISTA).
+        achado mais inesperado do Tier 2: ADMM-Nesterov, ADMM-ElasticNet e
+        FISTA-Nesterov caem de $\approx 0{,}806$ (Tier 1, Grid+CV) para
+        $\approx 0{,}58$ em $N=5000$. Revela um teto
+        de escalabilidade não detectável em $N \leq 1000$ e justifica a
+        reformulação dual proposta (DualFISTA).
   \item \textbf{H2 confirmada metodologicamente}: \texttt{val\_loss}
         domina \texttt{val\_acc} como critério de early stopping para
         modelos inter-instâncias em datasets desbalanceados

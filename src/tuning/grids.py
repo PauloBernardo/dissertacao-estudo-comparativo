@@ -128,9 +128,11 @@ GRIDS: dict[str, dict] = {
 
     "FISTANesterov": {
         # λ shifted down: 86% chose 0.01 (old min); removed 1.0.
+        # σ refined: added 0.15 and 1.5 (same as StandardLSSVM) to cover the
+        # ~0.1–0.3 range optimal for spiral/nonlinear synthetic datasets.
         "model_name": "FISTANesterovLSSVM",
         "grid": {
-            "sigma":   [0.05, 0.5, 5.0, 50.0],
+            "sigma":   [0.05, 0.15, 0.5, 1.5, 5.0],
             "tau":     [0.01, 0.1, 1.0, 10.0],
             "lambda_": [0.001, 0.005, 0.01, 0.1],
         },
