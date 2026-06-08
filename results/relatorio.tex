@@ -730,56 +730,10 @@ cenário comum em dados tabulares reais.
 
 \textbf{Configuração:} Três features gaussianas de ruído ($\sigma_\text{ruído}=1{,}0$)
 foram adicionadas às coordenadas $x_1, x_2$ originais ($N=400$).
-Avaliou-se o cenário com \textbf{$\sigma$ reajustado} (novo tuning para os dados
-em 5D).
+Grid+CV completo (30 sementes) nos 12 modelos LSSVM+XGBoost sobre os
+datasets 5D (TWS\_5f, TWM\_5f, TWC\_5f). Resultados de Transformers pendentes.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=\linewidth]{report_figs/fig4_5features.pdf}
-\caption{F1-macro: 2D original (translúcido) vs.\ 5D com $\sigma$ reajustado (sólido).}
-\label{fig:5features}
-\end{figure}
-
-\begin{table}[H]
-\centering
-\caption{Modelos propostos: F1-macro em 2D vs.\ 5D reajustado.}
-\label{tab:5f_proposed}
-\begin{tabular}{llrrr}
-\toprule
-\textbf{Modelo} & \textbf{Dataset} & \textbf{2D} & \textbf{5D reaj.} & \textbf{$\Delta$} \\
-\midrule
-\multirow{3}{*}{DualFISTA}
-  & TWS & 0,994 & 0,648 & $-$0,346 \\
-  & TWM & 1,000 & 0,962 & $-$0,038 \\
-  & TWC & 0,891 & 0,559 & $-$0,332 \\
-\midrule
-\multirow{3}{*}{LSSVM-ADMM}
-  & TWS & 0,992 & 0,632 & $-$0,360 \\
-  & TWM & 0,992 & 0,920 & $-$0,072 \\
-  & TWC & 0,866 & 0,549 & $-$0,317 \\
-\midrule
-\multirow{3}{*}{Nyström-SVM}
-  & TWS & 0,992 & 0,560 & $-$0,432 \\
-  & TWM & 1,000 & 0,966 & $-$0,034 \\
-  & TWC & 0,858 & 0,529 & $-$0,329 \\
-\midrule
-\multirow{3}{*}{FT-CUR (Nyströmformer)}
-  & TWS & 0,654 & 0,607 & $-$0,047 \\
-  & TWM & 0,981 & 0,928 & $-$0,053 \\
-  & TWC & 0,564 & 0,495 & $-$0,069 \\
-\midrule
-\multirow{3}{*}{SAINT}
-  & TWS & 0,639 & 0,595 & $-$0,044 \\
-  & TWM & 0,969 & 0,930 & $-$0,039 \\
-  & TWC & 0,588 & 0,490 & $-$0,098 \\
-\midrule
-\multirow{3}{*}{XGBoost}
-  & TWS & 0,875 & 0,927 & $+$0,052 \\
-  & TWM & 0,978 & 0,982 & $+$0,004 \\
-  & TWC & 0,476 & 0,772 & $+$0,296 \\
-\bottomrule
-\end{tabular}
-\end{table}
+\input{tables/ablation_b.tex}
 
 \textbf{Análise mecânica:} A adição de 3 features de ruído expande a distância
 euclidiana quadrática média em $\approx 3\sigma_\text{ruído}^2$, colapsando os
@@ -789,22 +743,21 @@ mas não restitui a resolução espacial original em fronteiras de alta frequên
 
 \textbf{Padrões observados:}
 \begin{itemize}
-  \item \textbf{DualFISTA}, \textbf{LSSVM-ADMM} e \textbf{Nyström-SVM} sofrem
-        quedas severas em TWS e TWC ($\Delta$ de $-0{,}33$ a $-0{,}43$), pelo
-        mesmo motivo estrutural: o kernel RBF não distingue features informativas
-        de ruído. O Nyström, agora com base $> 0{,}85$ em 2D, tem queda
-        proporcionalmente similar aos outros LSSVMs.
-  \item \textbf{FT-CUR} e \textbf{SAINT} são notavelmente robustos
-        ($\Delta \approx -0{,}04$ a $-0{,}10$): a atenção opera sobre representações
-        aprendidas dos tokens, não sobre distâncias brutas entre amostras. Features
-        irrelevantes têm impacto marginal porque o modelo aprende a ignorá-las.
-        Esta é a vantagem estrutural mais clara dos Transformers tabulares sobre
-        os métodos kernel neste cenário.
-  \item \textbf{XGBoost} \emph{melhora} com features extras
-        ($\Delta = +0{,}05$ a $+0{,}30$): árvores aproveitam o sinal adicional.
-        Em TWC vai de $0{,}476$ (2D) para $0{,}772$ (5D retunado) --- o ganho
-        mais expressivo do estudo. Confirma a complementaridade dos paradigmas:
-        kernel para geometria pura, árvores para feature-rich tabular.
+  \item \textbf{XGBoost} é o mais robusto de todos: queda média de apenas
+        $-0{,}048$, praticamente nula em TWM ($-0{,}000$) e moderada em TWC
+        ($-0{,}131$). Árvores de decisão com feature importance natural ignoram
+        dimensões irrelevantes, o que constitui vantagem estrutural sobre
+        métodos kernel neste cenário.
+  \item Todos os \textbf{LSSVMs sofrem quedas severas} em TWS e TWC
+        ($\Delta$ de $-0{,}26$ a $-0{,}39$): o kernel RBF isotrópico trata
+        todas as dimensões igualmente, portanto as 3 novas dimensões de ruído
+        distorcem as distâncias e destroem a estrutura aprendida.
+  \item \textbf{DualFISTA} e \textbf{ADMM} são os LSSVMs mais robustos
+        ($\overline{\Delta} \approx -0{,}26$); \textbf{OppositeMaps} é o mais
+        sensível ($-0{,}39$), seguido de \textbf{Pruning} ($-0{,}32$).
+  \item \textbf{TWM} é consistentemente mais resistente ao ruído que TWS e TWC
+        em todos os modelos: sua fronteira de decisão linear/simples é menos
+        afetada pela distorção das distâncias.
 \end{itemize}
 
 % ─────────────────────────────────────────────────────────────────────────────
@@ -814,62 +767,28 @@ mas não restitui a resolução espacial original em fronteiras de alta frequên
 \textbf{Motivação:} Os datasets sintéticos anteriores (TWS/TWM/TWC) são
 bidimensionais, favorecendo o kernel RBF. O MK5 usa dados gerados por
 \texttt{make\_classification} (scikit-learn) com 5 features verdadeiramente
-informativas em 3 níveis de dificuldade de separação.
+informativas em 3 níveis de dificuldade: MKE (fácil), MKM (médio), MKH (difícil).
+Grid+CV completo, 30 sementes, 12 modelos LSSVM+XGBoost.
+Resultados de Transformers pendentes.
 
-\begin{table}[H]
-\centering
-\caption{Ablação C (MK5) --- F1-macro médio (30 sementes).
-MKE = fácil, MKM = médio, MKH = difícil. $\star$ = proposto.
-Spar.A = esparsidade amostral; Spar.At = esparsidade de atenção.}
-\label{tab:mk5}
-\resizebox{\linewidth}{!}{%
-\begin{tabular}{lrrrr rr}
-\toprule
-\textbf{Modelo} & \textbf{MKE} & \textbf{MKM} & \textbf{MKH} & \textbf{Média} & \textbf{Spar.A} & \textbf{Spar.At} \\
-\midrule
-\multicolumn{7}{l}{\textit{Baseline geral tabular}} \\
-XGBoost      & 0,978 & 0,820 & 0,690 & 0,829 & --- & --- \\
-\multicolumn{7}{l}{\textit{Baselines LSSVM}} \\
-LSSVM-Std    & 0,987 & 0,859 & 0,729 & 0,859 &  0,0\% & --- \\
-LSSVM-FSA    & 0,986 & 0,833 & 0,696 & 0,838 & 45,0\% & --- \\
-LSSVM-IP     & 0,989 & 0,819 & 0,683 & 0,830 & 58,1\% & --- \\
-LSSVM-PCP    & 0,973 & 0,827 & 0,683 & 0,828 &  0,0\% & --- \\
-LSSVM-ADMM   & 0,986 & 0,825 & 0,685 & 0,832 &  9,6\% & --- \\
-LSSVM-Prun   & 0,988 & 0,601 & 0,622 & 0,737 & 75,5\% & --- \\
-LSSVM-OppM   & 0,888 & 0,632 & 0,523 & 0,681 & 78,0\% & --- \\
-\multicolumn{7}{l}{\textit{Baselines FT-Transformer}} \\
-FT-Softmax   & 0,976 & 0,797 & 0,669 & 0,814 & --- &  0,2\% \\
-FT-Entmax    & 0,976 & 0,801 & 0,657 & 0,811 & --- &  1,4\% \\
-FT-Sparsemax & 0,975 & 0,787 & 0,652 & 0,805 & --- & 39,1\% \\
-FT-TopK      & 0,975 & 0,768 & 0,644 & 0,796 & --- & 76,8\% \\
-\midrule
-\multicolumn{7}{l}{\textit{Modelos propostos}} \\
-DualFISTA$^\star$    & \textbf{0,987} & \textbf{0,858} & \textbf{0,726} & \textbf{0,857} & 21,4\% & --- \\
-Nyström-SVM$^\star$  & 0,986 & 0,839 & 0,712 & 0,845 & 64,3\% & --- \\
-FT-CUR$^\star$ (Nyströmformer) & 0,967 & 0,797 & 0,664 & 0,809 & --- & $78{,}2\%$ \\
-SAINT                & 0,971 & 0,782 & 0,668 & 0,807 & --- & $0\%$ \\
-\bottomrule
-\end{tabular}}
-\end{table}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=\linewidth]{report_figs/fig5_mk5.pdf}
-\caption{Ablação C --- MK5: F1-macro por nível de dificuldade.}
-\label{fig:mk5}
-\end{figure}
+\input{tables/ablation_c.tex}
 
 \textbf{Destaques:}
 \begin{itemize}
-  \item \textbf{DualFISTA} ($0{,}857$) quase empata com o LSSVM-Std ($0{,}859$)
-        com $21\%$ de esparsidade --- padrão consistente com o Tier~1.
-  \item \textbf{Nyström-SVM} ($0{,}845$) supera todos os FT-Transformers neste
-        cenário multifeature, com $64\%$ de esparsidade: a aproximação Nyström é
-        eficaz quando há features informativas distribuídas em dimensão maior
-        que 2D.
-  \item \textbf{SAINT} ($0{,}807$) e \textbf{FT-CUR} ($0{,}809$) ficam novamente
-        empatados (diferença $0{,}002$), confirmando que a compressão
-        Nyströmformer no FT-CUR não custa F1 também em dados multifeature.
+  \item \textbf{LSSVM-Std} lidera com $0{,}851$ de F1 médio, seguido de
+        \textbf{Nyström-SVM} ($0{,}841$), \textbf{DualFISTA} ($0{,}838$) e
+        \textbf{LSSVM-IP} ($0{,}840$) --- o mesmo bloco líder do Tier 1.
+        O ranking é essencialmente preservado quando se passa de 2 para 5
+        features informativas.
+  \item \textbf{XGBoost} ($0{,}827$) permanece competitivo, agora próximo do
+        LSSVM-PCP ($0{,}826$). Com 5 features informativas (sem ruído), as
+        árvores exploram bem o espaço de features.
+  \item \textbf{MKH} é o nível mais difícil para todos: F1 médio cai para
+        $0{,}63$--$0{,}71$ (vs $0{,}97$--$0{,}99$ em MKE), indicando fronteiras
+        de decisão mais complexas que excedem a capacidade dos modelos com $N=400$.
+  \item \textbf{LSSVM-Pruning} ($0{,}809$) e \textbf{OppMaps} ($0{,}681$) ficam
+        claramente abaixo dos demais, padrão consistente com o Tier 1 e com a
+        ablação de escalabilidade.
 \end{itemize}
 
 % ─────────────────────────────────────────────────────────────────────────────
