@@ -376,6 +376,60 @@ são os piores. O colapso dos Transformers nos datasets sintéticos TWS/TWM/TWC
 --- onde a fronteira de decisão exige inductive bias geométrico que a atenção
 não possui --- é o principal responsável pelos ranks baixos.
 
+\subsection{Ranking nos datasets reais (sem sintéticos)}
+\label{sec:tier1_friedman_real}
+
+Para isolar o efeito do inductive bias geométrico, repetiu-se a análise de
+Friedman excluindo os três datasets sintéticos (TWS, TWM, TWC) e considerando
+apenas os seis datasets reais (BCW, PID, HAB, VCP, GCR, AUS).
+
+Resultado: $\chi^2 = 88{,}38$, $p \approx 0$, $\text{CD} = 9{,}56$
+(18 modelos $\times$ 6 datasets).
+
+\begin{center}
+\small
+\begin{tabular}{clrr}
+\toprule
+Rank & Modelo & Avg.\ rank & F1 médio \\
+\midrule
+1  & LSSVM-Nyström       & 3,167 & 0,776 \\
+2  & LSSVM-Std           & 3,333 & 0,775 \\
+3  & LSSVM-DualFISTA     & 3,833 & 0,773 \\
+4  & XGBoost             & 6,167 & 0,766 \\
+5  & LSSVM-IP            & 6,500 & 0,766 \\
+6  & LSSVM-FSA           & 7,667 & 0,766 \\
+\midrule
+7  & \textbf{FT-CUR}     & 9,000 & 0,751 \\
+8  & LSSVM-PCP           & 9,167 & 0,763 \\
+9  & \textbf{FT-Softmax} & 9,333 & 0,754 \\
+10 & \textbf{SAINT}      & 10,167 & 0,743 \\
+11 & \textbf{FT-Entmax}  & 10,833 & 0,749 \\
+12 & LSSVM-Pruning       & 11,500 & 0,733 \\
+13 & \textbf{FT-Sparsemax} & 11,500 & 0,748 \\
+14 & LSSVM-ADMM          & 12,750 & 0,734 \\
+15 & \textbf{FT-TopK}    & 12,833 & 0,733 \\
+16 & LSSVM-FISTA         & 13,167 & 0,732 \\
+17 & LSSVM-ADMM-EN       & 13,417 & 0,735 \\
+18 & LSSVM-OppMaps       & 16,667 & 0,658 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Interpretação:} sem os datasets sintéticos, os Transformers sobem
+significativamente no ranking. FT-CUR (rank 7) e FT-Softmax (rank 9)
+superam LSSVM-PCP, LSSVM-Pruning, LSSVM-ADMM e LSSVM-FISTA. A diferença
+entre o bloco líder LSSVM (ranks 3,2--3,8) e os melhores Transformers
+(rank 9,0--9,3) é inferior ao CD ($9{,}56$), portanto
+\textbf{não é estatisticamente significativa} para $\alpha = 0{,}05$.
+
+Conclui-se que o fraco desempenho global dos Transformers no Tier 1 é
+\emph{quase inteiramente explicado pelo colapso nos datasets sintéticos}.
+Em dados tabulares reais, Transformers e LSSVMs com kernel são
+estatisticamente equivalentes no topo. A escolha entre as duas famílias
+deve ser guiada pelo tipo de dado: para dados com estrutura geométrica
+não-linear e $N$ pequeno, kernel methods dominam; para dados tabulares
+heterogêneos reais, Transformers são alternativas viáveis.
+
 % ─────────────────────────────────────────────────────────────────────────────
 \section{Arquitetura dos FT-Transformers e Tipos de Atenção}
 \label{sec:ft_attention}
