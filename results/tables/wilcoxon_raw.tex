@@ -3,22 +3,28 @@
   \caption{P-valores brutos do teste de Wilcoxon signed-rank (sem correção; negrito = $p<0{,}05$).}
   \label{tab:wilcoxon_raw}
   \resizebox{\textwidth}{!}{%
-  \begin{tabular}{lrrrrrrrrrrrr}
+  \begin{tabular}{lrrrrrrrrrrrrrrrrrr}
     \toprule
-     & LSSVM-ADMM-Elastic & LSSVM-ADMM & LSSVM-DualFISTA & LSSVM-FISTA & LSSVM-FSA & LSSVM-IP & LSSVM-Nystrom & LSSVM-OppMaps & LSSVM-PCP & LSSVM-Pruning & LSSVM (Standard) & XGBoost \\
+     & LSSVM-ADMM-Elastic & LSSVM-ADMM & LSSVM-DualFISTA & LSSVM-FISTA & LSSVM-FSA & FTTransformerCURColnorm & FTTransformer\_entmax & FTTransformer\_softmax & FTTransformer\_sparsemax & FTTransformer\_topk & LSSVM-IP & LSSVM-Nystrom & LSSVM-OppMaps & LSSVM-PCP & LSSVM-Pruning & SAINTColnorm & LSSVM (Standard) & XGBoost \\
     \midrule
-    LSSVM-ADMM-Elastic & -- & 0.219 & 0.074 & 0.910 & 0.098 & 0.098 & 0.055 & 0.301 & \textbf{0.004} & 0.426 & 0.055 & 0.250 \\
-LSSVM-ADMM & 0.219 & -- & 0.074 & 1.000 & 0.129 & 0.098 & 0.055 & 0.301 & \textbf{0.008} & 0.426 & 0.055 & 0.250 \\
-LSSVM-DualFISTA & 0.074 & 0.074 & -- & 0.055 & \textbf{0.008} & \textbf{0.027} & 0.734 & \textbf{0.008} & 0.129 & \textbf{0.004} & 1.000 & 0.129 \\
-LSSVM-FISTA & 0.910 & 1.000 & 0.055 & -- & 0.098 & 0.055 & \textbf{0.039} & 0.203 & \textbf{0.012} & 0.426 & \textbf{0.039} & 0.250 \\
-LSSVM-FSA & 0.098 & 0.129 & \textbf{0.008} & 0.098 & -- & 0.359 & \textbf{0.012} & \textbf{0.027} & 0.426 & 0.496 & \textbf{0.020} & 0.820 \\
-LSSVM-IP & 0.098 & 0.098 & \textbf{0.027} & 0.055 & 0.359 & -- & \textbf{0.039} & \textbf{0.020} & 0.250 & \textbf{0.012} & \textbf{0.027} & 0.734 \\
-LSSVM-Nystrom & 0.055 & 0.055 & 0.734 & \textbf{0.039} & \textbf{0.012} & \textbf{0.039} & -- & \textbf{0.020} & 0.098 & \textbf{0.004} & 1.000 & \textbf{0.039} \\
-LSSVM-OppMaps & 0.301 & 0.301 & \textbf{0.008} & 0.203 & \textbf{0.027} & \textbf{0.020} & \textbf{0.020} & -- & 0.074 & \textbf{0.020} & \textbf{0.020} & 0.055 \\
-LSSVM-PCP & \textbf{0.004} & \textbf{0.008} & 0.129 & \textbf{0.012} & 0.426 & 0.250 & 0.098 & 0.074 & -- & 0.820 & 0.129 & 0.820 \\
-LSSVM-Pruning & 0.426 & 0.426 & \textbf{0.004} & 0.426 & 0.496 & \textbf{0.012} & \textbf{0.004} & \textbf{0.020} & 0.820 & -- & \textbf{0.008} & 0.426 \\
-LSSVM (Standard) & 0.055 & 0.055 & 1.000 & \textbf{0.039} & \textbf{0.020} & \textbf{0.027} & 1.000 & \textbf{0.020} & 0.129 & \textbf{0.008} & -- & 0.129 \\
-XGBoost & 0.250 & 0.250 & 0.129 & 0.250 & 0.820 & 0.734 & \textbf{0.039} & 0.055 & 0.820 & 0.426 & 0.129 & -- \\
+    LSSVM-ADMM-Elastic & -- & 0.219 & 0.074 & 0.910 & 0.098 & 0.426 & 0.359 & 0.426 & 0.426 & 0.250 & 0.098 & 0.055 & 0.301 & \textbf{0.004} & 0.426 & 0.426 & 0.055 & 0.250 \\
+LSSVM-ADMM & 0.219 & -- & 0.074 & 1.000 & 0.129 & 0.426 & 0.359 & 0.426 & 0.426 & 0.250 & 0.098 & 0.055 & 0.301 & \textbf{0.008} & 0.426 & 0.426 & 0.055 & 0.250 \\
+LSSVM-DualFISTA & 0.074 & 0.074 & -- & 0.055 & \textbf{0.008} & \textbf{0.012} & \textbf{0.004} & \textbf{0.008} & \textbf{0.004} & \textbf{0.004} & \textbf{0.027} & 0.734 & \textbf{0.008} & 0.129 & \textbf{0.004} & \textbf{0.004} & 1.000 & 0.129 \\
+LSSVM-FISTA & 0.910 & 1.000 & 0.055 & -- & 0.098 & 0.570 & 0.426 & 0.496 & 0.426 & 0.203 & 0.055 & \textbf{0.039} & 0.203 & \textbf{0.012} & 0.426 & 0.359 & \textbf{0.039} & 0.250 \\
+LSSVM-FSA & 0.098 & 0.129 & \textbf{0.008} & 0.098 & -- & \textbf{0.039} & \textbf{0.020} & \textbf{0.027} & \textbf{0.020} & \textbf{0.008} & 0.359 & \textbf{0.012} & \textbf{0.027} & 0.426 & 0.496 & \textbf{0.020} & \textbf{0.020} & 0.820 \\
+FTTransformerCURColnorm & 0.426 & 0.426 & \textbf{0.012} & 0.570 & \textbf{0.039} & -- & 0.570 & 0.652 & 0.652 & 0.250 & \textbf{0.027} & \textbf{0.004} & 1.000 & 0.098 & 0.301 & 0.426 & \textbf{0.004} & \textbf{0.039} \\
+FTTransformer\_entmax & 0.359 & 0.359 & \textbf{0.004} & 0.426 & \textbf{0.020} & 0.570 & -- & 0.496 & 0.301 & 0.164 & \textbf{0.020} & \textbf{0.004} & 0.910 & 0.055 & 0.426 & 0.570 & \textbf{0.004} & \textbf{0.004} \\
+FTTransformer\_softmax & 0.426 & 0.426 & \textbf{0.008} & 0.496 & \textbf{0.027} & 0.652 & 0.496 & -- & 1.000 & 0.164 & \textbf{0.012} & \textbf{0.004} & 1.000 & 0.129 & 0.496 & 0.570 & \textbf{0.004} & \textbf{0.027} \\
+FTTransformer\_sparsemax & 0.426 & 0.426 & \textbf{0.004} & 0.426 & \textbf{0.020} & 0.652 & 0.301 & 1.000 & -- & 0.129 & \textbf{0.012} & \textbf{0.004} & 1.000 & 0.074 & 0.496 & 0.496 & \textbf{0.004} & \textbf{0.004} \\
+FTTransformer\_topk & 0.250 & 0.250 & \textbf{0.004} & 0.203 & \textbf{0.008} & 0.250 & 0.164 & 0.164 & 0.129 & -- & \textbf{0.004} & \textbf{0.004} & 0.910 & \textbf{0.027} & 0.203 & 0.734 & \textbf{0.004} & \textbf{0.004} \\
+LSSVM-IP & 0.098 & 0.098 & \textbf{0.027} & 0.055 & 0.359 & \textbf{0.027} & \textbf{0.020} & \textbf{0.012} & \textbf{0.012} & \textbf{0.004} & -- & \textbf{0.039} & \textbf{0.020} & 0.250 & \textbf{0.012} & \textbf{0.008} & \textbf{0.027} & 0.734 \\
+LSSVM-Nystrom & 0.055 & 0.055 & 0.734 & \textbf{0.039} & \textbf{0.012} & \textbf{0.004} & \textbf{0.004} & \textbf{0.004} & \textbf{0.004} & \textbf{0.004} & \textbf{0.039} & -- & \textbf{0.020} & 0.098 & \textbf{0.004} & \textbf{0.008} & 1.000 & \textbf{0.039} \\
+LSSVM-OppMaps & 0.301 & 0.301 & \textbf{0.008} & 0.203 & \textbf{0.027} & 1.000 & 0.910 & 1.000 & 1.000 & 0.910 & \textbf{0.020} & \textbf{0.020} & -- & 0.074 & \textbf{0.020} & 0.910 & \textbf{0.020} & 0.055 \\
+LSSVM-PCP & \textbf{0.004} & \textbf{0.008} & 0.129 & \textbf{0.012} & 0.426 & 0.098 & 0.055 & 0.129 & 0.074 & \textbf{0.027} & 0.250 & 0.098 & 0.074 & -- & 0.820 & 0.129 & 0.129 & 0.820 \\
+LSSVM-Pruning & 0.426 & 0.426 & \textbf{0.004} & 0.426 & 0.496 & 0.301 & 0.426 & 0.496 & 0.496 & 0.203 & \textbf{0.012} & \textbf{0.004} & \textbf{0.020} & 0.820 & -- & 0.301 & \textbf{0.008} & 0.426 \\
+SAINTColnorm & 0.426 & 0.426 & \textbf{0.004} & 0.359 & \textbf{0.020} & 0.426 & 0.570 & 0.570 & 0.496 & 0.734 & \textbf{0.008} & \textbf{0.008} & 0.910 & 0.129 & 0.301 & -- & \textbf{0.008} & \textbf{0.020} \\
+LSSVM (Standard) & 0.055 & 0.055 & 1.000 & \textbf{0.039} & \textbf{0.020} & \textbf{0.004} & \textbf{0.004} & \textbf{0.004} & \textbf{0.004} & \textbf{0.004} & \textbf{0.027} & 1.000 & \textbf{0.020} & 0.129 & \textbf{0.008} & \textbf{0.008} & -- & 0.129 \\
+XGBoost & 0.250 & 0.250 & 0.129 & 0.250 & 0.820 & \textbf{0.039} & \textbf{0.004} & \textbf{0.027} & \textbf{0.004} & \textbf{0.004} & 0.734 & \textbf{0.039} & 0.055 & 0.820 & 0.426 & \textbf{0.020} & 0.129 & -- \\
     \bottomrule
   \end{tabular}}
 \end{table}

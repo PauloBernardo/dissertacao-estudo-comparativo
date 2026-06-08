@@ -1,0 +1,26 @@
+\begin{table}[ht]
+  \centering
+  \caption{Ablação A — Escalabilidade amostral: F1-macro médio (30 sementes) em N=400 vs N=2000.}
+  \label{tab:ablation_a}
+  \footnotesize
+  \begin{tabular}{lcccccccccc}
+    \toprule
+    \multicolumn{1}{c}{} & \multicolumn{3}{c}{TWS} & \multicolumn{3}{c}{TWM} & \multicolumn{3}{c}{TWC} & \multicolumn{1}{c}{} \\
+    \cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}
+    Modelo & $N_{400}$ & $N_{2k}$ & $\Delta$ & $N_{400}$ & $N_{2k}$ & $\Delta$ & $N_{400}$ & $N_{2k}$ & $\Delta$ & $\overline{\Delta}$ \\
+    \midrule
+    LSSVM-Nyström & 0.992 & --- & --- & 0.999 & --- & --- & 0.898 & --- & --- & --- \\
+    LSSVM (Std) & 0.994 & 0.996 & ++0.003 & 0.997 & 0.998 & ++0.002 & 0.898 & 0.946 & ++0.048 & ++0.017 \\
+    LSSVM-DualFISTA & 0.992 & --- & --- & 1.000 & --- & --- & 0.905 & --- & --- & --- \\
+    LSSVM-IP & 0.992 & --- & --- & 0.996 & --- & --- & 0.897 & --- & --- & --- \\
+    LSSVM-FSA & 0.987 & 0.994 & ++0.007 & 0.997 & 0.997 & -0.000 & 0.879 & --- & --- & ++0.004 \\
+    LSSVM-PCP & 0.990 & 0.994 & ++0.004 & 0.993 & 0.997 & ++0.005 & 0.880 & 0.936 & ++0.057 & ++0.022 \\
+    XGBoost & 0.944 & --- & --- & 0.984 & --- & --- & 0.912 & --- & --- & --- \\
+    LSSVM-Pruning & 0.989 & --- & --- & 0.997 & --- & --- & 0.891 & --- & --- & --- \\
+    LSSVM-FISTA & 0.989 & --- & --- & 0.996 & --- & --- & 0.875 & --- & --- & --- \\
+    LSSVM-ADMM & 0.974 & --- & --- & 0.988 & --- & --- & 0.883 & --- & --- & --- \\
+    LSSVM-ADMM-EN & 0.974 & --- & --- & 0.988 & --- & --- & 0.879 & --- & --- & --- \\
+    LSSVM-OppMaps & 0.986 & --- & --- & 0.991 & --- & --- & 0.907 & --- & --- & --- \\
+    \bottomrule
+  \end{tabular}
+\end{table}

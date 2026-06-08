@@ -1,0 +1,24 @@
+\begin{table}[ht]
+  \centering
+  \caption{Ablação C — Síntético multifeature (MK5): F1-macro médio (30 sementes).}
+  \label{tab:ablation_c}
+  \footnotesize
+  \begin{tabular}{lcccc}
+    \toprule
+    Modelo & MKE & MKM & MKH & Média \\
+    \midrule
+    LSSVM-Nyström & --- & --- & --- & --- \\
+    LSSVM (Std) & 0.987 & 0.858 & 0.709 & 0.851 \\
+    LSSVM-DualFISTA & --- & --- & --- & --- \\
+    LSSVM-IP & 0.985 & 0.834 & 0.700 & 0.840 \\
+    LSSVM-FSA & 0.986 & 0.831 & 0.686 & 0.834 \\
+    LSSVM-PCP & 0.984 & 0.821 & 0.672 & 0.826 \\
+    XGBoost & --- & --- & --- & --- \\
+    LSSVM-Pruning & 0.985 & 0.809 & 0.633 & 0.809 \\
+    LSSVM-FISTA & --- & --- & --- & --- \\
+    LSSVM-ADMM & 0.983 & 0.811 & 0.668 & 0.821 \\
+    LSSVM-ADMM-EN & 0.983 & --- & --- & 0.983 \\
+    LSSVM-OppMaps & 0.903 & 0.622 & 0.519 & 0.681 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
