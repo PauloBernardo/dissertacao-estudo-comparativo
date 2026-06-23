@@ -43,125 +43,108 @@ GRIDS: dict[str, dict] = {
     },
 
     "PCPLSSVm": {
+        # sigma=0.15 em 100% dos casos sintéticos (TWS/TWM/TWC Tier 1).
         "model_name": "PCPLSSVm",
         "grid": {
-            "sigma": [0.05, 0.15, 0.5, 1.5, 5.0],
-            "tau":   [0.1, 0.5, 2.5, 12.5, 50.0],
-            "rank":  [20, 50, 100, 200],
+            "tau":  [0.1, 0.5, 2.5, 12.5, 50.0],
+            "rank": [20, 50, 100, 200],
         },
-        "fixed": {},
+        "fixed": {"sigma": 0.15},
         "needs_gpu": False,
     },
 
     "FSALSSVm": {
+        # sigma=0.5 em 73% dos casos sintéticos (TWS/TWM/TWC Tier 1).
         "model_name": "FSALSSVm",
         "grid": {
-            "sigma":        [0.05, 0.15, 0.5, 1.5, 5.0],
             "tau":          [0.1, 0.5, 2.5, 12.5, 50.0],
             "n_components": [50, 100, 200],
         },
-        "fixed": {},
+        "fixed": {"sigma": 0.5},
         "needs_gpu": False,
     },
 
     "IPLSSVm": {
+        # sigma=0.5 em 83% dos casos sintéticos (TWS/TWM/TWC Tier 1).
         "model_name": "IPLSSVm",
         "grid": {
-            "sigma":           [0.05, 0.15, 0.5, 1.5, 5.0],
             "tau":             [0.1, 0.5, 2.5, 12.5, 50.0],
             "selection_ratio": [0.1, 0.2, 0.5, 0.7],
         },
-        "fixed": {},
+        "fixed": {"sigma": 0.5},
         "needs_gpu": False,
     },
 
     "PruningLSSVM": {
+        # pruning_rate=0.05 em 100% dos casos sintéticos (TWS/TWM/TWC Tier 1).
         "model_name": "PruningLSSVM",
         "grid": {
-            "sigma":        [0.05, 0.15, 0.5, 1.5, 5.0, 15.0],
-            "tau":          [0.1, 0.5, 2.5, 12.5, 50.0],
-            "pruning_rate": [0.05, 0.10, 0.20, 0.30],
+            "sigma": [0.05, 0.15, 0.5, 1.5, 5.0, 15.0],
+            "tau":   [0.1, 0.5, 2.5, 12.5, 50.0],
         },
-        "fixed": {"drop_tolerance": 0.05},
+        "fixed": {"drop_tolerance": 0.05, "pruning_rate": 0.05},
         "needs_gpu": False,
     },
 
     "OppositeMapsLSSVM": {
+        # sigma=0.5 em 87%, n_prototypes=100 em 97% dos casos sintéticos.
         "model_name": "OppositeMapsLSSVM",
         "grid": {
-            "sigma":        [0.05, 0.15, 0.5, 1.5, 5.0],
-            "tau":          [0.1, 0.5, 2.5, 12.5, 50.0],
-            "n_prototypes": [10, 30, 100, 200],
+            "tau": [0.1, 0.5, 2.5, 12.5, 50.0],
         },
-        "fixed": {"drop_tolerance": 0.05},
+        "fixed": {"drop_tolerance": 0.05, "sigma": 0.5, "n_prototypes": 100},
         "needs_gpu": False,
     },
 
     # ───────────────────── LSSVM paper-base + variants ────────────────────
 
     "ADMMNesterovLSSVM": {
-        # σ, τ, λ — 3 hyperparameters per Marinho et al.; ρ auto-set.
-        # λ range shifted down: 73% chose 0.01 (old min); removed 1.0, 10.0.
+        # sigma=0.1 em 98%, lambda_=0.001 em 87% dos casos sintéticos.
         "model_name": "ADMMNesterovLSSVM",
         "grid": {
-            "sigma":   [0.1, 0.5, 2.0, 8.0, 32.0],
-            "tau":     [0.005, 0.05, 0.5, 5.0, 50.0],
-            "lambda_": [0.001, 0.005, 0.01, 0.1],
+            "tau": [0.005, 0.05, 0.5, 5.0, 50.0],
         },
-        "fixed": {"rho": None, "max_iter": 500},
+        "fixed": {"sigma": 0.1, "lambda_": 0.001, "rho": None, "max_iter": 500},
         "needs_gpu": False,
     },
 
     "ADMMElasticNet": {
-        # ADMMNesterovLSSVM with lambda2_ > 0 (Elastic Net penalty).
-        # Same λ shift as ADMM-N; λ₂ extended down (80% chose 0.01 old min).
+        # sigma=0.1 em 98%, lambda_=0.001 em 89%, lambda2_=0.001 em 76% dos casos sintéticos.
         "model_name": "ADMMNesterovLSSVM",
         "grid": {
-            "sigma":    [0.1, 0.5, 2.0, 8.0, 32.0],
-            "tau":      [0.005, 0.05, 0.5, 5.0, 50.0],
-            "lambda_":  [0.001, 0.005, 0.01, 0.1],
-            "lambda2_": [0.001, 0.01, 0.1],
+            "tau": [0.005, 0.05, 0.5, 5.0, 50.0],
         },
-        "fixed": {"rho": None, "max_iter": 500},
+        "fixed": {"sigma": 0.1, "lambda_": 0.001, "lambda2_": 0.001, "rho": None, "max_iter": 500},
         "needs_gpu": False,
     },
 
     "FISTANesterov": {
-        # λ shifted down: 86% chose 0.01 (old min); removed 1.0.
-        # σ refined: added 0.15 and 1.5 (same as StandardLSSVM) to cover the
-        # ~0.1–0.3 range optimal for spiral/nonlinear synthetic datasets.
+        # sigma=0.15 em 100%, lambda_=0.001 em 84% dos casos sintéticos (TWS/TWM/TWC Tier 1).
         "model_name": "FISTANesterovLSSVM",
         "grid": {
-            "sigma":   [0.05, 0.15, 0.5, 1.5, 5.0],
-            "tau":     [0.01, 0.1, 1.0, 10.0],
-            "lambda_": [0.001, 0.005, 0.01, 0.1],
+            "tau": [0.01, 0.1, 1.0, 10.0],
         },
-        "fixed": {},
+        "fixed": {"sigma": 0.15, "lambda_": 0.001},
         "needs_gpu": False,
     },
 
     "DualFISTA": {
-        # λ shifted down: 68% chose 0.01 (old min); removed 1.0 (0 chosen).
+        # sigma=0.5 em 100%, lambda_=0.001 em 73% dos casos sintéticos (TWS/TWM/TWC Tier 1).
         "model_name": "DualFISTALSSVM",
         "grid": {
-            "sigma":   [0.05, 0.5, 5.0, 50.0],
-            "tau":     [0.01, 0.1, 1.0, 10.0],
-            "lambda_": [0.001, 0.01, 0.1],
+            "tau": [0.01, 0.1, 1.0, 10.0],
         },
-        "fixed": {},
+        "fixed": {"sigma": 0.5, "lambda_": 0.001},
         "needs_gpu": False,
     },
 
     "NystromLSSVMColnorm": {
-        # gamma extended to 100 (74% hit old max of 10).
-        # m_ratio extended to 0.30 (67% hit old max of 0.20).
+        # sigma=0.5 em 100%, m_ratio=0.30 em 78% dos casos sintéticos.
         "model_name": "NystromLSSVMColnorm",
         "grid": {
-            "sigma":   [0.1, 0.5, 2.0, 8.0],
-            "gamma":   [0.1, 1.0, 10.0, 30.0, 50.0, 100.0],
-            "m_ratio": [0.05, 0.10, 0.20, 0.30],
+            "gamma": [0.1, 1.0, 10.0, 30.0, 50.0, 100.0],
         },
-        "fixed": {},
+        "fixed": {"sigma": 0.5, "m_ratio": 0.30},
         "needs_gpu": False,
     },
 

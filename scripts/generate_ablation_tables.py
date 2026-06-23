@@ -131,7 +131,7 @@ def table_ablation_a(tier1: pd.DataFrame, abl: pd.DataFrame) -> str:
     lines = [
         r"\begin{table}[ht]",
         r"  \centering",
-        r"  \caption{Ablação A — Escalabilidade amostral: F1-macro médio (30 sementes) em N=400 vs N=2000.}",
+        r"  \caption{Ablação A — Escalabilidade amostral: F1-macro médio (20 sementes) em N=400 vs N=2000.}",
         r"  \label{tab:ablation_a}",
         r"  \footnotesize",
         rf"  \begin{{tabular}}{{{col_spec}}}",
@@ -181,7 +181,7 @@ def table_ablation_b(tier1: pd.DataFrame, abl: pd.DataFrame) -> str:
     lines = [
         r"\begin{table}[ht]",
         r"  \centering",
-        r"  \caption{Ablação B — Robustez ao ruído: F1-macro médio (30 sementes) com 2 vs 5 features.}",
+        r"  \caption{Ablação B — Robustez ao ruído: F1-macro médio (20 sementes) com 2 vs 5 features.}",
         r"  \label{tab:ablation_b}",
         r"  \footnotesize",
         rf"  \begin{{tabular}}{{{col_spec}}}",
@@ -222,7 +222,7 @@ def table_ablation_c(abl: pd.DataFrame) -> str:
     lines = [
         r"\begin{table}[ht]",
         r"  \centering",
-        r"  \caption{Ablação C — Síntético multifeature (MK5): F1-macro médio (30 sementes).}",
+        r"  \caption{Ablação C — Síntético multifeature (MK5): F1-macro médio (20 sementes).}",
         r"  \label{tab:ablation_c}",
         r"  \footnotesize",
         rf"  \begin{{tabular}}{{{col_spec}}}",

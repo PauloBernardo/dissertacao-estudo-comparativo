@@ -72,7 +72,7 @@ A versão correta usa a fórmula matemática da aproximação Nyström
 ($\tilde K = CW^{-1}C^\top$), com custo $O(n_\text{test}\cdot m)$ e
 \textbf{sem dependência de $X_\text{treino}$ na predição} (verificado experimentalmente).
 A perda de F1 em relação ao bug original é de apenas $0{,}0085$, mas agora com
-$\approx 69\%$ de esparsidade amostral genuína.
+$\approx 78\%$ de esparsidade amostral genuína (Grid+CV, Tier 1).
 \end{tcolorbox}
 
 \subsection*{Modelos avaliados}
@@ -123,9 +123,9 @@ $^\star$ = aplicação/combinação proposta.
   \item 30 sementes aleatórias, partição estratificada 70/30.
   \item Métrica principal: F1-macro (média aritmética do F1 por classe).
   \item Hiperparâmetros otimizados via \textbf{Grid Search exaustivo + 5-fold CV}
-        estratificado (\texttt{GridSearchCV}, scikit-learn) para modelos LSSVM e
-        XGBoost no Tier 1. Transformers Tier 1 (pendente re-execução em GPU) e
-        todos os modelos Tier 2 utilizam Optuna TPE (20 trials, 3-fold CV).
+        estratificado (\texttt{GridSearchCV}, scikit-learn) para todos os 18 modelos
+        no Tier 1 (Transformers re-executados com \texttt{epochs=40}, \texttt{patience=6}
+        em GPU T4). Todos os modelos Tier 2 utilizam Optuna TPE (20 trials, 3-fold CV).
   \item Normalização por \texttt{StandardScaler} ajustado apenas no treino.
 \end{itemize}
 
@@ -224,7 +224,7 @@ com os demais LSSVMs:
         \emph{não} usados como landmark-key.
 \end{itemize}
 A razão $m/n$ é tunada por Grid+CV por dataset; a esparsidade resultante varia
-entre $50\%$ (TWC) e $92\%$ (PID), com média $69\%$ no Tier~1.
+entre $50\%$ (TWC) e $92\%$ (PID), com média $78\%$ no Tier~1.
 
 % ─────────────────────────────────────────────────────────────────────────────
 \section{Experimento Tier 1: Benchmarks Reais}
@@ -323,12 +323,12 @@ laranja = FT-CUR.}
 \begin{itemize}
   \item \textbf{Nyström-SVM} ($0{,}838$) é o modelo com melhor F1-macro médio,
         seguido muito de perto por LSSVM-Std ($0{,}838$) e DualFISTA ($0{,}837$)
-        --- os três empatam estatisticamente. Com $\approx 69\%$ de esparsidade
+        --- os três empatam estatisticamente. Com $\approx 78\%$ de esparsidade
         amostral, o Nyström-SVM valida o trade-off F1/esparsidade como o melhor
         entre modelos de alta compressão.
   \item \textbf{DualFISTA} ($0{,}837$) alcança F1-macro médio essencialmente
         igual ao LSSVM-Std completo ($0{,}838$, diferença $0{,}001$) com
-        $\approx 20\%$ de esparsidade. É o único modelo esparso que se aproxima
+        $\approx 5\%$ de esparsidade. É o único modelo esparso que se aproxima
         do baseline sem esparsidade.
   \item \textbf{XGBoost} (baseline tabular) atinge $0{,}826$ no Tier 1 ---
         agora competitivo com os LSSVMs esparsos (IP $0{,}832$, PCP $0{,}827$).
@@ -351,7 +351,7 @@ laranja = FT-CUR.}
         $0{,}641$ vs $0{,}994$. Nos datasets reais os Transformers são
         competitivos (ver Seção~\ref{sec:tier1_friedman_real}).
   \item \textbf{FT-CUR} ($0{,}738$) é o melhor Transformer, empatado em rank
-        com FT-Entmax ($0{,}734$). FT-CUR comprime $\approx 79\%$ da atenção
+        com FT-Entmax ($0{,}734$). FT-CUR comprime $\approx 85\%$ da atenção
         inter-instâncias mantendo F1 superior ao SAINT denso ($0{,}731$):
         \textbf{a compressão não custa F1} também no protocolo rigoroso.
 \end{itemize}
@@ -384,7 +384,7 @@ Para isolar o efeito do inductive bias geométrico, repetiu-se a análise de
 Friedman excluindo os três datasets sintéticos (TWS, TWM, TWC) e considerando
 apenas os seis datasets reais (BCW, PID, HAB, VCP, GCR, AUS).
 
-Resultado: $\chi^2 = 88{,}38$, $p \approx 0$, $\text{CD} = 9{,}56$
+Resultado: $\chi^2 = 55{,}48$, $p \approx 0$, $\text{CD} = 8{,}65$
 (18 modelos $\times$ 6 datasets).
 
 \begin{center}
@@ -393,34 +393,34 @@ Resultado: $\chi^2 = 88{,}38$, $p \approx 0$, $\text{CD} = 9{,}56$
 \toprule
 Rank & Modelo & Avg.\ rank & F1 médio \\
 \midrule
-1  & LSSVM-Nyström       & 3,167 & 0,776 \\
+1  & LSSVM-Nyström       & 3,000 & 0,776 \\
 2  & LSSVM-Std           & 3,333 & 0,775 \\
 3  & LSSVM-DualFISTA     & 3,833 & 0,773 \\
-4  & XGBoost             & 6,167 & 0,766 \\
-5  & LSSVM-IP            & 6,500 & 0,766 \\
-6  & LSSVM-FSA           & 7,667 & 0,766 \\
+4  & XGBoost             & 5,833 & 0,766 \\
+5  & LSSVM-IP            & 6,167 & 0,766 \\
+6  & LSSVM-FSA           & 7,833 & 0,766 \\
 \midrule
-7  & \textbf{FT-CUR}     & 9,000 & 0,751 \\
+7  & \textbf{FT-Entmax}  & 9,000 & 0,757 \\
 8  & LSSVM-PCP           & 9,167 & 0,763 \\
-9  & \textbf{FT-Softmax} & 9,333 & 0,754 \\
-10 & \textbf{SAINT}      & 10,167 & 0,743 \\
-11 & \textbf{FT-Entmax}  & 10,833 & 0,749 \\
-12 & LSSVM-Pruning       & 11,500 & 0,733 \\
-13 & \textbf{FT-Sparsemax} & 11,500 & 0,748 \\
-14 & LSSVM-ADMM          & 12,750 & 0,734 \\
-15 & \textbf{FT-TopK}    & 12,833 & 0,733 \\
-16 & LSSVM-FISTA         & 13,167 & 0,732 \\
-17 & LSSVM-ADMM-EN       & 13,417 & 0,735 \\
-18 & LSSVM-OppMaps       & 16,667 & 0,658 \\
+9  & \textbf{FT-CUR}     & 9,333 & 0,759 \\
+10 & \textbf{FT-Sparsemax} & 10,167 & 0,752 \\
+11 & \textbf{SAINT}      & 10,333 & 0,755 \\
+12 & \textbf{FT-Softmax} & 10,667 & 0,755 \\
+13 & LSSVM-Pruning       & 11,833 & 0,733 \\
+14 & LSSVM-ADMM          & 12,917 & 0,734 \\
+15 & \textbf{FT-TopK}    & 13,500 & 0,736 \\
+16 & LSSVM-ADMM-EN       & 13,583 & 0,735 \\
+17 & LSSVM-FISTA         & 13,667 & 0,732 \\
+18 & LSSVM-OppMaps       & 16,833 & 0,658 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
 \textbf{Interpretação:} sem os datasets sintéticos, os Transformers sobem
-significativamente no ranking. FT-CUR (rank 7) e FT-Softmax (rank 9)
+significativamente no ranking. FT-Entmax (rank 9,0) e FT-CUR (rank 9,3)
 superam LSSVM-PCP, LSSVM-Pruning, LSSVM-ADMM e LSSVM-FISTA. A diferença
-entre o bloco líder LSSVM (ranks 3,2--3,8) e os melhores Transformers
-(rank 9,0--9,3) é inferior ao CD ($9{,}56$), portanto
+entre o bloco líder LSSVM (ranks 3,0--3,8) e os melhores Transformers
+(rank 9,0--9,3) é inferior ao CD ($8{,}65$), portanto
 \textbf{não é estatisticamente significativa} para $\alpha = 0{,}05$.
 
 Conclui-se que o fraco desempenho global dos Transformers no Tier 1 é
@@ -588,14 +588,14 @@ inter-instâncias (SAINT/FT-CUR). Tier 1, média sobre 9 datasets e 30 sementes.
 \textbf{Modelo} & \textbf{F1-macro} & \textbf{Spar.\ feat.} & \textbf{Compr.\ inst.} & \textbf{Mecanismo} \\
 \midrule
 \multicolumn{5}{l}{\textit{Atenção inter-features (intra-instância)}} \\
-FT-TopK      & 0,729 & 76,8\% & --- & top-$k$ fixo ($k{=}2$ de $d{+}1$ tokens) \\
-FT-Sparsemax & 0,774 & 39,1\% & --- & sparsemax (zeros exatos) \\
-FT-Entmax    & 0,742 &  1,4\% & --- & entmax (poucos zeros exatos) \\
-FT-Softmax   & 0,740 &  0,2\% & --- & softmax (nunca exatamente zero) \\
+FT-TopK      & 0,712 & 79,8\% & --- & top-$k$ fixo ($k{=}2$ de $d{+}1$ tokens) \\
+FT-Sparsemax & 0,731 & 41,4\% & --- & sparsemax (zeros exatos) \\
+FT-Entmax    & 0,734 &  1,1\% & --- & entmax (poucos zeros exatos) \\
+FT-Softmax   & 0,730 &  0,0\% & --- & softmax (nunca exatamente zero) \\
 \midrule
 \multicolumn{5}{l}{\textit{Atenção inter-instâncias}} \\
-SAINT        & 0,744 & --- & $0\%$  & softmax $n{\times}n$ completo (baseline denso) \\
-FT-CUR$^\star$ & 0,747 & --- & $79{,}3\%$ & Nyströmformer, $m/n{\approx}0{,}20$, $O(nmd)$ \\
+SAINT        & 0,731 & --- & $0\%$  & softmax $n{\times}n$ completo (baseline denso) \\
+FT-CUR$^\star$ & 0,738 & --- & $85{,}2\%$ & Nyströmformer, $m/n{\approx}0{,}15$, $O(nmd)$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -608,10 +608,10 @@ FT-CUR$^\star$ & 0,747 & --- & $79{,}3\%$ & Nyströmformer, $m/n{\approx}0{,}20$
   \item \textbf{FT-Entmax} ($1{,}4\%$) produz poucos zeros na prática: apesar de
         ser conceitualmente esparso, a entmax com $\alpha{=}1{,}5$ raramente satura
         em zero para os datasets avaliados.
-  \item \textbf{SAINT} ($0{,}744$, denso) e \textbf{FT-CUR} ($0{,}747$, $79{,}3\%$
+  \item \textbf{SAINT} ($0{,}731$, denso) e \textbf{FT-CUR} ($0{,}738$, $85{,}2\%$
         de compressão) atingem F1 essencialmente idêntico --- diferença de apenas
-        $0{,}003$. Isso valida empiricamente o Nyströmformer: \textbf{comprimir
-        $\approx 80\%$ da atenção inter-instâncias não custa F1}. A aproximação
+        $0{,}007$. Isso valida empiricamente o Nyströmformer: \textbf{comprimir
+        $\approx 85\%$ da atenção inter-instâncias não custa F1}. A aproximação
         $\tilde A = C(W^+ R)\,V$ via softmax separado é fiel à atenção completa
         $A = \text{softmax}(QK^\top/\sqrt d)\,V$ na prática.
   \item Comparado aos FT-Transformers baselines (sem atenção inter-instâncias),
@@ -659,6 +659,20 @@ mantêm a vantagem estrutural.
 
 \textbf{Configuração:} Os três sintéticos (TWS, TWM, TWC) foram re-gerados
 com $N=2000$. Os hiperparâmetros tuned para Tier 1 ($N=400$) foram reutilizados.
+
+\begin{tcolorbox}[colback=fixbg, colframe=fixborder, fonttitle=\bfseries,
+  title=\textbf{Nota: ADMM-ElasticNet excluído desta ablação}]
+O ADMM-ElasticNet não foi incluído na Ablação A por duas razões complementares:
+(i)~a análise da distribuição de $\lambda_2$ no Tier 1 mostra que $73{,}3\%$ das
+combinações ótimas selecionaram o menor valor da grade ($\lambda_2 = 0{,}001$),
+indicando que o regularizador $\ell_2$ adicional raramente é ativo; e
+(ii)~resultados parciais com $N=2000$ confirmam desempenho virtualmente idêntico
+ao LSSVM-ADMM (F1: $0{,}9955$ vs.\ $0{,}9953$). Adicionalmente, o grid aumentado
+($\sigma \times \tau \times \lambda \times \lambda_2 = 5\times5\times4\times3 = 300$
+combinações vs.\ 100 do ADMM) tornaria o custo computacional $3\times$ maior
+sem ganho preditivo. Os resultados do Tier 1 para ADMM-ElasticNet são mantidos
+nas tabelas comparativas gerais (Seção~\ref{sec:tier1_results}).
+\end{tcolorbox}
 
 \begin{figure}[H]
 \centering
@@ -815,18 +829,18 @@ LSSVM-ADMM-Nesterov (Marinho et al.)
 ADMM-ElasticNet$^\circ$
   & Variante do paper-base com penalidade Elastic Net ($\ell_1+\ell_2$);
     combinação não localizada em literatura.
-  & Similar ao paper-base, ligeiramente mais homogênea. Média: 27\%. \\
+  & Similar ao paper-base, ligeiramente mais homogênea. Média: $\approx 7\%$ (Tier 1, Grid+CV). \\
 \addlinespace
 DualFISTA$^\circ$
   & Formulação dual:
     $\min_\alpha \frac{1}{2}\alpha^\top\Omega\alpha - \mathbf{1}^\top\alpha + \lambda\|\alpha\|_1$,
     otimizado via FISTA. Não localizada na literatura nesta forma exata.
-  & Mais uniforme que ADMM (dual bem condicionado). Média: 20\%. \\
+  & Mais uniforme que ADMM (dual bem condicionado). Média: $\approx 5\%$ (Tier 1, Grid+CV). \\
 \addlinespace
 Nyström-SVM$^\star$
   & Aproximação Nyström com seleção \emph{colnorm} (norma de coluna em vez
     de uniforme/leverage); predição honesta restrita aos $m$ landmarks.
-  & Controlada por $m/n$ tunado por dataset; varia 50--92\%. Média: 69\%. \\
+  & Controlada por $m/n$ tunado por dataset; varia 50--92\%. Média: $\approx 78\%$ (Tier 1, Grid+CV). \\
 \addlinespace
 FT-CUR (Nyströmformer)$^\star$
   & Aplicação de Nyströmformer (Xiong et al.\ 2021) à atenção inter-instâncias
@@ -862,8 +876,8 @@ DualFISTA$^\circ$    & 0,837 &  5\% & ---       & 0,979 & $+$0,018 & 0,723 & $-$
 LSSVM-ADMM (paper-base) & 0,806 &  8\% & ---  & 0,977 & $+$0,023 & 0,700 & $-$0,253 & 0,832 \\
 ADMM-ElasticNet$^\circ$ & 0,805 &  7\% & ---  & --- & --- & --- & --- & --- \\
 Nyström-SVM$^\star$  & \textbf{0,838} & \textbf{78\%} & --- & \textbf{0,978} & $+$0,144 & 0,685 & $-$0,149 & 0,845 \\
-FT-CUR (Nyströmformer)$^\star$ & 0,747 & --- & $79{,}3\%$ & 0,849 & $+$0,102 & 0,677 & $-$0,070 & 0,809 \\
-SAINT (baseline FT)  & 0,744 & --- & $0\%$ & 0,862 & $+$0,118 & 0,672 & $-$0,072 & 0,807 \\
+FT-CUR (Nyströmformer)$^\star$ & 0,738 & --- & $85{,}2\%$ & 0,849 & $+$0,111 & 0,677 & $-$0,061 & 0,809 \\
+SAINT (baseline FT)  & 0,731 & --- & $0\%$ & 0,862 & $+$0,131 & 0,672 & $-$0,059 & 0,807 \\
 \bottomrule
 \end{tabular}}
 \end{table}
@@ -880,7 +894,7 @@ SAINT (baseline FT)  & 0,744 & --- & $0\%$ & 0,862 & $+$0,118 & 0,672 & $-$0,072
 \midrule
 DualFISTA$^\circ$
   & F1 quase idêntico ao LSSVM-Std; convergência estável
-  & Sensível a features de ruído (kernel RBF); esparsidade moderada (20\%)
+  & Sensível a features de ruído (kernel RBF); esparsidade baixa ($\approx 5\%$ no Tier 1)
   & Formulação dual bem condicionada; melhor trade-off esparsidade/acurácia em baixa esparsidade \\
 \addlinespace
 ADMM-ElasticNet$^\circ$
@@ -889,7 +903,7 @@ ADMM-ElasticNet$^\circ$
   & Variante do paper-base com Elastic Net (combinação não localizada em literatura) \\
 \addlinespace
 Nyström-SVM$^\star$
-  & F1 competitivo ($0{,}834$, a $0{,}008$ do LSSVM-Std) com $69\%$ de esparsidade;
+  & F1 competitivo ($0{,}838$, equivalente ao LSSVM-Std) com $78\%$ de esparsidade;
     melhor trade-off em alta esparsidade
   & Sensível a features de ruído (kernel RBF); $m/n$ ideal varia muito entre datasets ($8$--$50\%$)
   & Único modelo com compressão de memória real: $O(nm)$ vs.\ $O(n^2)$; auditoria matemática confirma honestidade \\
@@ -1043,7 +1057,7 @@ heurísticas cegas ($\geq 17$).
         $0{,}009$). Repete o padrão Tier 1: \emph{a compressão Nyströmformer
         é fiel também em larga escala}.
   \item \textbf{DualFISTA} fica em $2{,}1\%$ de esparsidade no Tier 2 ---
-        muito abaixo dos $20\%$ do Tier 1. O Optuna passou a preferir
+        muito abaixo dos $5\%$ do Tier 1 (Grid+CV). O Optuna passou a preferir
         $\lambda$ pequenos para preservar margem em datasets imbalanceados,
         evidenciando que o método se ajusta dinamicamente ao regime de dados.
   \item \textbf{LSSVM-Pruning} agora opera em $52\%$ de esparsidade média
@@ -1223,12 +1237,12 @@ LSSVM-PCP            & 0,827 & 0,685 & $-$0,142 & cone projection \\
 LSSVM-FSA            & 0,829 & 0,679 & $-$0,150 & forward selection \\
 \midrule
 XGBoost              & 0,826 & 0,735 & $-$0,091 & gradient boosting \\
-FT-Softmax$^\dagger$ & 0,740 & 0,725 & $-$0,015 & atenção feature densa \\
-FT-Sparsemax$^\dagger$ & 0,774 & 0,723 & $-$0,051 & atenção feature esparsa \\
-FT-Entmax$^\dagger$  & 0,742 & 0,723 & $-$0,019 & atenção feature esparsa \\
-FT-TopK$^\dagger$    & 0,729 & 0,720 & $-$0,009 & atenção feature top-$k$ \\
-SAINT$^\dagger$      & 0,744 & 0,722 & $-$0,022 & atenção inter-inst.\ densa \\
-FT-CUR$^{\star\dagger}$ & 0,747 & 0,713 & $-$0,034 & atenção inter-inst.\ comprimida \\
+FT-Softmax$^\dagger$ & 0,730 & 0,725 & $-$0,005 & atenção feature densa \\
+FT-Sparsemax$^\dagger$ & 0,731 & 0,723 & $-$0,008 & atenção feature esparsa \\
+FT-Entmax$^\dagger$  & 0,734 & 0,723 & $-$0,011 & atenção feature esparsa \\
+FT-TopK$^\dagger$    & 0,712 & 0,720 & $+$0,008 & atenção feature top-$k$ \\
+SAINT$^\dagger$      & 0,731 & 0,722 & $-$0,009 & atenção inter-inst.\ densa \\
+FT-CUR$^{\star\dagger}$ & 0,738 & 0,713 & $-$0,025 & atenção inter-inst.\ comprimida \\
 \midrule
 LSSVM-ADMM (paper-base)  & 0,806 & 0,580 & $-$0,226 & primal $\ell_1$ (ADMM) \\
 ADMM-ElasticNet$^\circ$ & 0,805 & 0,576 & $-$0,229 & primal $\ell_1+\ell_2$ \\
@@ -1249,10 +1263,11 @@ LSSVM-OppMaps             & 0,759 & 0,478 & $-$0,281 & opposite maps \\
         mecanismos de esparsidade propostos são \emph{neutros} em relação à
         formulação dual.
   \item \textbf{Transformers e XGBoost.} FT-Transformers ($^\dagger$,
-        protocolo Optuna) absorvem a transição com baixa perda
-        ($\Delta \approx -0{,}01$ a $-0{,}05$). As variantes esparsas convergem
-        para o mesmo patamar do softmax denso ($0{,}720$--$0{,}725$): a
-        esparsidade na atenção inter-features não traz vantagem mensurável.
+        protocolo Optuna no Tier 2) absorvem a transição com baixa perda
+        ($\Delta \approx -0{,}025$ a $+0{,}008$, com FT-TopK ligeiramente
+        melhor no Tier 2 que no Tier 1 com Grid+CV). As variantes esparsas
+        convergem para o mesmo patamar do softmax denso ($0{,}720$--$0{,}725$):
+        a esparsidade na atenção inter-features não traz vantagem mensurável.
         \textbf{XGBoost}, com o novo Grid+CV, passa de $0{,}776$ (Optuna) para
         $0{,}826$ no Tier 1, resultando em $\Delta = -0{,}091$ --- maior que
         os Transformers, mas ainda muito inferior ao colapso dos métodos primais.
@@ -1379,9 +1394,9 @@ sem perda predominante de $F_1$ no benchmark operacional.
 \textbf{Experimento} & \textbf{Configuração} & \textbf{Runs} & \textbf{Resultado principal} \\
 \midrule
 Tier 1            & 12 mod.\ LSSVM+XGB, 9 datasets, 30 seeds (Grid+CV) & 3240 & Nyström 0,838 / LSSVM-Std 0,838 / DualFISTA 0,837 / XGBoost 0,826 \\
-Ablação A (escala) & 18 modelos, 3 sintéticos, $N{=}2000$, 30s            & 1620 & Nyström $+0{,}14$; FT-CUR/SAINT data-hungry \\
-Ablação B (ruído)  & 18 modelos, 3 sintéticos, $+$3 feat.\ ruído, 30s    & 1620 & XGBoost $+0{,}30$ em TWC; FT-CUR/SAINT robustos \\
-Ablação C (MK5)    & 18 modelos, 3 sintéticos, 30 seeds                  & 1620 & Nyström 0,845 $>$ XGBoost 0,829 $>$ FT-CUR 0,809 \\
+Ablação A (escala) & 11 mod.\ LSSVM+XGB (em andamento), 3 sintéticos, $N{=}2000$, 30s & 649+ & ADMM $+0{,}072$ em TWC; Transf.\ pendentes (Kaggle) \\
+Ablação B (ruído)  & 12 mod.\ LSSVM+XGB, 3 sintéticos, $+$3 feat.\ ruído, 30s & 1080 & XGBoost $\overline{\Delta}{=}{-}0{,}048$; LSSVMs: $-0{,}26$ a $-0{,}39$; Transf.\ pendentes \\
+Ablação C (MK5)    & 12 mod.\ LSSVM+XGB, 3 sintéticos, 30 seeds         & 1080 & LSSVM-Std 0,851 $>$ Nyström 0,841 $>$ XGBoost 0,827; Transf.\ pendentes \\
 \midrule
 Tier 2 ($N_{\text{treino}}=5000$) & 18 modelos, 6 datasets reais, 30s    & 3240 & XGBoost 0,735; SAINT/FT-CUR/FT baselines $\sim$0,72; primais $\ell_1$ colapsam para 0,58 \\
 Ablação H2 (early stop) & FT-CUR/SAINT, CREDIT/BANK, 3 métricas, 30s   & 360  & \texttt{val\_loss} $>$ \texttt{val\_acc} ($p < 10^{-5}$ em todos os 4 cenários) \\
@@ -1395,7 +1410,7 @@ Benchmark eficiência    & 6 Transformers, 3 datasets reais, 1 seed       & 137 
 \textbf{Conclusões consolidadas:}
 \begin{enumerate}
   \item \textbf{Nyström-LSSVM} é o melhor resultado da dissertação em alta
-        esparsidade: $F_1 = 0{,}838$ no Tier 1 (\(69\%\) esp., Grid+CV) e
+        esparsidade: $F_1 = 0{,}838$ no Tier 1 (\(78\%\) esp., Grid+CV) e
         $0{,}707$ no Tier 2 (\(81{,}5\%\) esp.), em ambos os regimes a
         $\leq 0{,}002$ do LSSVM-Std denso. \emph{Compressão sem custo
         preditivo}, agora confirmado em escala $N=5000$.
@@ -1406,8 +1421,9 @@ Benchmark eficiência    & 6 Transformers, 3 datasets reais, 1 seed       & 137 
         ainda a ser benchmarkeada (próxima etapa).
   \item \textbf{FT-CUR} valida o paradigma de compressão Nyströmformer em
         dados tabulares: empata com SAINT denso em todos os experimentos
-        ($\Delta \leq 0{,}013$) com \(\approx 89\%\) de compressão
-        inter-instâncias, e roda em $N=48$k onde SAINT entra em OOM.
+        ($\Delta \leq 0{,}013$) com \(\approx 85\text{--}89\%\) de compressão
+        inter-instâncias (Tier 1: $85\%$; Tier 2: $89\%$), e roda em
+        $N=48$k onde SAINT entra em OOM.
   \item \textbf{Colapso dos métodos primais com $\ell_1$ em escala} é o
         achado mais inesperado do Tier 2: ADMM-Nesterov, ADMM-ElasticNet e
         FISTA-Nesterov caem de $\approx 0{,}806$ (Tier 1, Grid+CV) para
