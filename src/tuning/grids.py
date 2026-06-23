@@ -30,6 +30,35 @@ from __future__ import annotations
 
 GRIDS: dict[str, dict] = {
 
+    # ──────────────── ADMM-Nyström: esparso + escalável ──────────────────
+
+    "ADMMNystromLSSVM": {
+        # Modo A — single-machine.  Grade: sigma/tau/lambda_ livres, m_ratio fixo.
+        "model_name": "ADMMNystromLSSVM",
+        "grid": {
+            "sigma":   [0.1, 0.5, 2.0],
+            "tau":     [0.005, 0.05, 0.5, 5.0, 50.0],
+            "lambda_": [1.0, 0.1, 0.01],
+        },
+        "fixed": {"m_ratio": 0.10, "rho": None, "max_iter": 500,
+                  "n_blocks": 1, "n_jobs": 1},
+        "needs_gpu": False,
+    },
+
+    "ADMMNystromDistributed": {
+        # Modo B — block-parallel (4 blocos, todos os cores disponíveis).
+        # Mesma grade que A; n_blocks/n_jobs ativam o modo paralelo.
+        "model_name": "ADMMNystromLSSVM",
+        "grid": {
+            "sigma":   [0.1, 0.5, 2.0],
+            "tau":     [0.005, 0.05, 0.5, 5.0, 50.0],
+            "lambda_": [1.0, 0.1, 0.01],
+        },
+        "fixed": {"m_ratio": 0.10, "rho": None, "max_iter": 500,
+                  "n_blocks": 4, "n_jobs": 4},
+        "needs_gpu": False,
+    },
+
     # ───────────────────────── LSSVM baselines ────────────────────────────
 
     "StandardLSSVM": {
@@ -99,42 +128,51 @@ GRIDS: dict[str, dict] = {
     # ───────────────────── LSSVM paper-base + variants ────────────────────
 
     "ADMMNesterovLSSVM": {
-        # sigma=0.1 em 98%, lambda_=0.001 em 87% dos casos sintéticos.
+        # HAB probe (30 seeds): lambda_=1.0 venceu em 57%, sigma=0.5 em 97%.
+        # sigma [0.1, 0.5, 2.0]: extremos 8.0/32.0 descartados (nunca escolhidos na probe).
         "model_name": "ADMMNesterovLSSVM",
         "grid": {
-            "tau": [0.005, 0.05, 0.5, 5.0, 50.0],
+            "sigma":   [0.1, 0.5, 2.0],
+            "tau":     [0.005, 0.05, 0.5, 5.0, 50.0],
+            "lambda_": [1.0, 0.1, 0.01],
         },
-        "fixed": {"sigma": 0.1, "lambda_": 0.001, "rho": None, "max_iter": 500},
+        "fixed": {"rho": None, "max_iter": 500},
         "needs_gpu": False,
     },
 
     "ADMMElasticNet": {
-        # sigma=0.1 em 98%, lambda_=0.001 em 89%, lambda2_=0.001 em 76% dos casos sintéticos.
+        # Mesmo protocolo que ADMMNesterovLSSVM; lambda2_ fixo (L2 ridge não afeta esparsidade).
         "model_name": "ADMMNesterovLSSVM",
         "grid": {
-            "tau": [0.005, 0.05, 0.5, 5.0, 50.0],
+            "sigma":   [0.1, 0.5, 2.0],
+            "tau":     [0.005, 0.05, 0.5, 5.0, 50.0],
+            "lambda_": [1.0, 0.1, 0.01],
         },
-        "fixed": {"sigma": 0.1, "lambda_": 0.001, "lambda2_": 0.001, "rho": None, "max_iter": 500},
+        "fixed": {"lambda2_": 0.001, "rho": None, "max_iter": 500},
         "needs_gpu": False,
     },
 
     "FISTANesterov": {
-        # sigma=0.15 em 100%, lambda_=0.001 em 84% dos casos sintéticos (TWS/TWM/TWC Tier 1).
+        # sigma livre (3 pontos); lambda_ estendido para capturar regime esparso.
         "model_name": "FISTANesterovLSSVM",
         "grid": {
-            "tau": [0.01, 0.1, 1.0, 10.0],
+            "sigma":   [0.1, 0.5, 2.0],
+            "tau":     [0.01, 0.1, 1.0, 10.0],
+            "lambda_": [1.0, 0.1, 0.01],
         },
-        "fixed": {"sigma": 0.15, "lambda_": 0.001},
+        "fixed": {},
         "needs_gpu": False,
     },
 
     "DualFISTA": {
-        # sigma=0.5 em 100%, lambda_=0.001 em 73% dos casos sintéticos (TWS/TWM/TWC Tier 1).
+        # sigma livre (3 pontos); lambda_ estendido para capturar regime esparso.
         "model_name": "DualFISTALSSVM",
         "grid": {
-            "tau": [0.01, 0.1, 1.0, 10.0],
+            "sigma":   [0.1, 0.5, 2.0],
+            "tau":     [0.01, 0.1, 1.0, 10.0],
+            "lambda_": [1.0, 0.1, 0.01],
         },
-        "fixed": {"sigma": 0.5, "lambda_": 0.001},
+        "fixed": {},
         "needs_gpu": False,
     },
 
