@@ -40,8 +40,8 @@ GRIDS: dict[str, dict] = {
             "tau":     [0.005, 0.05, 0.5, 5.0, 50.0],
             "lambda_": [1.0, 0.1, 0.01],
         },
-        "fixed": {"m_ratio": 0.10, "rho": None, "max_iter": 500,
-                  "n_blocks": 1, "n_jobs": 1},
+        "fixed": {"m_ratio": 0.30, "rho": None, "max_iter": 500,
+                  "landmark_method": "colnorm", "n_blocks": 1, "n_jobs": 1},
         "needs_gpu": False,
     },
 
@@ -54,8 +54,21 @@ GRIDS: dict[str, dict] = {
             "tau":     [0.005, 0.05, 0.5, 5.0, 50.0],
             "lambda_": [1.0, 0.1, 0.01],
         },
-        "fixed": {"m_ratio": 0.10, "rho": None, "max_iter": 500,
-                  "n_blocks": 4, "n_jobs": 4},
+        "fixed": {"m_ratio": 0.30, "rho": None, "max_iter": 500,
+                  "landmark_method": "colnorm", "n_blocks": 4, "n_jobs": 4},
+        "needs_gpu": False,
+    },
+
+    "FISTANystrom": {
+        # FISTA primal no espaço Nyström — mesmo espaço que ADMMNystromLSSVM
+        # mas sem parâmetro ρ. Mesma grade de sigma/tau/lambda_.
+        "model_name": "FISTANystromLSSVM",
+        "grid": {
+            "sigma":   [0.1, 0.5, 2.0],
+            "tau":     [0.005, 0.05, 0.5, 5.0, 50.0],
+            "lambda_": [1.0, 0.1, 0.01],
+        },
+        "fixed": {"m_ratio": 0.30, "landmark_method": "colnorm", "max_iter": 5000},
         "needs_gpu": False,
     },
 
@@ -153,12 +166,12 @@ GRIDS: dict[str, dict] = {
     },
 
     "FISTANesterov": {
-        # sigma livre (3 pontos); lambda_ estendido para capturar regime esparso.
+        # sigma livre (3 pontos); lambda_ estendido: 0.001 recupera BCW/GCR, 1.0 captura regime esparso.
         "model_name": "FISTANesterovLSSVM",
         "grid": {
             "sigma":   [0.1, 0.5, 2.0],
             "tau":     [0.01, 0.1, 1.0, 10.0],
-            "lambda_": [1.0, 0.1, 0.01],
+            "lambda_": [1.0, 0.1, 0.01, 0.001],
         },
         "fixed": {},
         "needs_gpu": False,

@@ -58,6 +58,12 @@ def _build_model(model_name: str, model_params: dict[str, Any], label_format: st
     elif model_name == "DualFISTALSSVM":
         from src.models.lssvm.dual.fista_dual_lssvm import DualFISTALSSVM
         return DualFISTALSSVM(**model_params), label_format
+    elif model_name == "DualFISTANystromLSSVM":
+        from src.models.lssvm.dual.fista_dual_nystrom import DualFISTANystromLSSVM
+        return DualFISTANystromLSSVM(**model_params), label_format
+    elif model_name == "FISTANystromLSSVM":
+        from src.models.lssvm.primal.fista_nystrom import FISTANystromLSSVM
+        return FISTANystromLSSVM(**model_params), label_format
     elif model_name == "PCPLSSVm":
         from src.models.lssvm.primal.pcp_lssvm import PCPLSSVm
         return PCPLSSVm(**model_params), label_format
@@ -94,8 +100,10 @@ def _build_model(model_name: str, model_params: dict[str, Any], label_format: st
 
 _LSSVM_MODELS = {
     "StandardLSSVM", "ADMMNesterovLSSVM", "ADMMNystromLSSVM",
-    "FISTANesterovLSSVM", "DualFISTALSSVM", "PCPLSSVm", "FSALSSVm",
-    "PruningLSSVM", "IPLSSVm", "OppositeMapsLSSVM", "NystromLSSVMColnorm",
+    "FISTANesterovLSSVM", "FISTANystromLSSVM",
+    "DualFISTALSSVM", "DualFISTANystromLSSVM",
+    "PCPLSSVm", "FSALSSVm", "PruningLSSVM", "IPLSSVm",
+    "OppositeMapsLSSVM", "NystromLSSVMColnorm",
 }
 _TRANSFORMER_MODELS = {"FTTransformer"}
 # Inter-instance models expose n_support_/sparsity_ratio_/n_samples_fit_ like LSSVMs

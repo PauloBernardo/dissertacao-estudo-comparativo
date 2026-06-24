@@ -89,6 +89,11 @@ class ADMMNystromLSSVM(BaseEstimator, ClassifierMixin):
         Restart threshold η ∈ (0,1).
     estimate_bias : bool
         Estimate intercept b = mean(y − Cθ) after convergence.
+    landmark_method : str
+        Landmark selection strategy: 'colnorm' (default), 'random', 'fps',
+        'leverage', 'kmeans', 'opposite'.  'colnorm' samples proportional to
+        the squared kernel-column norms ‖K[:,j]‖² — same criterion used by
+        NystromLSSVMColnorm.
     n_blocks : int
         Number of data blocks for the parallel CᵀC computation.
         1 = single-machine (mode A); >1 = block-parallel (mode B).
@@ -111,6 +116,7 @@ class ADMMNystromLSSVM(BaseEstimator, ClassifierMixin):
         adaptive_restart: bool = True,
         restart_eta: float = 0.999,
         estimate_bias: bool = True,
+        landmark_method: str = "colnorm",
         n_blocks: int = 1,
         n_jobs: int = 1,
         random_state: int | None = None,
@@ -126,6 +132,7 @@ class ADMMNystromLSSVM(BaseEstimator, ClassifierMixin):
         self.adaptive_restart = adaptive_restart
         self.restart_eta = restart_eta
         self.estimate_bias = estimate_bias
+        self.landmark_method = landmark_method
         self.n_blocks = n_blocks
         self.n_jobs = n_jobs
         self.random_state = random_state
@@ -186,10 +193,18 @@ class ADMMNystromLSSVM(BaseEstimator, ClassifierMixin):
         self.n_samples_fit_ = n
         self.n_features_in_ = X.shape[1]
 
-        # ── Step 1: select m landmarks randomly ───────────────────────────────
+        # ── Step 1: select m landmarks ────────────────────────────────────────
         m = max(2, int(round(self.m_ratio * n)))
-        rng = np.random.RandomState(self.random_state)
-        lm_idx = rng.choice(n, size=m, replace=False)
+        from src.models.landmark_selection import get_selector
+        extra = {}
+        # leverage needs true kernel norms; colnorm uses feature norms ||x_i||²
+        # (same as NystromLSSVMColnorm) to avoid the O(N²) kernel matrix.
+        if self.landmark_method == "leverage":
+            extra["kernel"] = lambda Z: self._rbf(Z, Z)
+        selector = get_selector(self.landmark_method, m,
+                                random_state=self.random_state, **extra)
+        selector.fit(X)
+        lm_idx = selector.indices_
         self.landmarks_ = X[lm_idx].copy()
         self.m_ = m
 
