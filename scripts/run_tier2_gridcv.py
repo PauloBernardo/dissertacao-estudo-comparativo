@@ -57,8 +57,9 @@ from src.tuning.grids import GRIDS, grid_size
 TIER2_DATASETS = ["ADULT", "BANK", "CREDIT", "HIGGS50K", "SHOPPERS", "TELCO"]
 
 DEFAULT_VARIANTS = [
-    # Baselines densos (custo O(N²/N³) — referência para escala)
-    "StandardLSSVM", "ADMMNesterovLSSVM",
+    # Baselines LSSVM clássicos (viáveis a N=2000, < 3 min/run)
+    "StandardLSSVM", "DualFISTA",
+    "PCPLSSVm", "FSALSSVm", "IPLSSVm",
     # Contribuições escaláveis (Nyström — foco do Tier 2)
     "NystromLSSVMColnorm", "ADMMNystromLSSVM", "FISTANystrom",
     # Baseline ML
@@ -76,7 +77,8 @@ OUTPUT_FILE = Path("results/tier2_gridcv.json")
 
 # Usado apenas para determinar o formato de label (signed vs binary)
 LSSVM_VARIANTS = {
-    "StandardLSSVM", "ADMMNesterovLSSVM",
+    "StandardLSSVM", "DualFISTA",
+    "PCPLSSVm", "FSALSSVm", "IPLSSVm",
     "NystromLSSVMColnorm", "ADMMNystromLSSVM", "FISTANystrom",
 }
 
