@@ -85,13 +85,15 @@ GRIDS: dict[str, dict] = {
     },
 
     "PCPLSSVm": {
-        # sigma=0.15 em 100% dos casos sintéticos (TWS/TWM/TWC Tier 1).
+        # sigma precisa ser buscado: kernel RBF exato colapsa para zero em dados UCI
+        # com muitas features (||x-y||²>>σ²). FSALSSVm/IPLSSVm usam RFF (não afetados).
         "model_name": "PCPLSSVm",
         "grid": {
-            "tau":  [0.1, 0.5, 2.5, 12.5, 50.0],
-            "rank": [20, 50, 100, 200],
+            "sigma": [0.5, 1.5, 5.0],
+            "tau":   [0.1, 0.5, 2.5, 12.5, 50.0],
+            "rank":  [20, 50, 100, 200],
         },
-        "fixed": {"sigma": 0.15},
+        "fixed": {},
         "needs_gpu": False,
     },
 
