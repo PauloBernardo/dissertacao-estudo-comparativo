@@ -15,6 +15,8 @@ env/
 
 # Data (downloaded — reproduced via scripts/download_data.py)
 data/raw/
+# Exception: parquet cache allows clone-and-run without re-downloading from UCI
+!data/raw/*.parquet
 
 # Results (large — excluded from version control)
 results/*.json

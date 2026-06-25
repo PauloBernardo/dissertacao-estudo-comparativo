@@ -41,12 +41,27 @@ class DatasetLoader:
         """Load a dataset by its short name (e.g. 'BCW', 'HAB').
 
         Returns (X, y, meta) where y ∈ {0, 1} (positive class = 1).
+        Checks for a cached .parquet in data/raw/ before downloading.
         """
         key = name.upper()
         if key not in cls._registry:
             available = sorted(cls._registry.keys())
             raise ValueError(f"Unknown dataset {name!r}. Available: {available}")
-        X, y, meta = cls._registry[key]()
+
+        cache = _DATA_DIR / f"{key}.parquet"
+        if cache.exists():
+            df = pd.read_parquet(cache)
+            y   = df.pop("__y__").values.astype(int)
+            X   = df.values.astype(float)
+            meta = {"tier": df.attrs.get("__tier__")}
+        else:
+            X, y, meta = cls._registry[key]()
+            df = pd.DataFrame(X, columns=[f"f{i}" for i in range(X.shape[1])])
+            df["__y__"] = y.astype(int)
+            df.attrs["__tier__"] = meta.get("tier")
+            df.to_parquet(cache, index=False)
+            logger.info("Cached %s → %s", key, cache)
+
         meta["name"] = key
         meta.setdefault("n_samples", len(y))
         meta.setdefault("n_features", X.shape[1])
