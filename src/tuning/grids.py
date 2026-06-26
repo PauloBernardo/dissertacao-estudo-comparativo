@@ -98,24 +98,27 @@ GRIDS: dict[str, dict] = {
     },
 
     "FSALSSVm": {
-        # sigma=0.5 em 73% dos casos sintéticos (TWS/TWM/TWC Tier 1).
+        # sigma no grid: RFF de alta frequência (sigma pequeno) não captura estrutura
+        # nos dados UCI com muitas features — mesmo problema do PCPLSSVm.
         "model_name": "FSALSSVm",
         "grid": {
+            "sigma":        [0.5, 1.5, 5.0],
             "tau":          [0.1, 0.5, 2.5, 12.5, 50.0],
             "n_components": [50, 100, 200],
         },
-        "fixed": {"sigma": 0.5},
+        "fixed": {},
         "needs_gpu": False,
     },
 
     "IPLSSVm": {
-        # sigma=0.5 em 83% dos casos sintéticos (TWS/TWM/TWC Tier 1).
+        # sigma no grid: mesma razão que FSALSSVm.
         "model_name": "IPLSSVm",
         "grid": {
+            "sigma":           [0.5, 1.5, 5.0],
             "tau":             [0.1, 0.5, 2.5, 12.5, 50.0],
             "selection_ratio": [0.1, 0.2, 0.5, 0.7],
         },
-        "fixed": {"sigma": 0.5},
+        "fixed": {},
         "needs_gpu": False,
     },
 
@@ -192,12 +195,13 @@ GRIDS: dict[str, dict] = {
     },
 
     "NystromLSSVMColnorm": {
-        # sigma=0.5 em 100%, m_ratio=0.30 em 78% dos casos sintéticos.
+        # sigma no grid: kernel RBF colapsa com sigma=0.5 em dados UCI de alta dimensão.
         "model_name": "NystromLSSVMColnorm",
         "grid": {
+            "sigma": [0.5, 1.5, 5.0],
             "gamma": [0.1, 1.0, 10.0, 30.0, 50.0, 100.0],
         },
-        "fixed": {"sigma": 0.5, "m_ratio": 0.30},
+        "fixed": {"m_ratio": 0.30},
         "needs_gpu": False,
     },
 
