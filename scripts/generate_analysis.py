@@ -51,8 +51,19 @@ MODEL_LABELS: dict[str, str] = {
     "ADMMElasticNet":         "LSSVM-ADMM-Elastic",
     "FISTANesterov":          "LSSVM-FISTA",
     "DualFISTA":              "LSSVM-DualFISTA",
+    "DualFISTALSSVM":         "LSSVM-DualFISTA",
     "NystromLSSVMColnorm":    "LSSVM-Nystrom",
+    "ADMMNystromLSSVM":       "ADMM-Nystrom",
+    "ADMMNystromDistributed": "ADMM-Nystrom-Dist",
+    "FISTANystrom":           "FISTA-Nystrom",
+    "FISTANystromLSSVM":      "FISTA-Nystrom",
     "XGBoost":                "XGBoost",
+    "FTTransformer_softmax":  "FT-Softmax",
+    "FTTransformer_topk":     "FT-TopK",
+    "FTTransformer_entmax":   "FT-Entmax",
+    "FTTransformer_sparsemax":"FT-Sparsemax",
+    "SAINTColnorm":           "SAINT",
+    "FTTransformerCURColnorm":"FT-CUR",
 }
 
 
@@ -79,9 +90,11 @@ def build_score_matrix(df: pd.DataFrame, metric: str) -> tuple[np.ndarray, list[
     return mat, models, datasets
 
 
-def run(results_path: Path, metric: str) -> None:
+def run(results_path: Path, metric: str, prefix: str = "tier1") -> None:
     TABLES_DIR.mkdir(parents=True, exist_ok=True)
     PLOTS_DIR.mkdir(parents=True, exist_ok=True)
+
+    tier_label = prefix.upper().replace("_", " ")
 
     print(f"Loading {results_path} ...")
     df = load_results(results_path)
@@ -92,39 +105,39 @@ def run(results_path: Path, metric: str) -> None:
     df_display["model"] = df_display["model_label"]
 
     models_raw    = sorted(df["model"].unique())
-    models_label  = [MODEL_LABELS.get(m, m) for m in models_raw]
     datasets      = sorted(df["dataset"].unique())
+    n_datasets    = len(datasets)
 
     # ── 1. Main results table (F1-macro) ──────────────────────────────────────
     print("Generating results table ...")
     tex = results_table(
         df_display.to_dict("records"),
         metric=metric,
-        caption=f"Média $\\pm$ desvio padrão de F1-macro (30 sementes, 9 conjuntos de dados Tier 1).",
-        label="tab:tier1_results",
+        caption=f"Média $\\pm$ desvio padrão de F1-macro (30 sementes, {n_datasets} conjuntos de dados {tier_label}).",
+        label=f"tab:{prefix}_results",
     )
-    (TABLES_DIR / "tier1_results.tex").write_text(tex)
-    print(f"  Saved tables/tier1_results.tex")
+    (TABLES_DIR / f"{prefix}_results.tex").write_text(tex)
+    print(f"  Saved tables/{prefix}_results.tex")
 
     # ── 2. Accuracy table ─────────────────────────────────────────────────────
     tex_acc = results_table(
         df_display.to_dict("records"),
         metric="test_accuracy",
-        caption="Média $\\pm$ desvio padrão de Acurácia (30 sementes, 9 conjuntos de dados Tier 1).",
-        label="tab:tier1_accuracy",
+        caption=f"Média $\\pm$ desvio padrão de Acurácia (30 sementes, {n_datasets} conjuntos de dados {tier_label}).",
+        label=f"tab:{prefix}_accuracy",
     )
-    (TABLES_DIR / "tier1_accuracy.tex").write_text(tex_acc)
-    print(f"  Saved tables/tier1_accuracy.tex")
+    (TABLES_DIR / f"{prefix}_accuracy.tex").write_text(tex_acc)
+    print(f"  Saved tables/{prefix}_accuracy.tex")
 
     # ── 3. Sparsity table ─────────────────────────────────────────────────────
     print("Generating sparsity table ...")
     tex_sp = sparsity_table(
         df_display.to_dict("records"),
-        caption="Taxa de esparsidade média por modelo (todos os datasets e sementes).",
-        label="tab:sparsity",
+        caption=f"Taxa de esparsidade média por modelo ({tier_label}, todos os datasets e sementes).",
+        label=f"tab:{prefix}_sparsity",
     )
-    (TABLES_DIR / "sparsity.tex").write_text(tex_sp)
-    print(f"  Saved tables/sparsity.tex")
+    (TABLES_DIR / f"{prefix}_sparsity.tex").write_text(tex_sp)
+    print(f"  Saved tables/{prefix}_sparsity.tex")
 
     # ── 4. Statistical tests ──────────────────────────────────────────────────
     print("Running statistical tests ...")
@@ -142,19 +155,19 @@ def run(results_path: Path, metric: str) -> None:
     # Friedman test
     friedman = friedman_test(score_mat_T)
     print(f"  Friedman: stat={friedman['statistic']:.3f}, p={friedman['pvalue']:.4f}")
-    (TABLES_DIR / "friedman.txt").write_text(
-        f"Friedman test\nStatistic: {friedman['statistic']:.4f}\np-value:   {friedman['pvalue']:.6f}\n"
+    (TABLES_DIR / f"{prefix}_friedman.txt").write_text(
+        f"Friedman test ({tier_label})\nStatistic: {friedman['statistic']:.4f}\np-value:   {friedman['pvalue']:.6f}\n"
     )
 
     # Average ranks
     ranks = average_ranks(score_mat_T)
     tex_ranks = ranks_table(
         ranks, labels_v,
-        caption="Ranks médios de Friedman (menor = melhor).",
-        label="tab:ranks",
+        caption=f"Ranks médios de Friedman — {tier_label} (menor = melhor).",
+        label=f"tab:{prefix}_ranks",
     )
-    (TABLES_DIR / "ranks.tex").write_text(tex_ranks)
-    print(f"  Saved tables/ranks.tex")
+    (TABLES_DIR / f"{prefix}_ranks.tex").write_text(tex_ranks)
+    print(f"  Saved tables/{prefix}_ranks.tex")
 
     # Nemenyi CD
     cd = nemenyi_cd(len(models_v), len(d_order))
@@ -196,55 +209,55 @@ def run(results_path: Path, metric: str) -> None:
     tex_wilcoxon = wilcoxon_table(
         pmat,
         caption=(
-            "P-valores do teste de Wilcoxon signed-rank com correção de Holm-Bonferroni "
+            f"P-valores do teste de Wilcoxon signed-rank com correção de Holm-Bonferroni — {tier_label} "
             r"($n_{\text{comp}}=" + str(n_comparisons) + r"$; "
             r"negrito = significativo em $\alpha=0{,}05$)."
         ),
-        label="tab:wilcoxon",
+        label=f"tab:{prefix}_wilcoxon",
     )
     tex_wilcoxon_raw = wilcoxon_table(
         pmat_raw,
-        caption="P-valores brutos do teste de Wilcoxon signed-rank (sem correção; negrito = $p<0{,}05$).",
-        label="tab:wilcoxon_raw",
+        caption=f"P-valores brutos do teste de Wilcoxon signed-rank — {tier_label} (sem correção; negrito = $p<0{{,}}05$).",
+        label=f"tab:{prefix}_wilcoxon_raw",
     )
-    (TABLES_DIR / "wilcoxon_raw.tex").write_text(tex_wilcoxon_raw)
-    print(f"  Saved tables/wilcoxon_raw.tex")
-    (TABLES_DIR / "wilcoxon.tex").write_text(tex_wilcoxon)
-    print(f"  Saved tables/wilcoxon.tex")
+    (TABLES_DIR / f"{prefix}_wilcoxon_raw.tex").write_text(tex_wilcoxon_raw)
+    print(f"  Saved tables/{prefix}_wilcoxon_raw.tex")
+    (TABLES_DIR / f"{prefix}_wilcoxon.tex").write_text(tex_wilcoxon)
+    print(f"  Saved tables/{prefix}_wilcoxon.tex")
 
     # ── 5. CD diagram ─────────────────────────────────────────────────────────
     print("Generating CD diagram ...")
     fig = cd_diagram(ranks, labels_v, cd,
-                     title=f"Diagrama de Diferença Crítica — F1-macro")
-    fig.savefig(PLOTS_DIR / "cd_diagram.pdf", bbox_inches="tight")
-    fig.savefig(PLOTS_DIR / "cd_diagram.png", bbox_inches="tight", dpi=150)
+                     title=f"Diagrama de Diferença Crítica — F1-macro ({tier_label})")
+    fig.savefig(PLOTS_DIR / f"{prefix}_cd_diagram.pdf", bbox_inches="tight")
+    fig.savefig(PLOTS_DIR / f"{prefix}_cd_diagram.png", bbox_inches="tight", dpi=150)
     plt.close(fig)
-    print(f"  Saved plots/cd_diagram.pdf / .png")
+    print(f"  Saved plots/{prefix}_cd_diagram.pdf / .png")
 
     # ── 6. Box plots ──────────────────────────────────────────────────────────
     print("Generating box plots ...")
     fig = boxplots(df_display.to_dict("records"), metric=metric,
-                   title=f"Distribuição de F1-macro por dataset")
-    fig.savefig(PLOTS_DIR / "boxplots.pdf", bbox_inches="tight")
-    fig.savefig(PLOTS_DIR / "boxplots.png", bbox_inches="tight", dpi=150)
+                   title=f"Distribuição de F1-macro por dataset ({tier_label})")
+    fig.savefig(PLOTS_DIR / f"{prefix}_boxplots.pdf", bbox_inches="tight")
+    fig.savefig(PLOTS_DIR / f"{prefix}_boxplots.png", bbox_inches="tight", dpi=150)
     plt.close(fig)
-    print(f"  Saved plots/boxplots.pdf / .png")
+    print(f"  Saved plots/{prefix}_boxplots.pdf / .png")
 
     # ── 7. Sparsity vs accuracy scatter ──────────────────────────────────────
     print("Generating sparsity scatter ...")
     fig = sparsity_accuracy_scatter(df_display.to_dict("records"), metric=metric)
-    fig.savefig(PLOTS_DIR / "sparsity_scatter.pdf", bbox_inches="tight")
-    fig.savefig(PLOTS_DIR / "sparsity_scatter.png", bbox_inches="tight", dpi=150)
+    fig.savefig(PLOTS_DIR / f"{prefix}_sparsity_scatter.pdf", bbox_inches="tight")
+    fig.savefig(PLOTS_DIR / f"{prefix}_sparsity_scatter.png", bbox_inches="tight", dpi=150)
     plt.close(fig)
-    print(f"  Saved plots/sparsity_scatter.pdf / .png")
+    print(f"  Saved plots/{prefix}_sparsity_scatter.pdf / .png")
 
     # ── 8. Training time bar plot ─────────────────────────────────────────────
     print("Generating training time plot ...")
     fig = training_time_barplot(df_display.to_dict("records"), time_col="fit_time_s")
-    fig.savefig(PLOTS_DIR / "training_time.pdf", bbox_inches="tight")
-    fig.savefig(PLOTS_DIR / "training_time.png", bbox_inches="tight", dpi=150)
+    fig.savefig(PLOTS_DIR / f"{prefix}_training_time.pdf", bbox_inches="tight")
+    fig.savefig(PLOTS_DIR / f"{prefix}_training_time.png", bbox_inches="tight", dpi=150)
     plt.close(fig)
-    print(f"  Saved plots/training_time.pdf / .png")
+    print(f"  Saved plots/{prefix}_training_time.pdf / .png")
 
     # ── 9. Summary CSV ────────────────────────────────────────────────────────
     summary = (
@@ -254,11 +267,11 @@ def run(results_path: Path, metric: str) -> None:
         .sort_values("mean", ascending=False)
     )
     summary.index = [MODEL_LABELS.get(m, m) for m in summary.index]
-    summary.to_csv(TABLES_DIR / "summary.csv")
-    print(f"  Saved tables/summary.csv")
+    summary.to_csv(TABLES_DIR / f"{prefix}_summary.csv")
+    print(f"  Saved tables/{prefix}_summary.csv")
 
     # ── Print summary ─────────────────────────────────────────────────────────
-    print(f"\n=== {metric} Summary ===")
+    print(f"\n=== {metric} Summary ({tier_label}) ===")
     print(summary.to_string())
     print(f"\nFriedman p-value: {friedman['pvalue']:.6f}")
     print(f"Nemenyi CD (α=0.05): {cd:.3f}")
@@ -266,7 +279,7 @@ def run(results_path: Path, metric: str) -> None:
     for name, rank in sorted(zip(labels_v, ranks), key=lambda x: x[1]):
         print(f"  {name:30s} {rank:.3f}")
 
-    print("\nDone. All files saved to results/tables/ and results/plots/")
+    print(f"\nDone. All files saved to results/tables/{prefix}_* and results/plots/{prefix}_*")
 
 
 def main() -> None:
@@ -274,8 +287,14 @@ def main() -> None:
     parser.add_argument("--results", type=Path,
                         default=ROOT / "results" / "tier1_gridcv.json")
     parser.add_argument("--metric", default="test_f1_macro")
+    parser.add_argument("--prefix", default=None,
+                        help="Output filename prefix (default: inferred from --results filename)")
     args = parser.parse_args()
-    run(args.results, args.metric)
+    prefix = args.prefix
+    if prefix is None:
+        stem = args.results.stem          # e.g. "tier2_gridcv" or "tier1_gridcv"
+        prefix = stem.split("_")[0]       # "tier2" or "tier1"
+    run(args.results, args.metric, prefix=prefix)
 
 
 if __name__ == "__main__":

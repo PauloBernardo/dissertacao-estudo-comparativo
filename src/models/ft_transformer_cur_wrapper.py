@@ -72,6 +72,7 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
         val_fraction: float = 0.20,
         random_state: int | None = None,
         early_stop_metric: str = "val_acc",
+        batch_size: int | None = None,
     ):
         self.d_model = d_model
         self.n_heads = n_heads
@@ -85,6 +86,7 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
         self.val_fraction = val_fraction
         self.random_state = random_state
         self.early_stop_metric = early_stop_metric
+        self.batch_size = batch_size
 
     # ------------------------------------------------------------------
     # Helpers internos
@@ -147,6 +149,7 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
             lr=self.lr, epochs=self.epochs, patience=self.patience,
             weight_decay=self.weight_decay,
             early_stop_metric=self.early_stop_metric,
+            batch_size=self.batch_size,
         )
 
         # Armazena X_train_ completo como contexto para inferência

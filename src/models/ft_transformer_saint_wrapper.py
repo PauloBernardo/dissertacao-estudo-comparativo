@@ -28,16 +28,8 @@ from src.models.ft_transformer_model import SAINTClassifier, fit_model
 
 
 # SAINT mantém a atenção inter-instâncias n×n completa.
-# Em GPUs pequenas (ex.: MX350 com 2GB) o forward/backward pode estourar
-# para N≥3000. Detectamos automaticamente: usa CUDA se houver ≥4GB livres,
-# senão CPU. T4 (16GB) e A100 (40GB) cabem confortavelmente.
 def _pick_device():
-    if not torch.cuda.is_available():
-        return torch.device("cpu")
-    free_bytes, _ = torch.cuda.mem_get_info()
-    if free_bytes >= 4 * 1024**3:  # ≥4GB livres
-        return torch.device("cuda")
-    return torch.device("cpu")
+    return torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 DEVICE = _pick_device()
 
@@ -71,6 +63,7 @@ class SAINTColnorm(BaseEstimator, ClassifierMixin):
         val_fraction: float = 0.20,
         random_state: int | None = None,
         early_stop_metric: str = "val_acc",
+        batch_size: int | None = 256,
     ):
         self.d_model      = d_model
         self.n_heads      = n_heads
@@ -82,6 +75,7 @@ class SAINTColnorm(BaseEstimator, ClassifierMixin):
         self.val_fraction = val_fraction
         self.random_state = random_state
         self.early_stop_metric = early_stop_metric
+        self.batch_size   = batch_size
 
     def _to_tensor(self, X, y=None):
         Xt = torch.tensor(X, dtype=torch.float32, device=DEVICE)
@@ -110,10 +104,11 @@ class SAINTColnorm(BaseEstimator, ClassifierMixin):
 
         fit_model(
             self._model, X_tr_t, y_tr_t, X_val_t, y_val_t,
-            landmark_idx=None,          # SAINT: atenção completa, sem landmarks
+            landmark_idx=None,
             lr=self.lr, epochs=self.epochs, patience=self.patience,
             weight_decay=self.weight_decay,
             early_stop_metric=self.early_stop_metric,
+            batch_size=self.batch_size,  # mini-batch: atenção B×B limitada pelo orçamento de memória
         )
 
         self.X_train_ = X
@@ -133,7 +128,10 @@ class SAINTColnorm(BaseEstimator, ClassifierMixin):
         n_ctx = len(self.X_train_)
         X_ctx = np.concatenate([self.X_train_, X], axis=0)
         X_ctx_t = self._to_tensor(X_ctx)
-        logits_all = self._model(X_ctx_t, landmark_idx=None)
+        infer_bs = self.batch_size if self.batch_size is not None else 1024
+        chunks = [self._model(X_ctx_t[s:s + infer_bs], landmark_idx=None)
+                  for s in range(0, X_ctx_t.shape[0], infer_bs)]
+        logits_all = torch.cat(chunks, dim=0)
         return logits_all[n_ctx:].cpu().numpy()
 
     def predict(self, X: np.ndarray) -> np.ndarray:
