@@ -1,0 +1,338 @@
+{
+  "XGBoost__ADULT": {
+    "best_params": {
+      "n_estimators": 214,
+      "max_depth": 7,
+      "learning_rate": 0.044449575514094085,
+      "subsample": 0.9941869190296131,
+      "colsample_bytree": 0.551022405374014,
+      "reg_lambda": 0.006847105576684045,
+      "reg_alpha": 0.004418125737902547
+    },
+    "best_value": 0.804448766336483,
+    "metric": "f1_macro_cv"
+  },
+  "XGBoost__CREDIT": {
+    "best_params": {
+      "n_estimators": 148,
+      "max_depth": 3,
+      "learning_rate": 0.0606325267500862,
+      "subsample": 0.7270057453279419,
+      "colsample_bytree": 0.5632859557965029,
+      "reg_lambda": 0.06313561621546102,
+      "reg_alpha": 0.11100207510911897
+    },
+    "best_value": 0.6931392596845134,
+    "metric": "f1_macro_cv"
+  },
+  "XGBoost__BANK": {
+    "best_params": {
+      "n_estimators": 51,
+      "max_depth": 9,
+      "learning_rate": 0.16069280061469016,
+      "subsample": 0.6469364667351448,
+      "colsample_bytree": 0.9142920741995962,
+      "reg_lambda": 0.04661681220707687,
+      "reg_alpha": 0.1227191870880316
+    },
+    "best_value": 0.7474521450586713,
+    "metric": "f1_macro_cv"
+  },
+  "XGBoost__TELCO": {
+    "best_params": {
+      "n_estimators": 470,
+      "max_depth": 3,
+      "learning_rate": 0.017759757254086513,
+      "subsample": 0.8103854159860177,
+      "colsample_bytree": 0.9930007502218928,
+      "reg_lambda": 0.0010766318506127495,
+      "reg_alpha": 0.6189418675283368
+    },
+    "best_value": 0.7328532738321211,
+    "metric": "f1_macro_cv"
+  },
+  "XGBoost__SHOPPERS": {
+    "best_params": {
+      "n_estimators": 285,
+      "max_depth": 6,
+      "learning_rate": 0.024591256383397347,
+      "subsample": 0.8871168447171083,
+      "colsample_bytree": 0.7280751661082743,
+      "reg_lambda": 0.1878173875716192,
+      "reg_alpha": 0.001188937983177301
+    },
+    "best_value": 0.7963200706255401,
+    "metric": "f1_macro_cv"
+  },
+  "XGBoost__HIGGS50K": {
+    "best_params": {
+      "n_estimators": 166,
+      "max_depth": 4,
+      "learning_rate": 0.03310473131607297,
+      "subsample": 0.5114031823399278,
+      "colsample_bytree": 0.9023931446615743,
+      "reg_lambda": 0.001088122899682173,
+      "reg_alpha": 0.1523511264706066
+    },
+    "best_value": 0.7037326957827087,
+    "metric": "f1_macro_cv"
+  },
+  "DualFISTA__ADULT": {
+    "best_params": {
+      "sigma": 3.028525153605885,
+      "tau": 37.665768415992964,
+      "lambda_": 0.02576638574613589
+    },
+    "best_value": 0.7693639846600125,
+    "metric": "f1_macro_cv"
+  },
+  "DualFISTA__CREDIT": {
+    "best_params": {
+      "sigma": 5.988647761113142,
+      "tau": 45.99201751234188,
+      "lambda_": 0.0034723039138872323
+    },
+    "best_value": 0.6834212949307276,
+    "metric": "f1_macro_cv"
+  },
+  "DualFISTA__BANK": {
+    "best_params": {
+      "sigma": 2.428281388157124,
+      "tau": 28.6636910964255,
+      "lambda_": 0.02275872164796079
+    },
+    "best_value": 0.7100307467792137,
+    "metric": "f1_macro_cv"
+  },
+  "DualFISTA__TELCO": {
+    "best_params": {
+      "sigma": 5.7131761177150855,
+      "tau": 9.152205826391539,
+      "lambda_": 0.02088098165106177
+    },
+    "best_value": 0.723843750828245,
+    "metric": "f1_macro_cv"
+  },
+  "DualFISTA__SHOPPERS": {
+    "best_params": {
+      "sigma": 4.0203554670287325,
+      "tau": 56.00198829403073,
+      "lambda_": 0.006799354650591266
+    },
+    "best_value": 0.7623668809405922,
+    "metric": "f1_macro_cv"
+  },
+  "DualFISTA__HIGGS50K": {
+    "best_params": {
+      "sigma": 5.869645619534242,
+      "tau": 0.3180501055218639,
+      "lambda_": 0.031454598683702456
+    },
+    "best_value": 0.647071065291294,
+    "metric": "f1_macro_cv"
+  },
+  "NystromLSSVMColnorm__ADULT": {
+    "best_params": {
+      "sigma": 4.389881246749244,
+      "gamma": 9.284016778933875,
+      "m_ratio": 0.09293706010467057
+    },
+    "best_value": 0.765802734976062,
+    "metric": "f1_macro_cv"
+  },
+  "NystromLSSVMColnorm__CREDIT": {
+    "best_params": {
+      "sigma": 2.9554483012804775,
+      "gamma": 1.3130280280658586,
+      "m_ratio": 0.2008503516586637
+    },
+    "best_value": 0.6833511852503961,
+    "metric": "f1_macro_cv"
+  },
+  "NystromLSSVMColnorm__BANK": {
+    "best_params": {
+      "sigma": 3.028525153605885,
+      "gamma": 37.665768415992964,
+      "m_ratio": 0.18877374530006025
+    },
+    "best_value": 0.7008332876925936,
+    "metric": "f1_macro_cv"
+  },
+  "NystromLSSVMColnorm__TELCO": {
+    "best_params": {
+      "sigma": 6.859586094378968,
+      "gamma": 0.4487130489997652,
+      "m_ratio": 0.22081597785022586
+    },
+    "best_value": 0.7260550001320754,
+    "metric": "f1_macro_cv"
+  },
+  "NystromLSSVMColnorm__SHOPPERS": {
+    "best_params": {
+      "sigma": 3.028525153605885,
+      "gamma": 37.665768415992964,
+      "m_ratio": 0.18877374530006025
+    },
+    "best_value": 0.764941417773354,
+    "metric": "f1_macro_cv"
+  },
+  "NystromLSSVMColnorm__HIGGS50K": {
+    "best_params": {
+      "sigma": 7.5552017682571995,
+      "gamma": 14.304023366155874,
+      "m_ratio": 0.21584251353452907
+    },
+    "best_value": 0.6509702632096671,
+    "metric": "f1_macro_cv"
+  },
+  "SAINTColnorm__ADULT": {
+    "best_params": {
+      "d_model": 64,
+      "n_heads": 4,
+      "n_layers": 1,
+      "lr": 0.0028522504741460616,
+      "epochs": 60,
+      "patience": 8
+    },
+    "best_value": 0.7595254837477626,
+    "metric": "f1_macro_cv"
+  },
+  "SAINTColnorm__CREDIT": {
+    "best_params": {
+      "d_model": 32,
+      "n_heads": 4,
+      "n_layers": 2,
+      "lr": 0.0034587371047541744,
+      "epochs": 60,
+      "patience": 8
+    },
+    "best_value": 0.5234985370549228,
+    "metric": "f1_macro_cv"
+  },
+  "SAINTColnorm__BANK": {
+    "best_params": {
+      "d_model": 64,
+      "n_heads": 4,
+      "n_layers": 3,
+      "lr": 0.002262289140480344,
+      "epochs": 60,
+      "patience": 8
+    },
+    "best_value": 0.5413547152705263,
+    "metric": "f1_macro_cv"
+  },
+  "SAINTColnorm__TELCO": {
+    "best_params": {
+      "d_model": 64,
+      "n_heads": 4,
+      "n_layers": 3,
+      "lr": 0.0013118495372290064,
+      "epochs": 60,
+      "patience": 8
+    },
+    "best_value": 0.7236878183310446,
+    "metric": "f1_macro_cv"
+  },
+  "SAINTColnorm__SHOPPERS": {
+    "best_params": {
+      "d_model": 64,
+      "n_heads": 4,
+      "n_layers": 2,
+      "lr": 0.0028559957980545387,
+      "epochs": 60,
+      "patience": 8
+    },
+    "best_value": 0.7904657926382596,
+    "metric": "f1_macro_cv"
+  },
+  "SAINTColnorm__HIGGS50K": {
+    "best_params": {
+      "d_model": 64,
+      "n_heads": 4,
+      "n_layers": 3,
+      "lr": 0.001352699296099623,
+      "epochs": 60,
+      "patience": 8
+    },
+    "best_value": 0.6661281799842024,
+    "metric": "f1_macro_cv"
+  },
+  "FTTransformerCURColnorm__ADULT": {
+    "best_params": {
+      "d_model": 64,
+      "n_heads": 4,
+      "n_layers": 1,
+      "m_ratio": 0.09465234861099911,
+      "lr": 0.0034169125699365717,
+      "epochs": 60,
+      "patience": 8
+    },
+    "best_value": 0.7520548249258981,
+    "metric": "f1_macro_cv"
+  },
+  "FTTransformerCURColnorm__CREDIT": {
+    "best_params": {
+      "d_model": 16,
+      "n_heads": 4,
+      "n_layers": 2,
+      "m_ratio": 0.088013974518101,
+      "lr": 0.0012442409825686067,
+      "epochs": 60,
+      "patience": 8
+    },
+    "best_value": 0.44584123831806993,
+    "metric": "f1_macro_cv"
+  },
+  "FTTransformerCURColnorm__BANK": {
+    "best_params": {
+      "d_model": 64,
+      "n_heads": 4,
+      "n_layers": 1,
+      "m_ratio": 0.13370586657265232,
+      "lr": 0.0015925971599847204,
+      "epochs": 60,
+      "patience": 8
+    },
+    "best_value": 0.5291069449645457,
+    "metric": "f1_macro_cv"
+  },
+  "FTTransformerCURColnorm__TELCO": {
+    "best_params": {
+      "d_model": 32,
+      "n_heads": 2,
+      "n_layers": 2,
+      "m_ratio": 0.054392229573601514,
+      "lr": 0.003535634629148813,
+      "epochs": 60,
+      "patience": 8
+    },
+    "best_value": 0.7263511746401906,
+    "metric": "f1_macro_cv"
+  },
+  "FTTransformerCURColnorm__SHOPPERS": {
+    "best_params": {
+      "d_model": 64,
+      "n_heads": 4,
+      "n_layers": 2,
+      "m_ratio": 0.1212579226693264,
+      "lr": 0.0015891785078247435,
+      "epochs": 60,
+      "patience": 8
+    },
+    "best_value": 0.7909741498181395,
+    "metric": "f1_macro_cv"
+  },
+  "FTTransformerCURColnorm__HIGGS50K": {
+    "best_params": {
+      "d_model": 32,
+      "n_heads": 2,
+      "n_layers": 2,
+      "m_ratio": 0.10696834666380378,
+      "lr": 0.0023386446398320927,
+      "epochs": 60,
+      "patience": 8
+    },
+    "best_value": 0.6673392476739993,
+    "metric": "f1_macro_cv"
+  }
+}

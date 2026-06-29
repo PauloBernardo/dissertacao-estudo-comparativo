@@ -1,0 +1,176 @@
+{
+  "FTTransformerCURColnorm__ADULT__val_loss": {
+    "best_params": {
+      "d_model": 32,
+      "n_heads": 2,
+      "n_layers": 2,
+      "m_ratio": 0.054392229573601514,
+      "lr": 0.003535634629148813,
+      "epochs": 60,
+      "patience": 8,
+      "early_stop_metric": "val_loss"
+    },
+    "best_value": 0.7769027755746434,
+    "metric": "f1_macro_cv",
+    "balance_train": false
+  },
+  "FTTransformerCURColnorm__CREDIT__val_loss": {
+    "best_params": {
+      "d_model": 64,
+      "n_heads": 4,
+      "n_layers": 1,
+      "m_ratio": 0.14085324615361797,
+      "lr": 0.0007056823479968803,
+      "epochs": 60,
+      "patience": 8,
+      "early_stop_metric": "val_loss"
+    },
+    "best_value": 0.7004613802533809,
+    "metric": "f1_macro_cv",
+    "balance_train": false
+  },
+  "FTTransformerCURColnorm__BANK__val_loss": {
+    "best_params": {
+      "d_model": 64,
+      "n_heads": 4,
+      "n_layers": 1,
+      "m_ratio": 0.09465234861099911,
+      "lr": 0.0034169125699365717,
+      "epochs": 60,
+      "patience": 8,
+      "early_stop_metric": "val_loss"
+    },
+    "best_value": 0.6979860320299712,
+    "metric": "f1_macro_cv",
+    "balance_train": false
+  },
+  "FTTransformerCURColnorm__TELCO__val_loss": {
+    "best_params": {
+      "d_model": 64,
+      "n_heads": 4,
+      "n_layers": 1,
+      "m_ratio": 0.14693973045174144,
+      "lr": 0.0008655704137361819,
+      "epochs": 60,
+      "patience": 8,
+      "early_stop_metric": "val_loss"
+    },
+    "best_value": 0.7344693053498691,
+    "metric": "f1_macro_cv",
+    "balance_train": false
+  },
+  "FTTransformerCURColnorm__SHOPPERS__val_loss": {
+    "best_params": {
+      "d_model": 32,
+      "n_heads": 2,
+      "n_layers": 2,
+      "m_ratio": 0.12209307897934166,
+      "lr": 0.004378093666991678,
+      "epochs": 60,
+      "patience": 8,
+      "early_stop_metric": "val_loss"
+    },
+    "best_value": 0.7973099257218387,
+    "metric": "f1_macro_cv",
+    "balance_train": false
+  },
+  "FTTransformerCURColnorm__HIGGS50K__val_loss": {
+    "best_params": {
+      "d_model": 32,
+      "n_heads": 4,
+      "n_layers": 3,
+      "m_ratio": 0.07999231709288114,
+      "lr": 0.0036396393567863887,
+      "epochs": 60,
+      "patience": 8,
+      "early_stop_metric": "val_loss"
+    },
+    "best_value": 0.6707526462437498,
+    "metric": "f1_macro_cv",
+    "balance_train": false
+  },
+  "SAINTColnorm__ADULT__val_loss": {
+    "best_params": {
+      "d_model": 16,
+      "n_heads": 4,
+      "n_layers": 1,
+      "lr": 0.007750644796341917,
+      "epochs": 60,
+      "patience": 8,
+      "early_stop_metric": "val_loss"
+    },
+    "best_value": 0.7848417704855347,
+    "metric": "f1_macro_cv",
+    "balance_train": false
+  },
+  "SAINTColnorm__CREDIT__val_loss": {
+    "best_params": {
+      "d_model": 64,
+      "n_heads": 4,
+      "n_layers": 3,
+      "lr": 0.00045907375285391566,
+      "epochs": 60,
+      "patience": 8,
+      "early_stop_metric": "val_loss"
+    },
+    "best_value": 0.7013911510135539,
+    "metric": "f1_macro_cv",
+    "balance_train": false
+  },
+  "SAINTColnorm__BANK__val_loss": {
+    "best_params": {
+      "d_model": 64,
+      "n_heads": 4,
+      "n_layers": 2,
+      "lr": 0.0014717748075341434,
+      "epochs": 60,
+      "patience": 8,
+      "early_stop_metric": "val_loss"
+    },
+    "best_value": 0.7189764299662996,
+    "metric": "f1_macro_cv",
+    "balance_train": false
+  },
+  "SAINTColnorm__TELCO__val_loss": {
+    "best_params": {
+      "d_model": 32,
+      "n_heads": 4,
+      "n_layers": 1,
+      "lr": 0.004278556071453297,
+      "epochs": 60,
+      "patience": 8,
+      "early_stop_metric": "val_loss"
+    },
+    "best_value": 0.7308655330455739,
+    "metric": "f1_macro_cv",
+    "balance_train": false
+  },
+  "SAINTColnorm__SHOPPERS__val_loss": {
+    "best_params": {
+      "d_model": 32,
+      "n_heads": 2,
+      "n_layers": 2,
+      "lr": 0.0007501954443620128,
+      "epochs": 60,
+      "patience": 8,
+      "early_stop_metric": "val_loss"
+    },
+    "best_value": 0.7917979048997087,
+    "metric": "f1_macro_cv",
+    "balance_train": false
+  },
+  "SAINTColnorm__HIGGS50K__val_loss": {
+    "best_params": {
+      "d_model": 32,
+      "n_heads": 4,
+      "n_layers": 2,
+      "lr": 0.004066949841880859,
+      "epochs": 60,
+      "patience": 8,
+      "early_stop_metric": "val_loss"
+    },
+    "best_value": 0.6775989422185313,
+    "metric": "f1_macro_cv",
+    "balance_train": false
+  }
+}
