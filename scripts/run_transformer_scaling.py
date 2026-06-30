@@ -50,8 +50,11 @@ PATIENCE  = 6
 
 # N máximo por modelo — atenção densa O(N²) explode para N grande
 N_MAX = {
-    "FTTransformer_softmax":   10000,
-    "SAINTColnorm":            5000,   # atenção inter-instâncias densa
+    "FTTransformer_softmax":   10000,  # inter-features O(p²), escala com p não N
+    "FTTransformer_topk":      10000,
+    "FTTransformer_entmax":    10000,
+    "FTTransformer_sparsemax": 10000,
+    "SAINTColnorm":            5000,   # atenção inter-instâncias densa O(N²)
     "FTTransformerCURColnorm": 20000,  # Nyströmformer O(N·m)
 }
 
@@ -61,12 +64,19 @@ _PROC = psutil.Process(os.getpid())
 # ── Instanciação dos modelos ──────────────────────────────────────────────────
 
 def _make_model(variant: str):
-    if variant == "FTTransformer_softmax":
+    if variant in ("FTTransformer_softmax", "FTTransformer_topk",
+                   "FTTransformer_entmax", "FTTransformer_sparsemax"):
         from src.models.transformers.ft_transformer import FTTransformer
+        attn_map = {
+            "FTTransformer_softmax":   "softmax",
+            "FTTransformer_topk":      "topk",
+            "FTTransformer_entmax":    "entmax",
+            "FTTransformer_sparsemax": "sparsemax",
+        }
         return FTTransformer(
             num_blocks=2, num_heads=2,
             max_epochs=EPOCHS, patience=PATIENCE,
-            attention_type="softmax",
+            attention_type=attn_map[variant],
         )
     elif variant == "SAINTColnorm":
         from src.models.ft_transformer_saint_wrapper import SAINTColnorm
@@ -149,7 +159,11 @@ def main() -> None:
     scaler = StandardScaler()
     results: list[dict] = []
 
-    variants = ["FTTransformer_softmax", "SAINTColnorm", "FTTransformerCURColnorm"]
+    variants = [
+        "FTTransformer_softmax", "FTTransformer_topk",
+        "FTTransformer_entmax", "FTTransformer_sparsemax",
+        "SAINTColnorm", "FTTransformerCURColnorm",
+    ]
 
     for variant in variants:
         log.info("=== %s ===", variant)
