@@ -1,0 +1,3 @@
+Friedman test (TIER1 TRANSFORMERS)
+Statistic: 7.1587
+p-value:   0.209100
