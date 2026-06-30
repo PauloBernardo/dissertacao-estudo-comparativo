@@ -1275,6 +1275,61 @@ paradigma Transformer cresce \emph{em proporção à complexidade tabular dos
 dados}, e não à escolha de função de ativação da atenção.
 
 % ─────────────────────────────────────────────────────────────────────────────
+\subsection{Comparação entre variantes de FT-Transformer no Tier 2}
+\label{sec:tier2_transformer_variants}
+
+O experimento Tier 2 de Transformers executou \textbf{1080 runs}
+(6 variantes $\times$ 6 datasets $\times$ 30 sementes) com $N_{\text{treino}}=2000$,
+Optuna TPE (20 trials, 3-fold CV) e parada antecipada por \texttt{val\_loss}.
+A Tabela~\ref{tab:tier2_transformers_results} reporta o F1-macro por variante e
+dataset; a Tabela~\ref{tab:tier2_transformers_ranks} apresenta os ranks médios
+de Friedman.
+
+\input{tables/tier2_transformers_results.tex}
+
+\input{tables/tier2_transformers_ranks.tex}
+
+\textbf{Principais achados:}
+
+\begin{enumerate}
+  \item \textbf{Diferença entre variantes não é estatisticamente significativa.}
+        O teste de Friedman retorna $\chi^2 = 7{,}52$, $p = 0{,}185$ --- sem
+        evidência de que o tipo de atenção importa no regime Tier 2. Todos os
+        modelos ficam entre $0{,}689$ e $0{,}701$ de F1-macro médio, uma faixa
+        de apenas $0{,}012$.
+
+  \item \textbf{FT-CUR e FT-Entmax empatam em 1\textsuperscript{o} lugar}
+        (rank médio $2{,}667$ cada), seguidos de FT-Softmax e SAINT (rank
+        $3{,}167$). FT-CUR vence nos datasets CREDIT e SHOPPERS; FT-Entmax
+        vence em HIGGS50K; SAINT vence em ADULT e TELCO.
+
+  \item \textbf{FT-CUR mantém qualidade com atenção comprimida.}
+        Com $m = 0{,}2 \times N = 400$ landmarks, a aproximação Nyströmformer
+        nunca materializa a matriz $N \times N$, mas obtém F1 idêntico às
+        variantes densas. Isso valida a aproximação CUR como alternativa
+        eficiente mesmo em datasets Tier 2 de maior volume.
+
+  \item \textbf{Custo de treino: FT-CUR e FT-Entmax são os mais lentos.}
+        O tempo médio de treino por run é $\approx 29$\,s para FT-Softmax,
+        FT-Sparsemax e FT-TopK; $31$\,s para SAINT; $145$\,s para FT-CUR e
+        $185$\,s para FT-Entmax. FT-CUR é 5$\times$ mais lento que FT-Softmax
+        apesar de desempenho equivalente --- o custo vem da construção dos
+        landmarks e da inversão da matriz $W \in \mathbb{R}^{m \times m}$,
+        não da atenção em si. FT-Entmax é ainda mais lento devido ao solver
+        iterativo do operador $\alpha$-entmax.
+
+  \item \textbf{SAINT apresenta maior variância.} Com desvio padrão de
+        $0{,}085$ (vs.\ $0{,}065$--$0{,}076$ nos FT-Transformers), o SAINT
+        mostra sensibilidade maior à inicialização, reflexo da atenção
+        inter-instâncias densa que propaga ruído de amostragem.
+\end{enumerate}
+
+\textbf{Conclusão:} no regime Tier 2 com $N_{\text{treino}}=2000$, o tipo
+de atenção do FT-Transformer é um fator de segundo plano --- a arquitetura
+comum domina. A compressão CUR não degrada qualidade, mas o ganho de
+escalabilidade só se materializa em $N$ maiores do que os testados aqui.
+
+% ─────────────────────────────────────────────────────────────────────────────
 \section{Benchmark de Eficiência Computacional em \emph{Full-Data}}
 \label{sec:benchmark_full_data}
 
