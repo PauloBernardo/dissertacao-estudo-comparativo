@@ -42,20 +42,25 @@ log = logging.getLogger("transformer_bench")
 
 # ── Configuração ──────────────────────────────────────────────────────────────
 
-N_VALUES  = [500, 1000, 2000, 5000, 10000, 20000]
+N_VALUES  = [500, 1000, 2000, 5000, 10000, 20000, 50000]
 N_TEST    = 500   # subconjunto fixo para medir predição isolada
 REPEATS   = 3     # medianas sobre 3 repetições
 EPOCHS    = 40
 PATIENCE  = 6
 
-# N máximo por modelo — atenção densa O(N²) explode para N grande
+# N máximo por modelo
+# FTTransformer*: atenção inter-features O(p²) — escala linear com N → até 50K
+# SAINTColnorm:   atenção inter-instâncias densa O(N²) → OOM além de 5K
+# FTTransformerCURColnorm: Nyströmformer O(N·m), m=0.2N →
+#   N=20K: m=4K, C=[H,N,m] ~1.2GB VRAM (ok T4);
+#   N=50K: m=10K, C=[H,N,m] ~7.5GB VRAM (marginal em T4 16GB)
 N_MAX = {
-    "FTTransformer_softmax":   10000,  # inter-features O(p²), escala com p não N
-    "FTTransformer_topk":      10000,
-    "FTTransformer_entmax":    10000,
-    "FTTransformer_sparsemax": 10000,
-    "SAINTColnorm":            5000,   # atenção inter-instâncias densa O(N²)
-    "FTTransformerCURColnorm": 20000,  # Nyströmformer O(N·m)
+    "FTTransformer_softmax":   50000,
+    "FTTransformer_topk":      50000,
+    "FTTransformer_entmax":    50000,
+    "FTTransformer_sparsemax": 50000,
+    "SAINTColnorm":            5000,
+    "FTTransformerCURColnorm": 20000,  # N=50K arrisca OOM na T4
 }
 
 _PROC = psutil.Process(os.getpid())
