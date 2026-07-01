@@ -48,19 +48,14 @@ REPEATS   = 3     # medianas sobre 3 repetições
 EPOCHS    = 40
 PATIENCE  = 6
 
-# N máximo por modelo
-# FTTransformer*: atenção inter-features O(p²) — escala linear com N → até 50K
-# SAINTColnorm:   atenção inter-instâncias densa O(N²) → OOM além de 5K
-# FTTransformerCURColnorm: Nyströmformer O(N·m), m=0.2N →
-#   N=20K: m=4K, C=[H,N,m] ~1.2GB VRAM (ok T4);
-#   N=50K: m=10K, C=[H,N,m] ~7.5GB VRAM (marginal em T4 16GB)
+# Todos os modelos tentam até N=50K — OOM é capturado e registrado como erro
 N_MAX = {
     "FTTransformer_softmax":   50000,
     "FTTransformer_topk":      50000,
     "FTTransformer_entmax":    50000,
     "FTTransformer_sparsemax": 50000,
-    "SAINTColnorm":            5000,
-    "FTTransformerCURColnorm": 20000,  # N=50K arrisca OOM na T4
+    "SAINTColnorm":            50000,
+    "FTTransformerCURColnorm": 50000,
 }
 
 _PROC = psutil.Process(os.getpid())
@@ -182,9 +177,10 @@ def main() -> None:
 
             fits, preds, rams, vrams = [], [], [], []
 
+            oom = False
+            last_error = None
             for rep in range(args.repeats):
                 try:
-                    rng = np.random.default_rng(rep)
                     X_all, y_all = make_classification(
                         n_samples=n + N_TEST,
                         n_features=20, n_informative=10, n_redundant=5,
@@ -207,13 +203,30 @@ def main() -> None:
                              n, rep, m["fit_s"], m["pred_ms"],
                              m["ram_delta_mb"], m["vram_mb"])
 
+                except torch.cuda.OutOfMemoryError as e:
+                    oom = True
+                    last_error = "OOM"
+                    log.warning("  N=%6d rep=%d OOM — registrando e pulando N maiores", n, rep)
+                    if torch.cuda.is_available():
+                        torch.cuda.empty_cache()
+                    break
                 except Exception as e:
+                    last_error = str(e)
                     log.warning("  N=%6d rep=%d ERRO: %s", n, rep, e)
                     break
 
             if not fits:
-                results.append({"variant": variant, "n": n, "skipped": True,
-                                 "error": str(e)})
+                results.append({
+                    "variant": variant, "n": n, "skipped": True,
+                    "oom": oom, "error": last_error,
+                })
+                if oom:
+                    # OOM vai piorar com N maior — para este modelo
+                    log.warning("  OOM em N=%d — pulando N maiores para %s", n, variant)
+                    for n_skip in N_VALUES[N_VALUES.index(n) + 1:]:
+                        results.append({"variant": variant, "n": n_skip,
+                                        "skipped": True, "oom": True, "error": "OOM (skip após primeiro OOM)"})
+                    break
                 continue
 
             results.append({
@@ -238,7 +251,8 @@ def main() -> None:
     print("-" * 72)
     for r in results:
         if r.get("skipped"):
-            print(f"{r['variant']:<26}  {r['n']:>6}  {'—':>7}  {'—':>8}  {'—':>8}  {'—':>8}")
+            marker = "OOM" if r.get("oom") else "—"
+            print(f"{r['variant']:<26}  {r['n']:>6}  {marker:>7}  {marker:>8}  {marker:>8}  {marker:>8}")
         else:
             print(f"{r['variant']:<26}  {r['n']:>6}  "
                   f"{r['fit_s_median']:>6.1f}s  "
