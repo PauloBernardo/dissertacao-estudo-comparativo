@@ -331,7 +331,7 @@ laranja = FT-CUR.}
         $\approx 10\%$ de esparsidade. É o único modelo esparso da família dual
         que se aproxima do baseline sem esparsidade.
   \item \textbf{XGBoost} (baseline tabular) atinge $0{,}826$ no Tier 1 ---
-        agora competitivo com os LSSVMs esparsos (IP $0{,}832$, PCP $0{,}827$).
+        agora competitivo com os LSSVMs esparsos (IP $0{,}832$, PCP $0{,}838$).
         Destaque para TWC ($0{,}912$, melhor por coluna): o Grid+CV encontrou
         parâmetros que capturam a fronteira xadrez, eliminando o colapso
         observado no protocolo Optuna anterior ($0{,}476$). Perde em AUS e nos
@@ -529,11 +529,11 @@ Ordenado por F1-macro decrescente.}
 \textbf{Modelo} & \textbf{F1-macro} & \textbf{Spar.\ amostral} & \textbf{Mecanismo} \\
 \midrule
 \textbf{Nyström-SVM}$^\star$ & \textbf{0,838} & \textbf{78,1\%} & colnorm landmarks ($m/n$ tunado por dataset) \\
+LSSVM-PCP        & 0,838 & 74,1\% & pivoted Cholesky ($r$ tunado por dataset) \\
 LSSVM-Std        & 0,838 &  0,0\% & --- (baseline denso) \\
 LSSVM-IP         & 0,832 & 46,1\% & iterative pruning \\
 DualFISTA$^\star$ & 0,831 & 10,3\% & $\ell_1$ dual via FISTA \\
 LSSVM-FSA        & 0,829 & 54,6\% & seleção forward \\
-LSSVM-PCP        & 0,827 &  0,0\% & cone projection \\
 LSSVM-Prun       & 0,808 & 62,9\% & pruning iterativo c/ \emph{early stop} \\
 LSSVM-ADMM$^\star$& 0,802 & 24,4\% & $\ell_1$ primal (ADMM-Nesterov) \\
 ADMM-ElasticNet$^\star$& 0,802 & 24,5\% & $\ell_1 + \ell_2$ (Elastic Net) \\
@@ -627,13 +627,13 @@ FT-CUR$^\star$ & 0,738 & --- & $85{,}2\%$ & Nyströmformer, $m/n{\approx}0{,}15$
         para superar as variantes esparsas no nível feature.
 \end{itemize}
 
-\subsection{Esparsidade nos Transformers --- Tier 2 ($N=5000$)}
+\subsection{Esparsidade nos Transformers --- Tier 2 ($N_{\text{treino}}=2000$)}
 
-A transição para o Tier 2 ($N=5000$) permitiu analisar o comportamento de esparsidade dos Transformers em um regime de dados mais desafiador. A Tabela~\ref{tab:sparsity_ft_tier2} detalha a fração média de zeros na atenção inter-features (\texttt{mean\_zero\_fraction}) e a compressão de instâncias do FT-CUR.
+A transição para o Tier 2 ($N_{\text{treino}}=2000$) permitiu analisar o comportamento de esparsidade dos Transformers em um regime de dados mais desafiador. A Tabela~\ref{tab:sparsity_ft_tier2} detalha a fração média de zeros na atenção inter-features (\texttt{mean\_zero\_fraction}) e a compressão de instâncias do FT-CUR.
 
 \begin{table}[H]
 \centering
-\caption{Esparsidade de atenção e compressão nos Transformers (Tier 2). Valores agregados dos experimentos N=5000 com \texttt{val\_loss}.}
+\caption{Esparsidade de atenção e compressão nos Transformers (Tier 2). Valores agregados dos experimentos $N_{\text{treino}}=2000$ com \texttt{val\_loss}.}
 \label{tab:sparsity_ft_tier2}
 \begin{tabular}{lrll}
 \toprule
@@ -904,16 +904,16 @@ FT-CUR (Nyströmformer)$^\star$
 \end{table}
 
 % ─────────────────────────────────────────────────────────────────────────────
-\section{Tier 2: Datasets Reais ($N_{\text{treino}}=5000$)}
+\section{Tier 2: Datasets Reais ($N_{\text{treino}}=2000$)}
 \label{sec:tier2}
 
 Esta seção apresenta os resultados \emph{consolidados} do experimento Tier 2,
 que estende a comparação a seis datasets reais de larga escala
 (\textbf{ADULT}, \textbf{CREDIT}, \textbf{BANK}, \textbf{TELCO},
 \textbf{SHOPPERS}, \textbf{HIGGS50K}) com subamostragem estratificada para
-$N_{\text{treino}}=5000$ por seed. Os \textbf{18 modelos} (baselines, paper-base
+$N_{\text{treino}}=2000$ por seed. Os \textbf{15 modelos} (baselines, paper-base
 e variantes/propostos) completaram as 30 sementes, totalizando
-\textbf{3.240 execuções}. Os resultados de FT-CUR e SAINT incorporam a correção
+\textbf{2.700 execuções}. Os resultados de FT-CUR e SAINT incorporam a correção
 metodológica da ablação H2 (Seção~\ref{sec:tier2_ftcur_limit}):
 \texttt{early\_stop\_metric = val\_loss} em vez de \texttt{val\_acc}.
 
@@ -921,13 +921,13 @@ metodológica da ablação H2 (Seção~\ref{sec:tier2_ftcur_limit}):
 
 \begin{itemize}
   \item \textbf{Subamostragem por seed}: cada (modelo, dataset, seed) usa
-        uma amostra estratificada de $N{=}7143$ amostras, determinística pela
-        seed. O split $70/30$ resulta em $N_{\text{treino}}{=}5000$ +
-        $N_{\text{teste}}{=}2143$. Cada seed gera um subsample diferente,
-        permitindo estimar variância amostral sobre $N$ pequeno.
-  \item \textbf{Tuning Optuna}: 20 trials $\times$ 3-fold CV sobre cada
-        subsample, separado por (modelo, dataset). Cada um dos 18 modelos teve
-        espaço de busca próprio.
+        uma amostra estratificada de $N{=}2857$ amostras, determinística pela
+        seed. O split $70/30$ resulta em $N_{\text{treino}}{=}2000$ +
+        $N_{\text{teste}}{=}857$. Cada seed gera um subsample diferente,
+        permitindo estimar variância amostral sobre $N$ moderado.
+  \item \textbf{Tuning GridSearchCV}: grade fixa $\times$ 5-fold CV sobre cada
+        subsample, separado por (modelo, dataset). Cada um dos 15 modelos teve
+        grade de busca própria.
   \item \textbf{Métricas}: 30 seeds por (modelo, dataset), F1-macro como
         métrica primária para lidar com o desbalanceamento inerente aos dados.
   \item \textbf{Análise estatística}: teste de Friedman seguido de Wilcoxon
@@ -1004,7 +1004,7 @@ em negrito.
   \item \textbf{LSSVM-OppMaps} é o pior modelo do estudo ($0{,}478$): a
         seleção \emph{opposite maps} com esparsidade fixa em $94\%$ não
         possui mecanismo de \emph{early stopping}, e destrói a fronteira
-        de decisão em escala $N=5000$.
+        de decisão em escala $N=2000$.
 \end{itemize}
 
 \subsection{Análise estatística: Friedman e ranks médios}
@@ -1035,7 +1035,7 @@ heurísticas cegas ($\geq 17$).
         $81{,}5\%$ de esparsidade amostral com $F_1 = 0{,}707$, apenas
         $0{,}002$ abaixo do LSSVM-Std denso ($0{,}709$). \emph{Compressão
         substancial sem custo preditivo}, agora confirmado em dados reais
-        $N=5000$.
+        $N=2000$.
   \item \textbf{FT-CUR} obtém $89{,}4\%$ de compressão inter-instâncias com
         $F_1 = 0{,}713$, equivalente ao SAINT denso ($0{,}722$, gap
         $0{,}009$). Repete o padrão Tier 1: \emph{a compressão Nyströmformer
@@ -1050,7 +1050,7 @@ heurísticas cegas ($\geq 17$).
         destruir a fronteira de decisão, ao custo de menos compressão.
   \item \textbf{LSSVM-OppMaps} mantém $94\%$ de esparsidade fixa e
         permanece em colapso ($F_1 = 0{,}478$): sem mecanismo análogo de
-        \emph{early stopping}, a heurística cega não escala em $N=5000$.
+        \emph{early stopping}, a heurística cega não escala em $N=2000$.
   \item \textbf{FT-Sparsemax ($75\%$) e FT-TopK ($89\%$)} mantêm a
         esparsidade inter-features observada no Tier 1; FT-Entmax ($19\%$)
         permanece pouco saturada na prática.
@@ -1080,7 +1080,7 @@ FISTA-Nesterov           & 0,787 & 0,577 & $-$0,210 & 49,1\% \\
 \end{table}
 
 \textbf{Mecânica do colapso (ADMM/ADMM-EN).} Para a matriz kernel densa
-$5000 \times 5000$ ($25$ milhões de entradas), o Optuna convergiu para
+$2000 \times 2000$ ($4$ milhões de entradas), o GridSearchCV convergiu para
 valores de $\lambda$ grandes o suficiente para zerar $\approx 75\%$ dos
 coeficientes $\alpha_i$. O hiperplano resultante torna-se rígido e, na
 ausência de uma atualização proporcional do \emph{bias} via problema de
@@ -1206,7 +1206,7 @@ real grande (Tier 2).
 \begin{table}[H]
 \centering
 \caption{F1-macro médio: Tier 1 (sintéticos + pequenos reais, $N \in [400, 1584]$)
-vs.\ Tier 2 ($N_{\text{treino}}=5000$ em datasets reais grandes).
+vs.\ Tier 2 ($N_{\text{treino}}=2000$ em datasets reais grandes).
 $\Delta$ negativo = perda ao migrar.}
 \label{tab:tier1_vs_tier2}
 \begin{tabular}{lrrrl}
@@ -1217,7 +1217,7 @@ LSSVM-Std            & 0,838 & 0,709 & $-$0,129 & kernel denso \\
 DualFISTA$^\circ$    & 0,831 & 0,706 & $-$0,125 & dual $\ell_1$ via FISTA \\
 Nyström-LSSVM$^\star$ & 0,838 & 0,707 & $-$0,131 & kernel esparso (81\% esp.) \\
 LSSVM-IP             & 0,832 & 0,694 & $-$0,138 & iterative pruning \\
-LSSVM-PCP            & 0,827 & 0,685 & $-$0,142 & cone projection \\
+LSSVM-PCP            & 0,838 & 0,689 & $-$0,149 & cone projection \\
 LSSVM-FSA            & 0,829 & 0,679 & $-$0,150 & forward selection \\
 \midrule
 XGBoost              & 0,826 & 0,735 & $-$0,091 & gradient boosting \\
@@ -1247,7 +1247,7 @@ LSSVM-OppMaps             & 0,759 & 0,478 & $-$0,281 & opposite maps \\
         confirmando que os mecanismos de esparsidade propostos são
         \emph{neutros} em relação à formulação dual em escala.
   \item \textbf{Transformers e XGBoost.} FT-Transformers ($^\dagger$,
-        protocolo Optuna no Tier 2) absorvem a transição com baixa perda
+        protocolo GridSearchCV no Tier 2) absorvem a transição com baixa perda
         ($\Delta \approx -0{,}025$ a $+0{,}008$, com FT-TopK ligeiramente
         melhor no Tier 2 que no Tier 1 com Grid+CV). As variantes esparsas
         convergem para o mesmo patamar do softmax denso ($0{,}720$--$0{,}725$):
@@ -1399,7 +1399,7 @@ HIGGS50K & SAINT        & 20\,000 & 58,3  & 1,96 & 12\,385 \\
         dataset completo ($N{=}30$k), o treinamento sobe para $2\,451$\,s
         e a inferência para $77{,}7$\,s. A causa mais plausível é a
         extrapolação de hiperparâmetros tunados em regime reduzido
-        ($N_{\text{treino}}=5000$): em particular, um \texttt{m\_ratio}
+        ($N_{\text{treino}}=2000$): em particular, um \texttt{m\_ratio}
         muito maior no CREDIT ($0{,}141$ vs.\ $0{,}054$ em ADULT) aumenta
         fortemente o número absoluto de landmarks e o custo do bloco
         inter-instâncias.
@@ -1734,7 +1734,7 @@ Ablação A (escala) & 18 mod., 3 sintéticos, $N{=}400 \to 2000$, 30s (LSSVM/XG
 Ablação B (ruído)  & 18 mod., 3 sintéticos, $+$3 feat.\ ruído, 30s & 1620 & XGBoost $\overline{\Delta}{=}{-}0{,}048$; LSSVMs $-0{,}26$ a $-0{,}39$; Transf.\ $-0{,}029$ a $-0{,}044$ \\
 Ablação C (MK5)    & 18 mod., 3 sintéticos (5 features), 30 seeds  & 1620 & LSSVM-Std 0,851 $>$ Nyström 0,841; Transf.\ abaixo ($0{,}782$--$0{,}807$) \\
 \midrule
-Tier 2 ($N_{\text{treino}}=5000$) & 18 modelos, 6 datasets reais, 30s    & 3240 & XGBoost 0,735; SAINT/FT-CUR/FT baselines $\sim$0,72; primais $\ell_1$ colapsam para 0,58 \\
+Tier 2 ($N_{\text{treino}}=2000$) & 15 modelos, 6 datasets reais, 30s    & 2700 & XGBoost 0,735; SAINT/FT-CUR/FT baselines $\sim$0,72; primais $\ell_1$ colapsam para 0,58 \\
 Ablação H2 (early stop) & FT-CUR/SAINT, CREDIT/BANK, 3 métricas, 30s   & 360  & \texttt{val\_loss} $>$ \texttt{val\_acc} ($p < 10^{-5}$ em todos os 4 cenários) \\
 Benchmark eficiência    & 6 Transformers, 3 datasets reais, 1 seed       & 137  & SAINT OOM cedo; FT baselines dominam tempo/memória; FT-CUR patológico em CREDIT 30k \\
 \midrule
@@ -1749,7 +1749,7 @@ Benchmark eficiência    & 6 Transformers, 3 datasets reais, 1 seed       & 137 
         esparsidade: $F_1 = 0{,}838$ no Tier 1 (\(78\%\) esp., Grid+CV) e
         $0{,}707$ no Tier 2 (\(81{,}5\%\) esp.), em ambos os regimes a
         $\leq 0{,}002$ do LSSVM-Std denso. \emph{Compressão sem custo
-        preditivo}, agora confirmado em escala $N=5000$.
+        preditivo}, agora confirmado em escala $N=2000$.
   \item \textbf{DualFISTA} mantém F1 próximo ao LSSVM-Std no Tier 1
         ($0{,}831$ vs.\ $0{,}838$, $\Delta{=}0{,}007$) e elimina o colapso
         dos primais com $\ell_1$ no Tier 2 — contribuição qualitativa
@@ -1767,7 +1767,7 @@ Benchmark eficiência    & 6 Transformers, 3 datasets reais, 1 seed       & 137 
   \item \textbf{Colapso dos métodos primais com $\ell_1$ em escala} é o
         achado mais inesperado do Tier 2: ADMM-Nesterov, ADMM-ElasticNet e
         FISTA-Nesterov caem de $0{,}787$--$0{,}802$ (Tier 1, Grid+CV) para
-        $\approx 0{,}58$ em $N=5000$. Revela um teto
+        $\approx 0{,}58$ em $N=2000$. Revela um teto
         de escalabilidade não detectável em $N \leq 1000$ e justifica a
         reformulação dual proposta (DualFISTA).
   \item \textbf{H2 confirmada metodologicamente}: \texttt{val\_loss}
@@ -1804,7 +1804,7 @@ Benchmark eficiência    & 6 Transformers, 3 datasets reais, 1 seed       & 137 
         FT-CUR no $N$ completo de cada dataset (Colab GPU; $\sim 10$--$12$h);
         e XGBoost + Nyström-LSSVM em $N$ completo (Colab CPU; $\sim 3$--$5$h)
         para confirmar a vantagem de eficiência amostral observada em
-        $N=5000$.
+        $N=2000$.
   \item \textbf{Re-rodar Tier 1 (\texttt{lambda\_ratio} corrigido)} para
         4 modelos: a correção de escala do $\lambda$ entre Tier 1 e Tier 2
         (sintaxe \texttt{lambda\_ratio} em vez de absoluto) deve ser
