@@ -278,10 +278,10 @@ $\circ$ = variante investigada; $\star$ = proposta.}
 XGBoost         & 0,958 & 0,724 & 0,559 & 0,804 & \textbf{0,691} & 0,862 & 0,944 & 0,984 & \textbf{0,912} & 0,826 \\
 \midrule
 \multicolumn{11}{l}{\textit{Baselines LSSVM}} \\
-LSSVM-Std       & \textbf{0,973} & \textbf{0,732} & 0,566 & 0,827 & \textbf{0,691} & 0,861 & \textbf{0,994} & 0,997 & 0,898 & \textbf{0,838} \\
+LSSVM-Std       & 0,973 & \textbf{0,732} & 0,566 & 0,827 & \textbf{0,691} & 0,861 & \textbf{0,994} & 0,997 & 0,898 & \textbf{0,838} \\
 LSSVM-FSA       & 0,966 & \textbf{0,732} & 0,550 & 0,811 & 0,680 & 0,855 & 0,987 & 0,997 & 0,879 & 0,829 \\
 LSSVM-IP        & 0,969 & 0,718 & 0,546 & \textbf{0,828} & 0,681 & 0,857 & 0,992 & 0,996 & 0,897 & 0,832 \\
-LSSVM-PCP       & 0,916 & 0,717 & \textbf{0,627} & 0,783 & 0,684 & 0,849 & 0,990 & 0,993 & 0,880 & 0,827 \\
+LSSVM-PCP       & \textbf{0,975} & 0,731 & 0,563 & 0,827 & 0,687 & 0,862 & 0,991 & \textbf{1,000} & 0,905 & \textbf{0,838} \\
 FISTA-Nesterov  & 0,823 & 0,682 & 0,609 & 0,755 & 0,552 & 0,829 & 0,971 & 0,989 & 0,877 & 0,787 \\
 LSSVM-Prun      & 0,969 & 0,642 & 0,493 & 0,816 & 0,628 & 0,851 & 0,989 & 0,997 & 0,891 & 0,808 \\
 LSSVM-OppM      & 0,951 & 0,463 & 0,454 & 0,715 & 0,550 & 0,815 & 0,986 & 0,991 & 0,907 & 0,759 \\
@@ -294,12 +294,12 @@ FT-Softmax        & 0,954 & 0,688 & 0,553 & 0,803 & 0,675 & 0,855 & 0,625 & 0,94
 FT-TopK           & 0,951 & 0,668 & 0,537 & 0,756 & 0,648 & 0,855 & 0,630 & 0,884 & 0,476 & 0,712 \\
 \midrule
 \multicolumn{11}{l}{\textit{Paper-base estendido}} \\
-LSSVM-ADMM-Nesterov     & 0,872 & 0,688 & 0,623 & 0,765 & 0,592 & 0,840 & 0,971 & 0,988 & 0,881 & 0,802 \\
+LSSVM-ADMM-Nesterov     & 0,872 & 0,688 & \textbf{0,623} & 0,765 & 0,592 & 0,840 & 0,971 & 0,988 & 0,881 & 0,802 \\
 \midrule
 \multicolumn{11}{l}{\textit{Variantes investigadas / propostos}} \\
 DualFISTA$^\circ$       & 0,964 & 0,726 & 0,574 & 0,831 & 0,642 & 0,851 & 0,993 & 0,997 & 0,901 & 0,831 \\
-Nyström-SVM$^\star$     & 0,970 & 0,728 & 0,579 & 0,825 & \textbf{0,691} & \textbf{0,863} & 0,992 & \textbf{0,999} & 0,898 & \textbf{0,838} \\
-ADMM-ElasticNet$^\circ$ & 0,872 & 0,687 & 0,623 & 0,764 & 0,592 & 0,840 & 0,971 & 0,988 & 0,881 & 0,802 \\
+Nyström-SVM$^\star$     & 0,970 & 0,728 & 0,579 & 0,825 & \textbf{0,691} & \textbf{0,863} & 0,992 & 0,999 & 0,898 & \textbf{0,838} \\
+ADMM-ElasticNet$^\circ$ & 0,872 & 0,687 & \textbf{0,623} & 0,764 & 0,592 & 0,840 & 0,971 & 0,988 & 0,881 & 0,802 \\
 FT-CUR$^{\star}$ (Nyströmformer) & 0,949 & 0,704 & 0,559 & 0,815 & 0,672 & 0,856 & 0,624 & 0,974 & 0,487 & 0,738 \\
 \bottomrule
 \end{tabular}}
@@ -1266,8 +1266,8 @@ LSSVM-OppMaps             & 0,759 & 0,478 & $-$0,281 & opposite maps \\
         Tier 1 e reduz a queda a $-0{,}214$.
 \end{enumerate}
 
-\textbf{Reordenação:} no Tier 1, o ranking é Nyström/LSSVM-Std ($0{,}838$)
-$>$ IP ($0{,}832$) $>$ DualFISTA ($0{,}831$) $>$ FSA/PCP/XGBoost ($0{,}826$--$0{,}829$)
+\textbf{Reordenação:} no Tier 1, o ranking é Nyström/LSSVM-Std/PCP ($0{,}838$)
+$>$ IP ($0{,}832$) $>$ DualFISTA ($0{,}831$) $>$ FSA/XGBoost ($0{,}826$--$0{,}829$)
 $>$ primais $\ell_1$ $>$ OppMaps; no Tier 2, é XGBoost $\geq$
 FT-Transformers + SAINT + FT-CUR $>$ LSSVMs duais (Std, Nyström, DualFISTA,
 IP, PCP, FSA) $>$ primais com $\ell_1$ $>$ heurísticas. A vantagem do
