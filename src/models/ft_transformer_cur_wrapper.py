@@ -73,6 +73,7 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
         random_state: int | None = None,
         early_stop_metric: str = "val_acc",
         batch_size: int | None = None,
+        m_landmarks: int | None = None,
     ):
         self.d_model = d_model
         self.n_heads = n_heads
@@ -87,6 +88,10 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
         self.random_state = random_state
         self.early_stop_metric = early_stop_metric
         self.batch_size = batch_size
+        # Se m_landmarks é fornecido, usa número FIXO de landmarks (independente de N),
+        # garantindo atenção O(n·m) genuinamente sub-quadrática. Caso contrário,
+        # usa m = round(m_ratio · n) (m cresce com N → O(m_ratio·n²)).
+        self.m_landmarks = m_landmarks
 
     # ------------------------------------------------------------------
     # Helpers internos
@@ -125,8 +130,12 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
         X_tr, y_tr = X[idx_tr], y[idx_tr]
         X_val, y_val = X[idx_val], y[idx_val]
 
-        # Landmarks sobre o conjunto de treino interno
-        m = max(2, round(self.m_ratio * len(idx_tr)))
+        # Landmarks sobre o conjunto de treino interno.
+        # m FIXO (m_landmarks) → O(n·m); ou m = m_ratio·n → O(m_ratio·n²).
+        if self.m_landmarks is not None:
+            m = max(2, min(self.m_landmarks, len(idx_tr)))
+        else:
+            m = max(2, round(self.m_ratio * len(idx_tr)))
         self._landmark_idx_ = self._landmark_idx(X_tr, m)
 
         # Modelo
@@ -156,7 +165,10 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
         # e recalcula landmarks sobre ele (índices agora referem X_train_)
         self.X_train_ = X
         self.y_train_ = y
-        m_full = max(2, round(self.m_ratio * n))
+        if self.m_landmarks is not None:
+            m_full = max(2, min(self.m_landmarks, n))
+        else:
+            m_full = max(2, round(self.m_ratio * n))
         self._landmark_idx_full_ = self._landmark_idx(X, m_full)
 
         # Esparsidade de compressão inter-instâncias: 1 - m/n

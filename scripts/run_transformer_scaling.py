@@ -48,14 +48,23 @@ REPEATS   = 3     # medianas sobre 3 repetições
 EPOCHS    = 40
 PATIENCE  = 6
 
-# Todos os modelos tentam até N=50K — OOM é capturado e registrado como erro
+# Todos os modelos tentam até N=50K — OOM é capturado e registrado como erro.
+# Duas variantes inter-instâncias por modelo, para comparação JUSTA:
+#   *_minibatch  : batch_size=256 → atenção limitada ao batch (memória constante)
+#   *_full/mfixed: batch completo → SAINT O(N²) (OOM); FT-CUR O(N·m) com m FIXO (escala)
+BATCH = 256
+M_FIXED = 256          # landmarks fixos p/ FT-CUR full-batch → O(N·m) sub-quadrático
+M_MINIBATCH = 64       # landmarks p/ FT-CUR mini-batch
+
 N_MAX = {
     "FTTransformer_softmax":   50000,
     "FTTransformer_topk":      50000,
     "FTTransformer_entmax":    50000,
     "FTTransformer_sparsemax": 50000,
-    "SAINTColnorm":            50000,
-    "FTTransformerCURColnorm": 50000,
+    "SAINT_minibatch":         50000,
+    "SAINT_fullbatch":         50000,
+    "FTCUR_minibatch":         50000,
+    "FTCUR_mfixed_full":       50000,
 }
 
 _PROC = psutil.Process(os.getpid())
@@ -78,18 +87,29 @@ def _make_model(variant: str):
             max_epochs=EPOCHS, patience=PATIENCE,
             attention_type=attn_map[variant],
         )
-    elif variant == "SAINTColnorm":
+    elif variant in ("SAINT_minibatch", "SAINT_fullbatch"):
         from src.models.ft_transformer_saint_wrapper import SAINTColnorm
+        # mini-batch: atenção B×B constante | full-batch: atenção N×N → O(N²)
+        bs = BATCH if variant == "SAINT_minibatch" else None
         return SAINTColnorm(
             n_heads=2, n_layers=1,
             epochs=EPOCHS, patience=PATIENCE, early_stop_metric="val_loss",
+            batch_size=bs,
         )
-    elif variant == "FTTransformerCURColnorm":
+    elif variant in ("FTCUR_minibatch", "FTCUR_mfixed_full"):
         from src.models.ft_transformer_cur_wrapper import FTTransformerCURColnorm
-        return FTTransformerCURColnorm(
-            n_heads=4, n_layers=2, m_ratio=0.2,
-            epochs=EPOCHS, patience=PATIENCE, early_stop_metric="val_loss",
-        )
+        if variant == "FTCUR_minibatch":
+            # mini-batch (como o SAINT); m fixo pequeno → memória de treino limitada
+            return FTTransformerCURColnorm(
+                n_heads=4, n_layers=2, m_landmarks=M_MINIBATCH, batch_size=BATCH,
+                epochs=EPOCHS, patience=PATIENCE, early_stop_metric="val_loss",
+            )
+        else:
+            # batch completo, m FIXO → atenção O(N·m) genuinamente sub-quadrática
+            return FTTransformerCURColnorm(
+                n_heads=4, n_layers=2, m_landmarks=M_FIXED, batch_size=None,
+                epochs=EPOCHS, patience=PATIENCE, early_stop_metric="val_loss",
+            )
     raise ValueError(variant)
 
 
@@ -162,7 +182,8 @@ def main() -> None:
     variants = [
         "FTTransformer_softmax", "FTTransformer_topk",
         "FTTransformer_entmax", "FTTransformer_sparsemax",
-        "SAINTColnorm", "FTTransformerCURColnorm",
+        "SAINT_minibatch", "SAINT_fullbatch",
+        "FTCUR_minibatch", "FTCUR_mfixed_full",
     ]
 
     for variant in variants:
