@@ -124,6 +124,13 @@ class SAINTColnorm(BaseEstimator, ClassifierMixin):
 
     @torch.no_grad()
     def _logits(self, X: np.ndarray) -> np.ndarray:
+        # A atenção inter-instâncias do SAINT é BATCH-LEVEL (Somepalli et al., 2021):
+        # cada linha atende às demais linhas DO SEU BATCH — no treino E na
+        # inferência —, nunca sobre o dataset inteiro. Custo O(B²), constante em N.
+        # Por isso a predição processa [X_train ‖ X_test] em chunks de `batch_size`,
+        # o MESMO regime do treino, reproduzindo o F1 reportado e o design do paper.
+        # NÃO trocar por forward full-context: o modelo foi treinado/tunado com
+        # atenção sobre B linhas (não N) → seria mismatch treino/inferência.
         self._model.eval()
         n_ctx = len(self.X_train_)
         X_ctx = np.concatenate([self.X_train_, X], axis=0)

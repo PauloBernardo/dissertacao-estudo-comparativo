@@ -123,9 +123,9 @@ $^\star$ = aplicação/combinação proposta.
   \item 30 sementes aleatórias, partição estratificada 70/30.
   \item Métrica principal: F1-macro (média aritmética do F1 por classe).
   \item Hiperparâmetros otimizados via \textbf{Grid Search exaustivo + 5-fold CV}
-        estratificado (\texttt{GridSearchCV}, scikit-learn) para todos os 18 modelos
-        no Tier 1 (Transformers re-executados com \texttt{epochs=40}, \texttt{patience=6}
-        em GPU T4). Todos os modelos Tier 2 utilizam Optuna TPE (20 trials, 3-fold CV).
+        estratificado (\texttt{GridSearchCV}, scikit-learn) para todos os modelos
+        em ambos os tiers (Transformers re-executados com \texttt{epochs=40}, \texttt{patience=6}
+        em GPU T4).
   \item Normalização por \texttt{StandardScaler} ajustado apenas no treino.
 \end{itemize}
 
@@ -476,7 +476,13 @@ onde cada entrada $A_{ij}$ mede a influência da amostra $j$ sobre a amostra $i$
   \item \textbf{SAINT} usa $f = \text{softmax}$ completo: $A \in \mathbb{R}^{n \times n}$
         é materializada integralmente. Custo: $O(n^2 d)$ por cabeça. Sem zeros exatos
         $\Rightarrow$ esparsidade de compressão $= 0\%$. Serve como \textbf{baseline
-        denso} para a comparação com FT-CUR.
+        denso} para a comparação com FT-CUR. \emph{Atenção:} na formulação original
+        (Somepalli et al., 2021) esse $n$ é o tamanho do \textbf{lote} $B$ --- a
+        atenção inter-instâncias é \textit{batch-level}, aplicada dentro de cada
+        \textit{mini-batch} no treino \emph{e} na inferência. O custo é, portanto,
+        $O(B^2 d)$ \emph{constante no tamanho $N$ do conjunto}; o preço é que o
+        contexto entre amostras fica \emph{local}, restrito às $B$ linhas do lote
+        (nos experimentos, $B = 1024$).
   \item \textbf{FT-CUR (Nyströmformer)} evita materializar $A$ ao todo:
         seleciona $m \ll n$ landmarks por norma de coluna e computa três produtos
         menores com softmax separado:
@@ -497,6 +503,23 @@ A atenção inter-features (softmax/topk/entmax/sparsemax) e a atenção
 inter-instâncias (SAINT/FT-CUR) são \textbf{ortogonais}: SAINT e FT-CUR
 incluem ambas (bloco inter-features padrão + bloco inter-instâncias), enquanto
 os FT-Transformers baselines têm apenas a inter-features.
+
+\begin{tcolorbox}[colback=warnbg, colframe=warnborder, fonttitle=\bfseries,
+  title=\textbf{A comparação real: alcance a custo controlado (não ``denso vs.\ barato'')}]
+A leitura ingênua ``SAINT é $O(N^2)$ e estoura memória, FT-CUR resolve'' é
+\textbf{incorreta}. O SAINT canônico é \textit{batch-level}: seu custo é
+$O(B^2)$, \emph{constante em $N$} --- na medição de escalabilidade, a VRAM do
+SAINT em \textit{mini-batch} fica praticamente estável ($\approx 34$--$43$\,MB)
+de $N=500$ a $N=50\,000$. O custo $O(N^2)$ só aparece se a atenção
+inter-instâncias for forçada \textbf{densa e global} (todas as $N$ amostras num
+único \textit{forward}): aí a VRAM cresce de $\approx 78$\,MB ($N=1000$) para
+$>8{,}6$\,GB ($N=20\,000$), com OOM em $N=50\,000$. A diferença real, portanto,
+é de \textbf{alcance}: o \textit{mini-batch} do SAINT limita o custo
+\emph{restringindo o contexto ao lote} (local), ao passo que o \textbf{FT-CUR}
+entrega contexto \emph{global} --- todas as $N$ amostras via $m$ landmarks ---
+a custo $O(N m)$. Com $m$ fixo, escala linearmente ($\approx 75$\,MB $\to$
+$5{,}6$\,GB de $N=500$ a $50\,000$); com $m = rN$, volta a $O(rN^2)$.
+\end{tcolorbox}
 
 % ─────────────────────────────────────────────────────────────────────────────
 \section{Análise de Esparsidade}
@@ -1041,7 +1064,7 @@ heurísticas cegas ($\geq 17$).
         $0{,}009$). Repete o padrão Tier 1: \emph{a compressão Nyströmformer
         é fiel também em larga escala}.
   \item \textbf{DualFISTA} fica em $2{,}1\%$ de esparsidade no Tier 2 ---
-        muito abaixo dos $5\%$ do Tier 1 (Grid+CV). O Optuna passou a preferir
+        muito abaixo dos $5\%$ do Tier 1 (Grid+CV). O Grid+CV passou a preferir
         $\lambda$ pequenos para preservar margem em datasets imbalanceados,
         evidenciando que o método se ajusta dinamicamente ao regime de dados.
   \item \textbf{LSSVM-Pruning} agora opera em $52\%$ de esparsidade média
@@ -1127,8 +1150,8 @@ H1 & Seleção colnorm geométrica
    & A rodar \\
 \addlinespace
 H2 & \texttt{val\_acc} em early stopping favorece a classe majoritária
-   & Rerun com \texttt{val\_loss}/\texttt{val\_f1\_macro} e re-tuning Optuna
-     independente por métrica
+   & Rerun com \texttt{val\_loss}/\texttt{val\_f1\_macro} e re-tuning
+     \texttt{GridSearchCV} independente por métrica
    & \textbf{Confirmada} \\
 \addlinespace
 H3 & Limitação fundamental da decomposição CUR
@@ -1144,7 +1167,7 @@ $\times$ $3$ métricas $\times$ $30$ seeds):
 \begin{table}[H]
 \centering
 \caption{Efeito do critério de early stopping em FT-CUR e SAINT nos datasets
-desbalanceados CREDIT e BANK (30 seeds, retuning Optuna por métrica).}
+desbalanceados CREDIT e BANK (30 seeds, retuning \texttt{GridSearchCV} por métrica).}
 \label{tab:h2_results}
 \begin{tabular}{llrrrrr}
 \toprule
@@ -1280,7 +1303,7 @@ dados}, e não à escolha de função de ativação da atenção.
 
 O experimento Tier 2 de Transformers executou \textbf{1080 runs}
 (6 variantes $\times$ 6 datasets $\times$ 30 sementes) com $N_{\text{treino}}=2000$,
-Optuna TPE (20 trials, 3-fold CV) e parada antecipada por \texttt{val\_loss}.
+\texttt{GridSearchCV} (grade fixa, 5-fold CV) e parada antecipada por \texttt{val\_loss}.
 A Tabela~\ref{tab:tier2_transformers_results} reporta o F1-macro por variante e
 dataset; a Tabela~\ref{tab:tier2_transformers_ranks} apresenta os ranks médios
 de Friedman.
@@ -1823,7 +1846,7 @@ Benchmark eficiência    & 6 Transformers, 3 datasets reais, 1 seed       & 137 
 
 \begin{itemize}\sloppy
   \item \textbf{Código}: repositório \texttt{sparse-lssvm-transformers-study/}
-  \item \textbf{Ambiente}: Python 3.12, PyTorch, scikit-learn, Optuna;
+  \item \textbf{Ambiente}: Python 3.12, PyTorch, scikit-learn, XGBoost;
         virtualenv em \texttt{.venv/}
   \item \textbf{Resultados}: arquivos JSON em \texttt{results/}:
         \texttt{tier1\_results.json} (baselines),

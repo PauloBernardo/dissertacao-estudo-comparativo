@@ -182,7 +182,14 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
 
     @torch.no_grad()
     def _logits(self, X: np.ndarray) -> np.ndarray:
-        """Logits para X_test usando X_train_ como contexto."""
+        """Logits para X_test usando X_train_ como contexto.
+
+        Inferência transdutiva full-context num único forward — mesmo contrato do
+        SAINT e de eval_with_context no fit. `batch_size` governa apenas o TREINO;
+        aqui a atenção Nyström processa ``[X_train ‖ X_test]`` em O(N·m) com m FIXO
+        (``m_landmarks``), mantendo a inferência sub-quadrática mesmo carregando
+        todo o contexto de treino — o custo que no SAINT é O(N²).
+        """
         self._model.eval()
         n_ctx = len(self.X_train_)
         X_ctx = np.concatenate([self.X_train_, X], axis=0)

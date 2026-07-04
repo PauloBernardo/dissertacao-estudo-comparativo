@@ -6,11 +6,18 @@ Modelos (hiperparâmetros fixos — moda do GridCV Tier 2):
     - SAINTColnorm            (n_heads=2, n_layers=1)
     - FTTransformerCURColnorm (m_ratio=0.2, n_heads=4, n_layers=2)
 
-Métricas por N:
-    - fit_time_s      — tempo total de treino (40 épocas ou patience=6)
-    - pred_time_ms    — tempo de predição sobre N_TEST=500 amostras fixas
-    - ram_delta_mb    — pico de RAM adicional (psutil RSS, thread de monitoramento)
-    - vram_mb         — pico de VRAM (torch.cuda.max_memory_allocated)
+Métricas por N (treino e predição medidos SEPARADAMENTE):
+    - fit_s_median        — tempo total de treino (40 épocas ou patience=6)
+    - ram_delta_mb_median — pico de RAM adicional no TREINO (psutil RSS)
+    - vram_mb_median      — pico de VRAM no TREINO (torch.cuda.max_memory_allocated)
+    - pred_ms_median      — tempo de predição sobre N_TEST=500 amostras fixas
+    - pred_ram_mb_median  — pico de RAM adicional na PREDIÇÃO
+    - pred_vram_mb_median — pico de VRAM na PREDIÇÃO
+    - pred_oom            — True se a inferência estourou a memória (SAINT O(N²))
+
+Modelos transdutivos (SAINT/FT-CUR) carregam o contexto de treino na inferência,
+então a predição tem custo/memória próprios: SAINT é O(N²) (pode dar OOM mesmo com
+treino mini-batch), FT-CUR é O(N·m) com m fixo. Por isso a predição é medida à parte.
 
 Uso:
     python scripts/run_transformer_scaling.py [--output FILE] [--device cuda|cpu]
@@ -126,11 +133,12 @@ def _monitor_rss(stop: threading.Event, peak_mb: list) -> None:
         time.sleep(0.01)
 
 
-def _measure(variant: str, X_tr, y_tr, X_te) -> dict:
-    """Retorna métricas de fit e predição para um (variant, N)."""
-    model = _make_model(variant)
+def _run_phase(fn):
+    """Executa fn() medindo tempo (s), pico de RAM adicional (MB) e pico de VRAM (MB).
 
-    # Reset VRAM counter
+    Reseta o contador de VRAM antes da fase, então cada fase (treino/predição)
+    mede seu próprio pico isoladamente.
+    """
     if torch.cuda.is_available():
         torch.cuda.reset_peak_memory_stats()
 
@@ -140,10 +148,9 @@ def _measure(variant: str, X_tr, y_tr, X_te) -> dict:
     mon = threading.Thread(target=_monitor_rss, args=(stop, peak_mb), daemon=True)
     mon.start()
 
-    # ── Treino ────────────────────────────────────────────────────────────────
     t0 = time.perf_counter()
-    model.fit(X_tr, y_tr)
-    fit_s = time.perf_counter() - t0
+    fn()
+    elapsed = time.perf_counter() - t0
 
     stop.set()
     mon.join()
@@ -151,17 +158,42 @@ def _measure(variant: str, X_tr, y_tr, X_te) -> dict:
     ram_delta = max(peak_mb[0] - baseline_mb, 0.0)
     vram_mb = (torch.cuda.max_memory_allocated() / 1024 / 1024
                if torch.cuda.is_available() else 0.0)
+    return elapsed, ram_delta, vram_mb
 
-    # ── Predição ──────────────────────────────────────────────────────────────
-    t1 = time.perf_counter()
-    model.predict(X_te)
-    pred_ms = (time.perf_counter() - t1) * 1000
+
+def _measure(variant: str, X_tr, y_tr, X_te) -> dict:
+    """Retorna métricas de fit e predição para um (variant, N).
+
+    Treino e predição são medidos SEPARADAMENTE (tempo + RAM + VRAM). Isso é
+    essencial para modelos transdutivos (SAINT/FT-CUR): a inferência carrega o
+    contexto de treino e tem custo próprio — no SAINT é O(N²) e pode dar OOM
+    mesmo quando o treino (mini-batch) coube na memória. O OOM de predição é
+    capturado aqui, preservando as métricas de treino já coletadas.
+    """
+    model = _make_model(variant)
+
+    # ── Treino ────────────────────────────────────────────────────────────────
+    fit_s, fit_ram, fit_vram = _run_phase(lambda: model.fit(X_tr, y_tr))
+
+    # ── Predição (memória medida à parte; OOM não descarta o treino) ───────────
+    pred_oom = False
+    try:
+        pred_s, pred_ram, pred_vram = _run_phase(lambda: model.predict(X_te))
+        pred_ms = pred_s * 1000
+    except torch.cuda.OutOfMemoryError:
+        pred_oom = True
+        pred_ms = pred_ram = pred_vram = float("nan")
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
 
     return {
         "fit_s": round(fit_s, 3),
-        "pred_ms": round(pred_ms, 3),
-        "ram_delta_mb": round(ram_delta, 1),
-        "vram_mb": round(vram_mb, 1),
+        "ram_delta_mb": round(fit_ram, 1),   # RAM de TREINO (compat. retroativa)
+        "vram_mb": round(fit_vram, 1),        # VRAM de TREINO (compat. retroativa)
+        "pred_oom": pred_oom,
+        "pred_ms": None if pred_oom else round(pred_ms, 3),
+        "pred_ram_mb": None if pred_oom else round(pred_ram, 1),
+        "pred_vram_mb": None if pred_oom else round(pred_vram, 1),
     }
 
 
@@ -171,6 +203,10 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", default="results/transformer_scaling.json")
     parser.add_argument("--repeats", type=int, default=REPEATS)
+    parser.add_argument("--variants", default=None,
+                        help="Lista separada por vírgula p/ rodar só um subconjunto "
+                             "(ex.: SAINT_minibatch,SAINT_fullbatch,FTCUR_minibatch,"
+                             "FTCUR_mfixed_full). Default: todas.")
     args = parser.parse_args()
 
     out_path = Path(args.output)
@@ -185,6 +221,13 @@ def main() -> None:
         "SAINT_minibatch", "SAINT_fullbatch",
         "FTCUR_minibatch", "FTCUR_mfixed_full",
     ]
+    if args.variants:
+        wanted = [v.strip() for v in args.variants.split(",") if v.strip()]
+        unknown = [v for v in wanted if v not in variants]
+        if unknown:
+            raise SystemExit(f"Variantes desconhecidas: {unknown}\nDisponíveis: {variants}")
+        variants = wanted
+        log.info("Rodando apenas: %s", variants)
 
     for variant in variants:
         log.info("=== %s ===", variant)
@@ -197,6 +240,8 @@ def main() -> None:
                 continue
 
             fits, preds, rams, vrams = [], [], [], []
+            pred_rams, pred_vrams = [], []
+            pred_oom = False
 
             oom = False
             last_error = None
@@ -215,14 +260,21 @@ def main() -> None:
 
                     m = _measure(variant, X_tr, y_tr, X_te)
                     fits.append(m["fit_s"])
-                    preds.append(m["pred_ms"])
                     rams.append(m["ram_delta_mb"])
                     vrams.append(m["vram_mb"])
+                    if m["pred_oom"]:
+                        pred_oom = True   # inferência O(N²) estourou (SAINT)
+                    else:
+                        preds.append(m["pred_ms"])
+                        pred_rams.append(m["pred_ram_mb"])
+                        pred_vrams.append(m["pred_vram_mb"])
 
-                    log.info("  N=%6d rep=%d  fit=%.1fs  pred=%.1fms  "
-                             "RAM=%.1fMB  VRAM=%.1fMB",
-                             n, rep, m["fit_s"], m["pred_ms"],
-                             m["ram_delta_mb"], m["vram_mb"])
+                    log.info("  N=%6d rep=%d  fit=%.1fs  pred=%s  "
+                             "RAM=%.1fMB  VRAM=%.1fMB  predVRAM=%s",
+                             n, rep, m["fit_s"],
+                             "OOM" if m["pred_oom"] else f"{m['pred_ms']:.1f}ms",
+                             m["ram_delta_mb"], m["vram_mb"],
+                             "OOM" if m["pred_oom"] else f"{m['pred_vram_mb']:.1f}MB")
 
                 except torch.cuda.OutOfMemoryError as e:
                     oom = True
@@ -250,16 +302,22 @@ def main() -> None:
                     break
                 continue
 
+            have_pred = len(preds) > 0
             results.append({
                 "variant": variant, "n": n, "skipped": False,
                 "fit_s_median":      round(float(np.median(fits)), 3),
-                "pred_ms_median":    round(float(np.median(preds)), 3),
                 "ram_delta_mb_median": round(float(np.median(rams)), 1),
                 "vram_mb_median":    round(float(np.median(vrams)), 1),
+                # Predição medida à parte; pred_oom=True → inferência O(N²) estourou
+                "pred_oom":          pred_oom,
+                "pred_ms_median":    round(float(np.median(preds)), 3) if have_pred else None,
+                "pred_ram_mb_median":  round(float(np.median(pred_rams)), 1) if have_pred else None,
+                "pred_vram_mb_median": round(float(np.median(pred_vrams)), 1) if have_pred else None,
                 "fit_s_all":    [round(x, 3) for x in fits],
-                "pred_ms_all":  [round(x, 3) for x in preds],
                 "ram_mb_all":   [round(x, 1) for x in rams],
                 "vram_mb_all":  [round(x, 1) for x in vrams],
+                "pred_ms_all":  [round(x, 3) for x in preds],
+                "pred_vram_mb_all": [round(x, 1) for x in pred_vrams],
             })
 
     with open(out_path, "w") as f:
@@ -268,18 +326,23 @@ def main() -> None:
 
     # ── Tabela resumo ──────────────────────────────────────────────────────────
     print()
-    print(f"{'Variant':<26}  {'N':>6}  {'fit':>7}  {'pred':>8}  {'RAM':>8}  {'VRAM':>8}")
-    print("-" * 72)
+    print(f"{'Variant':<26}  {'N':>6}  {'fit':>7}  {'fitVRAM':>8}  "
+          f"{'pred':>8}  {'predVRAM':>9}")
+    print("-" * 78)
     for r in results:
         if r.get("skipped"):
             marker = "OOM" if r.get("oom") else "—"
-            print(f"{r['variant']:<26}  {r['n']:>6}  {marker:>7}  {marker:>8}  {marker:>8}  {marker:>8}")
+            print(f"{r['variant']:<26}  {r['n']:>6}  {marker:>7}  {marker:>8}  "
+                  f"{marker:>8}  {marker:>9}")
         else:
+            pred_ms = r.get("pred_ms_median")
+            pred_vram = r.get("pred_vram_mb_median")
+            pred_str  = "OOM" if pred_ms is None else f"{pred_ms:>6.1f}ms"
+            pvram_str = "OOM" if pred_vram is None else f"{pred_vram:>6.0f}MB"
             print(f"{r['variant']:<26}  {r['n']:>6}  "
                   f"{r['fit_s_median']:>6.1f}s  "
-                  f"{r['pred_ms_median']:>7.1f}ms  "
-                  f"{r['ram_delta_mb_median']:>6.0f}MB  "
-                  f"{r['vram_mb_median']:>6.0f}MB")
+                  f"{r['vram_mb_median']:>6.0f}MB  "
+                  f"{pred_str:>8}  {pvram_str:>9}")
 
 
 if __name__ == "__main__":
