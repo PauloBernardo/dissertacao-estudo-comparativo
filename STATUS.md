@@ -1,24 +1,25 @@
 # STATUS
 
-Atualizado em 03/06/2026.
+Atualizado em 04/07/2026.
 
 ## Resumo
 
-O repositório contém código ativo para execução do Tier 1, suítes de teste, artefatos de resultados e material histórico em `OLD/`. A principal inconsistência encontrada era documental: o `README.md` apontava scripts arquivados como se fossem o fluxo atual.
+O repositório contém código ativo para execução do Tier 1, execução CPU do Tier 2, suítes de teste, artefatos consolidados de resultados e material histórico em `OLD/`.
 
 ## Estado verificado no código
 
 - O entrypoint atual de Tier 1 é `scripts/run_tier1_gridcv.py`.
+- O entrypoint CPU atual de Tier 2 é `scripts/run_tier2_gridcv.py`.
 - O download e a validação dos datasets ficam em `scripts/download_data.py`.
 - O conjunto de variantes e grids ativos está em `src/tuning/grids.py`.
 - Os scripts `run_tuning_tier1.py`, `run_experiments_tier1.py` e reruns especializados por modelo foram arquivados em `OLD/scripts/`.
-- Há artefatos históricos em `results/` que não correspondem necessariamente à saída padrão do fluxo atual.
+- Há artefatos históricos em `results/` que não correspondem necessariamente à saída padrão do fluxo atual; para o Tier 2 final, use `tier2_gridcv.json`, `tier2_transformers.json` e `tier2_combined.json`.
 
 ## Dependências e ambiente
 
 - `pyproject.toml` pede Python `>=3.11`.
 - Para os modelos Transformer, o setup prático é `pip install -e ".[dev,transformers]"`.
-- O baseline `XGBoost` é usado pelo código ativo, mas `xgboost` não está declarado hoje em `pyproject.toml` nem em `requirements.txt`.
+- O baseline `XGBoost` é dependência formal em `pyproject.toml` e `requirements.txt`.
 
 ## Tier 1
 
@@ -38,20 +39,22 @@ Características do protocolo:
 
 ## Tier 2
 
-O repositório ainda contém notebooks, resultados e notas relacionadas ao Tier 2, mas os scripts operacionais principais citados em versões anteriores da documentação não estão presentes no diretório `scripts/` atual. Na prática:
+Estado consolidado usado na dissertação:
 
-- use os notebooks em `notebooks/` e os artefatos em `results/` como referência
-- trate instruções antigas sobre Tier 2 como histórico até nova consolidação
+1. `results/tier2_gridcv.json`: 1620 execuções CPU completas (9 modelos × 6 datasets × 30 sementes).
+2. `results/tier2_transformers.json`: 1080 execuções Transformer completas (6 modelos × 6 datasets × 30 sementes).
+3. `results/tier2_combined.json`: concatenação dos dois artefatos oficiais, totalizando 2700 execuções e 15 modelos.
+
+O arquivo `results/tier2_transformers_merged.json` é histórico e incompleto (540 execuções); não deve ser usado para tabelas finais.
 
 ## Limpeza documental concluída
 
-- `README.md` atualizado para refletir o fluxo real do Tier 1
+- `README.md` atualizado para refletir o fluxo real do Tier 1 e do Tier 2 consolidado
 - `scripts/` reduzido aos entrypoints operacionais atuais
 - referências a scripts arquivados removidas da documentação principal
 - `STATUS.md` reduzido a um snapshot estável, sem PIDs, ETAs e comandos transitórios
 
 ## Pendências recomendadas
 
-1. Declarar `xgboost` formalmente em `pyproject.toml` e `requirements.txt`.
-2. Decidir se o Tier 2 terá novos entrypoints locais em `scripts/` ou se os notebooks serão a interface oficial.
-3. Separar de forma explícita, na documentação, resultados históricos de resultados reproduzíveis pelo fluxo atual.
+1. Decidir se os reruns Transformer de Tier 2 serão transformados em um entrypoint único ou continuarão como artefatos consolidados.
+2. Separar de forma explícita, na documentação, resultados históricos de resultados reproduzíveis pelo fluxo atual.

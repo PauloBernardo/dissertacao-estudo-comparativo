@@ -94,7 +94,12 @@ def run(results_path: Path, metric: str, prefix: str = "tier1") -> None:
     TABLES_DIR.mkdir(parents=True, exist_ok=True)
     PLOTS_DIR.mkdir(parents=True, exist_ok=True)
 
-    tier_label = prefix.upper().replace("_", " ")
+    tier_label = {
+        "tier1": "Tier 1",
+        "tier2": "Tier 2",
+        "tier1_transformers": "Tier 1 — Transformers",
+        "tier2_transformers": "Tier 2 — Transformers",
+    }.get(prefix, prefix.replace("_", " ").title())
 
     print(f"Loading {results_path} ...")
     df = load_results(results_path)
