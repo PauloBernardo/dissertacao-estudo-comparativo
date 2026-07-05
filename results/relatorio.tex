@@ -1126,6 +1126,168 @@ reformulação dual do \textbf{DualFISTA} ---
 $\min_\alpha \tfrac{1}{2}\alpha^\top\Omega\alpha - \mathbf{1}^\top\alpha + \lambda\|\alpha\|_1$ ---
 elimina exatamente este problema, mantendo $F_1 = 0{,}706$ no Tier 2.
 
+\subsection{Ablação de Escalabilidade Amostral no Tier 2 ($N=2000 \to N=5000$)}
+\label{sec:tier2_n5000}
+
+Para testar se a hierarquia do Tier 2 ($N_{\text{treino}}=2000$) se sustenta em
+$N$ maior, os 15 modelos foram reavaliados em $N_{\text{treino}}=5000$
+(30 sementes, os mesmos 6 datasets; TELCO limitado a $\approx 4922$),
+mantendo os hiperparâmetros \textbf{fixos} --- a moda das configurações
+vencedoras do GridSearchCV em $N=2000$, por modelo e por dataset. Fixar os
+hiperparâmetros isola o efeito exclusivo do aumento de $N$ (script
+\texttt{run\_tier2\_fixedparams.py}, config extraída por
+\texttt{extract\_tier2\_fixed\_params.py}; 2700 registros, 0 erros).
+
+\begin{table}[H]
+\centering
+\caption{F1-macro: $N{=}2000$ (GridSearchCV) vs.\ $N{=}5000$ (hiperparâmetros
+fixos), 30 sementes, 6 datasets.}
+\label{tab:tier2_n5000}
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Modelo} & \textbf{F1 ($N{=}2000$)} & \textbf{F1 ($N{=}5000$)} & \textbf{$\Delta$} \\
+\midrule
+XGBoost              & 0,7233 & 0,7366 & $+$0,0133 \\
+SAINT                & 0,6892 & 0,7232 & $+$0,0341 \\
+FT-Softmax           & 0,7008 & 0,7224 & $+$0,0215 \\
+FT-Entmax            & 0,7010 & 0,7211 & $+$0,0202 \\
+FT-Sparsemax         & 0,6940 & 0,7195 & $+$0,0255 \\
+FT-TopK              & 0,6909 & 0,7156 & $+$0,0248 \\
+LSSVM-Nystrom        & 0,6989 & 0,7092 & $+$0,0103 \\
+LSSVM (Standard)     & 0,6993 & 0,7092 & $+$0,0099 \\
+LSSVM-IP             & 0,6942 & 0,7052 & $+$0,0111 \\
+FT-CUR               & 0,6979 & 0,7027 & $+$0,0048 \\
+LSSVM-DualFISTA      & 0,6840 & 0,6996 & $+$0,0156 \\
+FISTA-Nystrom        & 0,6736 & 0,6951 & $+$0,0214 \\
+LSSVM-PCP            & 0,6891 & 0,6908 & $+$0,0017 \\
+LSSVM-FSA            & 0,6764 & 0,6596 & $-$0,0167 \\
+\textbf{ADMM-Nystrom} & 0,6805 & 0,6158 & $-$0,0647 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Friedman sobre os 15 modelos rejeita a igualdade ($\chi^2=64{,}2$,
+$p=2{,}1\times10^{-8}$); Wilcoxon pareado vs.\ XGBoost (Holm) não mantém
+significância individual --- esperado com apenas 6 datasets e 14 comparações.
+
+\begin{tcolorbox}[colback=fixbg, colframe=fixborder, fonttitle=\bfseries,
+  title=\textbf{Achado 1 --- Nyström continua fiel em $N=5000$}]
+Nystrom-SVM ($0{,}7092$) permanece empatado com LSSVM-Std denso ($0{,}7092$):
+compressão sem custo preditivo se sustenta com mais dados.
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=warnbg, colframe=warnborder, fonttitle=\bfseries,
+  title=\textbf{Achado 2 --- atenção inter-instâncias densa (SAINT) ganha mais
+  com $N$ do que sua versão comprimida (FT-CUR)}]
+SAINT salta $+0{,}0341$ (o maior ganho do estudo), superando todas as
+variantes FT esparsas inter-atributos. FT-CUR quase não se move
+($+0{,}0048$). A Tabela~\ref{tab:tier2_n5000_ftcur_m} mostra por quê: nesta
+config, $m = m_{\text{ratio}} \cdot N$ --- o número de \emph{landmarks} cresce
+com $N$ (preservando $\approx 80$--$90\%$ de compressão), mas o alcance
+comprimido não recupera o ganho do contexto \emph{irrestrito} do SAINT denso.
+Nota de custo: com $m$ proporcional a $N$, o FT-CUR aqui é
+$O(m_{\text{ratio}} N^2)$ (quadrático, constante menor) --- não o regime
+$O(Nm)$ sub-quadrático da Seção~\ref{sec:eficiencia}, que exige $m$
+\emph{fixo}.
+
+\begin{center}
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Dataset} & $m_{\text{ratio}}$ & $N_{\text{treino}}$ & $m$ & \textbf{Compressão} & \textbf{F1} \\
+\midrule
+ADULT    & 0,1 & 5000 & 500  & 90,0\% & 0,7675 \\
+BANK     & 0,2 & 5000 & 1000 & 80,0\% & 0,5998 \\
+CREDIT   & 0,1 & 5000 & 500  & 90,0\% & 0,6868 \\
+HIGGS50K & 0,2 & 5000 & 1000 & 80,0\% & 0,6479 \\
+SHOPPERS & 0,1 & 5000 & 500  & 90,0\% & 0,7891 \\
+TELCO    & 0,1 & 4922 & 492  & 90,0\% & 0,7252 \\
+\bottomrule
+\end{tabular}
+\label{tab:tier2_n5000_ftcur_m}
+\end{center}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=warnbg, colframe=warnborder, fonttitle=\bfseries,
+  title=\textbf{Achado 3 --- ADMM-Nystrom: hiperparâmetros $\ell_1$ fixos não
+  transferem uniformemente entre escalas (mas o modelo não colapsa
+  estruturalmente --- validado por re-tuning)}]
+ADMM-Nystrom sofre a maior queda do estudo sob configuração fixa
+($-0{,}0647$). Decompondo por dataset:
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Dataset} & \textbf{F1 ($N{=}2000$)} & \textbf{F1 ($N{=}5000$)} & \textbf{$\Delta$} \\
+\midrule
+CREDIT   & 0,6458 & 0,4670 & $-$0,1788 \\
+HIGGS50K & 0,5943 & 0,4810 & $-$0,1134 \\
+BANK     & 0,6670 & 0,5598 & $-$0,1072 \\
+TELCO    & 0,6967 & 0,6798 & $-$0,0169 \\
+SHOPPERS & 0,7328 & 0,7490 & $+$0,0162 \\
+ADULT    & 0,7465 & 0,7584 & $+$0,0119 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+O colapso é \textbf{localizado}, não geral: concentra-se em CREDIT e
+HIGGS50K (maior dimensionalidade/ruído), enquanto ADULT e SHOPPERS melhoram.
+Importa notar que o desvio-padrão \emph{seed a seed dentro de cada dataset}
+NÃO cresce nesse regime (CREDIT: $0{,}0253\to0{,}0303$; HIGGS50K:
+$0{,}0184\to0{,}0176$) --- é um viés sistemático e reprodutível em todas as
+sementes, não ruído aleatório.
+
+\textbf{Validação por re-tuning (GridSearchCV completo, 10 sementes, N=5000):}
+
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Dataset} & \textbf{F1 ($N{=}2000$)} & \textbf{F1 ($N{=}5000$ fixo)} & \textbf{F1 ($N{=}5000$ retunado)} & $n$ \\
+\midrule
+CREDIT   & 0,6458 & 0,4670 & \textbf{0,6579} & 10 \\
+HIGGS50K & 0,5943 & 0,4810 & \textbf{0,6314} & 10 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Recuperação \textbf{total} --- em HIGGS50K o F1 retunado até supera $N=2000$
+--- a $6{,}3$ e $8{,}5$ desvios-padrão acima da distribuição sob parâmetros
+fixos, incompatível com flutuação de semente. O mecanismo: em ambos os
+datasets, o \textit{GridSearchCV} em $N=5000$ escolhe consistentemente
+$\lambda$ uma ordem de grandeza \textbf{menor} e $\tau$ uma ordem de grandeza
+\textbf{maior} do que o par fixado --- CREDIT: de $(\lambda{=}0{,}1,
+\tau{=}5{,}0)$ para $(\lambda{=}0{,}01,\tau{=}50{,}0)$, unânime em $10/10$
+sementes; HIGGS50K: de $(\lambda{=}1{,}0,\tau{=}0{,}5)$ para
+$(\lambda{=}0{,}1,\tau{=}5{,}0)$, em $9/10$. Com mais dados o modelo exige
+\emph{menos} regularização $\ell_1$ relativa (efeito clássico de
+viés-variância); o par fixado já era a moda de um consenso fraco em $N=2000$
+($11/30$ e $10/30$ sementes, respectivamente) e, ao escalar, ficou
+desalinhado do ótimo real. A fragilidade está na \textbf{prática de fixar
+hiperparâmetros $\ell_1$ extraídos de um consenso fraco}, não no ADMM-Nystrom
+em si --- reforça, agora com validação direta, a fragilidade
+$\ell_1$-primal-em-escala já discutida na Seção~\ref{sec:tier2_primal_collapse}.
+LSSVM-FSA também piora ($-0{,}0167$), de forma mais branda.
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=warnbg, colframe=warnborder, fonttitle=\bfseries,
+  title=\textbf{Ressalva --- Transformers ganham mais que LSSVMs com $N$
+  maior, mas a comparação usa hiperparâmetros fixos para ambas as famílias}]
+Sob o protocolo desta ablação (hiperparâmetros fixos, moda do GridCV em
+$N{=}2000$), a família \textbf{Transformer} ganha, em média, mais do que a
+família \textbf{LSSVM} ao passar de $N{=}2000$ para $N{=}5000$:
+$+0{,}0218$ vs.\ $+0{,}0076$ (excluído o ADMM-Nystrom, cuja queda é o
+artefato de hiperparâmetro já discutido), com SAINT isolado em $+0{,}0341$.
+Isso sustenta a leitura de que Transformers tendem a igualar ou superar os
+LSSVMs com mais dados --- \textbf{mas} a comparação não é definitiva: como
+\emph{ambas} as famílias operam sob hiperparâmetros fixos (nenhuma foi
+re-tunada em $N{=}5000$), e a validação do ADMM-Nystrom mostrou que essa
+limitação pode subestimar artificialmente um modelo, não se pode descartar
+que os demais LSSVMs também ganhariam com re-tuning completo em $N$ maior.
+Se a vantagem relativa dos Transformers se mantiver mesmo com ambas as
+famílias re-tunadas simetricamente, o ordenamento não se inverteria --- mas
+essa verificação exige repetir o GridSearchCV completo para os 15 modelos em
+cada $N$, o que fica como próximo passo (ver Seção~\ref{sec:tier2_n5000}).
+\end{tcolorbox}
+
 \subsection{FT-CUR/SAINT e a correção metodológica da H2}
 \label{sec:tier2_ftcur_limit}
 

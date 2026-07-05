@@ -1,0 +1,13 @@
+\begin{table}[ht]
+  \centering
+  \caption{Validação por re-tuning: ADMM-Nystrom em $N{=}5000$ com \textit{GridSearchCV} completo (10 sementes), vs.\ $N{=}2000$ e vs.\ $N{=}5000$ com hiperparâmetros fixos.}
+  \label{tab:tier2_n5000_admm_retune}
+  \begin{tabular}{lrrrr}
+    \toprule
+    Dataset & $F_1$ ($N{=}2000$) & $F_1$ ($N{=}5000$ fixo) & $F_1$ ($N{=}5000$ retunado) & $n$ \\
+    \midrule
+    CREDIT & 0.6458 & 0.4670 & \textbf{0.6579} & 10 \\
+    HIGGS50K & 0.5943 & 0.4810 & \textbf{0.6314} & 10 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

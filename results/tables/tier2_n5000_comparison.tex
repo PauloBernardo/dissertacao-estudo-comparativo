@@ -1,0 +1,26 @@
+\begin{table}[ht]
+  \centering
+  \caption{Comparação F1-macro entre $N_{\text{treino}}=2000$ (GridSearchCV) e $N_{\text{treino}}=5000$ (hiperparâmetros fixos, moda do GridCV de $N=2000$), 30 sementes, 6 datasets.}
+  \label{tab:tier2_n5000_comparison}
+  \begin{tabular}{lrrr}
+    \toprule
+    Modelo & $F_1$ ($N{=}2000$) & $F_1$ ($N{=}5000$) & $\Delta$ \\
+    \midrule
+    XGBoost & 0.7233 & 0.7366 & +0.0133 \\
+    SAINT & 0.6892 & 0.7232 & +0.0341 \\
+    FT-Softmax & 0.7008 & 0.7224 & +0.0215 \\
+    FT-Entmax & 0.7010 & 0.7211 & +0.0202 \\
+    FT-Sparsemax & 0.6940 & 0.7195 & +0.0255 \\
+    FT-TopK & 0.6909 & 0.7156 & +0.0248 \\
+    LSSVM-Nystrom & 0.6989 & 0.7092 & +0.0103 \\
+    LSSVM (Standard) & 0.6993 & 0.7092 & +0.0099 \\
+    LSSVM-IP & 0.6942 & 0.7052 & +0.0111 \\
+    FT-CUR & 0.6979 & 0.7027 & +0.0048 \\
+    LSSVM-DualFISTA & 0.6840 & 0.6996 & +0.0156 \\
+    FISTA-Nystrom & 0.6736 & 0.6951 & +0.0214 \\
+    LSSVM-PCP & 0.6891 & 0.6908 & +0.0017 \\
+    LSSVM-FSA & 0.6764 & 0.6596 & -0.0167 \\
+    ADMM-Nystrom & 0.6805 & 0.6158 & -0.0647 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
