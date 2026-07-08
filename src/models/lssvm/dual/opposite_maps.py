@@ -31,14 +31,26 @@ class OppositeMapsLSSVM(BaseLSSVM):
     Algorithm:
         1. Separate training data into positive (y=+1) and negative (y=-1).
         2. Run k-means with `n_prototypes` centroids per class.
-        3. For each positive prototype, find its nearest NEGATIVE training
-           sample (and vice versa). These pairs define the "opposite maps" —
-           the boundary-critical patterns.
+        3. For each prototype, select its nearest SAME-class sample (an
+           anchor for its own class's core) and its nearest OPPOSITE-class
+           sample (the boundary-critical pattern). These pairs form the
+           "opposite maps".
         4. Collect all opposite-map samples as the reduced training set.
         5. Retrain LSSVM on this reduced set.
         6. Safety fallback: compare training F1 against the full LSSVM
            baseline; if the prototype model drops by more than
            ``drop_tolerance``, keep the full model instead.
+
+    Anchor points (2026-07-07): earlier versions selected only the nearest
+    OPPOSITE-class sample per prototype, never a same-class anchor. That
+    concentrates the whole reduced set on boundary/overlap points — with an
+    LSSVM's least-squares loss (unlike hinge loss), fitting exact +1/-1
+    targets on a set of only closely-spaced, opposite-class pairs forces a
+    violently oscillating decision function (observed empirically as a
+    near-saturated kernel matrix and near-random/inverted test predictions
+    on hard datasets like HAB). Adding a same-class anchor per prototype
+    gives the least-squares fit stable "interior" targets to anchor +1/-1
+    against, alongside the boundary pairs.
 
     Parameters
     ----------
@@ -48,7 +60,8 @@ class OppositeMapsLSSVM(BaseLSSVM):
         Regularisation parameter.
     n_prototypes : int
         Number of k-means centroids per class. The final SV set has at
-        most 2 × n_prototypes samples.
+        most 4 × n_prototypes samples (same-class anchor + opposite-class
+        pair, per prototype, per class).
     random_state : int
         Seed for k-means.
     tol : float
@@ -96,12 +109,19 @@ class OppositeMapsLSSVM(BaseLSSVM):
         return alpha_sub, bias
 
     def _train_f1(
-        self, X: NDArray, y: NDArray, X_sub: NDArray,
+        self, X: NDArray, y: NDArray, X_sub: NDArray, y_sub: NDArray,
         alpha_sub: NDArray, bias: float,
     ) -> float:
-        """Macro-F1 on the training set for the model defined by (X_sub, α, b)."""
+        """Macro-F1 on the training set for the model defined by (X_sub, α, b).
+
+        ``alpha_sub`` is the raw dual multiplier (same convention as
+        ``BaseLSSVM.decision_function``, which computes ``alpha_ * y_train_``
+        before the kernel sum) — it must be weighted by ``y_sub`` here too,
+        or the score collapses to a label-agnostic (effectively degenerate)
+        decision function.
+        """
         K = self.kernel_matrix(X, X_sub)
-        scores = K @ alpha_sub + bias
+        scores = K @ (alpha_sub * y_sub) + bias
         y_pred = np.sign(scores)
         y_pred[y_pred == 0] = 1
         return float(f1_score(y, y_pred, average="macro", zero_division=0))
@@ -119,18 +139,23 @@ class OppositeMapsLSSVM(BaseLSSVM):
         pos_proto = self._cluster(X[pos_idx], n_proto)  # (n_proto, p)
         neg_proto = self._cluster(X[neg_idx], n_proto)
 
-        # ── Opposite map: for each positive prototype, find nearest negative ──
+        # ── Opposite map: each prototype contributes a same-class anchor and
+        #    an opposite-class boundary point ──────────────────────────────────
         selected_set = set()
 
-        # Nearest negative sample to each positive prototype
         for proto in pos_proto:
-            dists = np.sum((X[neg_idx] - proto) ** 2, axis=1)
-            selected_set.add(int(neg_idx[np.argmin(dists)]))
+            dists_pos = np.sum((X[pos_idx] - proto) ** 2, axis=1)
+            selected_set.add(int(pos_idx[np.argmin(dists_pos)]))
 
-        # Nearest positive sample to each negative prototype
+            dists_neg = np.sum((X[neg_idx] - proto) ** 2, axis=1)
+            selected_set.add(int(neg_idx[np.argmin(dists_neg)]))
+
         for proto in neg_proto:
-            dists = np.sum((X[pos_idx] - proto) ** 2, axis=1)
-            selected_set.add(int(pos_idx[np.argmin(dists)]))
+            dists_neg = np.sum((X[neg_idx] - proto) ** 2, axis=1)
+            selected_set.add(int(neg_idx[np.argmin(dists_neg)]))
+
+            dists_pos = np.sum((X[pos_idx] - proto) ** 2, axis=1)
+            selected_set.add(int(pos_idx[np.argmin(dists_pos)]))
 
         selected = np.array(sorted(selected_set))
 
@@ -156,9 +181,9 @@ class OppositeMapsLSSVM(BaseLSSVM):
             self._set_proto_solution(n, selected, alpha_proto, bias_proto)
             return
 
-        f1_proto = self._train_f1(X, y, X_sub, alpha_proto, bias_proto)
+        f1_proto = self._train_f1(X, y, X_sub, y_sub, alpha_proto, bias_proto)
         alpha_full, bias_full = self._solve_on_subset(X, y)
-        f1_full = self._train_f1(X, y, X, alpha_full, bias_full)
+        f1_full = self._train_f1(X, y, X, y, alpha_full, bias_full)
 
         if f1_proto < f1_full - self.drop_tolerance:
             logger.info(

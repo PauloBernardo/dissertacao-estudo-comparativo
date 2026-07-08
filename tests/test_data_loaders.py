@@ -87,7 +87,7 @@ class TestDatasetLoaderSynthetic:
 
     def test_available_lists_known_datasets(self):
         avail = DatasetLoader.available()
-        for name in ["BCW", "TWS", "BANK", "TELCO", "SHOPPERS", "HIGGS50K", "HIGGS500K"]:
+        for name in ["BCW", "TWS", "BANK", "TELCO", "SHOPPERS", "HIGGS50K", "HIGGS500K", "AI4I"]:
             assert name in avail, f"{name} missing from available()"
 
 
@@ -150,6 +150,38 @@ def _check_dataset(name: str, min_samples: int = 100, n_features_min: int = 2):
     assert not np.isnan(X).any()
     assert "tier" in meta
     return X, y, meta
+
+
+class TestTier1AdditionalDatasets:
+    @_network
+    def test_ai4i_loads(self):
+        X, y, meta = _check_dataset("AI4I", min_samples=1300, n_features_min=6)
+        assert X.shape == (1356, 6)
+        assert meta["tier"] == 1
+
+    @_network
+    def test_ai4i_keeps_all_failures(self):
+        # 1:3 undersampling must preserve every original failure (339 positives).
+        _, y, _ = DatasetLoader.load("AI4I")
+        assert int(y.sum()) == 339
+        assert len(y) == 4 * 339
+
+    @_network
+    def test_ai4i_excludes_leaky_columns(self):
+        # 5 features: Air/Process temp, Rotational speed, Torque, Tool wear, Type
+        # (TWF/HDF/PWF/OSF/RNF must not appear — they leak the label).
+        X, _, _ = DatasetLoader.load("AI4I")
+        assert X.shape[1] == 6
+
+    @_network
+    def test_ai4i_undersampling_reproducible_from_raw(self):
+        # Bypass the parquet cache: two independent raw loads must still
+        # agree, since the undersampling is seeded (not just cache-stable).
+        from src.data.loaders import _load_ai4i
+        X1, y1, _ = _load_ai4i()
+        X2, y2, _ = _load_ai4i()
+        np.testing.assert_array_equal(y1, y2)
+        np.testing.assert_array_equal(X1, X2)
 
 
 class TestTier2Datasets:

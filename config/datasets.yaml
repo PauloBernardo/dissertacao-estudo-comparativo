@@ -65,6 +65,22 @@ datasets:
     positive_class: 1
     negative_class: 0
 
+  AI4I:
+    name: AI4I 2020 Predictive Maintenance
+    tier: 1
+    n_samples: 1356  # após undersampling 1:3 do majoritário (original: 10000, 339 falhas)
+    n_features: 6
+    source: UCI
+    url: https://archive.ics.uci.edu/static/public/601/ai4i+2020+predictive+maintenance+dataset.zip
+    target_col: Machine failure
+    positive_class: 1
+    negative_class: 0
+    note: >
+      TWF/HDF/PWF/OSF/RNF excluídas das features (vazam o rótulo, ~99.7% de
+      concordância com Machine failure). Classe majoritária subamostrada
+      deterministicamente (seed=42) na proporção 1:3, preservando as 339
+      falhas originais.
+
   # Tier 2 — Médios
   ADULT:
     name: Adult Income

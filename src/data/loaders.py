@@ -1,4 +1,4 @@
-"""Standardised dataset loaders for all 18 real datasets.
+"""Standardised dataset loaders for all 19 real datasets.
 
 Usage:
     X, y, meta = DatasetLoader.load("BCW")
@@ -173,6 +173,67 @@ def _load_aus() -> tuple[NDArray, NDArray, dict]:
     X = df.iloc[:, :-1].values.astype(float)
     y = df.iloc[:, -1].values.astype(int)   # 0 or 1
     return X, y, {"tier": 1}
+
+
+# ── Tier 1 additions ──────────────────────────────────────────────────────────
+
+_AI4I_SEED = 42
+
+
+def _load_ai4i_features() -> tuple[pd.DataFrame, NDArray]:
+    """Download and parse the AI4I 2020 raw features and label.
+
+    Drops `UDI`/`Product ID` (identifiers) and `TWF`/`HDF`/`PWF`/`OSF`/`RNF`:
+    those five failure-mode flags agree with `Machine failure` in ~99.7% of
+    rows (they are literally the label's own decomposition), so keeping them
+    as features would leak the target almost perfectly.
+    """
+    dest_zip = _DATA_DIR / "ai4i2020.zip"
+    dest_csv = _DATA_DIR / "ai4i2020.csv"
+    if not dest_csv.exists():
+        _download(
+            "https://archive.ics.uci.edu/static/public/601/"
+            "ai4i+2020+predictive+maintenance+dataset.zip",
+            dest_zip,
+        )
+        with zipfile.ZipFile(dest_zip, "r") as z:
+            with z.open("ai4i2020.csv") as f:
+                dest_csv.write_bytes(f.read())
+
+    df = pd.read_csv(dest_csv)
+    leak_cols = ["TWF", "HDF", "PWF", "OSF", "RNF"]
+    df = df.drop(columns=["UDI", "Product ID"] + leak_cols)
+    y = df.pop("Machine failure").astype(int).values
+    return df, y
+
+
+@_register("AI4I")
+def _load_ai4i() -> tuple[NDArray, NDArray, dict]:
+    """AI4I 2020 Predictive Maintenance — undersampled 1:3, placed in Tier 1.
+
+    Original dataset: 10 000 samples, 3.39% failures (339/10000). Applies a
+    deterministic (seed=42) undersampling of the majority class at a 1:3
+    ratio (minority:majority), keeping all 339 failure cases and yielding
+    1356 samples — this is the resampled form used for the benchmark, not
+    the raw 10k dataset.
+    """
+    from sklearn.preprocessing import OrdinalEncoder
+
+    df, y_full = _load_ai4i_features()
+
+    cat_cols = ["Type"]
+    num_cols = [c for c in df.columns if c not in cat_cols]
+    enc = OrdinalEncoder()
+    X_cat = enc.fit_transform(df[cat_cols])
+    X_num = df[num_cols].values.astype(float)
+    X_full = np.hstack([X_num, X_cat])
+
+    rng = np.random.RandomState(_AI4I_SEED)
+    idx_pos = np.where(y_full == 1)[0]
+    idx_neg = rng.choice(np.where(y_full == 0)[0], size=3 * len(idx_pos), replace=False)
+    idx = np.sort(np.concatenate([idx_pos, idx_neg]))
+
+    return X_full[idx], y_full[idx], {"tier": 1}
 
 
 # ── Tier 2: Medium datasets ───────────────────────────────────────────────────

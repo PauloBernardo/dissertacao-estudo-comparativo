@@ -58,3 +58,4 @@ O arquivo `results/tier2_transformers_merged.json` é histórico e incompleto (5
 
 1. Decidir se os reruns Transformer de Tier 2 serão transformados em um entrypoint único ou continuarão como artefatos consolidados.
 2. Separar de forma explícita, na documentação, resultados históricos de resultados reproduzíveis pelo fluxo atual.
+3. `AI4I` (AI4I 2020 Predictive Maintenance, undersampling 1:3, seed=42, 1356 amostras) foi adicionado ao registro de datasets e ao Tier 1 (`src/data/loaders.py`, `config/datasets.yaml`, `scripts/download_data.py`, `scripts/run_tier1_gridcv.py --datasets` default). `results/tier1_gridcv.json` ainda reflete os 9 datasets antigos — falta rerodar o Tier 1 completo para incorporar o 10º dataset antes de atualizar tabelas/figuras da dissertação.

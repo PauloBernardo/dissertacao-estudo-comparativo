@@ -134,12 +134,35 @@ GRIDS: dict[str, dict] = {
     },
 
     "OppositeMapsLSSVM": {
-        # sigma=0.5 em 87%, n_prototypes=100 em 97% dos casos sintéticos.
+        # sigma/n_prototypes eram fixos (calibrados só nos sintéticos) —
+        # última colocação em AUS/GCR/HAB/PID/VCP/AI4I no Tier 1. Revisão
+        # 2026-07-07: ambos entram na grade; corrigido bug em `_train_f1`
+        # (faltava multiplicar por y_sub). Explorado depois (ver memória do
+        # projeto): F1 de validação em vez de treino, `val_fraction`
+        # buscável — nenhuma mudou o resultado prático o bastante pra
+        # justificar a complexidade, revertidas.
+        # Revisão 2026-07-07 (3)-(4): tentativas de `min_sparsity`/fallback
+        # contra um "piso" em vez do modelo denso — reduziram a instabilidade
+        # mas pioraram F1 (ver memória do projeto) e foram revertidas.
+        # Revisão 2026-07-07 (5) — causa raiz encontrada: `_select_prototypes`
+        # só pegava o vizinho mais próximo da classe OPOSTA por protótipo,
+        # concentrando o subconjunto inteiro em pontos de fronteira/overlap.
+        # LSSVM usa mínimos quadrados (não hinge loss) — ajustar +1/-1 exatos
+        # num conjunto só de pares muito próximos de classes opostas força
+        # uma fronteira de decisão violentamente oscilante (kernel quase
+        # saturado, F1 pior que aleatório observado no HAB). Fix: cada
+        # protótipo agora também contribui uma âncora da PRÓPRIA classe, não
+        # só o ponto de fronteira oposto — com isso o fallback comum (contra
+        # o modelo 100% denso) voltou a ser suficiente, sem precisar de
+        # `min_sparsity`: F1 ficou igual ou melhor que o modelo denso em
+        # HAB/GCR/AUS/PID, com 54-64% de esparsidade real (não mais 0%).
         "model_name": "OppositeMapsLSSVM",
         "grid": {
-            "tau": [0.1, 0.5, 2.5, 12.5, 50.0],
+            "sigma":        [0.05, 0.15, 0.5, 1.5, 5.0],
+            "tau":          [0.1, 0.5, 2.5, 12.5],
+            "n_prototypes": [5, 10, 25, 50, 100, 10_000],
         },
-        "fixed": {"drop_tolerance": 0.05, "sigma": 0.5, "n_prototypes": 100},
+        "fixed": {"drop_tolerance": 0.05},
         "needs_gpu": False,
     },
 

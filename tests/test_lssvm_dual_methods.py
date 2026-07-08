@@ -66,6 +66,20 @@ class TestPruningLSSVM:
         m_high = PruningLSSVM(**PARAMS, pruning_rate=0.30, max_pruning_steps=10).fit(X_tr, y_tr)
         assert m_low.n_support_ >= m_high.n_support_
 
+    def test_safety_fallback_triggers_on_aggressive_pruning(self, moons_data):
+        # Regression test for the _solve bug (2026-07-07): the training-F1
+        # drop check omitted the y[active] weighting, so best_score/
+        # current_score both degenerated to a label-agnostic (effectively
+        # constant) decision function and the "stop if F1 drops" guard never
+        # fired. pruning_rate=0.9 removes 90% of SVs per step — the reduced
+        # model must degrade enough that the fallback reverts to the full set.
+        X_tr, X_te, y_tr, y_te = moons_data
+        m = PruningLSSVM(
+            **PARAMS, pruning_rate=0.9, max_pruning_steps=20,
+            min_sv_fraction=0.02, drop_tolerance=0.05,
+        ).fit(X_tr, y_tr)
+        assert m.n_support_ == m.n_samples_fit_
+
 
 # ── IP-LSSVM ──────────────────────────────────────────────────────────────────
 
@@ -84,7 +98,10 @@ class TestIPLSSVM:
 
 class TestOppositeMapsLSSVM:
     def test_basic(self, moons_data):
-        # Need enough prototypes for non-trivial subset on 2-moons
+        # Need enough prototypes for non-trivial subset on 2-moons. Since
+        # each prototype now contributes a same-class anchor alongside the
+        # opposite-class boundary point (2026-07-07 fix), the reduced set
+        # is stable enough that the default fallback no longer discards it.
         _basic_checks(OppositeMapsLSSVM, moons_data, {"n_prototypes": 25})
 
     def test_more_prototypes_more_svs(self, moons_data):
@@ -92,6 +109,28 @@ class TestOppositeMapsLSSVM:
         m_few = OppositeMapsLSSVM(**PARAMS, n_prototypes=3).fit(X_tr, y_tr)
         m_many = OppositeMapsLSSVM(**PARAMS, n_prototypes=15).fit(X_tr, y_tr)
         assert m_few.n_support_ <= m_many.n_support_
+
+    def test_prototypes_include_same_class_anchor(self, moons_data):
+        # Regression test for the anchor-point fix (2026-07-07): each
+        # prototype must contribute a same-class anchor, not just an
+        # opposite-class boundary point — otherwise the reduced set is
+        # built entirely from closely-spaced cross-class pairs, which
+        # destabilises the LSSVM least-squares fit (see class docstring).
+        X_tr, X_te, y_tr, y_te = moons_data
+        m = OppositeMapsLSSVM(**PARAMS, n_prototypes=5, drop_tolerance=np.inf).fit(X_tr, y_tr)
+        selected_y = y_tr[m.support_indices_]
+        assert (selected_y == 1).sum() >= 2
+        assert (selected_y == -1).sum() >= 2
+
+    def test_fallback_triggers_on_bad_reduction(self, moons_data):
+        # Regression test for the fallback mechanism (2026-07-07): even with
+        # the anchor-point fix, n_prototypes=1 is too coarse a reduction on
+        # 2-moons — the fallback must still trigger and revert to the
+        # full model in genuinely bad cases.
+        X_tr, X_te, y_tr, y_te = moons_data
+        m = OppositeMapsLSSVM(**PARAMS, n_prototypes=1, drop_tolerance=0.05).fit(X_tr, y_tr)
+        assert m.sparsity_ratio_ == 0.0
+        assert m.n_support_ == m.n_samples_fit_
 
 
 # ── PCP-LSSVM ─────────────────────────────────────────────────────────────────

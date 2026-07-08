@@ -58,7 +58,7 @@ from src.tuning.grids import GRIDS, grid_size
 
 # ── Configuration ───────────────────────────────────────────────────────────
 
-TIER1_DATASETS = ["BCW", "PID", "HAB", "VCP", "GCR", "AUS", "TWS", "TWM", "TWC"]
+TIER1_DATASETS = ["BCW", "PID", "HAB", "VCP", "GCR", "AUS", "AI4I", "TWS", "TWM", "TWC"]
 
 DEFAULT_VARIANTS = list(GRIDS.keys())
 

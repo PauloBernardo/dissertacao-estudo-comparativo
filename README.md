@@ -60,7 +60,9 @@ O script abaixo baixa e valida os datasets do Tier 1. Os dados ficam em `data/ra
 python scripts/download_data.py --tier 1
 ```
 
-Tier 1 usa os datasets reais `BCW`, `PID`, `HAB`, `VCP`, `GCR`, `AUS` e os sintéticos `TWS`, `TWM`, `TWC`.
+Tier 1 usa os datasets reais `BCW`, `PID`, `HAB`, `VCP`, `GCR`, `AUS`, `AI4I` e os sintéticos `TWS`, `TWM`, `TWC`.
+
+`AI4I` (AI4I 2020 Predictive Maintenance, UCI) entra no Tier 1 apesar de sua origem ter 10 000 amostras: o protocolo aplica undersampling determinístico 1:3 da classe majoritária (seed=42), preservando as 339 falhas originais e resultando em 1356 amostras — na faixa de tamanho do Tier 1. As colunas `TWF`/`HDF`/`PWF`/`OSF`/`RNF` são excluídas das features por vazarem o rótulo `Machine failure` (~99.7% de concordância). Ver [src/data/loaders.py](/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/src/data/loaders.py).
 
 ## Testes
 
@@ -100,7 +102,7 @@ python -u scripts/run_tier1_gridcv.py \
   --log-level INFO
 ```
 
-Por padrão, o script roda todos os variants definidos em [src/tuning/grids.py](/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/src/tuning/grids.py) sobre os 9 datasets do Tier 1 e 30 seeds.
+Por padrão, o script roda todos os variants definidos em [src/tuning/grids.py](/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/src/tuning/grids.py) sobre os 10 datasets do Tier 1 e 30 seeds.
 
 ### Rodar só variantes CPU
 
@@ -152,6 +154,7 @@ O arquivo `results/tier2_transformers_merged.json` é histórico e incompleto (5
 - Modelos LSSVM usam rótulos assinados internamente quando necessário.
 - `SAINTColnorm` e `FTTransformerCURColnorm` estão configurados no grid atual com `early_stop_metric="val_loss"`.
 - O script é resiliente a interrupção: grava cada registro de forma atômica e pode ser retomado.
+- `AI4I` é servido já sob undersampling 1:3 (seed=42) e sem as colunas de vazamento `TWF`/`HDF`/`PWF`/`OSF`/`RNF`; `DatasetLoader.load("AI4I")` nunca retorna o dataset original de 10 000 amostras.
 
 ## Histórico
 

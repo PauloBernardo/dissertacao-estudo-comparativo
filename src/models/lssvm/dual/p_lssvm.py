@@ -110,9 +110,13 @@ class PruningLSSVM(BaseLSSVM):
         # Initial full solve
         alpha_sub, bias = self._solve_on_subset(X[active], y[active])
         
-        # Calculate baseline training performance
+        # Calculate baseline training performance.
+        # alpha_sub is the raw dual multiplier (same convention as
+        # BaseLSSVM.decision_function, which computes alpha_ * y_train_
+        # before the kernel sum) — must be weighted by y[active] here too,
+        # or the score collapses to a label-agnostic decision function.
         K_eval = self.kernel_matrix(X, X[active])
-        y_pred = np.sign(K_eval @ alpha_sub + bias)
+        y_pred = np.sign(K_eval @ (alpha_sub * y[active]) + bias)
         y_pred[y_pred == 0] = 1
         best_score = f1_score(y, y_pred, average="macro", zero_division=0)
         
@@ -140,9 +144,9 @@ class PruningLSSVM(BaseLSSVM):
             # Retrain on pruned subset
             alpha_sub, bias = self._solve_on_subset(X[active], y[active])
             
-            # Evaluate current performance drop
+            # Evaluate current performance drop (see weighting note above).
             K_eval = self.kernel_matrix(X, X[active])
-            y_pred = np.sign(K_eval @ alpha_sub + bias)
+            y_pred = np.sign(K_eval @ (alpha_sub * y[active]) + bias)
             y_pred[y_pred == 0] = 1
             current_score = f1_score(y, y_pred, average="macro", zero_division=0)
             
