@@ -38,6 +38,9 @@ Adaptive restart (Fast_ADMM_restart variant):
 
 Prediction:
     f(x) = αᵀ K(X_train, x)    (no bias in primal; bias estimated optionally)
+
+Paper-fonte (BASE TEORICA, fora do repo — ver docs/model_references.md):
+    IWANN___LSSVM_ADMM.pdf
 """
 
 from __future__ import annotations

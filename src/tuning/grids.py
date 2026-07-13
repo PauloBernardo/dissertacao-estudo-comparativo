@@ -98,6 +98,8 @@ GRIDS: dict[str, dict] = {
     },
 
     "FSALSSVm": {
+        # ⚠️ DEPRECADO (2026-07-10): Matching Pursuit, não o backfitting de
+        # Jiao. Substituído por FSALSSVmOriginal. Histórico.
         # sigma no grid: RFF de alta frequência (sigma pequeno) não captura estrutura
         # nos dados UCI com muitas features — mesmo problema do PCPLSSVm.
         "model_name": "FSALSSVm",
@@ -110,9 +112,39 @@ GRIDS: dict[str, dict] = {
         "needs_gpu": False,
     },
 
+    "FSALSSVmOriginal": {
+        # Reprodução FIEL do FSALS-SVM (Jiao et al. 2007): critério de resíduo
+        # quadrático normalizado (Eq. 30) + backfitting. Nº de basis functions
+        # como fração de N (escala com o dataset).
+        "model_name": "FSALSSVmOriginal",
+        "grid": {
+            "sigma":   [0.5, 1.5, 5.0],
+            "tau":     [0.1, 0.5, 2.5, 12.5, 50.0],
+            "n_ratio": [0.1, 0.25, 0.5],
+        },
+        "fixed": {},
+        "needs_gpu": False,
+    },
+
     "IPLSSVm": {
+        # ⚠️ DEPRECADO (2026-07-10): seleção por QR-pivoting da kernel, infiel
+        # ao critério α do paper. Substituído por IPLSSVmOriginal. Histórico.
         # sigma no grid: mesma razão que FSALSSVm.
         "model_name": "IPLSSVm",
+        "grid": {
+            "sigma":           [0.5, 1.5, 5.0],
+            "tau":             [0.1, 0.5, 2.5, 12.5, 50.0],
+            "selection_ratio": [0.1, 0.2, 0.5, 0.7],
+        },
+        "fixed": {},
+        "needs_gpu": False,
+    },
+
+    "IPLSSVmOriginal": {
+        # Reprodução FIEL do IP-LSSVM (Carvalho & Braga 2009): critério de
+        # relevância pelo α com sinal (do LS-SVM cheio) + pseudo-inversa no
+        # sistema reduzido sobredeterminado. Mesma grade do IPLSSVm.
+        "model_name": "IPLSSVmOriginal",
         "grid": {
             "sigma":           [0.5, 1.5, 5.0],
             "tau":             [0.1, 0.5, 2.5, 12.5, 50.0],
@@ -134,6 +166,12 @@ GRIDS: dict[str, dict] = {
     },
 
     "OppositeMapsLSSVM": {
+        # ⚠️ DEPRECADO (2026-07-10): adaptação do projeto (k-means no espaço de
+        # entrada + âncora da própria classe + fallback contra o modelo denso).
+        # Substituído pelo OppositeMapsOriginalLSSVM (reprodução fiel do paper
+        # Neto & Barreto 2013). Mantido aqui como histórico e ainda executável
+        # via --models OppositeMapsLSSVM; fora dos runs padrão do Tier 1/2.
+        # Dados históricos em results/oppmaps_adapted_history.json.
         # sigma/n_prototypes eram fixos (calibrados só nos sintéticos) —
         # última colocação em AUS/GCR/HAB/PID/VCP/AI4I no Tier 1. Revisão
         # 2026-07-07: ambos entram na grade; corrigido bug em `_train_f1`
@@ -163,6 +201,27 @@ GRIDS: dict[str, dict] = {
             "n_prototypes": [5, 10, 25, 50, 100, 10_000],
         },
         "fixed": {"drop_tolerance": 0.05},
+        "needs_gpu": False,
+    },
+
+    "OppositeMapsOriginalLSSVM": {
+        # Reprodução FIEL do paper (Neto & Barreto 2013): Kernel K-means no
+        # espaço de características (K2M), passos 3-6 do artigo, sem fallback
+        # e sem âncora. Comparação lado a lado com o OppositeMapsLSSVM
+        # (adaptação do projeto). Grade análoga, sem o sentinela 10_000 (era
+        # do mecanismo de piso, inexistente aqui) e sem drop_tolerance.
+        "model_name": "OppositeMapsOriginalLSSVM",
+        "grid": {
+            "sigma":       [0.05, 0.15, 0.5, 1.5, 5.0],
+            "tau":         [0.1, 0.5, 2.5, 12.5],
+            # protótipos por classe = fração de N (o VQ escala com o tamanho
+            # do dataset). 90% de esparsidade fixa era agressivo demais; o CV
+            # batia no teto 0.5, então 0.7 foi adicionado (deixa a fiel chegar
+            # mais perto do denso onde compensa). Range: agressivo (0.2, ~90%
+            # esparso) a suave (0.7, ~65%).
+            "proto_ratio": [0.2, 0.3, 0.5, 0.7],
+        },
+        "fixed": {},
         "needs_gpu": False,
     },
 
@@ -220,6 +279,40 @@ GRIDS: dict[str, dict] = {
     "NystromLSSVMColnorm": {
         # sigma no grid: kernel RBF colapsa com sigma=0.5 em dados UCI de alta dimensão.
         "model_name": "NystromLSSVMColnorm",
+        "grid": {
+            "sigma": [0.5, 1.5, 5.0],
+            "gamma": [0.1, 1.0, 10.0, 30.0, 50.0, 100.0],
+        },
+        "fixed": {"m_ratio": 0.30},
+        "needs_gpu": False,
+    },
+
+    # Baseline de ablação: idêntico ao NystromLSSVMColnorm, mas com seleção
+    # de landmarks aleatória (random). Isola o efeito do seletor colnorm.
+    # Ver scripts/analyze_nystrom_random.py.
+    "NystromLSSVMRandom": {
+        "model_name": "NystromLSSVMRandom",
+        "grid": {
+            "sigma": [0.5, 1.5, 5.0],
+            "gamma": [0.1, 1.0, 10.0, 30.0, 50.0, 100.0],
+        },
+        "fixed": {"m_ratio": 0.30},
+        "needs_gpu": False,
+    },
+
+    # Ablação de seletores (mesma grade do colnorm/random). K-means é o
+    # baseline "inteligente" do paper ICML de Nyström; opposite = Opposite Maps.
+    "NystromLSSVMKmeans": {
+        "model_name": "NystromLSSVMKmeans",
+        "grid": {
+            "sigma": [0.5, 1.5, 5.0],
+            "gamma": [0.1, 1.0, 10.0, 30.0, 50.0, 100.0],
+        },
+        "fixed": {"m_ratio": 0.30},
+        "needs_gpu": False,
+    },
+    "NystromLSSVMOpposite": {
+        "model_name": "NystromLSSVMOpposite",
         "grid": {
             "sigma": [0.5, 1.5, 5.0],
             "gamma": [0.1, 1.0, 10.0, 30.0, 50.0, 100.0],
@@ -352,6 +445,24 @@ GRIDS: dict[str, dict] = {
             "batch_size":         4096,  # O(B×m) — 10x menos memória que SAINT, cabe batch 4x maior
         },
         "needs_gpu": True,
+    },
+
+    # Ablação de seleção de landmarks do FT-CUR (paralela à do Nyström-SVM).
+    # Reutilizam a classe FTTransformerCURColnorm; o seletor entra via `fixed`.
+    # Mesma grade/fixos do colnorm; muda apenas selection_method.
+    **{
+        f"FTTransformerCUR{name}": {
+            "model_name": "FTTransformerCURColnorm",
+            "grid": {"n_layers": [1, 2, 3], "n_heads": [2, 4], "m_ratio": [0.10, 0.20]},
+            "fixed": {
+                "d_model": 32, "lr": 1e-3, "epochs": 40, "patience": 6,
+                "early_stop_metric": "val_loss", "batch_size": 4096,
+                "selection_method": method,
+            },
+            "needs_gpu": True,
+        }
+        for name, method in (("Random", "random"), ("Kmeans", "kmeans"),
+                             ("Opposite", "opposite"))
     },
 }
 

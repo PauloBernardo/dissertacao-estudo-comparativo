@@ -26,6 +26,9 @@ Comparison with ADMM:
   which implicitly provides second-order information via (K̃+ρI)⁻¹.
 - ADMM typically converges in fewer iterations; FISTA is simpler to implement.
 - Both achieve O(1/k²) convergence with Nesterov momentum.
+
+Paper-fonte (BASE TEORICA, fora do repo — ver docs/model_references.md):
+    LSSVM/CLASSICOS/beck2009.pdf
 """
 
 from __future__ import annotations

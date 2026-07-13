@@ -20,6 +20,9 @@ Analogia com LSSVM:
 Landmarks selecionados de X_train (espaço original), índices fixos usados em ambos os paradigmas.
 
 Autor: Paulo Ricardo Bernardo Silva
+
+Paper-fonte (BASE TEORICA, fora do repo — ver docs/model_references.md):
+    Transformers/ESTADO DA ARTE/2102.03902v3.pdf (Nyströmformer)
 """
 
 import torch
@@ -171,10 +174,12 @@ class InterInstanceAttentionCUR(nn.Module):
             out = out.permute(1, 0, 2).reshape(n, self.d_model)  # [n, d_model]
         else:
             # ── CUR: C = A[:, idx], R = A[idx, :], W = R[:, :, idx] ──
-            # U^{-1} é computado em modo detached para evitar gradientes
-            # instáveis através do SVD quando W tem valores singulares
-            # degenerados (problema conhecido com torch.linalg.svd).
-            # Gradientes fluem através de C e R (que dependem de A).
+            # U^{-1} é computado em modo detached (no_grad) por estabilidade:
+            # gradientes fluem através de C e R (que dependem de A), não da
+            # pseudo-inversa. NB: a pinv é Newton-Schulz (só matmuls, É
+            # diferenciável) — não há SVD aqui. A variante diferenciável
+            # (Nyströmformer original) está disponível via pinv_grad na classe
+            # InterInstanceAttentionNystrom (a usada no estudo).
             idx = landmark_idx
             C = A[:, :, idx]                       # [H, n, m]
             R = A[:, idx, :]                       # [H, m, n]
@@ -213,13 +218,18 @@ class InterInstanceAttentionNystrom(nn.Module):
     """
 
     def __init__(self, d_model: int, n_heads: int, tau_ratio: float = 0.1,
-                 dropout: float = 0.0):
+                 dropout: float = 0.0, pinv_grad: bool = False):
         super().__init__()
         assert d_model % n_heads == 0
         self.d_model  = d_model
         self.n_heads  = n_heads
         self.d_head   = d_model // n_heads
         self.tau_ratio = tau_ratio
+        # pinv_grad=False (default) mantém a pseudo-inversa destacada (no_grad),
+        # comportamento histórico. pinv_grad=True retropropaga pela pinv de
+        # Newton-Schulz (que É diferenciável), como no Nyströmformer original —
+        # a variante a ser testada na auditoria (2026-07-10).
+        self.pinv_grad = pinv_grad
         self.scale    = self.d_head ** 0.5
 
         self.q_proj  = nn.Linear(d_model, d_model, bias=False)
@@ -253,10 +263,15 @@ class InterInstanceAttentionNystrom(nn.Module):
             # W: landmark × landmark                        → [H, m, m]
             W = torch.softmax(Q_m @ K_m.transpose(-1, -2) / self.scale, dim=-1)
 
-            U_inv_list = []
-            with torch.no_grad():
-                for hd in range(self.n_heads):
-                    U_inv_list.append(_truncated_pinv(W[hd], self.tau_ratio))
+            # pinv_grad=True → pinv diferenciável (Nyströmformer original);
+            # False → destacada (comportamento histórico).
+            if self.pinv_grad:
+                U_inv_list = [_truncated_pinv(W[hd], self.tau_ratio)
+                              for hd in range(self.n_heads)]
+            else:
+                with torch.no_grad():
+                    U_inv_list = [_truncated_pinv(W[hd], self.tau_ratio)
+                                  for hd in range(self.n_heads)]
             U_inv = torch.stack(U_inv_list, dim=0)  # [H, m, m]
 
             # Right-to-left para nunca materializar n×n
@@ -367,7 +382,7 @@ class FTTransformerClassifier(nn.Module):
     def __init__(self, n_features: int, d_model: int = 64, n_heads: int = 4,
                  n_layers: int = 2, use_inter_instance: bool = True,
                  tau_ratio: float = 0.1, dropout: float = 0.0,
-                 attn_mode: str = "cur_full"):
+                 attn_mode: str = "cur_full", pinv_grad: bool = False):
         """
         attn_mode:
           "cur_full"    — original: materializa A completa (O(n²d)), CUR como pós-processamento
@@ -401,8 +416,12 @@ class FTTransformerClassifier(nn.Module):
                 "linear_cur": InterInstanceAttentionLinearCUR,
             }
             cls = _ATTN.get(attn_mode, InterInstanceAttentionCUR)
-            self.inter_attn = cls(d_model, n_heads, tau_ratio=tau_ratio,
-                                  dropout=dropout)
+            attn_kwargs = dict(tau_ratio=tau_ratio, dropout=dropout)
+            # pinv_grad (pinv diferenciável) implementado por ora só na variante
+            # "nystrom" — a usada no estudo (FT-CUR = attn_mode="nystrom").
+            if attn_mode == "nystrom":
+                attn_kwargs["pinv_grad"] = pinv_grad
+            self.inter_attn = cls(d_model, n_heads, **attn_kwargs)
 
         # Cabeça de classificação
         self.head = nn.Sequential(

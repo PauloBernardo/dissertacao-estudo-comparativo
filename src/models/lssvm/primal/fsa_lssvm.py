@@ -8,6 +8,9 @@ criterion.
 Reference:
     Jiao L. et al., "Fast Sparse Approximation for Least Squares Support
     Vector Machine", IEEE Transactions on Neural Networks, 2007.
+
+Paper-fonte (BASE TEORICA, fora do repo — ver docs/model_references.md):
+    LSSVM/CLASSICOS/tnn07a.pdf
 """
 
 from __future__ import annotations

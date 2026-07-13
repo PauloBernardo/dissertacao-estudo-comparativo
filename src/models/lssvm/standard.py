@@ -8,6 +8,9 @@ where Ωᵢⱼ = yᵢ yⱼ K(xᵢ, xⱼ) and τ = gamma (regularisation).
 
 The system is solved via Conjugate Gradient (Hestenes-Stiefel variant)
 applied to the positive-definite sub-system after elimination of b.
+
+Paper-fonte (BASE TEORICA, fora do repo — ver docs/model_references.md):
+    LSSVM/CLASSICOS/Suykens_NeurProcLett.pdf
 """
 
 from __future__ import annotations

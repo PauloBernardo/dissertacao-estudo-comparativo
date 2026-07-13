@@ -1,7 +1,7 @@
 """Generate figures for the dissertation report.
 
 Reads:
-  results/tier1_gridcv.json           — 18 models × 9 real datasets (N≈400)
+  results/tier1_gridcv.json           — 18 models × 10 real datasets (N≈400)
   results/ablation_a_scaling.json     — LSSVM × TWS/TWM/TWC N=2000
   results/ablation_a_transformers.json — Transformers × TWS/TWM/TWC N=2000
 
@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT  = ROOT / "results" / "report_figs"
 OUT.mkdir(parents=True, exist_ok=True)
 
-DATASETS_T1 = ["AUS", "BCW", "GCR", "HAB", "PID", "TWC", "TWM", "TWS", "VCP"]
+DATASETS_T1 = ["AI4I", "AUS", "BCW", "GCR", "HAB", "PID", "TWC", "TWM", "TWS", "VCP"]
 SYNTH_DS    = ["TWS", "TWM", "TWC"]
 
 MODEL_LABEL = {
@@ -115,7 +115,7 @@ def main() -> None:
             align="center", alpha=0.85, capsize=3, edgecolor="white", linewidth=0.5)
     ax.set_yticks(range(len(order)))
     ax.set_yticklabels(labels, fontsize=9)
-    ax.set_xlabel("F1-macro médio (30 sementes × 9 datasets)", fontsize=10)
+    ax.set_xlabel("F1-macro médio (30 sementes × 10 datasets)", fontsize=10)
     ax.set_title("Tier 1 — Desempenho Geral dos Modelos\n(★ = modelo proposto/investigado)", fontsize=11)
     ax.axvline(means[0], color="gray", linestyle=":", linewidth=0.8)
     ax.set_xlim(0.55, 0.95)

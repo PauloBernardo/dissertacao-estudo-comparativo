@@ -26,6 +26,9 @@ Key difference from primal FISTA/ADMM:
     - Ω is positive definite by construction → better conditioned
     - α_i = 0 means point i is exactly NOT a support vector
     - λ_max = 1 always (gradient at α=0 is -1, scale-invariant)
+
+Paper-fonte (BASE TEORICA, fora do repo — ver docs/model_references.md):
+    LSSVM/CLASSICOS/beck2009.pdf
 """
 
 from __future__ import annotations

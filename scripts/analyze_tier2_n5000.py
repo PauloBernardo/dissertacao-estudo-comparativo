@@ -36,7 +36,8 @@ DATASETS = ["ADULT", "BANK", "CREDIT", "HIGGS50K", "SHOPPERS", "TELCO"]
 # Nome interno -> rótulo da tese
 LABELS = {
     "StandardLSSVM": "LSSVM (Standard)", "DualFISTA": "LSSVM-DualFISTA",
-    "PCPLSSVm": "LSSVM-PCP", "FSALSSVm": "LSSVM-FSA", "IPLSSVm": "LSSVM-IP",
+    "PCPLSSVm": "LSSVM-PCP", "IPLSSVmOriginal": "LSSVM-IP",
+    "OppositeMapsOriginalLSSVM": "LSSVM-OppMaps", "PruningLSSVM": "LSSVM-Pruning",
     "NystromLSSVMColnorm": "LSSVM-Nystrom", "ADMMNystromLSSVM": "ADMM-Nystrom",
     "FISTANystrom": "FISTA-Nystrom", "XGBoost": "XGBoost",
     "FTTransformer_softmax": "FT-Softmax", "FTTransformer_topk": "FT-TopK",

@@ -8,6 +8,9 @@ Reference:
     Neto A.R.R. & Barreto G.A., "Opposite Maps: Vector Quantization
     Algorithms for Building Reduced-Set SVM and LSSVM Classifiers",
     Neural Processing Letters, 2013.
+
+Paper-fonte (BASE TEORICA, fora do repo — ver docs/model_references.md):
+    Opposite Maps + Outras propostas/CLASSICOS/NPL_Ajalmar.pdf
 """
 
 from __future__ import annotations
