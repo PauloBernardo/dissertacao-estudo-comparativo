@@ -49,11 +49,44 @@ DEFAULT_SEEDS = list(range(30))
 OUTPUT_FILE = Path("results/tier1_scarce_m05.json")
 
 M_RATIO = 0.05
-GRID = {
+
+# ── Configuração por família de modelo ──────────────────────────────────────
+# LSSVM-Nyström: grade sigma×gamma (24), rótulos ±1.
+LSSVM_GRID = {
     "sigma": [0.1, 0.5, 2.0, 8.0],
     "gamma": [0.1, 1.0, 10.0, 30.0, 50.0, 100.0],
 }
-GRID_SIZE = len(GRID["sigma"]) * len(GRID["gamma"])  # 24
+# FT-CUR: grade n_layers×n_heads (6) --- m_ratio sai da grade (fica FIXO);
+# demais hiperparâmetros idênticos aos do Tier 1 (grids.py). Rótulos {0,1}.
+FTCUR_GRID = {"n_layers": [1, 2, 3], "n_heads": [2, 4]}
+FTCUR_FIXED = {
+    "d_model": 32, "lr": 1e-3, "epochs": 40, "patience": 6,
+    "early_stop_metric": "val_loss", "batch_size": 4096,
+}
+FTCUR_SELECTORS = {
+    "FTTransformerCURColnorm": "colnorm",
+    "FTTransformerCURRandom": "random",
+    "FTTransformerCURKmeans": "kmeans",
+    "FTTransformerCUROpposite": "opposite",
+}
+
+
+def _cfg(variant: str):
+    """(model_name, fixed_params, grid, label_format) para a variante."""
+    if variant in FTCUR_SELECTORS:
+        fixed = dict(FTCUR_FIXED, m_ratio=M_RATIO,
+                     selection_method=FTCUR_SELECTORS[variant])
+        return "FTTransformerCURColnorm", fixed, FTCUR_GRID, "binary"
+    return variant, {"m_ratio": M_RATIO}, LSSVM_GRID, "signed"
+
+
+def _grid_size(variant: str) -> int:
+    _, _, grid, _ = _cfg(variant)
+    n = 1
+    for v in grid.values():
+        n *= len(v)
+    return n
+
 
 logger = logging.getLogger("scarce")
 
@@ -75,36 +108,41 @@ def _save(path: Path, records: list[dict]) -> None:
 
 
 def _pipeline(variant: str, seed: int):
-    estimator, _ = _build_model(variant, {"m_ratio": M_RATIO}, label_format="signed")
+    model_name, fixed, grid, label_fmt = _cfg(variant)
+    estimator, _ = _build_model(model_name, fixed, label_format=label_fmt)
     if hasattr(estimator, "set_params") and "random_state" in estimator.get_params():
         estimator.set_params(random_state=seed)
     pipe = Pipeline([("scaler", StandardScaler()), ("clf", estimator)])
-    return pipe, {f"clf__{k}": v for k, v in GRID.items()}
+    return pipe, {f"clf__{k}": v for k, v in grid.items()}
 
 
 def run_one(variant: str, dataset: str, seed: int) -> dict[str, Any]:
     set_global_seed(seed)
+    model_name, _fixed, _grid, label_fmt = _cfg(variant)
+    # FT-CUR precisa de GPU/serial; LSSVM paraleliza os folds.
+    n_jobs = 1 if variant in FTCUR_SELECTORS else -1
     rec: dict[str, Any] = {
-        "variant": variant, "model": variant, "dataset": dataset, "seed": seed,
-        "label_format": "signed", "grid_size": GRID_SIZE, "m_ratio_fixed": M_RATIO,
+        "variant": variant, "model": model_name, "dataset": dataset, "seed": seed,
+        "label_format": label_fmt, "grid_size": _grid_size(variant),
+        "m_ratio_fixed": M_RATIO,
     }
     try:
         X, y, meta = DatasetLoader.load(dataset)
         Xtr, Xte, ytr_raw, yte_raw = make_splits(X, y, test_size=0.30, seed=seed)
-        ytr = _convert_labels(ytr_raw, "signed")
-        yte = _convert_labels(yte_raw, "signed")
+        ytr = _convert_labels(ytr_raw, label_fmt)
+        yte = _convert_labels(yte_raw, label_fmt)
         rec.update({"n_train": int(len(Xtr)), "n_test": int(len(Xte)),
                     "n_features": int(X.shape[1]), "dataset_tier": meta.get("tier")})
 
         pipe, grid = _pipeline(variant, seed)
         cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=seed)
         search = GridSearchCV(pipe, grid, cv=cv, scoring="f1_macro", refit=True,
-                              n_jobs=-1, error_score=0.0)
+                              n_jobs=n_jobs, error_score=0.0)
         t0 = time.perf_counter()
         search.fit(Xtr, ytr)
         fit_time = time.perf_counter() - t0
 
-        test_metrics = _compute_test_metrics(search.best_estimator_, Xte, yte, "signed")
+        test_metrics = _compute_test_metrics(search.best_estimator_, Xte, yte, label_fmt)
         clf = search.best_estimator_.named_steps["clf"]
         sparsity = _collect_sparsity_metrics(clf, Xte)
         best_params = {k.replace("clf__", ""): v for k, v in search.best_params_.items()}
