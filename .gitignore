@@ -18,9 +18,10 @@ data/raw/
 # Exception: parquet cache allows clone-and-run without re-downloading from UCI
 !data/raw/*.parquet
 
-# Results (large — excluded from version control)
-results/*.json
-results/*.csv
+# Results — AGORA VERSIONADOS.
+# São a saída de ~20h de GPU/CPU e não são reproduzíveis de graça (o JSON do
+# probe de escassez em m=5% já se perdeu uma vez). Comprimem bem no git
+# (69 MB em disco -> ~8,5 MB no repo), então vale o backup e a rastreabilidade.
 results/*.parquet
 
 # Exception: tuning best_params is small and important for reproducibility

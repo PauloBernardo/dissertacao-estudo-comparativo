@@ -1,18 +1,18 @@
 \begin{table}[ht]
   \centering
-  \caption{P-valores brutos do teste de Wilcoxon signed-rank — TIER1 TRANSFORMERS (sem correção; negrito = $p<0{,}05$).}
+  \caption{P-valores brutos do teste de Wilcoxon signed-rank — Tier 1 — Transformers (sem correção; negrito = $p<0{,}05$).}
   \label{tab:tier1_transformers_wilcoxon_raw}
   \resizebox{\textwidth}{!}{%
   \begin{tabular}{lrrrrrr}
     \toprule
      & FT-CUR & FT-Entmax & FT-Softmax & FT-Sparsemax & FT-TopK & SAINT \\
     \midrule
-    FT-CUR & -- & 0.652 & 0.164 & 0.359 & 0.074 & 0.359 \\
-FT-Entmax & 0.652 & -- & 0.164 & 0.203 & \textbf{0.008} & 0.496 \\
-FT-Softmax & 0.164 & 0.164 & -- & 0.734 & 0.074 & 1.000 \\
-FT-Sparsemax & 0.359 & 0.203 & 0.734 & -- & \textbf{0.020} & 1.000 \\
-FT-TopK & 0.074 & \textbf{0.008} & 0.074 & \textbf{0.020} & -- & 0.164 \\
-SAINT & 0.359 & 0.496 & 1.000 & 1.000 & 0.164 & -- \\
+    FT-CUR & -- & 1.000 & 0.492 & 0.695 & \textbf{0.037} & 0.232 \\
+FT-Entmax & 1.000 & -- & 0.322 & 0.160 & \textbf{0.004} & 0.275 \\
+FT-Softmax & 0.492 & 0.322 & -- & 1.000 & \textbf{0.037} & 0.695 \\
+FT-Sparsemax & 0.695 & 0.160 & 1.000 & -- & \textbf{0.010} & 0.625 \\
+FT-TopK & \textbf{0.037} & \textbf{0.004} & \textbf{0.037} & \textbf{0.010} & -- & 0.084 \\
+SAINT & 0.232 & 0.275 & 0.695 & 0.625 & 0.084 & -- \\
     \bottomrule
   \end{tabular}}
 \end{table}

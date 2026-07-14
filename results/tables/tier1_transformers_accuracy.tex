@@ -1,18 +1,18 @@
 \begin{table}[ht]
   \centering
-  \caption{Média $\pm$ desvio padrão de Acurácia (30 sementes, 9 conjuntos de dados TIER1 TRANSFORMERS).}
+  \caption{Média $\pm$ desvio padrão de Acurácia (30 sementes, 10 conjuntos de dados Tier 1 — Transformers).}
   \label{tab:tier1_transformers_accuracy}
   \resizebox{\textwidth}{!}{%
-  \begin{tabular}{lrrrrrrrrr}
+  \begin{tabular}{lrrrrrrrrrr}
     \toprule
-    Model & AUS & BCW & GCR & HAB & PID & TWC & TWM & TWS & VCP \\
+    Model & AI4I & AUS & BCW & GCR & HAB & PID & TWC & TWM & TWS & VCP \\
     \midrule
-    FT-CUR & 0.860 $\pm$ 0.017 & 0.952 $\pm$ 0.016 & 0.747 $\pm$ 0.023 & 0.733 $\pm$ 0.022 & 0.738 $\pm$ 0.023 & \textbf{0.505 $\pm$ 0.042} & \textbf{0.967 $\pm$ 0.041} & 0.634 $\pm$ 0.053 & 0.834 $\pm$ 0.029 \\
-FT-Entmax & \textbf{0.863 $\pm$ 0.018} & \textbf{0.961 $\pm$ 0.016} & 0.744 $\pm$ 0.023 & 0.741 $\pm$ 0.025 & 0.737 $\pm$ 0.028 & 0.503 $\pm$ 0.035 & 0.960 $\pm$ 0.061 & 0.631 $\pm$ 0.039 & 0.834 $\pm$ 0.044 \\
-FT-Softmax & 0.858 $\pm$ 0.020 & 0.957 $\pm$ 0.016 & \textbf{0.749 $\pm$ 0.019} & 0.741 $\pm$ 0.026 & 0.732 $\pm$ 0.028 & 0.499 $\pm$ 0.040 & 0.946 $\pm$ 0.064 & 0.630 $\pm$ 0.042 & 0.834 $\pm$ 0.047 \\
-FT-Sparsemax & 0.859 $\pm$ 0.019 & 0.953 $\pm$ 0.017 & 0.741 $\pm$ 0.023 & \textbf{0.743 $\pm$ 0.020} & 0.736 $\pm$ 0.028 & 0.496 $\pm$ 0.042 & 0.962 $\pm$ 0.056 & 0.635 $\pm$ 0.039 & 0.824 $\pm$ 0.050 \\
-FT-TopK & 0.857 $\pm$ 0.019 & 0.954 $\pm$ 0.017 & 0.729 $\pm$ 0.021 & 0.737 $\pm$ 0.021 & 0.719 $\pm$ 0.038 & 0.500 $\pm$ 0.048 & 0.885 $\pm$ 0.073 & 0.632 $\pm$ 0.044 & 0.797 $\pm$ 0.051 \\
-SAINT & 0.859 $\pm$ 0.018 & 0.949 $\pm$ 0.016 & 0.741 $\pm$ 0.018 & 0.738 $\pm$ 0.023 & \textbf{0.744 $\pm$ 0.025} & 0.494 $\pm$ 0.034 & 0.942 $\pm$ 0.066 & \textbf{0.642 $\pm$ 0.037} & \textbf{0.837 $\pm$ 0.030} \\
+    FT-CUR & 0.868 $\pm$ 0.025 & 0.860 $\pm$ 0.017 & 0.952 $\pm$ 0.016 & 0.747 $\pm$ 0.023 & 0.733 $\pm$ 0.022 & 0.738 $\pm$ 0.023 & \textbf{0.505 $\pm$ 0.042} & \textbf{0.967 $\pm$ 0.041} & 0.634 $\pm$ 0.053 & 0.834 $\pm$ 0.029 \\
+FT-Entmax & 0.883 $\pm$ 0.022 & \textbf{0.863 $\pm$ 0.018} & \textbf{0.961 $\pm$ 0.016} & 0.744 $\pm$ 0.023 & 0.741 $\pm$ 0.025 & 0.737 $\pm$ 0.028 & 0.503 $\pm$ 0.035 & 0.960 $\pm$ 0.061 & 0.631 $\pm$ 0.039 & 0.834 $\pm$ 0.044 \\
+FT-Softmax & \textbf{0.888 $\pm$ 0.024} & 0.858 $\pm$ 0.020 & 0.957 $\pm$ 0.016 & \textbf{0.749 $\pm$ 0.019} & 0.741 $\pm$ 0.026 & 0.732 $\pm$ 0.028 & 0.499 $\pm$ 0.040 & 0.946 $\pm$ 0.064 & 0.630 $\pm$ 0.042 & 0.834 $\pm$ 0.047 \\
+FT-Sparsemax & 0.879 $\pm$ 0.020 & 0.859 $\pm$ 0.019 & 0.953 $\pm$ 0.017 & 0.741 $\pm$ 0.023 & \textbf{0.743 $\pm$ 0.020} & 0.736 $\pm$ 0.028 & 0.496 $\pm$ 0.042 & 0.962 $\pm$ 0.056 & 0.635 $\pm$ 0.039 & 0.824 $\pm$ 0.050 \\
+FT-TopK & 0.842 $\pm$ 0.020 & 0.857 $\pm$ 0.019 & 0.954 $\pm$ 0.017 & 0.729 $\pm$ 0.021 & 0.737 $\pm$ 0.021 & 0.719 $\pm$ 0.038 & 0.500 $\pm$ 0.048 & 0.885 $\pm$ 0.073 & 0.632 $\pm$ 0.044 & 0.797 $\pm$ 0.051 \\
+SAINT & 0.861 $\pm$ 0.021 & 0.859 $\pm$ 0.018 & 0.949 $\pm$ 0.016 & 0.741 $\pm$ 0.018 & 0.738 $\pm$ 0.023 & \textbf{0.744 $\pm$ 0.025} & 0.494 $\pm$ 0.034 & 0.942 $\pm$ 0.066 & \textbf{0.642 $\pm$ 0.037} & \textbf{0.837 $\pm$ 0.030} \\
     \bottomrule
   \end{tabular}}
 \end{table}

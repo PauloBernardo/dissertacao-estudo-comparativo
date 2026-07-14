@@ -1,3 +1,3 @@
-Friedman test (TIER1)
-Statistic: 76.7671
+Friedman test (Tier 1)
+Statistic: 91.8298
 p-value:   0.000000

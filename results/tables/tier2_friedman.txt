@@ -1,3 +1,3 @@
 Friedman test (Tier 2)
-Statistic: 42.4000
-p-value:   0.000107
+Statistic: 49.3382
+p-value:   0.000015

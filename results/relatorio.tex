@@ -926,6 +926,122 @@ FT-CUR (Nyströmformer)$^\star$
 \end{tabular}
 \end{table}
 
+\subsection{ADMM-Nystrom no Tier 1: o Nyström ajuda o ADMM-Nesterov?}
+\label{sec:admm_nystrom_tier1}
+
+O paper-base (LSSVM-ADMM-Nesterov) resolve o sistema ADMM com o kernel
+$n \times n$ completo. Uma variante natural --- já auditada e usada como
+referência no Tier~2 (Seção~\ref{sec:tier2_n5000}) --- substitui
+$K$ por sua aproximação de Nyström ($m/n = 30\%$, landmarks por norma de
+coluna, \emph{colnorm}) \emph{dentro} da otimização ADMM, mantendo idênticos
+o restante do algoritmo (penalidade $\ell_1$, aceleração de Nesterov,
+critério de parada). A pergunta é isolada: \textbf{a aproximação de baixo
+posto ajuda ou prejudica o ADMM-Nesterov?} Comparam-se as duas variantes nos
+10 datasets do Tier~1, pareadas seed a seed (30 sementes, mesmo protocolo
+Grid+CV).
+
+\begin{table}[H]
+\centering
+\caption{ADMM-Nesterov (paper-base) vs.\ ADMM-Nystrom: F1-macro e esparsidade
+amostral médios (30 sementes pareadas). $p$: teste de Wilcoxon pareado
+(Nystrom vs.\ Nesterov). \textbf{Negrito}: diferença favorável ao Nystrom
+estatisticamente significativa ($p<0{,}05$).}
+\label{tab:admm_nystrom_helps}
+\begin{tabular}{lrrrrrr}
+\toprule
+\textbf{Dataset} & \textbf{F1 Nest.} & \textbf{F1 Nystrom} & \textbf{$\Delta$F1}
+  & \textbf{Spar.\ Nest.} & \textbf{Spar.\ Nystrom} & \textbf{$p$ (Wilcoxon)} \\
+\midrule
+BCW  & 0,8717 & 0,9493 & \textbf{$+$0,0776} & 17,9\% & 11,3\% & $1{,}9\times10^{-9}$ \\
+AI4I & 0,8423 & 0,8877 & \textbf{$+$0,0453} & 3,8\%  & 47,8\% & $1{,}9\times10^{-9}$ \\
+PID  & 0,6877 & 0,7282 & \textbf{$+$0,0404} & 66,7\% & 72,0\% & $6{,}1\times10^{-8}$ \\
+GCR  & 0,5916 & 0,6279 & \textbf{$+$0,0363} & 3,1\%  & 4,0\%  & $2{,}8\times10^{-6}$ \\
+VCP  & 0,7644 & 0,7879 & \textbf{$+$0,0235} & 5,4\%  & 44,4\% & $9{,}9\times10^{-3}$ \\
+TWS  & 0,9708 & 0,9897 & \textbf{$+$0,0189} & 6,4\%  & 12,1\% & $2{,}5\times10^{-5}$ \\
+AUS  & 0,8400 & 0,8525 & \textbf{$+$0,0125} & 33,2\% & 54,8\% & $1{,}9\times10^{-3}$ \\
+TWC  & 0,8812 & 0,8901 & \textbf{$+$0,0089} & 4,8\%  & 25,1\% & $4{,}1\times10^{-2}$ \\
+TWM  & 0,9880 & 0,9874 & $-$0,0007 & 20,8\% & 59,8\% & 0,131 \\
+HAB  & 0,6232 & 0,5599 & $-$0,0632 & 62,2\% & 54,3\% & $1{,}8\times10^{-5}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{O Nyström ajuda o ADMM-Nesterov em 8 dos 10 datasets}, com ganhos
+estatisticamente significativos ($p<0{,}05$) que vão de $+0{,}009$ (TWC) a
+$+0{,}078$ (BCW) de F1-macro --- e, na maioria dos casos, aumentando também a
+esparsidade amostral (destaque para AI4I: $3{,}8\% \to 47{,}8\%$, e VCP:
+$5{,}4\% \to 44{,}4\%$). Em TWM o efeito é nulo ($p=0{,}131$, empate
+estatístico). Apenas em \textbf{HAB} o Nyström piora o ADMM de forma
+estatisticamente significativa ($-0{,}063$, $p=1{,}8\times10^{-5}$).
+O padrão geral é claro: \textbf{a aproximação de baixo posto não é apenas uma
+economia computacional --- ela tipicamente regulariza e melhora o ADMM-Nesterov
+no Tier~1}, o que motiva sua adoção como variante de referência também no
+Tier~2. HAB é a exceção que exige explicação, não descarte.
+
+\begin{tcolorbox}[colback=warnbg, colframe=warnborder, fonttitle=\bfseries,
+  title=\textbf{Achado --- HAB: o kernel saturado degenera a seleção
+  \emph{colnorm} e o Nyström piora o ADMM}]
+A reversão em HAB não é artefato de poucas sementes ruins: o Nystrom perde em
+$26/30$ sementes ($p=1{,}8\times10^{-5}$, teste de Wilcoxon pareado). A causa
+é estrutural, não estatística.
+
+Calculando o espectro do kernel RBF ($\sigma=2{,}0$, valor mais frequente
+escolhido pelo Grid+CV em quase todos os datasets reais) nos 7 datasets reais
+do Tier~1:
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Dataset} & $\boldsymbol{\lambda_1/\sum\lambda}$ & \textbf{$\overline{K}_{\text{offdiag}}$}
+  & \textbf{CV(colnorm)} \\
+\midrule
+HAB  & \textbf{0,596} & \textbf{0,567} & \textbf{0,312} \\
+VCP  & 0,433 & 0,387 & 0,435 \\
+AI4I & 0,367 & 0,336 & 0,411 \\
+PID  & 0,298 & 0,249 & 0,595 \\
+AUS  & 0,124 & 0,097 & 0,679 \\
+BCW  & 0,109 & 0,062 & 0,937 \\
+GCR  & 0,038 & 0,020 & 0,894 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+HAB tem, disparado, o kernel mais \textbf{saturado} do Tier~1: o autovalor
+dominante concentra $59{,}6\%$ de toda a energia espectral (2\textsuperscript{o}
+lugar, VCP, fica em $43{,}3\%$) e a similaridade média entre pares
+($\overline{K}_{\text{offdiag}} = 0{,}567$) é quase o dobro do segundo colocado
+--- ou seja, $K$ se aproxima de uma matriz quase-constante (quase posto~1).
+
+O seletor de landmarks \emph{colnorm} amostra pontos com probabilidade
+proporcional a $\|K(x_i,\cdot)\|^2$. Quando $K$ é quase constante, todas as
+linhas têm norma parecida e esse critério perde poder discriminativo: o
+coeficiente de variação de $\|K_{i,:}\|^2$ em HAB ($0{,}312$) é o menor entre
+os datasets reais --- o \emph{colnorm} degenera em algo próximo de amostragem
+uniforme aleatória, exatamente onde mais precisaria ser seletivo.
+
+O ADMM-Nesterov denso ainda enxerga a matriz de kernel inteira, incluindo os
+autovalores residuais pequenos que carregam o sinal discriminativo real (o
+autovalor dominante, quando o kernel satura, contribui essencialmente para o
+termo de bias). O Nyström, reconstruindo $K$ a partir de $m=30\%$ landmarks
+mal selecionados, distorce desproporcionalmente essa parte pequena e
+informativa do espectro --- mesmo capturando $\approx 100\%$ da energia
+agregada (dominada pela direção quase-constante e trivial).
+
+O mecanismo não é exclusivo do par ADMM/Nystrom: durante a depuração do
+LSSVM-OppMaps (variante de seleção de protótipos por vizinhança, também
+avaliada neste estudo), observou-se empiricamente que HAB era o dataset
+onde essa seleção mais degenerava em
+predições quase aleatórias sob configurações de baixa esparsidade forçada ---
+consistente com o mesmo kernel quase-degenerado identificado aqui. A hipótese
+de que a saturação do kernel é a causa raiz comum a ambos os casos é plausível
+e coerente com a evidência espectral acima, mas não foi testada formalmente
+para o OppMaps neste trabalho; fica como direção de investigação futura.
+A recomendação prática imediata é verificar a saturação do kernel
+($\lambda_1/\sum\lambda$ ou $\overline{K}_{\text{offdiag}}$) antes de confiar
+em landmarks/protótipos escolhidos por critérios sensíveis à variância das
+linhas de $K$.
+\end{tcolorbox}
+
 % ─────────────────────────────────────────────────────────────────────────────
 \section{Tier 2: Datasets Reais ($N_{\text{treino}}=2000$)}
 \label{sec:tier2}

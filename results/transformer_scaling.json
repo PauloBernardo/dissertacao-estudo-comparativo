@@ -1,0 +1,1604 @@
+[
+  {
+    "variant": "FTTransformer_softmax",
+    "n": 500,
+    "skipped": false,
+    "fit_s_median": 0.352,
+    "pred_ms_median": 2.948,
+    "ram_delta_mb_median": 0.2,
+    "vram_mb_median": 74.8,
+    "fit_s_all": [
+      2.156,
+      0.275,
+      0.352
+    ],
+    "pred_ms_all": [
+      3.198,
+      2.865,
+      2.948
+    ],
+    "ram_mb_all": [
+      556.3,
+      0.2,
+      0.0
+    ],
+    "vram_mb_all": [
+      74.8,
+      74.8,
+      74.8
+    ]
+  },
+  {
+    "variant": "FTTransformer_softmax",
+    "n": 1000,
+    "skipped": false,
+    "fit_s_median": 1.033,
+    "pred_ms_median": 2.883,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 74.8,
+    "fit_s_all": [
+      1.055,
+      1.026,
+      1.033
+    ],
+    "pred_ms_all": [
+      2.883,
+      2.888,
+      2.808
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      74.8,
+      74.8,
+      74.8
+    ]
+  },
+  {
+    "variant": "FTTransformer_softmax",
+    "n": 2000,
+    "skipped": false,
+    "fit_s_median": 1.953,
+    "pred_ms_median": 2.98,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 74.9,
+    "fit_s_all": [
+      1.61,
+      2.038,
+      1.953
+    ],
+    "pred_ms_all": [
+      2.894,
+      3.005,
+      2.98
+    ],
+    "ram_mb_all": [
+      0.1,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      74.9,
+      74.9,
+      74.9
+    ]
+  },
+  {
+    "variant": "FTTransformer_softmax",
+    "n": 5000,
+    "skipped": false,
+    "fit_s_median": 4.407,
+    "pred_ms_median": 2.87,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 76.8,
+    "fit_s_all": [
+      4.407,
+      3.674,
+      4.422
+    ],
+    "pred_ms_all": [
+      2.87,
+      2.867,
+      2.997
+    ],
+    "ram_mb_all": [
+      0.3,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      76.8,
+      76.8,
+      76.8
+    ]
+  },
+  {
+    "variant": "FTTransformer_softmax",
+    "n": 10000,
+    "skipped": false,
+    "fit_s_median": 7.784,
+    "pred_ms_median": 2.865,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 83.2,
+    "fit_s_all": [
+      8.842,
+      6.437,
+      7.784
+    ],
+    "pred_ms_all": [
+      2.865,
+      2.907,
+      2.849
+    ],
+    "ram_mb_all": [
+      0.4,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      83.2,
+      83.2,
+      83.2
+    ]
+  },
+  {
+    "variant": "FTTransformer_softmax",
+    "n": 20000,
+    "skipped": false,
+    "fit_s_median": 17.364,
+    "pred_ms_median": 2.927,
+    "ram_delta_mb_median": 1.2,
+    "vram_mb_median": 149.5,
+    "fit_s_all": [
+      12.772,
+      17.364,
+      17.572
+    ],
+    "pred_ms_all": [
+      2.927,
+      2.848,
+      2.997
+    ],
+    "ram_mb_all": [
+      3.5,
+      1.2,
+      1.0
+    ],
+    "vram_mb_all": [
+      149.5,
+      149.5,
+      149.5
+    ]
+  },
+  {
+    "variant": "FTTransformer_softmax",
+    "n": 50000,
+    "skipped": false,
+    "fit_s_median": 37.709,
+    "pred_ms_median": 3.306,
+    "ram_delta_mb_median": 8.1,
+    "vram_mb_median": 340.3,
+    "fit_s_all": [
+      37.709,
+      31.322,
+      43.281
+    ],
+    "pred_ms_all": [
+      3.246,
+      3.306,
+      3.388
+    ],
+    "ram_mb_all": [
+      15.8,
+      8.1,
+      3.0
+    ],
+    "vram_mb_all": [
+      340.3,
+      340.3,
+      340.3
+    ]
+  },
+  {
+    "variant": "FTTransformer_topk",
+    "n": 500,
+    "skipped": false,
+    "fit_s_median": 0.384,
+    "pred_ms_median": 3.609,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 75.2,
+    "fit_s_all": [
+      0.741,
+      0.29,
+      0.384
+    ],
+    "pred_ms_all": [
+      3.804,
+      3.551,
+      3.609
+    ],
+    "ram_mb_all": [
+      109.3,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      75.2,
+      75.2,
+      75.2
+    ]
+  },
+  {
+    "variant": "FTTransformer_topk",
+    "n": 1000,
+    "skipped": false,
+    "fit_s_median": 0.716,
+    "pred_ms_median": 3.64,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 75.2,
+    "fit_s_all": [
+      0.851,
+      0.716,
+      0.537
+    ],
+    "pred_ms_all": [
+      3.64,
+      3.614,
+      3.769
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      75.2,
+      75.2,
+      75.2
+    ]
+  },
+  {
+    "variant": "FTTransformer_topk",
+    "n": 2000,
+    "skipped": false,
+    "fit_s_median": 2.112,
+    "pred_ms_median": 3.776,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 75.3,
+    "fit_s_all": [
+      2.112,
+      1.289,
+      2.15
+    ],
+    "pred_ms_all": [
+      3.612,
+      3.776,
+      3.89
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      75.3,
+      75.3,
+      75.3
+    ]
+  },
+  {
+    "variant": "FTTransformer_topk",
+    "n": 5000,
+    "skipped": false,
+    "fit_s_median": 3.877,
+    "pred_ms_median": 3.693,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 77.2,
+    "fit_s_all": [
+      3.877,
+      4.247,
+      3.58
+    ],
+    "pred_ms_all": [
+      3.639,
+      3.834,
+      3.693
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      77.2,
+      77.2,
+      77.2
+    ]
+  },
+  {
+    "variant": "FTTransformer_topk",
+    "n": 10000,
+    "skipped": false,
+    "fit_s_median": 8.761,
+    "pred_ms_median": 3.655,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 83.5,
+    "fit_s_all": [
+      9.469,
+      8.761,
+      6.423
+    ],
+    "pred_ms_all": [
+      3.655,
+      3.592,
+      4.005
+    ],
+    "ram_mb_all": [
+      0.8,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      83.5,
+      83.5,
+      83.5
+    ]
+  },
+  {
+    "variant": "FTTransformer_topk",
+    "n": 20000,
+    "skipped": false,
+    "fit_s_median": 15.889,
+    "pred_ms_median": 3.944,
+    "ram_delta_mb_median": 0.2,
+    "vram_mb_median": 149.2,
+    "fit_s_all": [
+      15.889,
+      18.856,
+      14.77
+    ],
+    "pred_ms_all": [
+      3.944,
+      4.1,
+      3.577
+    ],
+    "ram_mb_all": [
+      0.9,
+      0.2,
+      0.2
+    ],
+    "vram_mb_all": [
+      149.2,
+      149.2,
+      149.2
+    ]
+  },
+  {
+    "variant": "FTTransformer_topk",
+    "n": 50000,
+    "skipped": false,
+    "fit_s_median": 45.885,
+    "pred_ms_median": 4.136,
+    "ram_delta_mb_median": 7.5,
+    "vram_mb_median": 340.3,
+    "fit_s_all": [
+      40.314,
+      46.066,
+      45.885
+    ],
+    "pred_ms_all": [
+      4.091,
+      4.136,
+      4.214
+    ],
+    "ram_mb_all": [
+      7.5,
+      3.0,
+      10.9
+    ],
+    "vram_mb_all": [
+      340.3,
+      340.3,
+      340.3
+    ]
+  },
+  {
+    "variant": "FTTransformer_entmax",
+    "n": 500,
+    "skipped": false,
+    "fit_s_median": 2.156,
+    "pred_ms_median": 15.998,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 81.9,
+    "fit_s_all": [
+      3.692,
+      1.518,
+      2.156
+    ],
+    "pred_ms_all": [
+      18.8,
+      15.998,
+      15.614
+    ],
+    "ram_mb_all": [
+      136.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      81.9,
+      81.9,
+      81.9
+    ]
+  },
+  {
+    "variant": "FTTransformer_entmax",
+    "n": 1000,
+    "skipped": false,
+    "fit_s_median": 6.461,
+    "pred_ms_median": 16.129,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 81.9,
+    "fit_s_all": [
+      6.637,
+      6.383,
+      6.461
+    ],
+    "pred_ms_all": [
+      16.129,
+      15.613,
+      16.525
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      81.9,
+      81.9,
+      81.9
+    ]
+  },
+  {
+    "variant": "FTTransformer_entmax",
+    "n": 2000,
+    "skipped": false,
+    "fit_s_median": 12.099,
+    "pred_ms_median": 15.523,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 82.0,
+    "fit_s_all": [
+      11.475,
+      12.274,
+      12.099
+    ],
+    "pred_ms_all": [
+      15.167,
+      15.523,
+      16.052
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      82.0,
+      82.0,
+      82.0
+    ]
+  },
+  {
+    "variant": "FTTransformer_entmax",
+    "n": 5000,
+    "skipped": false,
+    "fit_s_median": 21.602,
+    "pred_ms_median": 16.095,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 83.9,
+    "fit_s_all": [
+      27.133,
+      21.602,
+      16.818
+    ],
+    "pred_ms_all": [
+      16.095,
+      15.623,
+      16.506
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      83.9,
+      83.9,
+      83.9
+    ]
+  },
+  {
+    "variant": "FTTransformer_entmax",
+    "n": 10000,
+    "skipped": false,
+    "fit_s_median": 45.763,
+    "pred_ms_median": 16.12,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 85.6,
+    "fit_s_all": [
+      45.763,
+      53.599,
+      36.168
+    ],
+    "pred_ms_all": [
+      17.049,
+      16.12,
+      15.504
+    ],
+    "ram_mb_all": [
+      0.2,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      85.6,
+      85.6,
+      85.6
+    ]
+  },
+  {
+    "variant": "FTTransformer_entmax",
+    "n": 20000,
+    "skipped": false,
+    "fit_s_median": 87.215,
+    "pred_ms_median": 15.741,
+    "ram_delta_mb_median": 0.3,
+    "vram_mb_median": 149.5,
+    "fit_s_all": [
+      68.721,
+      87.215,
+      106.356
+    ],
+    "pred_ms_all": [
+      15.966,
+      15.311,
+      15.741
+    ],
+    "ram_mb_all": [
+      2.8,
+      0.3,
+      0.3
+    ],
+    "vram_mb_all": [
+      149.5,
+      149.5,
+      149.5
+    ]
+  },
+  {
+    "variant": "FTTransformer_entmax",
+    "n": 50000,
+    "skipped": false,
+    "fit_s_median": 236.348,
+    "pred_ms_median": 15.954,
+    "ram_delta_mb_median": 8.5,
+    "vram_mb_median": 340.3,
+    "fit_s_all": [
+      157.716,
+      243.855,
+      236.348
+    ],
+    "pred_ms_all": [
+      15.845,
+      16.377,
+      15.954
+    ],
+    "ram_mb_all": [
+      8.5,
+      3.0,
+      15.2
+    ],
+    "vram_mb_all": [
+      340.3,
+      340.3,
+      340.3
+    ]
+  },
+  {
+    "variant": "FTTransformer_sparsemax",
+    "n": 500,
+    "skipped": false,
+    "fit_s_median": 0.31,
+    "pred_ms_median": 4.995,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 81.7,
+    "fit_s_all": [
+      0.518,
+      0.31,
+      0.277
+    ],
+    "pred_ms_all": [
+      4.995,
+      4.931,
+      5.02
+    ],
+    "ram_mb_all": [
+      1.2,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      81.7,
+      81.7,
+      81.7
+    ]
+  },
+  {
+    "variant": "FTTransformer_sparsemax",
+    "n": 1000,
+    "skipped": false,
+    "fit_s_median": 0.757,
+    "pred_ms_median": 4.973,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 81.8,
+    "fit_s_all": [
+      1.134,
+      0.757,
+      0.696
+    ],
+    "pred_ms_all": [
+      5.429,
+      4.92,
+      4.973
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      81.8,
+      81.8,
+      81.8
+    ]
+  },
+  {
+    "variant": "FTTransformer_sparsemax",
+    "n": 2000,
+    "skipped": false,
+    "fit_s_median": 1.584,
+    "pred_ms_median": 5.099,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 81.9,
+    "fit_s_all": [
+      1.584,
+      0.941,
+      2.555
+    ],
+    "pred_ms_all": [
+      5.027,
+      5.099,
+      5.105
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      81.9,
+      81.9,
+      81.9
+    ]
+  },
+  {
+    "variant": "FTTransformer_sparsemax",
+    "n": 5000,
+    "skipped": false,
+    "fit_s_median": 3.143,
+    "pred_ms_median": 5.004,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 83.4,
+    "fit_s_all": [
+      3.182,
+      2.75,
+      3.143
+    ],
+    "pred_ms_all": [
+      5.004,
+      5.075,
+      4.987
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      83.4,
+      83.4,
+      83.4
+    ]
+  },
+  {
+    "variant": "FTTransformer_sparsemax",
+    "n": 10000,
+    "skipped": false,
+    "fit_s_median": 5.785,
+    "pred_ms_median": 4.976,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 85.1,
+    "fit_s_all": [
+      5.785,
+      7.738,
+      5.43
+    ],
+    "pred_ms_all": [
+      4.976,
+      4.94,
+      5.117
+    ],
+    "ram_mb_all": [
+      0.2,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      85.1,
+      85.1,
+      85.1
+    ]
+  },
+  {
+    "variant": "FTTransformer_sparsemax",
+    "n": 20000,
+    "skipped": false,
+    "fit_s_median": 15.12,
+    "pred_ms_median": 5.092,
+    "ram_delta_mb_median": 0.3,
+    "vram_mb_median": 149.5,
+    "fit_s_all": [
+      11.902,
+      16.264,
+      15.12
+    ],
+    "pred_ms_all": [
+      5.092,
+      4.965,
+      5.273
+    ],
+    "ram_mb_all": [
+      1.2,
+      0.3,
+      0.3
+    ],
+    "vram_mb_all": [
+      149.5,
+      149.5,
+      149.5
+    ]
+  },
+  {
+    "variant": "FTTransformer_sparsemax",
+    "n": 50000,
+    "skipped": false,
+    "fit_s_median": 40.559,
+    "pred_ms_median": 5.793,
+    "ram_delta_mb_median": 12.0,
+    "vram_mb_median": 340.3,
+    "fit_s_all": [
+      36.289,
+      40.559,
+      47.265
+    ],
+    "pred_ms_all": [
+      5.749,
+      6.147,
+      5.793
+    ],
+    "ram_mb_all": [
+      12.0,
+      3.0,
+      12.6
+    ],
+    "vram_mb_all": [
+      340.3,
+      340.3,
+      340.3
+    ]
+  },
+  {
+    "variant": "SAINT_minibatch",
+    "n": 500,
+    "skipped": false,
+    "fit_s_median": 0.648,
+    "pred_ms_median": 5.169,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 33.8,
+    "fit_s_all": [
+      0.725,
+      0.648,
+      0.641
+    ],
+    "pred_ms_all": [
+      5.408,
+      5.169,
+      4.807
+    ],
+    "ram_mb_all": [
+      99.2,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      33.8,
+      33.8,
+      33.8
+    ]
+  },
+  {
+    "variant": "SAINT_minibatch",
+    "n": 1000,
+    "skipped": false,
+    "fit_s_median": 1.222,
+    "pred_ms_median": 7.026,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 33.8,
+    "fit_s_all": [
+      1.262,
+      1.222,
+      1.081
+    ],
+    "pred_ms_all": [
+      7.026,
+      6.964,
+      7.433
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      33.8,
+      33.8,
+      33.8
+    ]
+  },
+  {
+    "variant": "SAINT_minibatch",
+    "n": 2000,
+    "skipped": false,
+    "fit_s_median": 1.677,
+    "pred_ms_median": 12.584,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 34.0,
+    "fit_s_all": [
+      1.64,
+      1.677,
+      2.143
+    ],
+    "pred_ms_all": [
+      12.768,
+      12.584,
+      11.731
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      34.0,
+      34.0,
+      34.0
+    ]
+  },
+  {
+    "variant": "SAINT_minibatch",
+    "n": 5000,
+    "skipped": false,
+    "fit_s_median": 4.942,
+    "pred_ms_median": 25.962,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 34.5,
+    "fit_s_all": [
+      4.942,
+      4.746,
+      5.063
+    ],
+    "pred_ms_all": [
+      25.962,
+      26.138,
+      25.488
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      34.5,
+      34.5,
+      34.5
+    ]
+  },
+  {
+    "variant": "SAINT_minibatch",
+    "n": 10000,
+    "skipped": false,
+    "fit_s_median": 9.612,
+    "pred_ms_median": 47.151,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 35.4,
+    "fit_s_all": [
+      10.055,
+      5.352,
+      9.612
+    ],
+    "pred_ms_all": [
+      47.882,
+      46.482,
+      47.151
+    ],
+    "ram_mb_all": [
+      2.4,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      35.4,
+      35.4,
+      35.4
+    ]
+  },
+  {
+    "variant": "SAINT_minibatch",
+    "n": 20000,
+    "skipped": false,
+    "fit_s_median": 15.067,
+    "pred_ms_median": 88.915,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 37.3,
+    "fit_s_all": [
+      13.289,
+      18.415,
+      15.067
+    ],
+    "pred_ms_all": [
+      88.915,
+      86.865,
+      90.912
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      37.3,
+      37.3,
+      37.3
+    ]
+  },
+  {
+    "variant": "SAINT_minibatch",
+    "n": 50000,
+    "skipped": false,
+    "fit_s_median": 38.63,
+    "pred_ms_median": 215.044,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 43.2,
+    "fit_s_all": [
+      38.63,
+      40.036,
+      23.29
+    ],
+    "pred_ms_all": [
+      215.134,
+      215.044,
+      213.401
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      43.2,
+      43.2,
+      43.2
+    ]
+  },
+  {
+    "variant": "SAINT_fullbatch",
+    "n": 500,
+    "skipped": false,
+    "fit_s_median": 0.339,
+    "pred_ms_median": 2.194,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 43.8,
+    "fit_s_all": [
+      0.339,
+      0.336,
+      0.34
+    ],
+    "pred_ms_all": [
+      2.305,
+      2.194,
+      2.176
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      43.8,
+      43.8,
+      43.8
+    ]
+  },
+  {
+    "variant": "SAINT_fullbatch",
+    "n": 1000,
+    "skipped": false,
+    "fit_s_median": 0.371,
+    "pred_ms_median": 3.203,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 77.9,
+    "fit_s_all": [
+      0.371,
+      0.398,
+      0.361
+    ],
+    "pred_ms_all": [
+      3.887,
+      3.182,
+      3.203
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      77.9,
+      77.9,
+      77.9
+    ]
+  },
+  {
+    "variant": "SAINT_fullbatch",
+    "n": 2000,
+    "skipped": false,
+    "fit_s_median": 0.696,
+    "pred_ms_median": 5.362,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 175.6,
+    "fit_s_all": [
+      0.693,
+      0.696,
+      0.696
+    ],
+    "pred_ms_all": [
+      5.362,
+      5.413,
+      5.29
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      175.6,
+      175.6,
+      175.6
+    ]
+  },
+  {
+    "variant": "SAINT_fullbatch",
+    "n": 5000,
+    "skipped": false,
+    "fit_s_median": 1.97,
+    "pred_ms_median": 12.465,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 707.9,
+    "fit_s_all": [
+      1.968,
+      1.97,
+      1.971
+    ],
+    "pred_ms_all": [
+      12.964,
+      12.017,
+      12.465
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      707.9,
+      707.9,
+      707.9
+    ]
+  },
+  {
+    "variant": "SAINT_fullbatch",
+    "n": 10000,
+    "skipped": false,
+    "fit_s_median": 5.614,
+    "pred_ms_median": 24.095,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 2370.4,
+    "fit_s_all": [
+      5.62,
+      5.614,
+      5.592
+    ],
+    "pred_ms_all": [
+      24.478,
+      23.169,
+      24.095
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      2370.4,
+      2370.4,
+      2370.4
+    ]
+  },
+  {
+    "variant": "SAINT_fullbatch",
+    "n": 20000,
+    "skipped": false,
+    "fit_s_median": 18.904,
+    "pred_ms_median": 55.527,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 8632.4,
+    "fit_s_all": [
+      19.053,
+      18.84,
+      18.904
+    ],
+    "pred_ms_all": [
+      55.527,
+      54.513,
+      57.298
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      8636.8,
+      8632.4,
+      8632.4
+    ]
+  },
+  {
+    "variant": "SAINT_fullbatch",
+    "n": 50000,
+    "skipped": true,
+    "oom": true,
+    "error": "OOM"
+  },
+  {
+    "variant": "FTCUR_minibatch",
+    "n": 500,
+    "skipped": false,
+    "fit_s_median": 0.547,
+    "pred_ms_median": 6.318,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 53.4,
+    "fit_s_all": [
+      0.732,
+      0.455,
+      0.547
+    ],
+    "pred_ms_all": [
+      6.381,
+      6.318,
+      6.274
+    ],
+    "ram_mb_all": [
+      45.5,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      53.4,
+      53.4,
+      53.4
+    ]
+  },
+  {
+    "variant": "FTCUR_minibatch",
+    "n": 1000,
+    "skipped": false,
+    "fit_s_median": 1.913,
+    "pred_ms_median": 9.345,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 53.5,
+    "fit_s_all": [
+      2.606,
+      1.772,
+      1.913
+    ],
+    "pred_ms_all": [
+      9.462,
+      9.239,
+      9.345
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      53.5,
+      53.5,
+      53.5
+    ]
+  },
+  {
+    "variant": "FTCUR_minibatch",
+    "n": 2000,
+    "skipped": false,
+    "fit_s_median": 3.441,
+    "pred_ms_median": 12.822,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 53.7,
+    "fit_s_all": [
+      2.738,
+      3.441,
+      3.817
+    ],
+    "pred_ms_all": [
+      13.057,
+      12.648,
+      12.822
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      53.7,
+      53.7,
+      53.7
+    ]
+  },
+  {
+    "variant": "FTCUR_minibatch",
+    "n": 5000,
+    "skipped": false,
+    "fit_s_median": 6.85,
+    "pred_ms_median": 23.146,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 54.2,
+    "fit_s_all": [
+      6.85,
+      7.934,
+      5.652
+    ],
+    "pred_ms_all": [
+      22.878,
+      23.146,
+      23.45
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      54.2,
+      54.2,
+      54.2
+    ]
+  },
+  {
+    "variant": "FTCUR_minibatch",
+    "n": 10000,
+    "skipped": false,
+    "fit_s_median": 12.266,
+    "pred_ms_median": 41.891,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 55.1,
+    "fit_s_all": [
+      15.586,
+      10.774,
+      12.266
+    ],
+    "pred_ms_all": [
+      42.379,
+      41.891,
+      41.611
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      55.1,
+      55.1,
+      55.1
+    ]
+  },
+  {
+    "variant": "FTCUR_minibatch",
+    "n": 20000,
+    "skipped": false,
+    "fit_s_median": 26.219,
+    "pred_ms_median": 77.298,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 57.9,
+    "fit_s_all": [
+      26.219,
+      26.22,
+      23.982
+    ],
+    "pred_ms_all": [
+      77.298,
+      77.235,
+      77.558
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      57.9,
+      57.9,
+      57.9
+    ]
+  },
+  {
+    "variant": "FTCUR_minibatch",
+    "n": 50000,
+    "skipped": false,
+    "fit_s_median": 68.101,
+    "pred_ms_median": 192.954,
+    "ram_delta_mb_median": 6.1,
+    "vram_mb_median": 62.9,
+    "fit_s_all": [
+      104.136,
+      67.658,
+      68.101
+    ],
+    "pred_ms_all": [
+      195.786,
+      192.954,
+      191.762
+    ],
+    "ram_mb_all": [
+      6.1,
+      0.0,
+      7.4
+    ],
+    "vram_mb_all": [
+      62.9,
+      62.9,
+      62.9
+    ]
+  },
+  {
+    "variant": "FTCUR_mfixed_full",
+    "n": 500,
+    "skipped": false,
+    "fit_s_median": 0.573,
+    "pred_ms_median": 6.663,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 74.6,
+    "fit_s_all": [
+      0.573,
+      0.686,
+      0.573
+    ],
+    "pred_ms_all": [
+      7.032,
+      6.612,
+      6.663
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      74.6,
+      74.6,
+      74.6
+    ]
+  },
+  {
+    "variant": "FTCUR_mfixed_full",
+    "n": 1000,
+    "skipped": false,
+    "fit_s_median": 0.915,
+    "pred_ms_median": 8.592,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 129.8,
+    "fit_s_all": [
+      0.927,
+      0.907,
+      0.915
+    ],
+    "pred_ms_all": [
+      8.592,
+      8.5,
+      8.596
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      129.8,
+      129.8,
+      129.8
+    ]
+  },
+  {
+    "variant": "FTCUR_mfixed_full",
+    "n": 2000,
+    "skipped": false,
+    "fit_s_median": 1.497,
+    "pred_ms_median": 12.579,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 240.1,
+    "fit_s_all": [
+      1.497,
+      1.498,
+      1.49
+    ],
+    "pred_ms_all": [
+      12.579,
+      12.355,
+      12.637
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      240.1,
+      240.1,
+      240.1
+    ]
+  },
+  {
+    "variant": "FTCUR_mfixed_full",
+    "n": 5000,
+    "skipped": false,
+    "fit_s_median": 3.217,
+    "pred_ms_median": 23.912,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 573.8,
+    "fit_s_all": [
+      3.217,
+      3.222,
+      3.211
+    ],
+    "pred_ms_all": [
+      23.12,
+      23.912,
+      24.068
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      573.8,
+      573.8,
+      573.8
+    ]
+  },
+  {
+    "variant": "FTCUR_mfixed_full",
+    "n": 10000,
+    "skipped": false,
+    "fit_s_median": 6.109,
+    "pred_ms_median": 43.149,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 1129.8,
+    "fit_s_all": [
+      6.132,
+      6.109,
+      6.092
+    ],
+    "pred_ms_all": [
+      41.265,
+      43.423,
+      43.149
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      1129.8,
+      1129.8,
+      1129.8
+    ]
+  },
+  {
+    "variant": "FTCUR_mfixed_full",
+    "n": 20000,
+    "skipped": false,
+    "fit_s_median": 12.111,
+    "pred_ms_median": 82.946,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 2240.3,
+    "fit_s_all": [
+      12.096,
+      12.111,
+      12.14
+    ],
+    "pred_ms_all": [
+      82.946,
+      82.233,
+      82.99
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vram_mb_all": [
+      2240.3,
+      2240.3,
+      2240.3
+    ]
+  },
+  {
+    "variant": "FTCUR_mfixed_full",
+    "n": 50000,
+    "skipped": false,
+    "fit_s_median": 30.468,
+    "pred_ms_median": 205.133,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 5574.1,
+    "fit_s_all": [
+      30.531,
+      30.468,
+      30.429
+    ],
+    "pred_ms_all": [
+      208.772,
+      205.133,
+      202.627
+    ],
+    "ram_mb_all": [
+      0.0,
+      0.0,
+      0.9
+    ],
+    "vram_mb_all": [
+      5574.1,
+      5574.1,
+      5574.1
+    ]
+  }
+]
