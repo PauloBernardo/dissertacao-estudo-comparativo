@@ -7,6 +7,9 @@ Stops when the desired sparsity level is reached or accuracy drops.
 Reference:
     Suykens J.A.K. et al., "Least Squares Support Vector Machines",
     World Scientific, 2002. (Chapter 5 — Fixed-Size LSSVM / Pruning)
+
+Paper-fonte (BASE TEORICA, fora do repo — ver docs/model_references.md):
+    LSSVM/CLASSICOS/es2000-352.pdf
 """
 
 from __future__ import annotations

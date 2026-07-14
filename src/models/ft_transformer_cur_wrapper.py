@@ -15,13 +15,16 @@ Nota transductiva
     A atenção inter-instâncias requer X_train como contexto na inferência.
     fit() armazena X_train_; predict/predict_proba concatenam
     [X_train_ || X_test] internamente antes de chamar o modelo.
+
+Paper-fonte (BASE TEORICA, fora do repo — ver docs/model_references.md):
+    Transformers/ESTADO DA ARTE/2102.03902v3.pdf (Nyströmformer)
 """
 
 import numpy as np
 import torch
 from sklearn.base import BaseEstimator, ClassifierMixin
 
-from src.models.landmark_selection import ColumnNormSelector
+from src.models.landmark_selection import get_selector
 from src.models.ft_transformer_model import FTTransformerClassifier, fit_model
 
 
@@ -43,7 +46,9 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
     m_ratio : float
         Fração de landmarks CUR  (m = round(m_ratio * n_treino))
     tau_ratio : float
-        Limiar para pseudo-inversa truncada  (tau = tau_ratio * σ_max)
+        [NÃO USADO] Documentado como limiar de truncamento da pseudo-inversa,
+        mas a implementação atual (_truncated_pinv) é Newton-Schulz puro e
+        ignora este valor. Mantido por compatibilidade; não está na grade.
     lr : float
         Taxa de aprendizado (Adam)
     epochs : int
@@ -74,12 +79,22 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
         early_stop_metric: str = "val_acc",
         batch_size: int | None = None,
         m_landmarks: int | None = None,
+        pinv_grad: bool = False,
+        selection_method: str = "colnorm",
     ):
+        # Seletor de landmarks (subconjunto fixo de instâncias de treino usadas
+        # como landmark-keys). Padrão "colnorm"; as subclasses definem os demais.
+        # Avaliado no Apêndice de ablação de seleção (paralelo ao Nyström-SVM).
+        self.selection_method = selection_method
         self.d_model = d_model
         self.n_heads = n_heads
         self.n_layers = n_layers
         self.m_ratio = m_ratio
         self.tau_ratio = tau_ratio
+        # pinv_grad=False (default) = comportamento histórico (pinv destacada).
+        # =True retropropaga pela pseudo-inversa Newton-Schulz (Nyströmformer
+        # original). Variante a testar na auditoria — ver docs/auditoria.
+        self.pinv_grad = pinv_grad
         self.lr = lr
         self.epochs = epochs
         self.patience = patience
@@ -104,10 +119,29 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
         yt = torch.tensor(y, dtype=torch.float32, device=DEVICE)
         return Xt, yt
 
-    def _landmark_idx(self, X_train: np.ndarray, m: int) -> torch.Tensor:
-        sel = ColumnNormSelector(n_landmarks=m, random_state=self.random_state)
-        sel.fit(X_train)
-        return torch.tensor(sel.indices_, dtype=torch.long, device=DEVICE)
+    def _landmark_idx(self, X_train: np.ndarray, m: int,
+                      y_train: np.ndarray | None = None) -> torch.Tensor:
+        """Seleciona m instâncias de treino como landmark-keys.
+
+        A seleção opera sobre o input cru (idêntico ao Nyström-SVM), uma única
+        vez no fit. Suporta random / colnorm / kmeans / opposite. O opposite é
+        supervisionado e usa sigma por heurística da mediana (o FT-CUR não expõe
+        um sigma próprio, pois a atenção é aprendida).
+        """
+        if self.selection_method == "opposite":
+            from src.models.nystrom_lssvm_wrapper import (
+                select_opposite_landmarks, median_heuristic_sigma)
+            if y_train is None:
+                raise ValueError("seleção opposite requer y_train")
+            sigma = median_heuristic_sigma(X_train, random_state=self.random_state)
+            idx = select_opposite_landmarks(
+                X_train, y_train.astype(float), sigma=sigma,
+                m_ratio=m / len(X_train), random_state=self.random_state)
+        else:
+            sel = get_selector(self.selection_method, m, self.random_state)
+            sel.fit(X_train)
+            idx = sel.indices_
+        return torch.tensor(idx, dtype=torch.long, device=DEVICE)
 
     # ------------------------------------------------------------------
     # Fit / Predict
@@ -136,7 +170,7 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
             m = max(2, min(self.m_landmarks, len(idx_tr)))
         else:
             m = max(2, round(self.m_ratio * len(idx_tr)))
-        self._landmark_idx_ = self._landmark_idx(X_tr, m)
+        self._landmark_idx_ = self._landmark_idx(X_tr, m, y_tr)
 
         # Modelo
         self._model = FTTransformerClassifier(
@@ -147,6 +181,7 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
             use_inter_instance=True,
             tau_ratio=self.tau_ratio,
             attn_mode="nystrom",          # Nyströmformer: O(nmd), nunca n×n
+            pinv_grad=self.pinv_grad,
         ).to(DEVICE)
 
         X_tr_t, y_tr_t = self._to_tensor(X_tr, y_tr)
@@ -169,14 +204,16 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
             m_full = max(2, min(self.m_landmarks, n))
         else:
             m_full = max(2, round(self.m_ratio * n))
-        self._landmark_idx_full_ = self._landmark_idx(X, m_full)
+        self._landmark_idx_full_ = self._landmark_idx(X, m_full, y)
 
         # Esparsidade de compressão inter-instâncias: 1 - m/n
-        # Analogia com Nyström-LSSVM: fração de instâncias não usadas como landmark-key
-        self.n_landmarks_ = m_full
+        # Analogia com Nyström-LSSVM: fração de instâncias não usadas como landmark-key.
+        # Usa o número EFETIVO de landmarks (o opposite pode devolver ≤ m_full).
+        m_eff = int(len(self._landmark_idx_full_))
+        self.n_landmarks_ = m_eff
         self.n_samples_fit_ = n
-        self.sparsity_ratio_ = 1.0 - m_full / n
-        self.n_support_ = m_full   # landmarks usados como keys
+        self.sparsity_ratio_ = 1.0 - m_eff / n
+        self.n_support_ = m_eff   # landmarks usados como keys
 
         return self
 
@@ -236,3 +273,7 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
     #               "m_ratio": 0.10, "lr": 5e-4,
     #           },
     #   }
+    #
+    # As variantes de ablação (random/kmeans/opposite) reutilizam ESTA classe,
+    # passando ``selection_method`` via ``fixed`` da grade (evita subclasses que
+    # quebram o ``get_params`` do sklearn).

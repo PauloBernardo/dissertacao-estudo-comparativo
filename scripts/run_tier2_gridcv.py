@@ -59,7 +59,10 @@ TIER2_DATASETS = ["ADULT", "BANK", "CREDIT", "HIGGS50K", "SHOPPERS", "TELCO"]
 DEFAULT_VARIANTS = [
     # Baselines LSSVM clássicos (viáveis a N=2000, < 3 min/run)
     "StandardLSSVM", "DualFISTA",
-    "PCPLSSVm", "FSALSSVm", "IPLSSVm",
+    # IPLSSVm/FSALSSVm/OppositeMapsLSSVM (adaptações) deprecados 2026-07-10 →
+    # substituídos pelas reproduções fiéis. Histórico em *_adapted_history.json.
+    "PCPLSSVm", "FSALSSVmOriginal", "IPLSSVmOriginal",
+    "OppositeMapsOriginalLSSVM", "PruningLSSVM",
     # Contribuições escaláveis (Nyström — foco do Tier 2)
     "NystromLSSVMColnorm", "ADMMNystromLSSVM", "FISTANystrom",
     # Baseline ML
@@ -78,8 +81,10 @@ OUTPUT_FILE = Path("results/tier2_gridcv.json")
 # Usado apenas para determinar o formato de label (signed vs binary)
 LSSVM_VARIANTS = {
     "StandardLSSVM", "DualFISTA",
-    "PCPLSSVm", "FSALSSVm", "IPLSSVm",
-    "NystromLSSVMColnorm", "ADMMNystromLSSVM", "FISTANystrom",
+    "PCPLSSVm", "FSALSSVm", "FSALSSVmOriginal", "IPLSSVm", "IPLSSVmOriginal",
+    "OppositeMapsLSSVM", "OppositeMapsOriginalLSSVM", "PruningLSSVM",
+    "NystromLSSVMColnorm", "NystromLSSVMRandom", "NystromLSSVMKmeans",
+    "NystromLSSVMOpposite", "ADMMNystromLSSVM", "FISTANystrom",
 }
 
 logger = logging.getLogger("tier2")

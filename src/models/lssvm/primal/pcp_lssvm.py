@@ -14,6 +14,9 @@ PCP selects r pivot points greedily (max residual diagonal); Nyström
 selects m landmarks by column-norm sampling. Both compress N → r/m and
 predict in O(n_test × r). Reported sparsity = 1 − r/N, exactly as
 NystromLSSVMColnorm reports 1 − m/N.
+
+Paper-fonte (BASE TEORICA, fora do repo — ver docs/model_references.md):
+    LSSVM/CLASSICOS/zhou2016.pdf
 """
 
 from __future__ import annotations

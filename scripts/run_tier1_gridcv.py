@@ -60,15 +60,20 @@ from src.tuning.grids import GRIDS, grid_size
 
 TIER1_DATASETS = ["BCW", "PID", "HAB", "VCP", "GCR", "AUS", "AI4I", "TWS", "TWM", "TWC"]
 
-DEFAULT_VARIANTS = list(GRIDS.keys())
+# Modelos deprecados: fora dos runs padrão, mas ainda executáveis via
+# --models <nome> (mantidos como histórico). OppositeMapsLSSVM (adaptação do
+# projeto) foi substituído pelo OppositeMapsOriginalLSSVM (fiel ao paper) em
+# 2026-07-10 — ver results/oppmaps_adapted_history.json.
+DEPRECATED_VARIANTS = {"OppositeMapsLSSVM", "IPLSSVm", "FSALSSVm"}
+DEFAULT_VARIANTS = [k for k in GRIDS if k not in DEPRECATED_VARIANTS]
 
 DEFAULT_SEEDS = list(range(30))
 
 OUTPUT_FILE = Path("results/tier1_gridcv.json")
 
 LSSVM_VARIANTS = {
-    "StandardLSSVM", "PCPLSSVm", "FSALSSVm", "IPLSSVm",
-    "PruningLSSVM", "OppositeMapsLSSVM",
+    "StandardLSSVM", "PCPLSSVm", "FSALSSVm", "FSALSSVmOriginal", "IPLSSVm", "IPLSSVmOriginal",
+    "PruningLSSVM", "OppositeMapsLSSVM", "OppositeMapsOriginalLSSVM",
     "ADMMNesterovLSSVM", "ADMMElasticNet",
     "FISTANesterov", "DualFISTA", "NystromLSSVMColnorm",
 }

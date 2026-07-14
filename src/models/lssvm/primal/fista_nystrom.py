@@ -33,6 +33,9 @@ Comparison with ADMMNystromLSSVM
     Parameters : one fewer — no ρ to tune (FISTA uses L directly)
     Convergence: both O(1/k²) with Nesterov; ADMM may converge in fewer iters
                  due to implicit second-order information via the Cholesky solve
+
+Paper-fonte (BASE TEORICA, fora do repo — ver docs/model_references.md):
+    LSSVM/CLASSICOS/beck2009.pdf
 """
 
 from __future__ import annotations

@@ -6,6 +6,9 @@ decomposition of the kernel matrix, then retrains on the reduced subset.
 Reference:
     Carvalho B.P.R. & Braga A.P., "IP-LSSVM: A two-step sparse
     classifier based on LS-SVM", Pattern Recognition Letters, 2009.
+
+Paper-fonte (BASE TEORICA, fora do repo — ver docs/model_references.md):
+    LSSVM/CLASSICOS/carvalho2009.pdf
 """
 
 from __future__ import annotations

@@ -85,6 +85,7 @@ class NystromApproximation:
                  selection_method: str = 'random',
                  random_state: Optional[int] = None,
                  regularization: float = 1e-10,
+                 landmark_indices: Optional[np.ndarray] = None,
                  **selector_kwargs):
         """
         Parâmetros
@@ -107,10 +108,12 @@ class NystromApproximation:
         self.selection_method = selection_method
         self.random_state = random_state
         self.regularization = regularization
+        self.landmark_indices = landmark_indices
         self.selector_kwargs = selector_kwargs
 
         # Atributos preenchidos após fit
         self.selector_ = None
+        self.indices_ = None
         self.landmarks_ = None
         self.W_ = None
         self.W_inv_ = None
@@ -131,22 +134,31 @@ class NystromApproximation:
         """
         n_samples = X.shape[0]
 
-        # Selecionar landmarks
-        kwargs = dict(self.selector_kwargs)
-        # 'leverage' needs the kernel; 'colnorm' uses feature norms (||x_i||²)
-        # to avoid computing the full N×N kernel matrix (O(n²) memory).
-        if self.selection_method == 'leverage':
-            kwargs.setdefault('kernel', self.kernel)
-        self.selector_ = get_selector(
-            self.selection_method,
-            self.n_landmarks,
-            self.random_state,
-            **kwargs
-        )
-        self.selector_.fit(X)
-
-        # Obter landmarks
-        self.landmarks_ = self.selector_.get_landmarks(X)
+        if self.landmark_indices is not None:
+            # Landmarks pré-computados (ex.: seleção supervisionada por
+            # kernel k-means em feature space no wrapper Opposite). Ignora o
+            # seletor unsupervised e usa os índices fornecidos diretamente.
+            self.selector_ = None
+            self.indices_ = np.asarray(self.landmark_indices, dtype=int)
+            self.n_landmarks = len(self.indices_)
+            self.landmarks_ = X[self.indices_]
+        else:
+            # Selecionar landmarks
+            kwargs = dict(self.selector_kwargs)
+            # 'leverage' needs the kernel; 'colnorm' uses feature norms (||x_i||²)
+            # to avoid computing the full N×N kernel matrix (O(n²) memory).
+            if self.selection_method == 'leverage':
+                kwargs.setdefault('kernel', self.kernel)
+            self.selector_ = get_selector(
+                self.selection_method,
+                self.n_landmarks,
+                self.random_state,
+                **kwargs
+            )
+            self.selector_.fit(X)
+            self.indices_ = self.selector_.indices_
+            # Obter landmarks
+            self.landmarks_ = self.selector_.get_landmarks(X)
 
         # Calcular W = K(landmarks, landmarks)
         self.W_ = self.kernel(self.landmarks_, self.landmarks_)
@@ -240,7 +252,9 @@ class NystromLSSVM:
 
     def __init__(self, n_landmarks: int, gamma: float = 1.0,
                  kernel: Callable = None, selection_method: str = 'random',
-                 random_state: Optional[int] = None, **selector_kwargs):
+                 random_state: Optional[int] = None,
+                 landmark_indices: Optional[np.ndarray] = None,
+                 **selector_kwargs):
         """
         Parâmetros
         ----------
@@ -260,6 +274,7 @@ class NystromLSSVM:
         self.kernel = kernel if kernel is not None else RBFKernel(sigma=1.0)
         self.selection_method = selection_method
         self.random_state = random_state
+        self.landmark_indices = landmark_indices
         self.selector_kwargs = selector_kwargs
 
         # Atributos após fit
@@ -292,6 +307,7 @@ class NystromLSSVM:
             kernel=self.kernel,
             selection_method=self.selection_method,
             random_state=self.random_state,
+            landmark_indices=self.landmark_indices,
             **self.selector_kwargs
         )
         self.nystrom_.fit(X)

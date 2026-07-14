@@ -13,8 +13,10 @@ Landmark model:
 Sparse objective (primal LSSVM with L1 on landmark weights):
     min_{θ,b}  (1/2τ) ‖Cθ + b·1 - y‖₂²  +  (λ/2)‖θ‖₁
 
-where C = K(X_train, Z) ∈ ℝ^{N×m}.  Bias profiled out exactly:
-    b = mean(y - Cθ)     (closed-form KKT condition)
+where C = K(X_train, Z) ∈ ℝ^{N×m}.  As in the base ADMMNesterovLSSVM, the
+pure primal L1 objective carries NO bias; an intercept is estimated post-hoc
+(optionally) to help on imbalanced data:
+    b = mean(y - Cθ)     (computed after θ converges, not jointly with θ)
 
 ADMM with Nesterov momentum — identical to Marinho's Algorithm 2+3 but
 operating on the m×m system instead of N×N:
@@ -45,6 +47,9 @@ This mirrors the consensus-ADMM distributed architecture described by
 Marinho.  On a real cluster each block would run on a separate machine;
 here joblib spawns B processes on the same hardware for benchmarking.
 Set n_jobs=-1 to use all available CPU cores.
+
+Paper-fonte (BASE TEORICA, fora do repo — ver docs/model_references.md):
+    IWANN___LSSVM_ADMM.pdf; Nyström: LSSVM/ESTADO DA ARTE/2202.11599v2.pdf (NysADMM)
 """
 
 from __future__ import annotations
@@ -92,8 +97,9 @@ class ADMMNystromLSSVM(BaseEstimator, ClassifierMixin):
     landmark_method : str
         Landmark selection strategy: 'colnorm' (default), 'random', 'fps',
         'leverage', 'kmeans', 'opposite'.  'colnorm' samples proportional to
-        the squared kernel-column norms ‖K[:,j]‖² — same criterion used by
-        NystromLSSVMColnorm.
+        the squared input-feature norms ‖x_i‖² (a cheap O(Nd) proxy for the
+        kernel-column/leverage norms, avoiding the O(N²) kernel matrix) — the
+        same criterion used by NystromLSSVMColnorm.
     n_blocks : int
         Number of data blocks for the parallel CᵀC computation.
         1 = single-machine (mode A); >1 = block-parallel (mode B).

@@ -70,21 +70,39 @@ def _build_model(model_name: str, model_params: dict[str, Any], label_format: st
     elif model_name == "FSALSSVm":
         from src.models.lssvm.primal.fsa_lssvm import FSALSSVm
         return FSALSSVm(**model_params), label_format
+    elif model_name == "FSALSSVmOriginal":
+        from src.models.lssvm.primal.fsa_lssvm_original import FSALSSVmOriginal
+        return FSALSSVmOriginal(**model_params), label_format
     elif model_name == "PruningLSSVM":
         from src.models.lssvm.dual.p_lssvm import PruningLSSVM
         return PruningLSSVM(**model_params), label_format
     elif model_name == "IPLSSVm":
         from src.models.lssvm.dual.ip_lssvm import IPLSSVm
         return IPLSSVm(**model_params), label_format
+    elif model_name == "IPLSSVmOriginal":
+        from src.models.lssvm.dual.ip_lssvm_original import IPLSSVmOriginal
+        return IPLSSVmOriginal(**model_params), label_format
     elif model_name == "OppositeMapsLSSVM":
         from src.models.lssvm.dual.opposite_maps import OppositeMapsLSSVM
         return OppositeMapsLSSVM(**model_params), label_format
+    elif model_name == "OppositeMapsOriginalLSSVM":
+        from src.models.lssvm.dual.opposite_maps_original import OppositeMapsOriginalLSSVM
+        return OppositeMapsOriginalLSSVM(**model_params), label_format
     elif model_name == "FTTransformer":
         from src.models.transformers.ft_transformer import FTTransformer
         return FTTransformer(**model_params), "binary"
     elif model_name == "NystromLSSVMColnorm":
         from src.models.nystrom_lssvm_wrapper import NystromLSSVMColnorm
         return NystromLSSVMColnorm(**model_params), "signed"
+    elif model_name == "NystromLSSVMRandom":
+        from src.models.nystrom_lssvm_wrapper import NystromLSSVMRandom
+        return NystromLSSVMRandom(**model_params), "signed"
+    elif model_name == "NystromLSSVMKmeans":
+        from src.models.nystrom_lssvm_wrapper import NystromLSSVMKmeans
+        return NystromLSSVMKmeans(**model_params), "signed"
+    elif model_name == "NystromLSSVMOpposite":
+        from src.models.nystrom_lssvm_wrapper import NystromLSSVMOpposite
+        return NystromLSSVMOpposite(**model_params), "signed"
     elif model_name == "FTTransformerCURColnorm":
         from src.models.ft_transformer_cur_wrapper import FTTransformerCURColnorm
         return FTTransformerCURColnorm(**model_params), "binary"
@@ -102,8 +120,9 @@ _LSSVM_MODELS = {
     "StandardLSSVM", "ADMMNesterovLSSVM", "ADMMNystromLSSVM",
     "FISTANesterovLSSVM", "FISTANystromLSSVM",
     "DualFISTALSSVM", "DualFISTANystromLSSVM",
-    "PCPLSSVm", "FSALSSVm", "PruningLSSVM", "IPLSSVm",
-    "OppositeMapsLSSVM", "NystromLSSVMColnorm",
+    "PCPLSSVm", "FSALSSVm", "FSALSSVmOriginal", "PruningLSSVM",
+    "IPLSSVm", "IPLSSVmOriginal",
+    "OppositeMapsLSSVM", "OppositeMapsOriginalLSSVM", "NystromLSSVMColnorm",
 }
 _TRANSFORMER_MODELS = {"FTTransformer"}
 # Inter-instance models expose n_support_/sparsity_ratio_/n_samples_fit_ like LSSVMs
