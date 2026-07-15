@@ -126,6 +126,7 @@ class ADMMNystromLSSVM(BaseEstimator, ClassifierMixin):
         n_blocks: int = 1,
         n_jobs: int = 1,
         random_state: int | None = None,
+        track_history: bool = False,
     ) -> None:
         self.sigma = sigma
         self.tau = tau
@@ -138,6 +139,9 @@ class ADMMNystromLSSVM(BaseEstimator, ClassifierMixin):
         self.adaptive_restart = adaptive_restart
         self.restart_eta = restart_eta
         self.estimate_bias = estimate_bias
+        # Se True, popula self.history_ com {iter, objective, primal_res, dual_res}
+        # a cada iteração (para curvas de convergência). Desligado por padrão.
+        self.track_history = track_history
         self.landmark_method = landmark_method
         self.n_blocks = n_blocks
         self.n_jobs = n_jobs
@@ -234,7 +238,10 @@ class ADMMNystromLSSVM(BaseEstimator, ClassifierMixin):
         M = CtC_tau + rho * np.eye(m)
         L_M = np.linalg.cholesky(M + 1e-10 * np.eye(m))
 
-        threshold = self.lambda_ / (2.0 * rho)  # Marinho λ/2 convention
+        # threshold = λ/ρ — convenção do paper-fonte (Marinho et al., IWANN 2025:
+        # Eq. 16 usa λ‖α‖₁ sem ½; Eq. 20/Alg. 2 usam S_{λ/ρ}). Ver nota em
+        # admm_nesterov.py sobre a antiga convenção λ/(2ρ).
+        threshold = self.lambda_ / rho
 
         # ── Step 5: ADMM-Nesterov loop ────────────────────────────────────────
         theta = np.zeros(m)
@@ -245,6 +252,9 @@ class ADMMNystromLSSVM(BaseEstimator, ClassifierMixin):
         t_mom = 1.0
         c_prev = np.inf
         converged = False
+        # Histórico por iteração (objetivo + resíduos primal/dual). Só é populado
+        # se track_history=True — usado para as curvas de convergência.
+        self.history_: list[dict] = []
 
         for k in range(self.max_iter):
             # θ-update: (CᵀC/τ + ρI)θ = Cᵀy/τ + ρ(ẑ - û)
@@ -262,6 +272,15 @@ class ADMMNystromLSSVM(BaseEstimator, ClassifierMixin):
             # Convergence check
             primal_res = float(np.linalg.norm(theta_new - z_new))
             dual_res   = float(rho * np.linalg.norm(z_new - z_prev))
+
+            # Histórico opcional (curvas de convergência) — custo zero se desligado.
+            # Objetivo avaliado em z, a variável esparsa (a que vira theta_).
+            if getattr(self, "track_history", False):
+                obj = (0.5 / self.tau * float(np.sum((C @ z_new - y) ** 2))
+                       + self.lambda_ * float(np.abs(z_new).sum()))
+                self.history_.append({"iter": k + 1, "objective": obj,
+                                      "primal_res": primal_res, "dual_res": dual_res})
+
             if primal_res < self.tol and dual_res < self.tol:
                 z = z_new
                 theta = theta_new
@@ -362,5 +381,18 @@ class ADMMNystromLSSVM(BaseEstimator, ClassifierMixin):
 
     @property
     def sparsity_ratio_(self) -> float:
-        """Fraction of m landmarks pruned to zero by L1."""
-        return 1.0 - self.n_support_ / self.m_
+        """Esparsidade AMOSTRAL: fração das N amostras de treino sem influência
+        na predição — comparável a todos os demais modelos do estudo.
+
+        Combina os dois mecanismos: (i) o Nyström já descarta 1 − m/N amostras
+        (não-landmarks) e (ii) o ℓ1 zera parte dos m pesos restantes. Logo,
+
+            sparsity = 1 − (landmarks ativos) / N
+
+        NOTA: até 2026-07-14 este método dividia por ``m_`` (medindo apenas a
+        fração de landmarks podados pelo ℓ1), o que NÃO é comparável aos demais
+        modelos — que sempre reportam sobre N — e subestimava a esparsidade real
+        (ex.: 0,386 reportado vs 0,816 real no Tier 1). Ver FISTANystromLSSVM,
+        que tinha o mesmo problema.
+        """
+        return 1.0 - self.n_support_ / self.n_samples_fit_

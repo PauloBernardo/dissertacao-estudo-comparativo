@@ -34,11 +34,14 @@ GRIDS: dict[str, dict] = {
 
     "ADMMNystromLSSVM": {
         # Modo A — single-machine.  Grade: sigma/tau/lambda_ livres, m_ratio fixo.
+        # λ=0.001 acrescentado ao harmonizar o soft-threshold para λ/ρ (convenção
+        # do paper-fonte). Como o ℓ1 efetivo dobrou, o antigo piso (λ=0.01, escolhido
+        # em 68% dos runs sob a convenção λ/2ρ) deixaria o modelo preso na fronteira.
         "model_name": "ADMMNystromLSSVM",
         "grid": {
             "sigma":   [0.1, 0.5, 2.0],
             "tau":     [0.005, 0.05, 0.5, 5.0, 50.0],
-            "lambda_": [1.0, 0.1, 0.01],
+            "lambda_": [1.0, 0.5, 0.1, 0.01, 0.001],
         },
         "fixed": {"m_ratio": 0.30, "rho": None, "max_iter": 500,
                   "landmark_method": "colnorm", "n_blocks": 1, "n_jobs": 1},
@@ -234,7 +237,7 @@ GRIDS: dict[str, dict] = {
         "grid": {
             "sigma":   [0.1, 0.5, 2.0],
             "tau":     [0.005, 0.05, 0.5, 5.0, 50.0],
-            "lambda_": [1.0, 0.1, 0.01],
+            "lambda_": [1.0, 0.5, 0.1, 0.01, 0.001],  # ver nota em ADMMNystromLSSVM
         },
         "fixed": {"rho": None, "max_iter": 500},
         "needs_gpu": False,
@@ -246,7 +249,7 @@ GRIDS: dict[str, dict] = {
         "grid": {
             "sigma":   [0.1, 0.5, 2.0],
             "tau":     [0.005, 0.05, 0.5, 5.0, 50.0],
-            "lambda_": [1.0, 0.1, 0.01],
+            "lambda_": [1.0, 0.5, 0.1, 0.01, 0.001],  # ver nota em ADMMNystromLSSVM
         },
         "fixed": {"lambda2_": 0.001, "rho": None, "max_iter": 500},
         "needs_gpu": False,

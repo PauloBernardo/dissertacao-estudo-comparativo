@@ -1,0 +1,440 @@
+{
+  "ADMMNystromLSSVM": {
+    "ADULT": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 50.0
+    },
+    "BANK": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 0.5
+    },
+    "CREDIT": {
+      "lambda_": 0.1,
+      "sigma": 2.0,
+      "tau": 5.0
+    },
+    "HIGGS50K": {
+      "lambda_": 1.0,
+      "sigma": 2.0,
+      "tau": 0.5
+    },
+    "SHOPPERS": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 5.0
+    },
+    "TELCO": {
+      "lambda_": 0.1,
+      "sigma": 2.0,
+      "tau": 5.0
+    }
+  },
+  "DualFISTA": {
+    "ADULT": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 1.0
+    },
+    "BANK": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 10.0
+    },
+    "CREDIT": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 1.0
+    },
+    "HIGGS50K": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 1.0
+    },
+    "SHOPPERS": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 10.0
+    },
+    "TELCO": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 1.0
+    }
+  },
+  "FISTANystrom": {
+    "ADULT": {
+      "lambda_": 1.0,
+      "sigma": 2.0,
+      "tau": 0.05
+    },
+    "BANK": {
+      "lambda_": 0.1,
+      "sigma": 2.0,
+      "tau": 0.005
+    },
+    "CREDIT": {
+      "lambda_": 1.0,
+      "sigma": 2.0,
+      "tau": 0.05
+    },
+    "HIGGS50K": {
+      "lambda_": 1.0,
+      "sigma": 2.0,
+      "tau": 0.5
+    },
+    "SHOPPERS": {
+      "lambda_": 1.0,
+      "sigma": 2.0,
+      "tau": 0.005
+    },
+    "TELCO": {
+      "lambda_": 1.0,
+      "sigma": 2.0,
+      "tau": 0.5
+    }
+  },
+  "FSALSSVm": {
+    "ADULT": {
+      "n_components": 200,
+      "sigma": 5.0,
+      "tau": 12.5
+    },
+    "BANK": {
+      "n_components": 200,
+      "sigma": 5.0,
+      "tau": 2.5
+    },
+    "CREDIT": {
+      "n_components": 200,
+      "sigma": 5.0,
+      "tau": 2.5
+    },
+    "HIGGS50K": {
+      "n_components": 200,
+      "sigma": 5.0,
+      "tau": 0.5
+    },
+    "SHOPPERS": {
+      "n_components": 200,
+      "sigma": 5.0,
+      "tau": 2.5
+    },
+    "TELCO": {
+      "n_components": 50,
+      "sigma": 5.0,
+      "tau": 0.5
+    }
+  },
+  "FTTransformerCURColnorm": {
+    "ADULT": {
+      "m_ratio": 0.2,
+      "n_heads": 2,
+      "n_layers": 1
+    },
+    "BANK": {
+      "m_ratio": 0.2,
+      "n_heads": 4,
+      "n_layers": 2
+    },
+    "CREDIT": {
+      "m_ratio": 0.1,
+      "n_heads": 4,
+      "n_layers": 3
+    },
+    "HIGGS50K": {
+      "m_ratio": 0.2,
+      "n_heads": 4,
+      "n_layers": 1
+    },
+    "SHOPPERS": {
+      "m_ratio": 0.1,
+      "n_heads": 2,
+      "n_layers": 1
+    },
+    "TELCO": {
+      "m_ratio": 0.1,
+      "n_heads": 4,
+      "n_layers": 3
+    }
+  },
+  "FTTransformer_entmax": {
+    "ADULT": {
+      "num_blocks": 3,
+      "num_heads": 4
+    },
+    "BANK": {
+      "num_blocks": 3,
+      "num_heads": 2
+    },
+    "CREDIT": {
+      "num_blocks": 2,
+      "num_heads": 2
+    },
+    "HIGGS50K": {
+      "num_blocks": 3,
+      "num_heads": 2
+    },
+    "SHOPPERS": {
+      "num_blocks": 3,
+      "num_heads": 2
+    },
+    "TELCO": {
+      "num_blocks": 3,
+      "num_heads": 4
+    }
+  },
+  "FTTransformer_softmax": {
+    "ADULT": {
+      "num_blocks": 2,
+      "num_heads": 2
+    },
+    "BANK": {
+      "num_blocks": 2,
+      "num_heads": 4
+    },
+    "CREDIT": {
+      "num_blocks": 2,
+      "num_heads": 2
+    },
+    "HIGGS50K": {
+      "num_blocks": 2,
+      "num_heads": 2
+    },
+    "SHOPPERS": {
+      "num_blocks": 2,
+      "num_heads": 4
+    },
+    "TELCO": {
+      "num_blocks": 3,
+      "num_heads": 2
+    }
+  },
+  "FTTransformer_sparsemax": {
+    "ADULT": {
+      "num_blocks": 4,
+      "num_heads": 4
+    },
+    "BANK": {
+      "num_blocks": 4,
+      "num_heads": 4
+    },
+    "CREDIT": {
+      "num_blocks": 4,
+      "num_heads": 4
+    },
+    "HIGGS50K": {
+      "num_blocks": 2,
+      "num_heads": 4
+    },
+    "SHOPPERS": {
+      "num_blocks": 3,
+      "num_heads": 4
+    },
+    "TELCO": {
+      "num_blocks": 3,
+      "num_heads": 4
+    }
+  },
+  "FTTransformer_topk": {
+    "ADULT": {
+      "num_blocks": 3,
+      "num_heads": 4
+    },
+    "BANK": {
+      "num_blocks": 4,
+      "num_heads": 4
+    },
+    "CREDIT": {
+      "num_blocks": 4,
+      "num_heads": 4
+    },
+    "HIGGS50K": {
+      "num_blocks": 4,
+      "num_heads": 4
+    },
+    "SHOPPERS": {
+      "num_blocks": 4,
+      "num_heads": 4
+    },
+    "TELCO": {
+      "num_blocks": 2,
+      "num_heads": 4
+    }
+  },
+  "IPLSSVm": {
+    "ADULT": {
+      "selection_ratio": 0.7,
+      "sigma": 5.0,
+      "tau": 50.0
+    },
+    "BANK": {
+      "selection_ratio": 0.7,
+      "sigma": 5.0,
+      "tau": 50.0
+    },
+    "CREDIT": {
+      "selection_ratio": 0.5,
+      "sigma": 5.0,
+      "tau": 2.5
+    },
+    "HIGGS50K": {
+      "selection_ratio": 0.7,
+      "sigma": 5.0,
+      "tau": 0.5
+    },
+    "SHOPPERS": {
+      "selection_ratio": 0.7,
+      "sigma": 5.0,
+      "tau": 50.0
+    },
+    "TELCO": {
+      "selection_ratio": 0.7,
+      "sigma": 5.0,
+      "tau": 2.5
+    }
+  },
+  "NystromLSSVMColnorm": {
+    "ADULT": {
+      "gamma": 10.0,
+      "sigma": 5.0
+    },
+    "BANK": {
+      "gamma": 100.0,
+      "sigma": 5.0
+    },
+    "CREDIT": {
+      "gamma": 10.0,
+      "sigma": 5.0
+    },
+    "HIGGS50K": {
+      "gamma": 1.0,
+      "sigma": 5.0
+    },
+    "SHOPPERS": {
+      "gamma": 30.0,
+      "sigma": 5.0
+    },
+    "TELCO": {
+      "gamma": 1.0,
+      "sigma": 5.0
+    }
+  },
+  "PCPLSSVm": {
+    "ADULT": {
+      "rank": 200,
+      "sigma": 5.0,
+      "tau": 0.1
+    },
+    "BANK": {
+      "rank": 200,
+      "sigma": 5.0,
+      "tau": 0.1
+    },
+    "CREDIT": {
+      "rank": 200,
+      "sigma": 5.0,
+      "tau": 0.1
+    },
+    "HIGGS50K": {
+      "rank": 200,
+      "sigma": 5.0,
+      "tau": 0.5
+    },
+    "SHOPPERS": {
+      "rank": 200,
+      "sigma": 5.0,
+      "tau": 0.1
+    },
+    "TELCO": {
+      "rank": 200,
+      "sigma": 5.0,
+      "tau": 0.5
+    }
+  },
+  "SAINTColnorm": {
+    "ADULT": {
+      "n_heads": 2,
+      "n_layers": 1
+    },
+    "BANK": {
+      "n_heads": 4,
+      "n_layers": 3
+    },
+    "CREDIT": {
+      "n_heads": 2,
+      "n_layers": 3
+    },
+    "HIGGS50K": {
+      "n_heads": 4,
+      "n_layers": 1
+    },
+    "SHOPPERS": {
+      "n_heads": 2,
+      "n_layers": 1
+    },
+    "TELCO": {
+      "n_heads": 2,
+      "n_layers": 1
+    }
+  },
+  "StandardLSSVM": {
+    "ADULT": {
+      "sigma": 5.0,
+      "tau": 12.5
+    },
+    "BANK": {
+      "sigma": 5.0,
+      "tau": 50.0
+    },
+    "CREDIT": {
+      "sigma": 5.0,
+      "tau": 12.5
+    },
+    "HIGGS50K": {
+      "sigma": 5.0,
+      "tau": 0.5
+    },
+    "SHOPPERS": {
+      "sigma": 5.0,
+      "tau": 50.0
+    },
+    "TELCO": {
+      "sigma": 5.0,
+      "tau": 0.5
+    }
+  },
+  "XGBoost": {
+    "ADULT": {
+      "learning_rate": 0.3,
+      "max_depth": 3,
+      "n_estimators": 100
+    },
+    "BANK": {
+      "learning_rate": 0.1,
+      "max_depth": 6,
+      "n_estimators": 100
+    },
+    "CREDIT": {
+      "learning_rate": 0.1,
+      "max_depth": 3,
+      "n_estimators": 100
+    },
+    "HIGGS50K": {
+      "learning_rate": 0.1,
+      "max_depth": 3,
+      "n_estimators": 100
+    },
+    "SHOPPERS": {
+      "learning_rate": 0.1,
+      "max_depth": 3,
+      "n_estimators": 100
+    },
+    "TELCO": {
+      "learning_rate": 0.1,
+      "max_depth": 3,
+      "n_estimators": 100
+    }
+  }
+}

@@ -177,8 +177,13 @@ class ADMMNesterovLSSVM(BaseLSSVM):
             if self.lambda_ratio is not None:
                 lam *= self.lambda_ratio
 
-        # Soft-threshold: reference uses λ/2 convention → threshold = λ/(2ρ)
-        threshold = lam / (2.0 * rho)
+        # Soft-threshold: threshold = λ₁/ρ.
+        # Convenção do paper-fonte (Marinho et al., IWANN 2025): a Eq. (16) define
+        # o objetivo com λ‖α‖₁ (sem ½) e a Eq. (20)/Algoritmo 2 usam S_{λ/ρ}.
+        # (Versões anteriores usavam λ/(2ρ), atribuindo a Marinho uma convenção λ/2
+        #  que o artigo NÃO adota; era apenas uma reparametrização de λ, mas tornava
+        #  o λ incomparável com a família FISTA, que já usa λ/L.)
+        threshold = lam / rho
 
         # Elastic Net scaling for z-step: 1/(1 + λ₂/ρ)
         elastic_scale = 1.0 / (1.0 + self.lambda2_ / rho) if self.lambda2_ > 0.0 else 1.0

@@ -90,6 +90,7 @@ class FISTANystromLSSVM(BaseEstimator, ClassifierMixin):
         adaptive_restart: bool = True,
         estimate_bias: bool = True,
         random_state: int | None = None,
+        track_history: bool = False,
     ) -> None:
         self.sigma = sigma
         self.tau = tau
@@ -100,6 +101,9 @@ class FISTANystromLSSVM(BaseEstimator, ClassifierMixin):
         self.max_iter = max_iter
         self.adaptive_restart = adaptive_restart
         self.estimate_bias = estimate_bias
+        # Se True, popula self.history_ com {iter, objective, step_norm} a cada
+        # iteração (curvas de convergência). Desligado por padrão, custo zero.
+        self.track_history = track_history
         self.random_state = random_state
 
     def _rbf(self, X: NDArray, Y: NDArray) -> NDArray:
@@ -161,13 +165,26 @@ class FISTANystromLSSVM(BaseEstimator, ClassifierMixin):
         y_ext      = np.zeros(m)
         t          = 1.0
         converged  = False
+        # Histórico por iteração (objetivo + variação do passo). Só é populado se
+        # track_history=True — usado para as curvas de convergência. O FISTA não
+        # tem resíduo primal/dual: não há splitting, logo não existe análogo.
+        self.history_: list[dict] = []
 
         for k in range(self.max_iter):
             grad      = M @ y_ext - r
             v         = y_ext - step * grad
             theta_new = self._soft_threshold(v, threshold)
 
-            if float(np.linalg.norm(theta_new - theta)) < self.tol:
+            step_norm = float(np.linalg.norm(theta_new - theta))
+            if self.track_history:
+                # Objetivo CENTRADO (o que o FISTA de fato minimiza):
+                #   f(θ) = 1/(2τ)·‖Ĉθ − ŷ‖² + λ‖θ‖₁
+                obj = (0.5 / self.tau * float(np.sum((C_hat @ theta_new - y_hat) ** 2))
+                       + self.lambda_ * float(np.abs(theta_new).sum()))
+                self.history_.append({"iter": k + 1, "objective": obj,
+                                      "step_norm": step_norm})
+
+            if step_norm < self.tol:
                 theta = theta_new
                 converged = True
                 break
@@ -238,4 +255,9 @@ class FISTANystromLSSVM(BaseEstimator, ClassifierMixin):
 
     @property
     def sparsity_ratio_(self) -> float:
-        return 1.0 - self.n_support_ / self.m_
+        """Esparsidade AMOSTRAL: fração das N amostras de treino sem influência
+        na predição (Nyström descarta 1 − m/N; o ℓ1 zera parte dos m restantes).
+        Comparável a todos os demais modelos. Ver nota em ADMMNystromLSSVM sobre
+        a convenção anterior (denominador ``m_``), que subestimava a esparsidade.
+        """
+        return 1.0 - self.n_support_ / self.n_samples_fit_
