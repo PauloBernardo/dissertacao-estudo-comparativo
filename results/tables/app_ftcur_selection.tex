@@ -1,0 +1,16 @@
+\begin{table}[ht]
+  \centering
+  \caption{FT-CUR sob os quatro seletores de \emph{landmarks} --- Tier~1, 30 sementes, agregado por grupo. $p$ = Friedman entre os seletores disponíveis. Nenhuma diferença de desempenho é significativa. Custo relativo de seleção (\emph{wall-time} do \textit{GridCV}): \texttt{random}/\texttt{colnorm} $\approx$ base, \texttt{kmeans} $+50\%$, \texttt{opposite} $+7\%$ --- sem ganho de desempenho que o justifique.}
+  \label{tab:app_ftcur_selection}
+  \begin{tabular}{llrrrrr}
+    \toprule
+    Grupo & Métrica & \texttt{colnorm} & \texttt{random} & \texttt{kmeans} & \texttt{opposite} & Friedman $p$ \\
+    \midrule
+    \multirow{2}{*}{Tabulares $n{=}210$} & $F_1$-macro & 0,7669 & 0,7666 & 0,7652 & 0,7616 & 0,345 \\
+     & Acurácia & 0,8187 & 0,8179 & 0,8184 & 0,8162 & 0,247 \\
+    \midrule
+    \multirow{2}{*}{Geométricos 2D $n{=}90$} & $F_1$-macro & 0,6889 & 0,6935 & 0,6920 & 0,6913 & 0,996 \\
+     & Acurácia & 0,7018 & 0,7078 & 0,7029 & 0,7031 & 0,876 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

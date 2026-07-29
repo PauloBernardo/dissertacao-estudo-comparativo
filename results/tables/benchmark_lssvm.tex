@@ -1,0 +1,18 @@
+\begin{table}[ht]
+\centering
+\caption{Tempo de Treino (s) e Memória (MB) para família LSSVM}
+\label{tab:benchmark_lssvm}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{l|rr|rr|rr|rr}
+\toprule
+& \multicolumn{2}{c|}{$N=1\,000$} & \multicolumn{2}{c|}{$N=5\,000$} & \multicolumn{2}{c|}{$N=10\,000$} & \multicolumn{2}{c}{$N=20\,000$} \\
+Modelo & Tempo & Mem. & Tempo & Mem. & Tempo & Mem. & Tempo & Mem. \\
+\midrule
+ADMM-Nesterov  O(N³) & 0.40 & 45.6 & 32.34 & 1335.9 & --- & --- & --- & --- \\
+ADMM-Nyström  O(N·m²) & 0.03 & $<0.1$ & 1.10 & 169.1 & 8.14 & 675.9 & 52.32 & 2739.3 \\
+FISTA-Nyström  O(N·m²) & 0.03 & 6.5 & 1.56 & 166.7 & 10.84 & 678.3 & 63.18 & 2736.6 \\
+LSSVM padrão  O(N³) & 0.06 & 15.3 & 1.11 & 572.2 & --- & --- & --- & --- \\
+Nyström-Colnorm  O(N·m²) & 0.03 & $<0.1$ & 1.36 & 209.3 & 7.50 & 884.0 & 46.31 & 3556.6 \\
+\bottomrule
+\end{tabular}}
+\end{table}

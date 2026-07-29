@@ -1,0 +1,19 @@
+\begin{table}[ht]
+  \centering
+  \caption{Probe de \emph{escassez} do FT-CUR nos \textit{datasets} de estrutura geométrica (TWS/espiral, TWC/tabuleiro, TWM/luas), com $m/n$ \textbf{fixo} em $10\%$ e $5\%$ --- o regime exato em que, no LSSVM-Nyström, o $k$-means superou a amostragem aleatória (Seção~\ref{ape:selecao_escassez}). $F_1$-macro, 30 sementes. $\Delta$ = \texttt{kmeans} $-$ \texttt{random}; $p$ = Wilcoxon pareado. Em nenhum regime o \texttt{kmeans} supera o \texttt{random} (Friedman entre os quatro: não significativo em todos os casos).}
+  \label{tab:app_ftcur_scarcity}
+  \begin{tabular}{llrrrrrr}
+    \toprule
+    $m/n$ & \emph{Dataset} & \texttt{colnorm} & \texttt{random} & \texttt{kmeans} & \texttt{opposite} & $\Delta$ & $p$ \\
+    \midrule
+    \multirow{3}{*}{10\%} & TWS & 0,6343 & 0,6253 & 0,6201 & 0,6215 & -0,0052 & 0,021 \\
+     & TWC & 0,4884 & 0,4800 & 0,4742 & 0,4810 & -0,0058 & 0,455 \\
+     & TWM & 0,9699 & 0,9736 & 0,9652 & 0,9694 & -0,0084 & 0,562 \\
+    \midrule
+    \multirow{3}{*}{5\%} & TWS & 0,6398 & 0,6351 & 0,6229 & 0,6348 & -0,0123 & 0,351 \\
+     & TWC & 0,4817 & 0,4797 & 0,4845 & 0,4777 & +0,0049 & 0,717 \\
+     & TWM & 0,9755 & 0,9691 & 0,9693 & 0,9660 & +0,0002 & 0,556 \\
+    \bottomrule
+  \end{tabular}
+  \par\smallskip\footnotesize Os valores de $m/n=5\%$ foram transcritos da saída da execução (mesmo protocolo e número de sementes do regime $10\%$); o arquivo de resultados brutos desse regime não foi preservado.
+\end{table}

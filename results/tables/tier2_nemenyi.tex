@@ -1,0 +1,27 @@
+\begin{table}[ht]
+  \centering
+  \caption{Pós-teste de Nemenyi --- Tier 2 ($k=16$ modelos, $n=6$ \textit{datasets}, $\mathrm{CD}=9.417$ a $\alpha=0{,}05$). ``Difere do 1º'' indica diferença significativa em relação ao XGBoost; as duas últimas colunas contam de quantos modelos cada um difere significativamente para melhor e para pior. Ao todo, 6 dos 120 pares são significativos.}
+  \label{tab:tier2_nemenyi}
+  \begin{tabular}{lrrccc}
+    \toprule
+    Modelo & \textit{Rank} & $\Delta$ p/ 1º & Difere do 1º & Supera & É superado \\
+    \midrule
+    XGBoost & 1.167 & 0.000 & --- & 5 & 0 \\
+    LSSVM (Standard) & 4.500 & 3.333 & não & 1 & 0 \\
+    LSSVM-Nystrom & 5.667 & 4.500 & não & 0 & 0 \\
+    FT-Entmax & 6.500 & 5.333 & não & 0 & 0 \\
+    SAINT & 6.500 & 5.333 & não & 0 & 0 \\
+    FT-CUR & 6.667 & 5.500 & não & 0 & 0 \\
+    FT-Softmax & 6.667 & 5.500 & não & 0 & 0 \\
+    LSSVM-IP & 6.833 & 5.666 & não & 0 & 0 \\
+    LSSVM-PCP & 9.333 & 8.166 & não & 0 & 0 \\
+    FT-Sparsemax & 9.833 & 8.666 & não & 0 & 0 \\
+    FT-TopK & 9.833 & 8.666 & não & 0 & 0 \\
+    LSSVM-DualFISTA & 11.333 & 10.166 & \textbf{sim} & 0 & 1 \\
+    LSSVM-OppMaps & 11.333 & 10.166 & \textbf{sim} & 0 & 1 \\
+    ADMM-Nystrom & 12.500 & 11.333 & \textbf{sim} & 0 & 1 \\
+    LSSVM-Pruning & 12.833 & 11.666 & \textbf{sim} & 0 & 1 \\
+    FISTA-Nystrom & 14.500 & 13.333 & \textbf{sim} & 0 & 2 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

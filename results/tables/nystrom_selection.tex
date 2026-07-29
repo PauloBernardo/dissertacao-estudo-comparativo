@@ -1,0 +1,22 @@
+\begin{table}[ht]
+  \centering
+  \caption{Seleção de \emph{landmarks} do Nyström-SVM --- norma de coluna (\texttt{colnorm}, usada na dissertação) vs.\ amostragem aleatória (\texttt{random}), agregada sobre os \emph{datasets} e 30 sementes de cada regime de $N$. $\Delta = \texttt{colnorm} - \texttt{random}$; $p$ = teste de Wilcoxon signed-rank pareado por (\emph{dataset}, semente). Nenhuma diferença de \emph{desempenho} é significativa ($\alpha=0{,}05$) em nenhum regime; o único $p<0{,}05$ é a esparsidade do Tier~1, e favorece o \texttt{random} (mais esparso). A esparsidade em $N{=}2000$ e $N{=}5000$ é idêntica por construção ($m/n$ fixo em $0{,}30$).}
+  \label{tab:nystrom_selection}
+  \begin{tabular}{llrrrr}
+    \toprule
+    Regime & Métrica & \texttt{colnorm} & \texttt{random} & $\Delta$ & $p$ \\
+    \midrule
+    \multirow{3}{*}{Tier~1 ($N{\approx}400$, 10 \emph{datasets})} & $F_1$-macro & 0,8430 & 0,8437 & -0,0007 & 0,716 \\
+     & Acurácia & 0,8748 & 0,8753 & -0,0005 & 0,577 \\
+     & Esparsidade & 0,7733 & 0,7842 & -0,0110 & 0,035 \\
+    \midrule
+    \multirow{3}{*}{Tier~2 ($N{=}2000$, 6 \emph{datasets})} & $F_1$-macro & 0,6989 & 0,6982 & +0,0007 & 0,691 \\
+     & Acurácia & 0,8085 & 0,8084 & +0,0001 & 0,788 \\
+     & Esparsidade & 0,6998 & 0,6998 & +0,0000 & -- \\
+    \midrule
+    \multirow{3}{*}{Ablação~D ($N{=}5000$, 6 \emph{datasets})} & $F_1$-macro & 0,7092 & 0,7095 & -0,0003 & 0,334 \\
+     & Acurácia & 0,8161 & 0,8159 & +0,0002 & 0,912 \\
+     & Esparsidade & 0,7000 & 0,7000 & +0,0000 & -- \\
+    \bottomrule
+  \end{tabular}
+\end{table}

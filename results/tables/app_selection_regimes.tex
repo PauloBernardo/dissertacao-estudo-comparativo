@@ -1,0 +1,22 @@
+\begin{table}[ht]
+  \centering
+  \caption{Nyström-SVM sob quatro seletores de \emph{landmarks} (amostragem aleatória \texttt{random}; norma de coluna \texttt{colnorm} = Drineas--Mahoney; \texttt{kmeans}; e \texttt{opposite}), agregados sobre os \emph{datasets} e 30 sementes de cada regime. $p$ = Friedman entre os quatro; nenhuma diferença de desempenho é significativa ($\alpha=0{,}05$) em nenhum regime.}
+  \label{tab:app_selection_regimes}
+  \begin{tabular}{llrrrrr}
+    \toprule
+    Regime & Métrica & \texttt{random} & \texttt{colnorm} & \texttt{kmeans} & \texttt{opposite} & Friedman $p$ \\
+    \midrule
+    \multirow{3}{*}{Tier~1 ($N{\approx}400$)} & $F_1$-macro & 0,8437 & 0,8430 & 0,8423 & 0,8431 & 0,461 \\
+     & Acurácia & 0,8753 & 0,8748 & 0,8746 & 0,8749 & 0,638 \\
+     & Esparsidade & 0,7842 & 0,7733 & 0,7939 & 0,7981 & 0,000 \\
+    \midrule
+    \multirow{3}{*}{Tier~2 ($N{=}2000$)} & $F_1$-macro & 0,6982 & 0,6989 & 0,6983 & 0,6991 & 0,811 \\
+     & Acurácia & 0,8084 & 0,8085 & 0,8083 & 0,8089 & 0,908 \\
+     & Esparsidade & 0,6998 & 0,6998 & 0,6998 & 0,6998 & -- \\
+    \midrule
+    \multirow{3}{*}{Ablação~D ($N{=}5000$)} & $F_1$-macro & 0,7095 & 0,7092 & 0,7090 & 0,7088 & 0,312 \\
+     & Acurácia & 0,8159 & 0,8161 & 0,8157 & 0,8155 & 0,019 \\
+     & Esparsidade & 0,7000 & 0,7000 & 0,7000 & 0,7017 & 0,000 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

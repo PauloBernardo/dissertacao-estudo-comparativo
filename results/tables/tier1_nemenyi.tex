@@ -1,0 +1,31 @@
+\begin{table}[ht]
+  \centering
+  \caption{Pós-teste de Nemenyi --- Tier 1 ($k=20$ modelos, $n=10$ \textit{datasets}, $\mathrm{CD}=9.377$ a $\alpha=0{,}05$). ``Difere do 1º'' indica diferença significativa em relação ao LSSVM-PCP; as duas últimas colunas contam de quantos modelos cada um difere significativamente para melhor e para pior. Ao todo, 28 dos 190 pares são significativos.}
+  \label{tab:tier1_nemenyi}
+  \begin{tabular}{lrrccc}
+    \toprule
+    Modelo & \textit{Rank} & $\Delta$ p/ 1º & Difere do 1º & Supera & É superado \\
+    \midrule
+    LSSVM-PCP & 4.450 & 0.000 & --- & 6 & 0 \\
+    LSSVM-Nystrom & 4.600 & 0.150 & não & 6 & 0 \\
+    LSSVM (Standard) & 4.600 & 0.150 & não & 6 & 0 \\
+    LSSVM-IP & 4.800 & 0.350 & não & 5 & 0 \\
+    LSSVM-FSA & 4.950 & 0.500 & não & 4 & 0 \\
+    LSSVM-DualFISTA & 6.800 & 2.350 & não & 1 & 0 \\
+    XGBoost & 8.000 & 3.550 & não & 0 & 0 \\
+    FISTA-Nystrom & 8.800 & 4.350 & não & 0 & 0 \\
+    LSSVM-Pruning & 9.000 & 4.550 & não & 0 & 0 \\
+    ADMM-Nystrom & 10.900 & 6.450 & não & 0 & 0 \\
+    LSSVM-OppMaps & 12.400 & 7.950 & não & 0 & 0 \\
+    FT-Entmax & 13.400 & 8.950 & não & 0 & 0 \\
+    LSSVM-ADMM & 13.700 & 9.250 & não & 0 & 0 \\
+    FT-CUR & 13.800 & 9.350 & não & 0 & 0 \\
+    LSSVM-ADMM-Elastic & 14.000 & 9.550 & \textbf{sim} & 0 & 3 \\
+    FT-Sparsemax & 14.200 & 9.750 & \textbf{sim} & 0 & 4 \\
+    FT-Softmax & 14.400 & 9.950 & \textbf{sim} & 0 & 5 \\
+    SAINT & 14.700 & 10.250 & \textbf{sim} & 0 & 5 \\
+    LSSVM-FISTA & 15.700 & 11.250 & \textbf{sim} & 0 & 5 \\
+    FT-TopK & 16.800 & 12.350 & \textbf{sim} & 0 & 6 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

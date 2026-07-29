@@ -1,0 +1,17 @@
+\begin{table}[ht]
+  \centering
+  \caption{Custo da seleção de $m=0{,}30\,N$ \emph{landmarks} (ms, mediana de 3 execuções, single-thread) em $N$ crescente. \texttt{random} é $O(m)$ (independe de $N$); \texttt{colnorm} (Drineas) é $O(N d)$; \texttt{kmeans} e \texttt{opposite} formam matrizes de kernel/clustering $O(N^2)$ --- exatamente o custo que a aproximação de Nyström existe para evitar.}
+  \label{tab:app_selection_cost}
+  \begin{tabular}{rrrrr}
+    \toprule
+    $N$ & \texttt{random} & \texttt{colnorm} & \texttt{kmeans} & \texttt{opposite} \\
+    \midrule
+    500 & 0,14 & 0,26 & 154 & 7,02 \\
+    1000 & 0,16 & 0,30 & 389 & 45,42 \\
+    2000 & 0,27 & 0,49 & 1256 & 214 \\
+    4000 & 0,20 & 0,70 & 4730 & 1518 \\
+    8000 & 0,31 & 1,18 & 17602 & 10854 \\
+    16000 & 0,42 & 2,90 & 85445 & 72865 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

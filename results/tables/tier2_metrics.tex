@@ -1,0 +1,28 @@
+\begin{table}[ht]
+  \centering
+  \caption{Métricas complementares --- Tier 2. Cada célula traz a média sobre os 6 \textit{datasets} e 30 sementes, com o \textit{rank} médio de Friedman entre parênteses (menor = melhor). Ordenado pelo \textit{rank} de F1-macro. Correlação de Spearman entre os \textit{ranks} de cada métrica e os de F1-macro --- Acurácia: $\rho = 0{,}825$, MCC: $\rho = 0{,}959$, AUC-ROC: $\rho = 0{,}692$.}
+  \label{tab:tier2_metrics}
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{lcccc}
+    \toprule
+    Modelo & F1-macro & Acurácia & MCC & AUC-ROC \\
+    \midrule
+    XGBoost & 0.723 (1.2) & 0.821 (1.3) & 0.459 (1.0) & 0.841 (1.0) \\
+    LSSVM (Standard) & 0.699 (4.5) & 0.809 (4.3) & 0.416 (5.0) & 0.805 (7.2) \\
+    LSSVM-Nystrom & 0.699 (5.7) & 0.808 (5.2) & 0.415 (5.3) & 0.803 (8.5) \\
+    FT-Entmax & 0.701 (6.5) & 0.808 (6.5) & 0.421 (5.8) & 0.821 (3.0) \\
+    SAINT & 0.689 (6.5) & 0.805 (9.2) & 0.394 (7.3) & 0.802 (8.3) \\
+    FT-Softmax & 0.701 (6.7) & 0.808 (4.7) & 0.421 (5.7) & 0.821 (2.3) \\
+    FT-CUR & 0.699 (6.7) & 0.804 (8.8) & 0.410 (7.7) & 0.802 (10.0) \\
+    LSSVM-IP & 0.697 (6.8) & 0.808 (5.8) & 0.412 (6.5) & 0.802 (8.5) \\
+    LSSVM-PCP & 0.689 (9.3) & 0.808 (5.2) & 0.405 (8.3) & 0.811 (5.5) \\
+    FT-Sparsemax & 0.694 (9.8) & 0.805 (8.8) & 0.410 (9.3) & 0.813 (6.2) \\
+    FT-TopK & 0.691 (9.8) & 0.805 (8.8) & 0.404 (9.3) & 0.813 (6.7) \\
+    LSSVM-DualFISTA & 0.684 (11.3) & 0.799 (12.3) & 0.385 (12.0) & 0.783 (13.5) \\
+    LSSVM-OppMaps & 0.683 (11.3) & 0.783 (15.5) & 0.372 (12.8) & 0.777 (13.8) \\
+    ADMM-Nystrom & 0.681 (12.5) & 0.798 (11.8) & 0.380 (12.7) & 0.784 (12.8) \\
+    LSSVM-Pruning & 0.680 (12.8) & 0.788 (14.2) & 0.371 (12.7) & 0.769 (14.5) \\
+    FISTA-Nystrom & 0.674 (14.5) & 0.795 (13.5) & 0.368 (14.5) & 0.782 (14.2) \\
+    \bottomrule
+  \end{tabular}}
+\end{table}

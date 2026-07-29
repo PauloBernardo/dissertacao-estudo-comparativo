@@ -1,0 +1,16 @@
+\begin{table}[ht]
+  \centering
+  \caption{Ablação de \emph{escassez}: $F_1$-macro do Nyström-SVM com $m/n$ FIXO em $5\%$ e $10\%$ (Tier~1, 30 sementes), separado entre os seis \emph{datasets} tabulares e os três sintéticos de estrutura geométrica 2D (espiral TWS, tabuleiro TWC, luas TWM). $\uparrow$/$\downarrow$ = significativamente melhor/pior que \texttt{random} (Wilcoxon, $\alpha=0{,}05$).}
+  \label{tab:app_selection_scarcity}
+  \begin{tabular}{llrrrr}
+    \toprule
+    $m/n$ & Grupo & \texttt{random} & \texttt{colnorm} & \texttt{kmeans} & \texttt{opposite} \\
+    \midrule
+    \multirow{2}{*}{5\%} & Tabulares (6) & 0,7749 & 0,7740 & 0,7720 & 0,7732 \\
+     & Geométricos 2D (3) & 0,7549 & 0,7509 & 0,7299$\downarrow$ & 0,7627 \\
+    \midrule
+    \multirow{2}{*}{10\%} & Tabulares (6) & 0,7768 & 0,7762 & 0,7733 & 0,7760 \\
+     & Geométricos 2D (3) & 0,9120 & 0,8671$\downarrow$ & 0,9467$\uparrow$ & 0,9255$\uparrow$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}

@@ -1,0 +1,16 @@
+\begin{table}[ht]
+  \centering
+  \caption{ADMM-Nyström \emph{vs.}\ FISTA-Nyström: as duas variantes avaliadas nos \textbf{mesmos} $(\sigma,\tau,\lambda)$ e sobre os \textbf{mesmos} \textit{landmarks}. Cada solução é avaliada nos \emph{dois} objetivos --- o \textbf{cru} (sem intercepto, o do ADMM) e o \textbf{centrado} (intercepto absorvido, o do FISTA). Cada algoritmo minimiza melhor o \emph{seu próprio} objetivo (em negrito) e pior o do outro: ambos convergem corretamente, para ótimos de \emph{problemas distintos}. Tempo: mediana de 5 execuções.}
+  \label{tab:admm_fista_opt}
+  \begin{tabular}{llrrrrr}
+    \toprule
+    \emph{Dataset} & Solver & Obj.\ cru & Obj.\ centrado & Iterações & Tempo (s) & ms/iter \\
+    \midrule
+    \multirow{2}{*}{ADULT} & \texttt{ADMM} & \textbf{173,35} & 145,86 & 82 & 0,261 & 3,19 \\
+     & \texttt{FISTA} & 202,79 & \textbf{125,08} & 770 & 0,273 & 0,35 \\
+    \midrule
+    \multirow{2}{*}{CREDIT} & \texttt{ADMM} & \textbf{172,19} & 140,44 & 55 & 0,237 & 4,31 \\
+     & \texttt{FISTA} & 199,05 & \textbf{119,46} & 653 & 0,241 & 0,37 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
