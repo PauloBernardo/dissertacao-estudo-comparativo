@@ -1,0 +1,1802 @@
+[
+ {
+  "dataset": "ADULT",
+  "seed": 0,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.912456228114057,
+   "f1_macro": 0.5186199040987672,
+   "fit_time_s": 57.225503519000085
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9939969984992496,
+   "f1_macro": 0.5426014352213788,
+   "fit_time_s": 57.853293828999995
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 0,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.47273636818409204,
+   "f1_macro": 0.5050507484348845,
+   "fit_time_s": 55.983609466000416
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.6453226613306653,
+   "f1_macro": 0.5021217731809573,
+   "fit_time_s": 56.566014156000165
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 0,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 259,
+   "converged": true,
+   "sparsity": 0.06553276638319161,
+   "f1_macro": 0.5065109479124167,
+   "fit_time_s": 34.25482191999981
+  },
+  "new": {
+   "n_iter": 270,
+   "converged": true,
+   "sparsity": 0.1425712856428214,
+   "f1_macro": 0.5065109479124167,
+   "fit_time_s": 37.52707354799986
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 0,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9974987493746873,
+   "f1_macro": 0.6044526495496197,
+   "fit_time_s": 3.2480509770002755
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9989994997498749,
+   "f1_macro": 0.48968925539098085,
+   "fit_time_s": 2.6600776569994196
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 0,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.8574287143571786,
+   "f1_macro": 0.6953125,
+   "fit_time_s": 3.7916773200004172
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9204602301150575,
+   "f1_macro": 0.5333724340175954,
+   "fit_time_s": 3.513755246999608
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 0,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.7518759379689846,
+   "f1_macro": 0.7508207693594826,
+   "fit_time_s": 3.272801542000707
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.7788894447223612,
+   "f1_macro": 0.7505205538263389,
+   "fit_time_s": 3.3253731249997145
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 1,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9114557278639319,
+   "f1_macro": 0.5198863636363636,
+   "fit_time_s": 53.408568959999684
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9939969984992496,
+   "f1_macro": 0.5331644151536237,
+   "fit_time_s": 54.511764667000534
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 1,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.4487243621810906,
+   "f1_macro": 0.5208444892996039,
+   "fit_time_s": 52.65317277899976
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.6473236618309155,
+   "f1_macro": 0.521802333932809,
+   "fit_time_s": 52.32385116600017
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 1,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 252,
+   "converged": true,
+   "sparsity": 0.061030515257628815,
+   "f1_macro": 0.5208444892996039,
+   "fit_time_s": 34.69722366299993
+  },
+  "new": {
+   "n_iter": 352,
+   "converged": true,
+   "sparsity": 0.12406203101550772,
+   "f1_macro": 0.5208444892996039,
+   "fit_time_s": 42.17766625100012
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 1,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9989994997498749,
+   "f1_macro": 0.4433984980297618,
+   "fit_time_s": 4.030500235000545
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9989994997498749,
+   "f1_macro": 0.4582589837208664,
+   "fit_time_s": 3.5221244559998013
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 1,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.8654327163581791,
+   "f1_macro": 0.7510947795935847,
+   "fit_time_s": 4.104674776999673
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9229614807403702,
+   "f1_macro": 0.5663892725986321,
+   "fit_time_s": 4.058891036000205
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 1,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.7463731865932967,
+   "f1_macro": 0.7710098291152272,
+   "fit_time_s": 3.2988536660004684
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.7658829414707353,
+   "f1_macro": 0.7574215436810856,
+   "fit_time_s": 4.097299699999894
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 2,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9189594797398699,
+   "f1_macro": 0.5111377067204178,
+   "fit_time_s": 44.47049220899953
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9869934967483742,
+   "f1_macro": 0.5115307254820364,
+   "fit_time_s": 41.74314933900041
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 2,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.4502251125562782,
+   "f1_macro": 0.5032131944484255,
+   "fit_time_s": 40.989418808000664
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.6408204102051025,
+   "f1_macro": 0.5032131944484255,
+   "fit_time_s": 39.014354122999976
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 2,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 200,
+   "converged": true,
+   "sparsity": 0.072536268134067,
+   "f1_macro": 0.5032131944484255,
+   "fit_time_s": 22.556183505999797
+  },
+  "new": {
+   "n_iter": 272,
+   "converged": true,
+   "sparsity": 0.12756378189094553,
+   "f1_macro": 0.5032131944484255,
+   "fit_time_s": 25.343055867999283
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 2,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9974987493746873,
+   "f1_macro": 0.503102506825515,
+   "fit_time_s": 3.658854942999824
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9989994997498749,
+   "f1_macro": 0.4814127728839525,
+   "fit_time_s": 2.3168991230004394
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 2,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.8554277138569284,
+   "f1_macro": 0.7340561577952349,
+   "fit_time_s": 3.3386608589999014
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9134567283641821,
+   "f1_macro": 0.6277251547424662,
+   "fit_time_s": 2.6656523409992587
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 2,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.7453726863431716,
+   "f1_macro": 0.7529124461475845,
+   "fit_time_s": 2.443780281999352
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.7688844422211105,
+   "f1_macro": 0.7440756061759697,
+   "fit_time_s": 2.276673681999455
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 3,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9189594797398699,
+   "f1_macro": 0.510037009428904,
+   "fit_time_s": 40.328914728999735
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9919959979989995,
+   "f1_macro": 0.5366463872294465,
+   "fit_time_s": 42.26745314800064
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 3,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.47173586793396693,
+   "f1_macro": 0.5159618706416736,
+   "fit_time_s": 43.627256072999444
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.6333166583291645,
+   "f1_macro": 0.5159618706416736,
+   "fit_time_s": 41.490648488999796
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 3,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 289,
+   "converged": true,
+   "sparsity": 0.0675337668834417,
+   "f1_macro": 0.5159618706416736,
+   "fit_time_s": 29.04832604300009
+  },
+  "new": {
+   "n_iter": 327,
+   "converged": true,
+   "sparsity": 0.12906453226613301,
+   "f1_macro": 0.5159618706416736,
+   "fit_time_s": 30.447795953999957
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 3,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9984992496248124,
+   "f1_macro": 0.5179140893122893,
+   "fit_time_s": 3.0310538530002304
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9989994997498749,
+   "f1_macro": 0.5211768738509305,
+   "fit_time_s": 2.2800918439997986
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 3,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.8604302151075538,
+   "f1_macro": 0.7139629548625193,
+   "fit_time_s": 2.6589023669994276
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9239619809904952,
+   "f1_macro": 0.587308552381756,
+   "fit_time_s": 3.0566307250001046
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 3,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.7493746873436719,
+   "f1_macro": 0.7411764705882353,
+   "fit_time_s": 2.9893475710005077
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.7788894447223612,
+   "f1_macro": 0.7451297923514024,
+   "fit_time_s": 2.9186304220002057
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 4,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9214607303651826,
+   "f1_macro": 0.4990424587790182,
+   "fit_time_s": 48.809508413
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9944972486243121,
+   "f1_macro": 0.5122739505714493,
+   "fit_time_s": 43.269271812000625
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 4,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.46423211605802905,
+   "f1_macro": 0.4990424587790182,
+   "fit_time_s": 42.76062003300012
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.6413206603301651,
+   "f1_macro": 0.4999642145084607,
+   "fit_time_s": 45.00953606700023
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 4,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 255,
+   "converged": true,
+   "sparsity": 0.07703851925962979,
+   "f1_macro": 0.4981204570418313,
+   "fit_time_s": 26.924217543999475
+  },
+  "new": {
+   "n_iter": 350,
+   "converged": true,
+   "sparsity": 0.1410705352676338,
+   "f1_macro": 0.4981204570418313,
+   "fit_time_s": 32.81781800299996
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 4,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9969984992496248,
+   "f1_macro": 0.6034401666330713,
+   "fit_time_s": 2.7665920769995864
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9989994997498749,
+   "f1_macro": 0.4676372221129254,
+   "fit_time_s": 2.781767182999829
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 4,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.8544272136068034,
+   "f1_macro": 0.6937728937728938,
+   "fit_time_s": 2.247221804000219
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9139569784892446,
+   "f1_macro": 0.5396296708747987,
+   "fit_time_s": 2.9396639220003635
+  }
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 4,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.7518759379689846,
+   "f1_macro": 0.7442199950378794,
+   "fit_time_s": 2.539254627000446
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.7708854427213607,
+   "f1_macro": 0.7468947956775556,
+   "fit_time_s": 2.7941904179997437
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 0,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.32166083041520765,
+   "f1_macro": 0.46659639865943786,
+   "fit_time_s": 46.27316832100041
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.5147573786893447,
+   "f1_macro": 0.46659639865943786,
+   "fit_time_s": 44.64595412400013
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 0,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 307,
+   "converged": true,
+   "sparsity": 0.03751875937968985,
+   "f1_macro": 0.46659639865943786,
+   "fit_time_s": 32.23659244100054
+  },
+  "new": {
+   "n_iter": 362,
+   "converged": true,
+   "sparsity": 0.0720360180090045,
+   "f1_macro": 0.46659639865943786,
+   "fit_time_s": 45.45758826299971
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 0,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 182,
+   "converged": true,
+   "sparsity": 0.004502251125562795,
+   "f1_macro": 0.46659639865943786,
+   "fit_time_s": 34.48529327599954
+  },
+  "new": {
+   "n_iter": 169,
+   "converged": true,
+   "sparsity": 0.007503751875937992,
+   "f1_macro": 0.46659639865943786,
+   "fit_time_s": 32.580736307000734
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 0,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9994997498749375,
+   "f1_macro": 0.4657534246575342,
+   "fit_time_s": 2.8735075969998434
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9994997498749375,
+   "f1_macro": 0.46905940594059403,
+   "fit_time_s": 2.4115771690003385
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 0,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9094547273636818,
+   "f1_macro": 0.4456670795081653,
+   "fit_time_s": 2.6640875920002145
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9684842421210605,
+   "f1_macro": 0.4199642536325162,
+   "fit_time_s": 2.895608406000065
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 0,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.7238619309654828,
+   "f1_macro": 0.6519764655702333,
+   "fit_time_s": 2.78609600999971
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.76088044022011,
+   "f1_macro": 0.6615384615384615,
+   "fit_time_s": 2.530096131999926
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 1,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.32616308154077034,
+   "f1_macro": 0.49672878220457517,
+   "fit_time_s": 43.48503999799959
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.5302651325662832,
+   "f1_macro": 0.49756002342377514,
+   "fit_time_s": 47.24127619000046
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 1,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 270,
+   "converged": true,
+   "sparsity": 0.03701850925462735,
+   "f1_macro": 0.49396355573317174,
+   "fit_time_s": 28.167094034
+  },
+  "new": {
+   "n_iter": 388,
+   "converged": true,
+   "sparsity": 0.07553776888444219,
+   "f1_macro": 0.49396355573317174,
+   "fit_time_s": 35.091217745000904
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 1,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 185,
+   "converged": true,
+   "sparsity": 0.004002001000500299,
+   "f1_macro": 0.49396355573317174,
+   "fit_time_s": 23.966609136999978
+  },
+  "new": {
+   "n_iter": 217,
+   "converged": true,
+   "sparsity": 0.00900450225112559,
+   "f1_macro": 0.49396355573317174,
+   "fit_time_s": 29.15747903600095
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 1,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9994997498749375,
+   "f1_macro": 0.46905940594059403,
+   "fit_time_s": 4.848632547000307
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9994997498749375,
+   "f1_macro": 0.46905940594059403,
+   "fit_time_s": 5.7476849390004645
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 1,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9234617308654327,
+   "f1_macro": 0.4474757489957171,
+   "fit_time_s": 5.421069594000073
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9744872436218109,
+   "f1_macro": 0.5217604065536362,
+   "fit_time_s": 4.462185925000085
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 1,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.7263631815907954,
+   "f1_macro": 0.6653938025056466,
+   "fit_time_s": 4.8238474030004
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.7478739369684843,
+   "f1_macro": 0.6406596283046855,
+   "fit_time_s": 3.035899126000004
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 2,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.30265132566283137,
+   "f1_macro": 0.45169240242000563,
+   "fit_time_s": 40.864734707000025
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.5157578789394697,
+   "f1_macro": 0.45064689250134365,
+   "fit_time_s": 41.02400272600062
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 2,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 304,
+   "converged": true,
+   "sparsity": 0.034017008504252155,
+   "f1_macro": 0.45169240242000563,
+   "fit_time_s": 31.62961522200021
+  },
+  "new": {
+   "n_iter": 358,
+   "converged": true,
+   "sparsity": 0.0690345172586293,
+   "f1_macro": 0.45169240242000563,
+   "fit_time_s": 32.70478338599969
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 2,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 113,
+   "converged": true,
+   "sparsity": 0.002501250625312701,
+   "f1_macro": 0.45169240242000563,
+   "fit_time_s": 17.646572962999926
+  },
+  "new": {
+   "n_iter": 193,
+   "converged": true,
+   "sparsity": 0.007003501750875385,
+   "f1_macro": 0.45169240242000563,
+   "fit_time_s": 21.328772081000352
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 2,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9994997498749375,
+   "f1_macro": 0.5323240841680893,
+   "fit_time_s": 2.940915885999857
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9994997498749375,
+   "f1_macro": 0.46905940594059403,
+   "fit_time_s": 2.98179798000092
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 2,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9084542271135567,
+   "f1_macro": 0.47819569743233864,
+   "fit_time_s": 2.965073666000535
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9744872436218109,
+   "f1_macro": 0.48090139696135414,
+   "fit_time_s": 3.0928549410000414
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 2,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.7258629314657329,
+   "f1_macro": 0.6789829888421438,
+   "fit_time_s": 2.8876818749995437
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.7463731865932967,
+   "f1_macro": 0.6979730880599557,
+   "fit_time_s": 2.0249827890002052
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 3,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.31465732866433216,
+   "f1_macro": 0.5142404880472333,
+   "fit_time_s": 43.8144008119998
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.5392696348174086,
+   "f1_macro": 0.5134033671632342,
+   "fit_time_s": 41.047421589000805
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 3,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 292,
+   "converged": true,
+   "sparsity": 0.03251625812906456,
+   "f1_macro": 0.5142404880472333,
+   "fit_time_s": 28.01321902499876
+  },
+  "new": {
+   "n_iter": 358,
+   "converged": true,
+   "sparsity": 0.0710355177588794,
+   "f1_macro": 0.5142404880472333,
+   "fit_time_s": 33.730017287998635
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 3,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 151,
+   "converged": true,
+   "sparsity": 0.005002501250625291,
+   "f1_macro": 0.5142404880472333,
+   "fit_time_s": 21.85793150599966
+  },
+  "new": {
+   "n_iter": 176,
+   "converged": true,
+   "sparsity": 0.007503751875937992,
+   "f1_macro": 0.5142404880472333,
+   "fit_time_s": 24.683758582001246
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 3,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9984992496248124,
+   "f1_macro": 0.4746392946205914,
+   "fit_time_s": 2.916512607000186
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9994997498749375,
+   "f1_macro": 0.46905940594059403,
+   "fit_time_s": 2.8210820150015934
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 3,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9144572286143071,
+   "f1_macro": 0.4427381589289371,
+   "fit_time_s": 3.089144508001482
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9744872436218109,
+   "f1_macro": 0.44648682046575866,
+   "fit_time_s": 2.9867301449994557
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 3,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.71935967983992,
+   "f1_macro": 0.6493486590038314,
+   "fit_time_s": 2.0914819379995606
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.7518759379689846,
+   "f1_macro": 0.6582449257547659,
+   "fit_time_s": 2.875544462000107
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 4,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.3021510755377689,
+   "f1_macro": 0.48542641237855344,
+   "fit_time_s": 40.472462105000886
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.5027513756878439,
+   "f1_macro": 0.48625057636149394,
+   "fit_time_s": 42.331279146999805
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 4,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 279,
+   "converged": true,
+   "sparsity": 0.03351675837918955,
+   "f1_macro": 0.4835032532404324,
+   "fit_time_s": 29.75060847399982
+  },
+  "new": {
+   "n_iter": 280,
+   "converged": true,
+   "sparsity": 0.0660330165082541,
+   "f1_macro": 0.4835032532404324,
+   "fit_time_s": 26.15135610300058
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 4,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 168,
+   "converged": true,
+   "sparsity": 0.004002001000500299,
+   "f1_macro": 0.4835032532404324,
+   "fit_time_s": 21.790551159001552
+  },
+  "new": {
+   "n_iter": 199,
+   "converged": true,
+   "sparsity": 0.00900450225112559,
+   "f1_macro": 0.4835032532404324,
+   "fit_time_s": 22.83646091999981
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 4,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9989994997498749,
+   "f1_macro": 0.4680719156850589,
+   "fit_time_s": 2.851870250999127
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9994997498749375,
+   "f1_macro": 0.4988607841383266,
+   "fit_time_s": 3.159276776999832
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 4,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.8959479739869936,
+   "f1_macro": 0.47373746418338103,
+   "fit_time_s": 2.8072169400002167
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9639819909954978,
+   "f1_macro": 0.472484109999293,
+   "fit_time_s": 2.946034544998838
+  }
+ },
+ {
+  "dataset": "BANK",
+  "seed": 4,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.728864432216108,
+   "f1_macro": 0.6638189067025364,
+   "fit_time_s": 3.0881647170008364
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.752376188094047,
+   "f1_macro": 0.6932776522968428,
+   "fit_time_s": 2.804499713000041
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 0,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9114557278639319,
+   "f1_macro": 0.5179692381776801,
+   "fit_time_s": 43.50231167200036
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9864932466233116,
+   "f1_macro": 0.5150239100962943,
+   "fit_time_s": 41.35285302400007
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 0,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.3726863431715858,
+   "f1_macro": 0.5241154869557826,
+   "fit_time_s": 43.35523281499991
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.5757878939469735,
+   "f1_macro": 0.5231603863231915,
+   "fit_time_s": 41.822369007000816
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 0,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 222,
+   "converged": true,
+   "sparsity": 0.043021510755377634,
+   "f1_macro": 0.5250703445730892,
+   "fit_time_s": 26.9830124300006
+  },
+  "new": {
+   "n_iter": 327,
+   "converged": true,
+   "sparsity": 0.08554277138569288,
+   "f1_macro": 0.5250703445730892,
+   "fit_time_s": 36.50020015100017
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 0,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9969984992496248,
+   "f1_macro": 0.4420797377297912,
+   "fit_time_s": 5.483825111999977
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9984992496248124,
+   "f1_macro": 0.44247616001959594,
+   "fit_time_s": 5.437240569999631
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 0,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.8029014507253627,
+   "f1_macro": 0.658575407879029,
+   "fit_time_s": 5.044580884999959
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.8594297148574287,
+   "f1_macro": 0.5737127371273713,
+   "fit_time_s": 5.396992686999511
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 0,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.727863931965983,
+   "f1_macro": 0.671039025920461,
+   "fit_time_s": 5.257183428000644
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.7508754377188595,
+   "f1_macro": 0.6716387072537948,
+   "fit_time_s": 5.057373659001314
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 1,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9129564782391195,
+   "f1_macro": 0.5586655962893586,
+   "fit_time_s": 46.42723803100125
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.991495747873937,
+   "f1_macro": 0.5702750038408357,
+   "fit_time_s": 42.492790584999966
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 1,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.38019009504752377,
+   "f1_macro": 0.5631104388012769,
+   "fit_time_s": 42.94418158100052
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.5737868934467234,
+   "f1_macro": 0.5640575201262332,
+   "fit_time_s": 42.883711684000446
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 1,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 292,
+   "converged": true,
+   "sparsity": 0.04402201100550274,
+   "f1_macro": 0.5631104388012769,
+   "fit_time_s": 31.01291295900046
+  },
+  "new": {
+   "n_iter": 354,
+   "converged": true,
+   "sparsity": 0.09254627313656827,
+   "f1_macro": 0.5631104388012769,
+   "fit_time_s": 33.357719839999845
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 1,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9974987493746873,
+   "f1_macro": 0.43774574049803405,
+   "fit_time_s": 2.335609239000405
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9994997498749375,
+   "f1_macro": 0.43774574049803405,
+   "fit_time_s": 2.925381819000904
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 1,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.8184092046023012,
+   "f1_macro": 0.6384860200920599,
+   "fit_time_s": 2.982462760999624
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.8679339669834918,
+   "f1_macro": 0.6003726129483,
+   "fit_time_s": 2.958455469999535
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 1,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.7348674337168584,
+   "f1_macro": 0.6489144047515716,
+   "fit_time_s": 2.8005919479983277
+  },
+  "new": {
+   "n_iter": 410,
+   "converged": true,
+   "sparsity": 0.7473736868434218,
+   "f1_macro": 0.6221488808123349,
+   "fit_time_s": 2.4305847300001915
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 2,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9154577288644322,
+   "f1_macro": 0.48220114239086087,
+   "fit_time_s": 40.79071118600041
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9769884942471235,
+   "f1_macro": 0.4793181152685653,
+   "fit_time_s": 43.42108836599982
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 2,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 420,
+   "converged": true,
+   "sparsity": 0.37768884442221107,
+   "f1_macro": 0.48689179106602803,
+   "fit_time_s": 38.98347005799951
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.5722861430715358,
+   "f1_macro": 0.48689179106602803,
+   "fit_time_s": 42.424899363000804
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 2,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 269,
+   "converged": true,
+   "sparsity": 0.04902451225612803,
+   "f1_macro": 0.4859387341231721,
+   "fit_time_s": 29.28474450900103
+  },
+  "new": {
+   "n_iter": 328,
+   "converged": true,
+   "sparsity": 0.09554777388694347,
+   "f1_macro": 0.4859387341231721,
+   "fit_time_s": 31.22401036699921
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 2,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9969984992496248,
+   "f1_macro": 0.43774574049803405,
+   "fit_time_s": 2.8434997229996952
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9989994997498749,
+   "f1_macro": 0.43774574049803405,
+   "fit_time_s": 2.0848593190003157
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 2,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.8199099549774888,
+   "f1_macro": 0.6129323308270677,
+   "fit_time_s": 2.7307595580005
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.8599299649824912,
+   "f1_macro": 0.6025937934228809,
+   "fit_time_s": 3.1880461549990287
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 2,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 465,
+   "converged": true,
+   "sparsity": 0.7323661830915458,
+   "f1_macro": 0.6150060686306962,
+   "fit_time_s": 2.627705155999138
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.7493746873436719,
+   "f1_macro": 0.6182424916573971,
+   "fit_time_s": 3.378546460000507
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 3,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9084542271135567,
+   "f1_macro": 0.5075435590952089,
+   "fit_time_s": 40.80738225400091
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9769884942471235,
+   "f1_macro": 0.5072042076537782,
+   "fit_time_s": 42.04495051599952
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 3,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 472,
+   "converged": true,
+   "sparsity": 0.3546773386693347,
+   "f1_macro": 0.5066101301115242,
+   "fit_time_s": 41.818339221001224
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.5572786393196598,
+   "f1_macro": 0.5066101301115242,
+   "fit_time_s": 40.46594985499905
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 3,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 219,
+   "converged": true,
+   "sparsity": 0.04102051025512754,
+   "f1_macro": 0.5091019981412639,
+   "fit_time_s": 24.480210363999504
+  },
+  "new": {
+   "n_iter": 306,
+   "converged": true,
+   "sparsity": 0.0735367683841921,
+   "f1_macro": 0.5091019981412639,
+   "fit_time_s": 30.499950891999106
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 3,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9964982491245623,
+   "f1_macro": 0.43774574049803405,
+   "fit_time_s": 2.6972421560003568
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9989994997498749,
+   "f1_macro": 0.43774574049803405,
+   "fit_time_s": 2.4441255150013603
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 3,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.807903951975988,
+   "f1_macro": 0.6186598089111429,
+   "fit_time_s": 2.502407474999927
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.8539269634817409,
+   "f1_macro": 0.5909139765683781,
+   "fit_time_s": 2.419578236000234
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 3,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.7238619309654828,
+   "f1_macro": 0.6371272326697616,
+   "fit_time_s": 2.8980198610006482
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.7383691845922962,
+   "f1_macro": 0.636147655833447,
+   "fit_time_s": 3.0073523510000086
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 4,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9084542271135567,
+   "f1_macro": 0.5281017294701014,
+   "fit_time_s": 42.84386026299944
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9934967483741871,
+   "f1_macro": 0.5352175795920769,
+   "fit_time_s": 41.758464024000205
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 4,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 497,
+   "converged": true,
+   "sparsity": 0.3591795897948975,
+   "f1_macro": 0.5298412620383637,
+   "fit_time_s": 41.62586602800002
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.5432716358179089,
+   "f1_macro": 0.5298412620383637,
+   "fit_time_s": 43.604990801000895
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 4,
+  "model": "ADMM-Nesterov",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 255,
+   "converged": true,
+   "sparsity": 0.03601800900450225,
+   "f1_macro": 0.530794826538584,
+   "fit_time_s": 25.830805743000383
+  },
+  "new": {
+   "n_iter": 286,
+   "converged": true,
+   "sparsity": 0.08104052026013009,
+   "f1_macro": 0.530794826538584,
+   "fit_time_s": 29.011333421000018
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 4,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 1.0,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9979989994997499,
+   "f1_macro": 0.43774574049803405,
+   "fit_time_s": 2.7513519570002245
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.9989994997498749,
+   "f1_macro": 0.43774574049803405,
+   "fit_time_s": 3.927252420999139
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 4,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.1,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.8004002001000501,
+   "f1_macro": 0.6010989010989011,
+   "fit_time_s": 3.0376240229998075
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.8554277138569284,
+   "f1_macro": 0.5613904637977507,
+   "fit_time_s": 2.720725835999474
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 4,
+  "model": "ADMM-Nystrom",
+  "lambda_nominal": 0.01,
+  "old": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.7223611805902952,
+   "f1_macro": 0.6203022875816994,
+   "fit_time_s": 2.403440921998481
+  },
+  "new": {
+   "n_iter": 500,
+   "converged": false,
+   "sparsity": 0.7443721860930466,
+   "f1_macro": 0.6119572829131653,
+   "fit_time_s": 2.765819897000256
+  }
+ }
+]
