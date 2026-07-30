@@ -14,23 +14,28 @@ Primal LSSVM (Eq. 8):
     min_{w,ε}  ½ wᵀw + 1/(2τ) Σ εᵢ²   s.t. yᵢ = wᵀφ(xᵢ) + εᵢ
 
 After representer theorem (Eq. 13–16), reduce to Elastic Net:
-    min_α  ½‖Aα - b‖₂² + λ₁/2‖α‖₁ + λ₂/2‖α‖₂²
+    min_α  ½‖Aα - b‖₂² + λ₁‖α‖₁ + λ₂/2‖α‖₂²
+NOTE: the paper's Eq. (16) writes ‖Aα-u‖₂² without the ½, which would
+imply a factor 2 in the α-step; its Eq. (20) does NOT carry that factor,
+so Eq. (20)/Algorithm 3 — implemented here — correspond to the ½ form
+above with an un-halved λ₁, consistent with the S_{λ/ρ} of Eq. (20).
 where:
     K̃  = K + σ_tik·I = LLᵀ   (Cholesky; L lower-triangular)
     A  = Lᵀ                    (upper-triangular, n×n)
-    b  = (τI + K̃)⁻¹ Lᵀ y     (n-vector)
+    b  = (τI + K̃)⁻¹ Lᵀ y     (n-vector; the vector u of the paper's Eq. 15 —
+                               note the LS target is this u, NOT y)
 
 Setting λ₂=0 recovers the original LASSO formulation.
 
 Fast ADMM with FISTA momentum (Algorithm 2+3):
     α^{k+1} = (K̃ + ρI)⁻¹ (r + ρ(ẑ^k - û^k))   where r = Aᵀb
-    z^{k+1} = S_{λ₁/(2ρ)}(α^{k+1} + û^k) / (1 + λ₂/ρ)   Elastic Net prox
+    z^{k+1} = S_{λ₁/ρ}(α^{k+1} + û^k) / (1 + λ₂/ρ)     Elastic Net prox
     u^{k+1} = û^k + α^{k+1} - z^{k+1}
     t^{k+1} = (1 + √(1 + 4t_k²)) / 2              FISTA momentum
     ẑ^{k+1} = z^{k+1} + ((t_k-1)/t_{k+1})(z^{k+1} - z^k)
     û^{k+1} = u^{k+1} + ((t_k-1)/t_{k+1})(u^{k+1} - u^k)
 
-When λ₂=0 the z-step reduces to S_{λ₁/(2ρ)}, matching the original paper.
+When λ₂=0 the z-step reduces to S_{λ₁/ρ}, matching Eq. (20) of the paper.
 
 Adaptive restart (Fast_ADMM_restart variant):
     c_k = (1/η)(‖u^{k+1} - û^k‖² + η²‖z^{k+1} - ẑ^k‖²)
