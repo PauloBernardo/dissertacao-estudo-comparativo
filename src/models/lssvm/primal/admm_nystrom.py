@@ -82,6 +82,11 @@ class ADMMNystromLSSVM(BaseEstimator, ClassifierMixin):
         Fraction of training samples used as landmarks (m = round(m_ratio·N)).
     rho : float or None
         ADMM augmented-Lagrangian step.  None = auto (1/max_eig(CᵀC/τ)).
+    lambda2_ : float
+        Elastic Net ℓ2 weight.  0.0 = pure LASSO (default, reproduces the
+        original formulation).  λ₂ > 0 injects strong convexity to stabilise
+        the Nesterov acceleration; it does NOT change the support, only shrinks
+        the surviving coefficients.
     tol : float
         Convergence tolerance on primal and dual residuals.
     max_iter : int
@@ -114,6 +119,7 @@ class ADMMNystromLSSVM(BaseEstimator, ClassifierMixin):
         sigma: float = 1.0,
         tau: float = 1.0,
         lambda_: float = 0.01,
+        lambda2_: float = 0.0,
         m_ratio: float = 0.10,
         rho: float | None = None,
         tol: float = 1e-6,
@@ -131,6 +137,7 @@ class ADMMNystromLSSVM(BaseEstimator, ClassifierMixin):
         self.sigma = sigma
         self.tau = tau
         self.lambda_ = lambda_
+        self.lambda2_ = lambda2_
         self.m_ratio = m_ratio
         self.rho = rho
         self.tol = tol
@@ -238,10 +245,21 @@ class ADMMNystromLSSVM(BaseEstimator, ClassifierMixin):
         M = CtC_tau + rho * np.eye(m)
         L_M = np.linalg.cholesky(M + 1e-10 * np.eye(m))
 
-        # threshold = λ/ρ — convenção do paper-fonte (Marinho et al., IWANN 2025:
-        # Eq. 16 usa λ‖α‖₁ sem ½; Eq. 20/Alg. 2 usam S_{λ/ρ}). Ver nota em
-        # admm_nesterov.py sobre a antiga convenção λ/(2ρ).
-        threshold = self.lambda_ / rho
+        # threshold = λ/(2ρ) — convenção da IMPLEMENTAÇÃO DE REFERÊNCIA do autor
+        # (Pesquisa_Tese/ADMM.py: `Sthresh(x, gamma)` encolhe por gamma/2.0 e é
+        # chamada com gamma = λ/ρ, logo o encolhimento efetivo é λ/(2ρ)).
+        # O artigo escreve S_{λ/ρ}, mas com a SUA definição de S, que embute o ½.
+        # É também a convenção sob a qual toda a grade de hiperparâmetros deste
+        # trabalho foi selecionada; trocá-la dobraria o encolhimento efetivo de
+        # cada λ já escolhido. Ver admm_nesterov.py para a mesma nota.
+        threshold = self.lambda_ / (2.0 * rho)
+
+        # Elastic Net: prox de λ₁‖z‖₁ + (λ₂/2)‖z‖² é S_{λ₁/ρ}(v)/(1 + λ₂/ρ).
+        # O encolhimento não altera o suporte (zero dividido segue zero); o termo
+        # ℓ2 injeta convexidade forte, satisfazendo a condição de Goldstein para
+        # a aceleração. Mesma convenção de ADMMNesterovLSSVM, para comparabilidade.
+        elastic_scale = (1.0 / (1.0 + self.lambda2_ / rho)
+                         if self.lambda2_ > 0.0 else 1.0)
 
         # ── Step 5: ADMM-Nesterov loop ────────────────────────────────────────
         theta = np.zeros(m)
@@ -263,7 +281,7 @@ class ADMMNystromLSSVM(BaseEstimator, ClassifierMixin):
 
             # z-update: soft-threshold
             z_prev = z.copy()
-            z_new  = self._soft_threshold(theta_new + u_hat, threshold)
+            z_new  = self._soft_threshold(theta_new + u_hat, threshold) * elastic_scale
 
             # u-update
             u_prev = u.copy()

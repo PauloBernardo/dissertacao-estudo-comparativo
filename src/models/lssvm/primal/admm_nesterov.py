@@ -182,13 +182,21 @@ class ADMMNesterovLSSVM(BaseLSSVM):
             if self.lambda_ratio is not None:
                 lam *= self.lambda_ratio
 
-        # Soft-threshold: threshold = λ₁/ρ.
-        # Convenção do paper-fonte (Marinho et al., IWANN 2025): a Eq. (16) define
-        # o objetivo com λ‖α‖₁ (sem ½) e a Eq. (20)/Algoritmo 2 usam S_{λ/ρ}.
-        # (Versões anteriores usavam λ/(2ρ), atribuindo a Marinho uma convenção λ/2
-        #  que o artigo NÃO adota; era apenas uma reparametrização de λ, mas tornava
-        #  o λ incomparável com a família FISTA, que já usa λ/L.)
-        threshold = lam / rho
+        # Soft-threshold: threshold = λ₁/(2ρ).
+        # Convenção da IMPLEMENTAÇÃO DE REFERÊNCIA do autor (Pesquisa_Tese/ADMM.py):
+        #     def Sthresh(x, gamma): return sign(x)*maximum(0, |x| - gamma/2.0)
+        #     ...  zhat = Sthresh(xhat + u, l/rho)
+        # ou seja, o encolhimento efetivo é λ/(2ρ).  O artigo escreve S_{λ/ρ}
+        # (Eq. 20/22), mas com a SUA definição de S, que já embute o fator ½.
+        #
+        # HISTÓRICO: em 15/07/2026 isto foi trocado para λ/ρ, sob a leitura de que
+        # o artigo adotava a convenção padrão de soft-threshold.  A consulta ao
+        # código de referência mostrou que não.  Revertido — e a reversão importa
+        # na prática: TODA a grade de hiperparâmetros deste trabalho foi
+        # selecionada sob λ/(2ρ), de modo que aplicar λ/ρ dobraria o encolhimento
+        # efetivo de cada λ já escolhido (observado: esparsidade do CREDIT em
+        # N=5000 subindo de 0,918 para 0,985, e do HIGGS50K de 0,989 para 1,000).
+        threshold = lam / (2.0 * rho)
 
         # Elastic Net scaling for z-step: 1/(1 + λ₂/ρ)
         elastic_scale = 1.0 / (1.0 + self.lambda2_ / rho) if self.lambda2_ > 0.0 else 1.0

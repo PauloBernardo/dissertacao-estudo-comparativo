@@ -81,12 +81,24 @@ MODEL_LABELS: dict[str, str] = {
 }
 
 
-def load_json(path: Path) -> pd.DataFrame:
-    raw = json.loads(path.read_text())
-    df = pd.DataFrame(raw)
-    df = df[df["status"] == "ok"].copy()
-    df["model"] = df["variant"].fillna(df.get("model", pd.Series(dtype=str)))
-    return df
+def load_json(*paths: Path) -> pd.DataFrame:
+    """Carrega e concatena uma ou mais execuções.
+
+    A Ablação A foi executada em dois lotes (LSSVMs e Transformers, em arquivos
+    separados); passar ambos é o que reproduz a tabela publicada.
+    """
+    frames = []
+    for path in paths:
+        df = pd.DataFrame(json.loads(path.read_text()))
+        df = df[df["status"] == "ok"].copy()
+        df["model"] = df["variant"].fillna(df.get("model", pd.Series(dtype=str)))
+        frames.append(df)
+    return pd.concat(frames, ignore_index=True)
+
+
+def n_seeds(df: pd.DataFrame) -> int:
+    """Número de sementes distintas, para a legenda não desencontrar dos dados."""
+    return int(df["seed"].nunique())
 
 
 def mean_f1(df: pd.DataFrame, model: str, dataset: str) -> float | None:
@@ -104,8 +116,8 @@ def fmt(v: float | None, bold: bool = False) -> str:
 def fmt_delta(delta: float | None) -> str:
     if delta is None:
         return "---"
-    sign = "+" if delta >= 0 else ""
-    return f"{sign}{delta:+.3f}"
+    # O especificador ':+' já emite o sinal; prefixar outro produzia '++0.004'.
+    return f"{delta:+.3f}"
 
 
 # ── Ablação A: Escalabilidade ──────────────────────────────────────────────────
@@ -143,7 +155,8 @@ def table_ablation_a(tier1: pd.DataFrame, abl: pd.DataFrame) -> str:
     lines = [
         r"\begin{table}[ht]",
         r"  \centering",
-        r"  \caption{Ablação A — Escalabilidade amostral: F1-macro médio (20 sementes) em N=400 vs N=2000.}",
+        rf"  \caption{{Ablação A — Escalabilidade amostral: F1-macro médio "
+        rf"({n_seeds(abl)} sementes) em N=400 vs N=2000.}}",
         r"  \label{tab:ablation_a}",
         r"  \footnotesize",
         rf"  \begin{{tabular}}{{{col_spec}}}",
@@ -193,7 +206,8 @@ def table_ablation_b(tier1: pd.DataFrame, abl: pd.DataFrame) -> str:
     lines = [
         r"\begin{table}[ht]",
         r"  \centering",
-        r"  \caption{Ablação B — Robustez ao ruído: F1-macro médio (20 sementes) com 2 vs 5 features.}",
+        rf"  \caption{{Ablação B — Robustez ao ruído: F1-macro médio "
+        rf"({n_seeds(abl)} sementes) com 2 vs 5 features.}}",
         r"  \label{tab:ablation_b}",
         r"  \footnotesize",
         rf"  \begin{{tabular}}{{{col_spec}}}",
@@ -234,7 +248,8 @@ def table_ablation_c(abl: pd.DataFrame) -> str:
     lines = [
         r"\begin{table}[ht]",
         r"  \centering",
-        r"  \caption{Ablação C — Síntético multifeature (MK5): F1-macro médio (20 sementes).}",
+        rf"  \caption{{Ablação C — Síntético multifeature (MK5): F1-macro médio "
+        rf"({n_seeds(abl)} sementes).}}",
         r"  \label{tab:ablation_c}",
         r"  \footnotesize",
         rf"  \begin{{tabular}}{{{col_spec}}}",
@@ -253,9 +268,10 @@ def table_ablation_c(abl: pd.DataFrame) -> str:
 def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--tier1", default="results/tier1_gridcv.json")
-    p.add_argument("--abl-a", default="results/ablation_a_scaling.json")
-    p.add_argument("--abl-b", default="results/ablation_b_noise.json")
-    p.add_argument("--abl-c", default="results/ablation_c_mk5.json")
+    p.add_argument("--abl-a", nargs="+", default=["results/ablation_a_scaling.json",
+                                              "results/ablation_a_transformers.json"])
+    p.add_argument("--abl-b", nargs="+", default=["results/ablation_b_noise.json"])
+    p.add_argument("--abl-c", nargs="+", default=["results/ablation_c_mk5.json"])
     args = p.parse_args()
 
     TABLES_DIR.mkdir(parents=True, exist_ok=True)
@@ -268,13 +284,15 @@ def main() -> None:
         ("B", "abl_b", lambda t, a: table_ablation_b(t, a), "ablation_b.tex"),
         ("C", "abl_c", lambda t, a: table_ablation_c(a),    "ablation_c.tex"),
     ]:
-        path = Path(getattr(args, path_attr.replace("-", "_")))
-        if not path.exists():
-            print(f"Ablação {abl_key}: {path} not found — skipping")
+        paths = [Path(x) for x in getattr(args, path_attr.replace("-", "_"))]
+        faltando = [x for x in paths if not x.exists()]
+        if faltando:
+            print(f"Ablação {abl_key}: {faltando} not found — skipping")
             continue
-        abl = load_json(path)
+        abl = load_json(*paths)
         ok  = len(abl)
-        print(f"Ablação {abl_key}: {ok} runs, {abl['dataset'].nunique()} datasets")
+        print(f"Ablação {abl_key}: {ok} runs, {abl['dataset'].nunique()} datasets, "
+              f"{n_seeds(abl)} sementes")
         tex = table_fn(tier1, abl)
         out = TABLES_DIR / out_name
         out.write_text(tex)

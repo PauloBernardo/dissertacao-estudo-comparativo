@@ -1,0 +1,506 @@
+[
+  {
+    "dataset": "ADULT",
+    "seed": 0,
+    "n_train": 1999,
+    "lambda": 0.01,
+    "rho": 0.002965661891604444,
+    "lambda_max": 337.1928549343138,
+    "threshold": 1.685964274671569,
+    "modal": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 50.0
+    }
+  },
+  {
+    "dataset": "ADULT",
+    "seed": 1,
+    "n_train": 1999,
+    "lambda": 0.01,
+    "rho": 0.0035869812059746826,
+    "lambda_max": 278.78596027610695,
+    "threshold": 1.3939298013805348,
+    "modal": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 50.0
+    }
+  },
+  {
+    "dataset": "ADULT",
+    "seed": 2,
+    "n_train": 1999,
+    "lambda": 0.01,
+    "rho": 0.003068968659900296,
+    "lambda_max": 325.8423629625751,
+    "threshold": 1.6292118148128756,
+    "modal": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 50.0
+    }
+  },
+  {
+    "dataset": "ADULT",
+    "seed": 0,
+    "n_train": 5000,
+    "lambda": 0.01,
+    "rho": 0.0005078532283129231,
+    "lambda_max": 1969.0728428014081,
+    "threshold": 9.84536421400704,
+    "modal": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 50.0
+    }
+  },
+  {
+    "dataset": "ADULT",
+    "seed": 1,
+    "n_train": 5000,
+    "lambda": 0.01,
+    "rho": 0.0005057841659760112,
+    "lambda_max": 1977.1279278193715,
+    "threshold": 9.885639639096858,
+    "modal": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 50.0
+    }
+  },
+  {
+    "dataset": "ADULT",
+    "seed": 2,
+    "n_train": 5000,
+    "lambda": 0.01,
+    "rho": 0.0005652867418946525,
+    "lambda_max": 1769.013716204158,
+    "threshold": 8.84506858102079,
+    "modal": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 50.0
+    }
+  },
+  {
+    "dataset": "BANK",
+    "seed": 0,
+    "n_train": 1999,
+    "lambda": 0.01,
+    "rho": 5.349758719354679e-05,
+    "lambda_max": 18692.431798505975,
+    "threshold": 93.46215899252988,
+    "modal": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 0.5
+    }
+  },
+  {
+    "dataset": "BANK",
+    "seed": 1,
+    "n_train": 1999,
+    "lambda": 0.01,
+    "rho": 5.6859573757064895e-05,
+    "lambda_max": 17587.187766699506,
+    "threshold": 87.93593883349753,
+    "modal": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 0.5
+    }
+  },
+  {
+    "dataset": "BANK",
+    "seed": 2,
+    "n_train": 1999,
+    "lambda": 0.01,
+    "rho": 5.694542663421435e-05,
+    "lambda_max": 17560.672719574868,
+    "threshold": 87.80336359787434,
+    "modal": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 0.5
+    }
+  },
+  {
+    "dataset": "BANK",
+    "seed": 0,
+    "n_train": 5000,
+    "lambda": 0.01,
+    "rho": 9.062449730028421e-06,
+    "lambda_max": 110345.43967581974,
+    "threshold": 551.7271983790987,
+    "modal": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 0.5
+    }
+  },
+  {
+    "dataset": "BANK",
+    "seed": 1,
+    "n_train": 5000,
+    "lambda": 0.01,
+    "rho": 9.165272306700029e-06,
+    "lambda_max": 109107.50565141164,
+    "threshold": 545.5375282570582,
+    "modal": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 0.5
+    }
+  },
+  {
+    "dataset": "BANK",
+    "seed": 2,
+    "n_train": 5000,
+    "lambda": 0.01,
+    "rho": 9.071228661699837e-06,
+    "lambda_max": 110238.6498338597,
+    "threshold": 551.1932491692985,
+    "modal": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 0.5
+    }
+  },
+  {
+    "dataset": "CREDIT",
+    "seed": 0,
+    "n_train": 1999,
+    "lambda": 0.1,
+    "rho": 0.0005703483703523728,
+    "lambda_max": 1753.314381142493,
+    "threshold": 87.66571905712466,
+    "modal": {
+      "lambda_": 0.1,
+      "sigma": 2.0,
+      "tau": 5.0
+    }
+  },
+  {
+    "dataset": "CREDIT",
+    "seed": 1,
+    "n_train": 1999,
+    "lambda": 0.1,
+    "rho": 0.0005305773784912397,
+    "lambda_max": 1884.7392303901454,
+    "threshold": 94.23696151950728,
+    "modal": {
+      "lambda_": 0.1,
+      "sigma": 2.0,
+      "tau": 5.0
+    }
+  },
+  {
+    "dataset": "CREDIT",
+    "seed": 2,
+    "n_train": 1999,
+    "lambda": 0.1,
+    "rho": 0.0004901708516440595,
+    "lambda_max": 2040.1049892011042,
+    "threshold": 102.00524946005521,
+    "modal": {
+      "lambda_": 0.1,
+      "sigma": 2.0,
+      "tau": 5.0
+    }
+  },
+  {
+    "dataset": "CREDIT",
+    "seed": 0,
+    "n_train": 5000,
+    "lambda": 0.1,
+    "rho": 9.102049515179465e-05,
+    "lambda_max": 10986.536585329519,
+    "threshold": 549.3268292664759,
+    "modal": {
+      "lambda_": 0.1,
+      "sigma": 2.0,
+      "tau": 5.0
+    }
+  },
+  {
+    "dataset": "CREDIT",
+    "seed": 1,
+    "n_train": 5000,
+    "lambda": 0.1,
+    "rho": 8.202382187527974e-05,
+    "lambda_max": 12191.580167046312,
+    "threshold": 609.5790083523157,
+    "modal": {
+      "lambda_": 0.1,
+      "sigma": 2.0,
+      "tau": 5.0
+    }
+  },
+  {
+    "dataset": "CREDIT",
+    "seed": 2,
+    "n_train": 5000,
+    "lambda": 0.1,
+    "rho": 8.424699615613132e-05,
+    "lambda_max": 11869.859408954395,
+    "threshold": 593.4929704477197,
+    "modal": {
+      "lambda_": 0.1,
+      "sigma": 2.0,
+      "tau": 5.0
+    }
+  },
+  {
+    "dataset": "HIGGS50K",
+    "seed": 0,
+    "n_train": 1999,
+    "lambda": 1.0,
+    "rho": 0.0030737709229323247,
+    "lambda_max": 325.33328770187507,
+    "threshold": 162.66664385093753,
+    "modal": {
+      "lambda_": 1.0,
+      "sigma": 2.0,
+      "tau": 0.5
+    }
+  },
+  {
+    "dataset": "HIGGS50K",
+    "seed": 1,
+    "n_train": 1999,
+    "lambda": 1.0,
+    "rho": 0.003277908594021292,
+    "lambda_max": 305.07257030410784,
+    "threshold": 152.53628515205392,
+    "modal": {
+      "lambda_": 1.0,
+      "sigma": 2.0,
+      "tau": 0.5
+    }
+  },
+  {
+    "dataset": "HIGGS50K",
+    "seed": 2,
+    "n_train": 1999,
+    "lambda": 1.0,
+    "rho": 0.0031679092978790712,
+    "lambda_max": 315.66560339006685,
+    "threshold": 157.83280169503342,
+    "modal": {
+      "lambda_": 1.0,
+      "sigma": 2.0,
+      "tau": 0.5
+    }
+  },
+  {
+    "dataset": "HIGGS50K",
+    "seed": 0,
+    "n_train": 5000,
+    "lambda": 1.0,
+    "rho": 0.0005087863285841963,
+    "lambda_max": 1965.461616829815,
+    "threshold": 982.7308084149075,
+    "modal": {
+      "lambda_": 1.0,
+      "sigma": 2.0,
+      "tau": 0.5
+    }
+  },
+  {
+    "dataset": "HIGGS50K",
+    "seed": 1,
+    "n_train": 5000,
+    "lambda": 1.0,
+    "rho": 0.0005315112519016595,
+    "lambda_max": 1881.4277146949667,
+    "threshold": 940.7138573474833,
+    "modal": {
+      "lambda_": 1.0,
+      "sigma": 2.0,
+      "tau": 0.5
+    }
+  },
+  {
+    "dataset": "HIGGS50K",
+    "seed": 2,
+    "n_train": 5000,
+    "lambda": 1.0,
+    "rho": 0.0005370812316285804,
+    "lambda_max": 1861.9157421824639,
+    "threshold": 930.9578710912319,
+    "modal": {
+      "lambda_": 1.0,
+      "sigma": 2.0,
+      "tau": 0.5
+    }
+  },
+  {
+    "dataset": "SHOPPERS",
+    "seed": 0,
+    "n_train": 1999,
+    "lambda": 0.01,
+    "rho": 0.0003665448274416323,
+    "lambda_max": 2728.17927067662,
+    "threshold": 13.6408963533831,
+    "modal": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 5.0
+    }
+  },
+  {
+    "dataset": "SHOPPERS",
+    "seed": 1,
+    "n_train": 1999,
+    "lambda": 0.01,
+    "rho": 0.00036553802938116194,
+    "lambda_max": 2735.69346995975,
+    "threshold": 13.678467349798751,
+    "modal": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 5.0
+    }
+  },
+  {
+    "dataset": "SHOPPERS",
+    "seed": 2,
+    "n_train": 1999,
+    "lambda": 0.01,
+    "rho": 0.00033091117879882923,
+    "lambda_max": 3021.9589547560427,
+    "threshold": 15.109794773780214,
+    "modal": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 5.0
+    }
+  },
+  {
+    "dataset": "SHOPPERS",
+    "seed": 0,
+    "n_train": 5000,
+    "lambda": 0.01,
+    "rho": 5.7445706176374676e-05,
+    "lambda_max": 17407.741440756516,
+    "threshold": 87.03870720378258,
+    "modal": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 5.0
+    }
+  },
+  {
+    "dataset": "SHOPPERS",
+    "seed": 1,
+    "n_train": 5000,
+    "lambda": 0.01,
+    "rho": 5.5520292713096244e-05,
+    "lambda_max": 18011.432417468466,
+    "threshold": 90.05716208734233,
+    "modal": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 5.0
+    }
+  },
+  {
+    "dataset": "SHOPPERS",
+    "seed": 2,
+    "n_train": 5000,
+    "lambda": 0.01,
+    "rho": 5.889520154633488e-05,
+    "lambda_max": 16979.311959961044,
+    "threshold": 84.89655979980522,
+    "modal": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 5.0
+    }
+  },
+  {
+    "dataset": "TELCO",
+    "seed": 0,
+    "n_train": 1999,
+    "lambda": 0.1,
+    "rho": 0.001920005325106513,
+    "lambda_max": 520.8318888097483,
+    "threshold": 26.04159444048742,
+    "modal": {
+      "lambda_": 0.1,
+      "sigma": 2.0,
+      "tau": 5.0
+    }
+  },
+  {
+    "dataset": "TELCO",
+    "seed": 1,
+    "n_train": 1999,
+    "lambda": 0.1,
+    "rho": 0.0020443899279586233,
+    "lambda_max": 489.143478122359,
+    "threshold": 24.45717390611795,
+    "modal": {
+      "lambda_": 0.1,
+      "sigma": 2.0,
+      "tau": 5.0
+    }
+  },
+  {
+    "dataset": "TELCO",
+    "seed": 2,
+    "n_train": 1999,
+    "lambda": 0.1,
+    "rho": 0.002415358584995718,
+    "lambda_max": 414.01720068069017,
+    "threshold": 20.70086003403451,
+    "modal": {
+      "lambda_": 0.1,
+      "sigma": 2.0,
+      "tau": 5.0
+    }
+  },
+  {
+    "dataset": "TELCO",
+    "seed": 0,
+    "n_train": 4922,
+    "lambda": 0.1,
+    "rho": 0.00034395232507261327,
+    "lambda_max": 2907.3796776599365,
+    "threshold": 145.36898388299682,
+    "modal": {
+      "lambda_": 0.1,
+      "sigma": 2.0,
+      "tau": 5.0
+    }
+  },
+  {
+    "dataset": "TELCO",
+    "seed": 1,
+    "n_train": 4922,
+    "lambda": 0.1,
+    "rho": 0.00033719755928510425,
+    "lambda_max": 2965.62051670869,
+    "threshold": 148.28102583543452,
+    "modal": {
+      "lambda_": 0.1,
+      "sigma": 2.0,
+      "tau": 5.0
+    }
+  },
+  {
+    "dataset": "TELCO",
+    "seed": 2,
+    "n_train": 4922,
+    "lambda": 0.1,
+    "rho": 0.0003662775956119536,
+    "lambda_max": 2730.1697182140306,
+    "threshold": 136.50848591070152,
+    "modal": {
+      "lambda_": 0.1,
+      "sigma": 2.0,
+      "tau": 5.0
+    }
+  }
+]

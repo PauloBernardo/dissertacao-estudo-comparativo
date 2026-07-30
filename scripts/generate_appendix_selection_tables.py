@@ -74,8 +74,11 @@ def regimes_table():
         r"  \caption{Nyström-SVM sob quatro seletores de \emph{landmarks} (amostragem aleatória "
         r"\texttt{random}; norma de coluna \texttt{colnorm} = Drineas--Mahoney; \texttt{kmeans}; e "
         r"\texttt{opposite}), agregados sobre os \emph{datasets} e 30 sementes de cada regime. "
-        r"$p$ = Friedman entre os quatro; nenhuma diferença de desempenho é significativa "
-        r"($\alpha=0{,}05$) em nenhum regime.}",
+        r"$p$ = Friedman entre os quatro. Dos seis testes de desempenho (duas métricas $\times$ "
+        r"três regimes), cinco não rejeitam a igualdade; o único com $p<0{,}05$ --- a acurácia "
+        r"da Ablação~D --- não sobrevive à correção para múltiplas comparações "
+        r"($\alpha/6 = 0{,}0083$) e corresponde a uma amplitude de $0{,}055$ ponto percentual "
+        r"entre o melhor e o pior seletor.}",
         r"  \label{tab:app_selection_regimes}",
         r"  \begin{tabular}{llrrrrr}", r"    \toprule",
         r"    Regime & Métrica & \texttt{random} & \texttt{colnorm} & \texttt{kmeans} & "
