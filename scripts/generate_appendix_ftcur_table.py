@@ -55,7 +55,7 @@ def main():
     S = load()
     lines = [
         r"\begin{table}[ht]", r"  \centering",
-        r"  \caption{FT-CUR sob os quatro seletores de \emph{landmarks} --- Tier~1, "
+        r"  \caption[FT-CUR sob os quatro seletores de \emph{landmarks} --- Tier~1]{FT-CUR sob os quatro seletores de \emph{landmarks} --- Tier~1, "
         r"30 sementes, agregado por grupo. $p$ = Friedman entre os seletores disponíveis. "
         r"Nenhuma diferença de desempenho é significativa. Custo relativo de seleção "
         r"(\emph{wall-time} do \textit{GridCV}): \texttt{random}/\texttt{colnorm} $\approx$ base, "

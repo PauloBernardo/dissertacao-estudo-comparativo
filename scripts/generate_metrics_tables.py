@@ -90,7 +90,7 @@ def build(tier: int) -> str:
     return "\n".join([
         r"\begin{table}[H]",
         r"  \centering",
-        rf"  \caption{{Métricas complementares --- Tier {tier}. Cada célula traz a "
+        rf"  \caption[Métricas complementares --- Tier {tier}]{{Métricas complementares --- Tier {tier}. Cada célula traz a "
         rf"média sobre os {len(ds)} \textit{{datasets}} e 30 sementes, com o "
         rf"\textit{{rank}} médio de Friedman entre parênteses (menor = melhor). "
         rf"Ordenado pelo \textit{{rank}} de F1-macro. Correlação de Spearman entre "

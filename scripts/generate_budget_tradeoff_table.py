@@ -66,7 +66,7 @@ def main() -> int:
             parts.append(r"    \midrule")
     tex = "\n".join([
         r"\begin{table}[H]", r"  \centering",
-        r"  \caption{Compromisso entre orçamento de iterações, custo de treino e desempenho "
+        r"  \caption[Compromisso entre orçamento de iterações, custo de treino e desempenho]{Compromisso entre orçamento de iterações, custo de treino e desempenho "
         r"(ADMM-Nyström, $N_{\text{treino}}=5000$, hiperparâmetros herdados de $N=2000$, "
         r"3 sementes, execução sequencial na mesma máquina). CREDIT e HIGGS50K são os dois "
         r"\textit{datasets} de maior queda na Ablação~D, e ilustram que a via mais econômica "

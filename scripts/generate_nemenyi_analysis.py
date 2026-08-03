@@ -83,7 +83,7 @@ def nemenyi_table(tier: int, rows: list[tuple[str, float]], n_datasets: int,
     return "\n".join([
         r"\begin{table}[H]",
         r"  \centering",
-        rf"  \caption{{Pós-teste de Nemenyi --- Tier {tier} "
+        rf"  \caption[Pós-teste de Nemenyi --- Tier {tier}]{{Pós-teste de Nemenyi --- Tier {tier} "
         rf"($k={len(rows)}$ modelos, $n={n_datasets}$ \textit{{datasets}}, "
         rf"$\mathrm{{CD}}={cd:.3f}$ a $\alpha=0{{,}}05$). "
         rf"``Difere do 1º'' indica diferença significativa em relação ao "

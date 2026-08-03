@@ -33,7 +33,7 @@ for arm in ORDER:
                 f"{sp:.3f} & {f1:.4f} & {t:.0f} \\\\".replace("0.", "0{,}"))
 tex = "\n".join([
  r"\begin{table}[H]", r"  \centering",
- r"  \caption{Controles de estabilidade do ADMM-Nesterov, um fator por vez a partir da "
+ r"  \caption[Controles de estabilidade do ADMM-Nesterov]{Controles de estabilidade do ADMM-Nesterov, um fator por vez a partir da "
  r"linha de base (CREDIT e HIGGS50K, $\lambda = 0{,}1$, $(\sigma,\tau)$ modais, "
  rf"{n_cells} execuções por braço, teto de $3\,000$ iterações salvo indicado). "
  r"O braço de teto reduzido isola o efeito do orçamento adotado na dissertação.}",

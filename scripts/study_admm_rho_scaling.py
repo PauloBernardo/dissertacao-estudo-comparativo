@@ -107,7 +107,7 @@ def main() -> int:
                       .replace(".", "{,}").replace("{,}1f", ".1f"))
     tex = "\n".join([
         r"\begin{table}[H]", r"  \centering",
-        r"  \caption{Escalonamento do limiar efetivo do ADMM-Nyström com $N$. "
+        r"  \caption[Escalonamento do limiar efetivo do ADMM-Nyström com $N$]{Escalonamento do limiar efetivo do ADMM-Nyström com $N$. "
         r"Como $\rho = 1/\lambda_{\max}(\mathbf{C}^\top\mathbf{C}/\tau)$, o encolhimento "
         r"aplicado a cada iteração vale $\lambda_1\lambda_{\max}/2$ e cresce com o maior "
         r"autovalor do Gram reduzido. Transferir $\lambda_1$ de $N=2000$ para $N=5000$ "

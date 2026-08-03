@@ -77,7 +77,7 @@ def main() -> int:
 
     tex = "\n".join([
         r"\begin{table}[H]", r"  \centering",
-        r"  \caption{Ablação D sob orçamento de iterações ampliado e sob Elastic Net. "
+        r"  \caption[Ablação D sob orçamento ampliado e sob Elastic Net]{Ablação D sob orçamento de iterações ampliado e sob Elastic Net. "
         r"Protocolo idêntico ao da Tabela~\ref{tab:tier2_n5000_admm_collapse} "
         r"($N_{\text{treino}}=5000$, hiperparâmetros herdados de $N=2000$, 30 sementes), "
         r"executado pelo mesmo \textit{runner}, variando apenas o peso $\ell_2$ ou o teto "

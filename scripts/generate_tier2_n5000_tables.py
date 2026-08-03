@@ -88,7 +88,7 @@ def main() -> None:
     lines = [
         r"\begin{table}[ht]",
         r"  \centering",
-        r"  \caption{Comparação F1-macro entre $N_{\text{treino}}=2000$ (GridSearchCV) e "
+        r"  \caption[Comparação F1-macro entre $N_{\text{treino}}=2000$ e $5000$]{Comparação F1-macro entre $N_{\text{treino}}=2000$ (GridSearchCV) e "
         r"$N_{\text{treino}}=5000$ (hiperparâmetros fixos, moda do GridCV de $N=2000$), "
         r"30 sementes, 6 datasets.}",
         r"  \label{tab:tier2_n5000_comparison}",
@@ -121,7 +121,7 @@ def main() -> None:
     lines = [
         r"\begin{table}[ht]",
         r"  \centering",
-        r"  \caption{FT-CUR em $N_{\text{treino}}=5000$: número de \textit{landmarks} "
+        r"  \caption[\textit{Landmarks} do FT-CUR em $N_{\text{treino}}=5000$]{FT-CUR em $N_{\text{treino}}=5000$: número de \textit{landmarks} "
         r"$m = m_{\text{ratio}} \cdot N$ por dataset (compressão constante, $m$ absoluto cresce com $N$).}",
         r"  \label{tab:tier2_n5000_ftcur_m}",
         r"  \begin{tabular}{lrrrrr}",
@@ -159,7 +159,7 @@ def main() -> None:
     lines = [
         r"\begin{table}[ht]",
         r"  \centering",
-        r"  \caption{ADMM-Nystrom por dataset: $F_1$-macro em $N{=}2000$ (GridCV) vs.\ "
+        r"  \caption[ADMM-Nyström por \textit{dataset}: $N{=}2000$ contra $N{=}5000$]{ADMM-Nystrom por dataset: $F_1$-macro em $N{=}2000$ (GridCV) vs.\ "
         r"$N{=}5000$ (hiperparâmetros $\ell_1$ fixos), ordenado pela maior queda.}",
         r"  \label{tab:tier2_n5000_admm_collapse}",
         r"  \begin{tabular}{lrrr}",
@@ -190,7 +190,7 @@ def main() -> None:
         lines = [
             r"\begin{table}[ht]",
             r"  \centering",
-            r"  \caption{Validação por re-tuning: ADMM-Nystrom em $N{=}5000$ com "
+            r"  \caption[Validação por \textit{re-tuning} do ADMM-Nyström em $N{=}5000$]{Validação por re-tuning: ADMM-Nystrom em $N{=}5000$ com "
             r"\textit{GridSearchCV} completo (10 sementes), vs.\ $N{=}2000$ e vs.\ "
             r"$N{=}5000$ com hiperparâmetros fixos.}",
             r"  \label{tab:tier2_n5000_admm_retune}",

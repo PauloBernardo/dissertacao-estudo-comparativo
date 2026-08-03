@@ -65,7 +65,7 @@ def num(x, d=2):
 def main():
     lines = [
         r"\begin{table}[ht]", r"  \centering",
-        r"  \caption{ADMM-Nyström \emph{vs.}\ FISTA-Nyström: os dois solvers avaliados "
+        r"  \caption[ADMM-Nyström \emph{vs.}\ FISTA-Nyström sob os mesmos hiperparâmetros]{ADMM-Nyström \emph{vs.}\ FISTA-Nyström: os dois solvers avaliados "
         r"nos \textbf{mesmos} $(\sigma,\tau,\lambda)$ e sobre os \textbf{mesmos} "
         r"\textit{landmarks}. Cada solução é avaliada nos \emph{dois} objetivos --- o "
         r"\textbf{cru} (sem intercepto, o do ADMM) e o \textbf{centrado} (intercepto "

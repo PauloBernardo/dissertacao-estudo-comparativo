@@ -71,7 +71,7 @@ def regimes_table():
                ("sparsity_ratio", "Esparsidade")]
     lines = [
         r"\begin{table}[ht]", r"  \centering",
-        r"  \caption{Nyström-SVM sob quatro seletores de \emph{landmarks} (amostragem aleatória "
+        r"  \caption[Nyström-SVM sob quatro seletores de \emph{landmarks}, nos três regimes de escala]{Nyström-SVM sob quatro seletores de \emph{landmarks} (amostragem aleatória "
         r"\texttt{random}; norma de coluna \texttt{colnorm} = Drineas--Mahoney; \texttt{kmeans}; e "
         r"\texttt{opposite}), agregados sobre os \emph{datasets} e 30 sementes de cada regime. "
         r"$p$ = Friedman entre os quatro. Dos seis testes de desempenho (duas métricas $\times$ "
@@ -117,7 +117,7 @@ def scarcity_table():
     }
     lines = [
         r"\begin{table}[ht]", r"  \centering",
-        r"  \caption{Ablação de \emph{escassez}: $F_1$-macro do Nyström-SVM com $m/n$ FIXO em "
+        r"  \caption[Ablação de escassez: Nyström-SVM com $m/n$ fixo em $5\%$ e $10\%$]{Ablação de \emph{escassez}: $F_1$-macro do Nyström-SVM com $m/n$ FIXO em "
         r"$5\%$ e $10\%$ (Tier~1, 30 sementes), separado entre os seis \emph{datasets} tabulares e "
         r"os três sintéticos de estrutura geométrica 2D (espiral TWS, tabuleiro TWC, luas TWM). "
         r"$\uparrow$/$\downarrow$ = significativamente melhor/pior que \texttt{random} "
@@ -158,7 +158,7 @@ def cost_table():
     rows = json.loads(f.read_text())
     lines = [
         r"\begin{table}[ht]", r"  \centering",
-        r"  \caption{Custo da seleção de $m=0{,}30\,N$ \emph{landmarks} (ms, mediana de 3 execuções, "
+        r"  \caption[Custo da seleção de \emph{landmarks} em $N$ crescente]{Custo da seleção de $m=0{,}30\,N$ \emph{landmarks} (ms, mediana de 3 execuções, "
         r"single-thread) em $N$ crescente. \texttt{random} é $O(m)$ (independe de $N$); \texttt{colnorm} "
         r"(Drineas) é $O(N d)$; \texttt{kmeans} e \texttt{opposite} formam matrizes de kernel/clustering "
         r"$O(N^2)$ --- exatamente o custo que a aproximação de Nyström existe para evitar.}",

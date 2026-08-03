@@ -52,7 +52,7 @@ def num(x):
 def main():
     lines = [
         r"\begin{table}[ht]", r"  \centering",
-        r"  \caption{Probe de \emph{escassez} do FT-CUR nos \textit{datasets} de estrutura "
+        r"  \caption[Probe de escassez do FT-CUR nos sintéticos de estrutura geométrica]{Probe de \emph{escassez} do FT-CUR nos \textit{datasets} de estrutura "
         r"geométrica (TWS/espiral, TWC/tabuleiro, TWM/luas), com $m/n$ \textbf{fixo} em "
         r"$10\%$ e $5\%$ --- o regime exato em que, no LSSVM-Nyström, o $k$-means superou a "
         r"amostragem aleatória (Seção~\ref{ape:selecao_escassez}). $F_1$-macro, 30 sementes. "

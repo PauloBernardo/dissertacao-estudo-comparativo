@@ -138,7 +138,7 @@ def gera_tabela(O, T, linhas, mae_g, r, p) -> None:
 
     tex = "\n".join([
         r"\begin{table}[H]", r"  \centering",
-        r"  \caption{Validação externa: AUC-ROC de teste neste estudo e no TabZilla "
+        r"  \caption[Validação externa: concordância em AUC-ROC com o TabZilla]{Validação externa: AUC-ROC de teste neste estudo e no TabZilla "
         r"\cite{mcelfresh2023when} sobre os cinco conjuntos do Tier~1 presentes nos dois "
         r"levantamentos. Nos modelos homólogos, as duas implementações concordam "
         rf"(MAE global de ${n(mae_g)}$; $r$ de Pearson $= {n(r)}$, "
