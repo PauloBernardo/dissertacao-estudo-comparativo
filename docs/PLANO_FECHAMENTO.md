@@ -87,12 +87,14 @@ F1-macro (épocas efetivas, segundos por ajuste):
 Fator de custo por ajuste (protocolo dos artigos lr 1e-3 ÷ publicado, N=2000): FT ×11,5; SAINT ×11,6; FT-CUR lote completo ×4,9; FT-CUR mini-lote global ×18,4. Nos datasets pequenos (1 passo/época) ≈ ×20.
 Publicado (T4): Tier 1 10,6 h; Tier 2 17,8 h; Abl. A 5,9 h; Abl. B/C 4,6 h; N=5000 1,2 h; total ≈ 40 h.
 
-| Opção | O que muda | GPU estimada | Kaggle (30 h/semana) |
+As horas abaixo são em **T4 (Kaggle)**; a MX350 local é ≈3× mais lenta (T4 ≈ 0,9–1,05 s por ajuste em N=2000 contra 2,7–2,9 s na MX350; `fit_time_s` dos JSONs publicados é o GridSearchCV inteiro, 31 ou 61 ajustes).
+
+| Opção | O que muda | T4 (Kaggle, 30 h/semana) | MX350 local (contínua) |
 |---|---|---|---|
-| A | tudo como a v1: grade + 5 folds + 30 sementes, seis modelos | ≈ 560 h | 19 semanas — inviável |
-| B | idem com 10 sementes | ≈ 190 h | 6–7 semanas |
-| C | **configuração fixa por modelo (padrão dos artigos / moda da v1), sem grade**, 30 sementes, seis modelos | ≈ 15–20 h | 1 semana |
-| D | só SAINT e FT-CUR com grade + 5 folds, 30 sementes | ≈ 45 h (SAINT) + 80–145 h (FT-CUR) | 4–6 semanas |
-| E | C + grade só no par SAINT/FT-CUR no Tier 2 | ≈ 60–80 h | 2–3 semanas |
+| A | tudo como a v1: grade + 5 folds + 30 sementes, seis modelos | ≈ 560 h → 19 semanas | ≈ 1600 h — inviável |
+| B | idem com 10 sementes | ≈ 190 h → 6–7 semanas | ≈ 570 h |
+| C | **configuração fixa por modelo (padrão dos artigos / moda da v1), sem grade**, 30 sementes, seis modelos | ≈ 15–20 h → 1 semana | ≈ 45–60 h → 2–3 dias |
+| D | só SAINT e FT-CUR com grade + 5 folds, 30 sementes | ≈ 125–190 h → 4–6 semanas | ≈ 400–570 h |
+| E | C + grade só no par SAINT/FT-CUR no Tier 2 | ≈ 60–80 h → 2–3 semanas | ≈ 200 h |
 
 Recomendação: **C** (é o desenho do artigo do FT-Transformer: "default configuration performs on par with tuned"), declarando que na v2 os Transformers usam configuração fixa enquanto os LSSVMs mantêm a grade — assimetria oposta à atual (hoje a grade dos Transformers tem 6–12 configurações contra 36–75 dos LSSVMs) e menos grave, pois o que a v2 quer medir é o efeito do orçamento de treino. Abl. A já é por transferência (barata). Decisão pendente.
