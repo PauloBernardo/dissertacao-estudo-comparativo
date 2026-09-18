@@ -117,7 +117,7 @@ class SAINTColnorm(BaseEstimator, ClassifierMixin):
         X_tr_t, y_tr_t = self._to_tensor(X_tr, y_tr)
         X_val_t, y_val_t = self._to_tensor(X_val, y_val)
 
-        fit_model(
+        info = fit_model(
             self._model, X_tr_t, y_tr_t, X_val_t, y_val_t,
             landmark_idx=None,
             lr=self.lr, epochs=self.epochs, patience=self.patience,
@@ -126,6 +126,7 @@ class SAINTColnorm(BaseEstimator, ClassifierMixin):
             batch_size=self.batch_size,  # mini-batch: atenção B×B limitada pelo orçamento de memória
             min_epochs=self.min_epochs,
         )
+        self.n_epochs_ = int(info['n_epochs'])
 
         self.X_train_ = X
         self.y_train_ = y

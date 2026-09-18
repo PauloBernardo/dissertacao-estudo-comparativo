@@ -25,6 +25,8 @@ PROTOCOLS = {
     # (lr, batch FT, batch SAINT, batch FT-CUR, epochs, patience, min_epochs)
     "published": dict(lr=1e-3, bs_ft=512, bs_saint=1024, bs_ftcur=4096, epochs=40,  patience=6,  min_epochs=0),
     "paper":     dict(lr=1e-4, bs_ft=256, bs_saint=256,  bs_ftcur=256,  epochs=1000, patience=16, min_epochs=200),
+    # mesmo orçamento/paciência dos artigos, mas com a lr do protocolo publicado: isola lr de orçamento
+    "paper_lr3": dict(lr=1e-3, bs_ft=256, bs_saint=256,  bs_ftcur=256,  epochs=1000, patience=16, min_epochs=200),
 }
 TIER2 = {"ADULT", "BANK", "CREDIT", "HIGGS50K", "SHOPPERS", "TELCO"}
 
@@ -56,7 +58,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--datasets", nargs="+", default=["TWS", "HAB", "AI4I", "BANK", "TELCO"])
     ap.add_argument("--models", nargs="+", default=["FT_softmax", "SAINT", "FTCUR_full", "FTCUR_mb_global"])
-    ap.add_argument("--protocols", nargs="+", default=["published", "paper"])
+    ap.add_argument("--protocols", nargs="+", default=["published", "paper", "paper_lr3"])
     ap.add_argument("--seeds", type=int, default=5)
     ap.add_argument("--output", default="results/pilot_transformer_budget.json")
     a = ap.parse_args()
@@ -78,7 +80,7 @@ def main():
                     try:
                         m = make(model, P, seed).fit(Xtr, ytr)
                         f1 = f1_score(yte, m.predict(Xte), average="macro")
-                        n_ep = getattr(m, "n_iter_", None)
+                        n_ep = getattr(m, "n_iter_", getattr(m, "n_epochs_", None))
                         rec = dict(dataset=ds, seed=seed, protocol=prot, model=model, f1=round(float(f1), 4),
                                    n_epochs=n_ep, fit_s=round(time.time() - t0, 1), status="ok")
                     except Exception as e:

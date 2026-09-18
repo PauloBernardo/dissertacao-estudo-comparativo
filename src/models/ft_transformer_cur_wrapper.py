@@ -206,7 +206,7 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
 
         use_global = (self.minibatch_landmarks == "global" and self.batch_size is not None
                       and self.batch_size < len(idx_tr))
-        fit_model(
+        info = fit_model(
             self._model, X_tr_t, y_tr_t, X_val_t, y_val_t,
             landmark_idx=self._landmark_idx_,
             lr=self.lr, epochs=self.epochs, patience=self.patience,
@@ -216,6 +216,7 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
             global_landmark_rows=X_tr_t[self._landmark_idx_] if use_global else None,
             min_epochs=self.min_epochs,
         )
+        self.n_epochs_ = int(info['n_epochs'])
 
         # Armazena X_train_ completo como contexto para inferência
         # e recalcula landmarks sobre ele (índices agora referem X_train_)
