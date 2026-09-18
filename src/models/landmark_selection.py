@@ -4,7 +4,7 @@ Estratégias de Seleção de Landmarks para Aproximação de Matrizes de Intera�
 Este módulo implementa seis estratégias de seleção de landmarks:
 1. Amostragem Aleatória (baseline)
 2. Seleção baseada em K-means
-3. Seleção baseada em Opposite Maps
+3. Reflexão de oposição (OBL, Tizhoosh 2005) — NÃO os Opposite Maps
 4. Amostragem por Leverage Scores
 5. Seleção por Norma de Coluna
 6. Farthest Point Sampling (FPS)
@@ -162,23 +162,31 @@ class KMeansSelector(LandmarkSelector):
         return self
 
 
-class OppositeMapsSelector(LandmarkSelector):
+class OBLReflectionSelector(LandmarkSelector):
     """
-    Seleção de landmarks baseada em Opposite Maps.
+    Seleção de landmarks por REFLEXÃO de oposição (Opposition-Based Learning).
 
-    Utiliza a heurística de oposição geométrica para maximizar
-    a diversidade do subconjunto selecionado. O operador de
-    oposição é definido como:
+    Heurística geométrica de Tizhoosh (2005): o ponto oposto de x é a sua
+    reflexão em relação ao centro do hiper-retângulo dos dados,
 
         x̆_j = a_j + b_j - x_j
 
     onde a_j e b_j são os limites inferior e superior da dimensão j.
 
+    ATENÇÃO (auditoria 2026-09-18): esta classe NÃO implementa os
+    *Opposite Maps* de Rocha Neto & Barreto (2013), que são quantização
+    vetorial por classe + protótipo mais próximo da classe contrária e não
+    usam reflexão alguma. O seletor fiel aos Opposite Maps (variante K2M a
+    orçamento fixo) é ``select_opposite_landmarks`` em
+    ``src/models/nystrom_lssvm_wrapper.py`` — é ele que o Nyström-SVM e o
+    FT-CUR usam na ablação de seleção. Esta classe permanece apenas como
+    heurística de cobertura não supervisionada, registrada sob a chave
+    ``'obl_reflection'``; a chave ``'opposite'`` foi desativada para evitar
+    confusão (levanta ValueError apontando para o seletor correto).
+
     Referência:
     - Tizhoosh, H.R. (2005). Opposition-Based Learning: A New Scheme
       for Machine Intelligence.
-    - Rocha Neto, A.R. & Barreto, G.A. (2013). Opposite Maps: Vector
-      Quantization Algorithms for Building Reduced-Set SVM and LSSVM.
     """
 
     def __init__(self, n_landmarks: int, random_state: Optional[int] = None,
@@ -215,9 +223,9 @@ class OppositeMapsSelector(LandmarkSelector):
         a, b = self.bounds_
         return a + b - x
 
-    def fit(self, X: np.ndarray) -> 'OppositeMapsSelector':
+    def fit(self, X: np.ndarray) -> 'OBLReflectionSelector':
         """
-        Seleciona landmarks usando a heurística de Opposite Maps.
+        Seleciona landmarks usando a heurística de reflexão OBL.
 
         Algoritmo:
         1. Calcular limites do espaço de dados
@@ -283,7 +291,7 @@ class QuasiOppositeSelector(LandmarkSelector):
     """
     Seleção de landmarks baseada em Quasi-Oposição.
 
-    Variante do Opposite Maps que usa um ponto intermediário
+    Variante da reflexão OBL que usa um ponto intermediário
     entre o centro do espaço e o ponto oposto.
 
         x̆_j = rand(center_j, opposite_j)
@@ -551,7 +559,8 @@ def get_selector(method: str, n_landmarks: int, random_state: Optional[int] = No
     Parâmetros
     ----------
     method : str
-        Método de seleção: 'random', 'kmeans', 'opposite', 'quasi_opposite'
+        Método de seleção: 'random', 'kmeans', 'obl_reflection', 'quasi_opposite',
+        'leverage', 'colnorm', 'fps'
     n_landmarks : int
         Número de landmarks
     random_state : int, opcional
@@ -564,10 +573,18 @@ def get_selector(method: str, n_landmarks: int, random_state: Optional[int] = No
     selector : LandmarkSelector
         Instância do seletor apropriado
     """
+    if method == 'opposite':
+        raise ValueError(
+            "get_selector('opposite') foi desativado: a antiga classe sob essa "
+            "chave era a reflexão OBL de Tizhoosh, NÃO os Opposite Maps de Rocha "
+            "Neto & Barreto (2013). Use src.models.nystrom_lssvm_wrapper."
+            "select_opposite_landmarks (K2M, fiel) ou a chave 'obl_reflection' "
+            "para a reflexão geométrica."
+        )
     methods = {
         'random': RandomSelector,
         'kmeans': KMeansSelector,
-        'opposite': OppositeMapsSelector,
+        'obl_reflection': OBLReflectionSelector,
         'quasi_opposite': QuasiOppositeSelector,
         'leverage': LeverageScoreSelector,
         'colnorm': ColumnNormSelector,
@@ -597,7 +614,7 @@ if __name__ == "__main__":
     print(f"Landmarks: {n_landmarks}")
     print()
 
-    for method in ['random', 'kmeans', 'opposite', 'quasi_opposite',
+    for method in ['random', 'kmeans', 'obl_reflection', 'quasi_opposite',
                     'leverage', 'colnorm', 'fps']:
         selector = get_selector(method, n_landmarks, random_state=42)
         selector.fit(X)

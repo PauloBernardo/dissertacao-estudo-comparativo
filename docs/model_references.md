@@ -16,10 +16,10 @@ versionados), e (d) o veredito da auditoria de fidelidade.
 
 | Modelo (variante) | Arquivo | Citação (bib) | Paper (BASE TEORICA) | arXiv/URL | Veredito |
 |---|---|---|---|---|---|
-| StandardLSSVM | `lssvm/standard.py` | suykens1999 | LSSVM/CLASSICOS/Suykens_NeurProcLett.pdf | — | 🟢 |
+| StandardLSSVM | `lssvm/standard.py` | suykens1999 | LSSVM/CLASSICOS/Suykens_NeurProcLett.pdf | — | ✅ (2026-09-18) CG Hestenes-Stiefel; b=(1ᵀη)/(yᵀη) ≡ (yᵀμ)/(yᵀη) por simetria de H |
 | ADMMNesterovLSSVM | `lssvm/primal/admm_nesterov.py` | marinho2025iwann | IWANN___LSSVM_ADMM.pdf | — | ✅ (converge ao LASSO exato) |
 | ADMMElasticNet | `lssvm/primal/admm_nesterov.py` (λ₂>0) | marinho2025iwann | IWANN___LSSVM_ADMM.pdf | — | ✅ (mesmo solver) |
-| ADMMNystromLSSVM | `lssvm/primal/admm_nystrom.py` | marinho2025iwann · williams2001nystrom · zhao2022nysadmm | IWANN…; NIPS-2000-nystrom; 2202.11599v2.pdf | arXiv:2202.11599 | ⏳ (solver ADMM ✅, falta ler o Nyström) |
+| ADMMNystromLSSVM | `lssvm/primal/admm_nystrom.py` | marinho2025iwann · williams2001nystrom · zhao2022nysadmm | IWANN…; NIPS-2000-nystrom; 2202.11599v2.pdf | arXiv:2202.11599 | ✅ (2026-09-18) base C=K(X,Z), f=Cθ, penalidade nos pesos dos landmarks; ρ=1/λmax(CᵀC/τ); threshold λ/2ρ; esparsidade sobre N |
 | FISTANesterov | `lssvm/primal/fista_lssvm.py` | beck2009fista | LSSVM/CLASSICOS/beck2009.pdf | — | ✅ (converge ao LASSO exato) |
 | FISTANystrom | `lssvm/primal/fista_nystrom.py` | beck2009fista · williams2001nystrom | beck2009.pdf; NIPS-2000-nystrom | — | ✅ (solver); seleção colnorm = ⏳ |
 | DualFISTA | `lssvm/dual/fista_dual_lssvm.py` | beck2009fista · marinho2025iwann | beck2009.pdf; IWANN… | — | ✅ (converge ao ótimo; exploração, não novidade) |
@@ -31,16 +31,20 @@ versionados), e (d) o veredito da auditoria de fidelidade.
 | **FSALSSVmOriginal** (fiel) | `lssvm/primal/fsa_lssvm_original.py` | jiao2007fast | LSSVM/CLASSICOS/tnn07a.pdf | — | ✅ backfitting Jiao (Eq.30) |
 | **OppositeMapsLSSVM** (adaptado) | `lssvm/dual/opposite_maps.py` | rochaneto2013opposite / neto2013opposite | Opposite Maps…/CLASSICOS/NPL_Ajalmar.pdf | — | ❌ não-fiel (fallback/âncora) → **deprecado** |
 | **OppositeMapsOriginalLSSVM** (fiel) | `lssvm/dual/opposite_maps_original.py` | rochaneto2013opposite | …/NPL_Ajalmar.pdf | — | ✅ Kernel k-means + mapa-oposto (passos 3–6) |
-| NystromLSSVMColnorm | `nystrom_lssvm_wrapper.py` | williams2001nystrom · espinoza2006fixed · drineas2005nystrom · kumar2012sampling | NIPS-2000-nystrom; espinoza2006.pdf; drineas05a.pdf | — | ⏳ (contribuição — correção interna) |
+| NystromLSSVMColnorm | `nystrom_lssvm_wrapper.py` | williams2001nystrom · espinoza2006fixed · drineas2005nystrom · kumar2012sampling | NIPS-2000-nystrom; espinoza2006.pdf; drineas05a.pdf | — | ✅ (2026-09-18) Woodbury verificado algebricamente; b=(1ᵀΩ⁻¹y)/(1ᵀΩ⁻¹1); predição via W⁻¹Cᵀα consistente com a extensão de Nyström; colnorm = ‖xᵢ‖² (proxy, como no texto) |
 | FTTransformerCURColnorm (FT-CUR) | `ft_transformer_cur_wrapper.py` · `ft_transformer_model.py` | xiong2021nystromformer · mahoney2009cur | Transformers/…/2102.03902v3.pdf; …cur-matrix… | arXiv:2102.03902 | ✅ conceitual (Nyströmformer Alg.1; pinv destacada a testar) |
-| SAINTColnorm | `ft_transformer_saint_wrapper.py` | somepalli2021saint | — | arXiv:2106.01342 | 🟢 |
-| FTTransformer (+ atenções esparsas) | `transformers/ft_transformer.py` · `transformers/sparse_attention/*` | gorishniy2021revisiting | Transformers/… | arXiv:2106.11959 | 🟢 |
-| XGBoost | `xgboost_wrapper.py` | chen2016xgboost | — | — | 🟢 (biblioteca) |
+| SAINTColnorm | `ft_transformer_saint_wrapper.py` · `ft_transformer_model.py::SAINTClassifier` | somepalli2021saint | Transformers/ESTADO DA ARTE/2106.01342_SAINT.pdf | arXiv:2106.01342 | ✅ (2026-09-18) reimplementado fiel: embedding FC+ReLU por atributo, MISA sobre (p+1)·d (Alg. 1), LN nos resíduos, GELU, head MLP no CLS; sem pré-treino contrastivo (declarado). **Resultados publicados vieram da versão só-CLS (`SAINTClassifierCLSOnly`) → re-executar** |
+| FTTransformer (+ atenções esparsas) | `transformers/ft_transformer.py` · `transformers/sparse_attention/*` | gorishniy2021revisiting · martins2016sparsemax · peters2019entmax | Transformers/… | arXiv:2106.11959 | ✅ softmax/top-k/sparsemax (sparsemax = entmax α=2 a 1e-16). ❌→✅ **entmax**: bisseção com intervalo errado (Σp≈1,4–7 antes de renormalizar; corrigido 2026-09-18 com Jacobiana exata) — **resultados FT-Entmax publicados vieram da versão errada** |
+| XGBoost | `xgboost_wrapper.py` | chen2016xgboost | — | — | ✅ (biblioteca, n_jobs=1, hist) |
 
-## Prioridade para a próxima rodada de auditoria
-1. 🎯 **NystromLSSVMColnorm** e **FT-CUR** — contribuições (correção interna, não fidelidade a paper)
-2. **ADMM-Nyström** — falta ler a parte Nyström (solver ADMM já ✅)
-3. 🟢 baixo risco (Standard, XGBoost, FT core, SAINT, atenções esparsas)
+## Rodada de 2026-09-18 — todos os modelos auditados
+- **Bug real encontrado:** `sparse_attention/entmax_attention.py` — intervalo de bisseção errado; a saída não era entmax-α (era uma distribuição recortada em z_max − 1/(α−1) e renormalizada). Corrigido com o intervalo de Peters et al. (2019) e backward exato; testes de regressão em `tests/test_transformers.py::TestEntmaxBisectionRegression`. **Pendência:** re-executar FT-Entmax (Tier 1, Tier 2, Ablações A–D, benchmark) ou marcar as linhas publicadas como "variante recortada".
+- **Armadilha removida:** `landmark_selection.get_selector('opposite')` era a reflexão OBL de Tizhoosh rotulada como Opposite Maps (origem da confusão no texto). Renomeada para `'obl_reflection'`; `'opposite'` agora levanta erro apontando para `select_opposite_landmarks` (K2M fiel, o único usado nos resultados).
+- **SAINT reimplementado fiel** (decisão do usuário: é baseline, tem de ser o modelo do artigo); versão só-CLS preservada como `SAINTClassifierCLSOnly`.
+- **Documentado no texto (não é bug):** FT-CUR/SAINT vs FT baselines usam backbones distintos (Adam+clip+MLP head vs AdamW+linear head); esparsidade de atenção conta pesos < 1e-4; ADMM-Nyström é subset-of-regressors (f = K(x,Z)θ), custo O(m²)/iteração; IP usa α com sinal.
+- **Ablação A assimétrica (achado 2026-09-18):** `ablation_a_transformers.json` veio de GridSearchCV em N=2000 (`run_tier1_gridcv` nos `*_2k`), enquanto LSSVM/XGBoost transferiram hiperparâmetros do Tier 1; a tese afirma transferência para todos. Corrigido no notebook de re-execução (todos os Transformers via `run_ablation_a_scaling.py --transformers-only`). Ver `docs/rerun_saint_entmax.md`.
+- **Ressalva de protocolo:** no FT-CUR em mini-batch (só o benchmark N ≥ 10 000), os landmarks de treino são sorteados por batch (`train_epoch`), não colnorm; colnorm vale para o full-batch (Tier 1/2, Ablação D) e para a inferência.
+
 
 ## Método do laudo (por modelo)
 1. **Fidelidade algébrica** — comparar equações/algoritmo do paper com o código.

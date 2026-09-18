@@ -1,8 +1,11 @@
 """
 Wrapper sklearn-compatível: SAINT (Self-Attention and Intersample Attention Transformer).
 
-SAINT alterna blocos de atenção inter-features e inter-instâncias em cada camada,
-usando atenção softmax completa (n×n) na dimensão inter-instâncias — sem aproximação.
+SAINT alterna blocos de atenção inter-features e inter-instâncias em cada estágio,
+usando atenção softmax completa (b×b) na dimensão inter-instâncias — sem aproximação.
+Arquitetura fiel a Somepalli et al. (2021) desde 2026-09-18: embedding FC+ReLU por
+atributo, MISA sobre a linha concatenada (n+1)·d (Alg. 1), LN nos resíduos, GELU,
+cabeça MLP sobre o [CLS]. Sem pré-treino contrastivo (treino supervisionado puro).
 
 É o baseline denso para comparação com o FT-CUR Nyströmformer:
   SAINT      : inter-instance softmax completo   (O(n²d) — denso)
@@ -64,7 +67,14 @@ class SAINTColnorm(BaseEstimator, ClassifierMixin):
         random_state: int | None = None,
         early_stop_metric: str = "val_acc",
         batch_size: int | None = 256,
+        dim_head: int = 16,
+        attn_dropout: float = 0.1,
+        ff_dropout: float = 0.1,
     ):
+        # dim_head / dropouts: valores do artigo (Apêndice) e do código de referência.
+        self.dim_head     = dim_head
+        self.attn_dropout = attn_dropout
+        self.ff_dropout   = ff_dropout
         self.d_model      = d_model
         self.n_heads      = n_heads
         self.n_layers     = n_layers
@@ -97,6 +107,9 @@ class SAINTColnorm(BaseEstimator, ClassifierMixin):
             d_model=self.d_model,
             n_heads=self.n_heads,
             n_layers=self.n_layers,
+            dim_head=self.dim_head,
+            attn_dropout=self.attn_dropout,
+            ff_dropout=self.ff_dropout,
         ).to(DEVICE)
 
         X_tr_t, y_tr_t = self._to_tensor(X_tr, y_tr)

@@ -95,7 +95,9 @@ class NystromApproximation:
         kernel : callable, opcional
             Função kernel. Se None, usa RBF com sigma=1.0
         selection_method : str
-            Método de seleção: 'random', 'kmeans', 'opposite', 'quasi_opposite'
+            Método de seleção: 'random', 'kmeans', 'colnorm', 'leverage', 'fps',
+            'obl_reflection', 'quasi_opposite' (para os Opposite Maps fiéis use
+            ``landmark_indices`` com ``select_opposite_landmarks``)
         random_state : int, opcional
             Semente para reprodutibilidade
         regularization : float
@@ -420,7 +422,7 @@ if __name__ == "__main__":
     kernel = RBFKernel(sigma=1.0)
     K_true = kernel(X_train)
 
-    for method in ['random', 'kmeans', 'opposite']:
+    for method in ['random', 'kmeans', 'obl_reflection']:
         for m_ratio in [0.1, 0.2, 0.5]:
             m = int(m_ratio * X_train.shape[0])
             nystrom = NystromApproximation(
@@ -441,7 +443,7 @@ if __name__ == "__main__":
     print("2. Teste de LSSVM com Nyström")
     print("-" * 40)
 
-    for method in ['random', 'kmeans', 'opposite']:
+    for method in ['random', 'kmeans', 'obl_reflection']:
         m = int(0.2 * X_train.shape[0])
         model = NystromLSSVM(
             n_landmarks=m,

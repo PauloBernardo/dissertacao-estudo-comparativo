@@ -355,3 +355,100 @@ class TestFTTransformerSparsity:
             clf.predict_proba(X[:32])
             z = clf.attention_sparsity()["mean_zero_fraction"]
             assert z > z_soft, f"{at} zero_fraction={z:.3f} not > softmax={z_soft:.3f}"
+
+
+# ── Regressão da auditoria 2026-09-18 ────────────────────────────────────────
+
+class TestEntmaxBisectionRegression:
+    """Trava a correção do intervalo de bisseção do entmax.
+
+    A versão antiga convergia sempre ao extremo do intervalo e a soma dos
+    pesos ANTES da renormalização ficava entre ~1,4 e ~7 (não 1).
+    """
+
+    def test_sum_is_one_without_renormalisation(self):
+        from src.models.transformers.sparse_attention.entmax_attention import (
+            _EntmaxBisectFunction,
+        )
+        torch.manual_seed(0)
+        z = torch.randn(6, 9, dtype=torch.float64) * 0.5   # regime onde o bug era pior
+        p = _EntmaxBisectFunction.apply(z, 1.5, 60)
+        # reconstrói τ a partir de p e checa que a soma bruta (sem renormalizar) é 1
+        am1 = 0.5
+        support = p > 0
+        tau = (am1 * z - p ** am1)[support].view(-1)  # (α−1)z_i − p_i^{α−1} = τ em todo o suporte
+        # τ deve ser constante por linha → soma bruta com esse τ = 1
+        z_rows = am1 * z
+        tau_row = torch.stack([(z_rows[i] - p[i] ** am1)[support[i]].mean() for i in range(z.shape[0])])
+        raw = ((z_rows - tau_row[:, None]).clamp(min=0) ** (1 / am1)).sum(-1)
+        torch.testing.assert_close(raw, torch.ones_like(raw), atol=1e-8, rtol=0)
+
+    def test_alpha_two_equals_sparsemax(self):
+        from src.models.transformers.sparse_attention.entmax_attention import _entmax_bisect
+        from src.models.transformers.sparse_attention.sparsemax_attention import _sparsemax
+        torch.manual_seed(1)
+        z = torch.randn(4, 7, dtype=torch.float64) * 2
+        torch.testing.assert_close(_entmax_bisect(z, 2.0, 60), _sparsemax(z), atol=1e-10, rtol=0)
+
+    def test_exact_jacobian(self):
+        from src.models.transformers.sparse_attention.entmax_attention import _EntmaxBisectFunction
+        torch.manual_seed(2)
+        z = (torch.randn(3, 8, dtype=torch.float64) * 1.5).requires_grad_(True)
+        assert torch.autograd.gradcheck(
+            lambda x: _EntmaxBisectFunction.apply(x, 1.5, 60), (z,), eps=1e-6, atol=1e-5
+        )
+
+
+def test_get_selector_opposite_is_disabled():
+    """'opposite' apontava para a reflexão OBL (Tizhoosh), não para os Opposite
+    Maps de Rocha Neto & Barreto; a chave foi desativada na auditoria."""
+    import pytest
+    from src.models.landmark_selection import get_selector
+    with pytest.raises(ValueError, match="select_opposite_landmarks"):
+        get_selector("opposite", 5, random_state=0)
+    sel = get_selector("obl_reflection", 5, random_state=0)
+    assert sel.__class__.__name__ == "OBLReflectionSelector"
+
+
+class TestSAINTFaithful:
+    """SAINT fiel (2026-09-18): MISA sobre a linha inteira, não só o CLS."""
+
+    def _model(self, p=5):
+        from src.models.ft_transformer_model import SAINTClassifier
+        torch.manual_seed(0)
+        m = SAINTClassifier(n_features=p, d_model=8, n_heads=2, n_layers=1,
+                            dim_head=4, attn_dropout=0.0, ff_dropout=0.0, head_hidden=16)
+        return m.eval()
+
+    def test_shapes_and_intersample_dependence(self):
+        m = self._model()
+        x = torch.randn(6, 5)
+        out = m(x)
+        assert out.shape == (6,)
+        # alterar OUTRA linha do lote muda a saída da linha 0 (atenção inter-instâncias)
+        x2 = x.clone(); x2[3] += 5.0
+        assert not torch.allclose(m(x2)[0], out[0])
+        # e a MISA usa todos os tokens: mudar só um atributo de outra linha já basta
+        x3 = x.clone(); x3[4, 2] += 5.0
+        assert not torch.allclose(m(x3)[0], out[0])
+
+    def test_row_permutation_equivariance(self):
+        m = self._model()
+        x = torch.randn(7, 5)
+        perm = torch.randperm(7)
+        torch.testing.assert_close(m(x)[perm], m(x[perm]), atol=1e-5, rtol=1e-5)
+
+    def test_misa_dimension_is_row_concat(self):
+        from src.models.ft_transformer_model import SAINTClassifier
+        m = SAINTClassifier(n_features=5, d_model=8, n_heads=2, n_layers=1, dim_head=4)
+        assert m.stages[0].misa.to_qkv.in_features == (5 + 1) * 8
+
+    def test_wrapper_fit_predict_cpu(self):
+        from src.models.ft_transformer_saint_wrapper import SAINTColnorm
+        rng = np.random.RandomState(0)
+        X = rng.randn(120, 4); y = (X[:, 0] + X[:, 1] > 0).astype(int)
+        clf = SAINTColnorm(d_model=8, n_heads=2, n_layers=1, epochs=3, patience=2,
+                           batch_size=64, random_state=0)
+        clf.fit(X, y)
+        assert clf.predict(X).shape == (120,)
+        assert clf.predict_proba(X).shape == (120, 2)

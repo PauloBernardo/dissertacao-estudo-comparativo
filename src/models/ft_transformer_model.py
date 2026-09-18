@@ -477,21 +477,160 @@ class FTTransformerClassifier(nn.Module):
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SAINT — Self-Attention and Intersample Attention Transformer
-# Somepalli et al. (2021): "SAINT: Improved Neural Networks for Tabular Data"
+# Somepalli et al. (2021), arXiv:2106.01342 — reprodução fiel da arquitetura
+# (auditoria 2026-09-18). A versão anterior (só CLS) fica abaixo como
+# SAINTClassifierCLSOnly, apenas para proveniência dos resultados antigos.
 # ─────────────────────────────────────────────────────────────────────────────
 
+class SAINTContinuousEmbedding(nn.Module):
+    """Embedding heterogêneo de atributos contínuos (SAINT, Seção 3).
+
+    "We use a separate single fully-connected layer with a ReLU nonlinearity
+    for each continuous feature, thus projecting the 1-dimensional input into
+    d-dimensional space." A implementação de referência (``simple_MLP``) usa
+    uma camada oculta de 100 unidades: Linear(1→100) → ReLU → Linear(100→d),
+    uma por atributo, sem compartilhamento de pesos entre atributos.
+    """
+
+    def __init__(self, n_features: int, d_model: int, hidden: int = 100):
+        super().__init__()
+        self.n_features = n_features
+        # Pesos por atributo, vetorizados: [p, 1, hidden] e [p, hidden, d]
+        self.w1 = nn.Parameter(torch.empty(n_features, 1, hidden))
+        self.b1 = nn.Parameter(torch.zeros(n_features, hidden))
+        self.w2 = nn.Parameter(torch.empty(n_features, hidden, d_model))
+        self.b2 = nn.Parameter(torch.zeros(n_features, d_model))
+        for w in (self.w1, self.w2):
+            nn.init.kaiming_uniform_(w, a=5 ** 0.5)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # x: [n, p] → h: [n, p, hidden] → out: [n, p, d]
+        h = torch.relu(x.unsqueeze(-1) * self.w1[:, 0, :].unsqueeze(0) + self.b1.unsqueeze(0))
+        out = torch.einsum("npk,pkd->npd", h, self.w2) + self.b2.unsqueeze(0)
+        return out
+
+
+class _FeedForward(nn.Module):
+    """FF do SAINT: duas camadas FC com GELU (Seção 3.1)."""
+
+    def __init__(self, dim: int, mult: int = 4, dropout: float = 0.0):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(dim, dim * mult), nn.GELU(), nn.Dropout(dropout),
+            nn.Linear(dim * mult, dim), nn.Dropout(dropout),
+        )
+
+    def forward(self, x):
+        return self.net(x)
+
+
+class _SAINTAttention(nn.Module):
+    """Atenção multi-cabeça genérica: projeta q,k,v de ``dim`` para
+    ``heads·dim_head`` e volta a ``dim`` (como ``Attention`` do código de
+    referência). Usada tanto para a MSA (dim = d) quanto para a MISA
+    (dim = (n+1)·d)."""
+
+    def __init__(self, dim: int, heads: int, dim_head: int, dropout: float):
+        super().__init__()
+        inner = heads * dim_head
+        self.heads, self.scale = heads, dim_head ** -0.5
+        self.to_qkv = nn.Linear(dim, inner * 3, bias=False)
+        self.to_out = nn.Linear(inner, dim)
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, x):                       # x: [B, L, dim]
+        B, L, _ = x.shape
+        q, k, v = self.to_qkv(x).chunk(3, dim=-1)
+        q, k, v = (t.view(B, L, self.heads, -1).transpose(1, 2) for t in (q, k, v))
+        attn = torch.softmax((q @ k.transpose(-1, -2)) * self.scale, dim=-1)
+        attn = self.dropout(attn)
+        out = (attn @ v).transpose(1, 2).reshape(B, L, -1)
+        return self.to_out(out)
+
+
+class SAINTStage(nn.Module):
+    """Um estágio do SAINT (Eqs. 1–2 do artigo):
+
+        z1 = LN(MSA(x))  + x          z2 = LN(FF1(z1)) + z1
+        z3 = LN(MISA({z2}_batch)) + z2   r = LN(FF2(z3)) + z3
+
+    MISA (Alg. 1): reshape [b, n, d] → [1, b, n·d], self-attention entre as
+    b linhas do lote, reshape de volta. Todos os tokens de todas as amostras
+    do lote se comunicam — não apenas o CLS.
+    """
+
+    def __init__(self, n_tokens: int, d_model: int, n_heads: int,
+                 dim_head: int = 16, attn_dropout: float = 0.1,
+                 ff_dropout: float = 0.1):
+        super().__init__()
+        self.msa = _SAINTAttention(d_model, n_heads, dim_head, attn_dropout)
+        self.ln1 = nn.LayerNorm(d_model)
+        self.ff1 = _FeedForward(d_model, dropout=ff_dropout)
+        self.ln2 = nn.LayerNorm(d_model)
+        self.misa = _SAINTAttention(n_tokens * d_model, n_heads, dim_head, attn_dropout)
+        self.ln3 = nn.LayerNorm(d_model)
+        self.ff2 = _FeedForward(d_model, dropout=ff_dropout)
+        self.ln4 = nn.LayerNorm(d_model)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:   # x: [b, n, d]
+        b, n, d = x.shape
+        z1 = self.ln1(self.msa(x)) + x
+        z2 = self.ln2(self.ff1(z1)) + z1
+        row = z2.reshape(1, b, n * d)                     # Alg. 1: 1 × b × (n·d)
+        z3 = self.ln3(self.misa(row).reshape(b, n, d)) + z2
+        return self.ln4(self.ff2(z3)) + z3
+
+
+class SAINTClassifier(nn.Module):
+    """SAINT para classificação binária (arquitetura fiel a Somepalli et al. 2021).
+
+    Embedding por atributo (FC+ReLU), token [CLS] aprendido, L estágios
+    SAINTStage (MSA → FF → MISA → FF, LayerNorm nos resíduos, GELU) e cabeça
+    MLP de uma camada oculta com ReLU sobre a representação do [CLS]
+    (Seção 4, "Finetuning").
+
+    Não implementado (declarado na dissertação): pré-treinamento contrastivo
+    (Seção 4) — o modelo é treinado de forma puramente supervisionada, como a
+    variante sem pré-treino reportada no artigo. O laço de treino
+    (``fit_model``) é o protocolo comum a todos os Transformers do estudo.
+
+    A atenção inter-instâncias é BATCH-LEVEL: cada linha atende às demais
+    linhas do lote passado ao ``forward``. ``landmark_idx`` é ignorado
+    (compatibilidade com ``fit_model``/``eval_with_context``).
+    """
+
+    def __init__(self, n_features: int, d_model: int = 32, n_heads: int = 8,
+                 n_layers: int = 1, dim_head: int = 16,
+                 attn_dropout: float = 0.1, ff_dropout: float = 0.1,
+                 head_hidden: int = 1000, embed_hidden: int = 100,
+                 tau_ratio: float = 0.1, dropout: float | None = None):
+        super().__init__()
+        if dropout is not None:            # compatibilidade com assinatura antiga
+            attn_dropout = ff_dropout = dropout
+        self.embed = SAINTContinuousEmbedding(n_features, d_model, embed_hidden)
+        self.cls_token = nn.Parameter(torch.zeros(1, 1, d_model))
+        nn.init.normal_(self.cls_token, std=0.02)
+        n_tokens = n_features + 1
+        self.stages = nn.ModuleList([
+            SAINTStage(n_tokens, d_model, n_heads, dim_head, attn_dropout, ff_dropout)
+            for _ in range(n_layers)
+        ])
+        self.head = nn.Sequential(
+            nn.Linear(d_model, head_hidden), nn.ReLU(), nn.Linear(head_hidden, 1),
+        )
+
+    def forward(self, x: torch.Tensor,
+                landmark_idx: Optional[torch.Tensor] = None) -> torch.Tensor:
+        n = x.shape[0]
+        h = torch.cat([self.cls_token.expand(n, -1, -1), self.embed(x)], dim=1)  # [n, p+1, d]
+        for stage in self.stages:
+            h = stage(h)
+        return self.head(h[:, 0, :]).squeeze(-1)          # só o [CLS] vai à cabeça
+
+
 class SAINTBlock(nn.Module):
-    """
-    Bloco SAINT: alterna feature-attention (sobre tokens) e intersample attention
-    (sobre instâncias) em cada camada.
-
-    Diferença-chave vs. FTTransformerClassifier (inter_full):
-      - inter_full: todos os blocos de feature-attention → uma camada inter-instâncias
-      - SAINTBlock: feature-attention → inter-instâncias → feature-attention → ... (alternado)
-
-    A intersample attention opera sobre o token CLS de cada instância, que
-    agrega a representação intra-instância. Sem CUR (referência completa).
-    """
+    """[HISTÓRICO — não usado nos experimentos novos] Bloco da versão antiga:
+    feature-attention seguida de atenção inter-instâncias SÓ sobre o CLS."""
 
     def __init__(self, d_model: int, n_heads: int, tau_ratio: float = 0.1,
                  dropout: float = 0.0):
@@ -502,33 +641,16 @@ class SAINTBlock(nn.Module):
                                                      dropout=dropout)
 
     def forward(self, h: torch.Tensor) -> torch.Tensor:
-        """
-        Parâmetros
-        ----------
-        h : tensor [n, n_tokens, d_model]  (CLS na posição 0)
-
-        Retorna
-        -------
-        h : tensor [n, n_tokens, d_model]
-        """
-        h = self.feat_block(h)                  # feature-attention (por instância)
-        cls = h[:, 0, :]                        # CLS tokens: [n, d_model]
-        cls = self.inter_attn(cls, None)        # intersample attention completa (sem CUR)
-        h = torch.cat([cls.unsqueeze(1), h[:, 1:, :]], dim=1)
-        return h
+        h = self.feat_block(h)
+        cls = self.inter_attn(h[:, 0, :], None)
+        return torch.cat([cls.unsqueeze(1), h[:, 1:, :]], dim=1)
 
 
-class SAINTClassifier(nn.Module):
-    """
-    SAINT para classificação binária de dados tabulares.
-
-    Usa blocos SAINTBlock (alternância feat-attn + inter-attn) como referência
-    com atenção intersample completa (sem CUR). Serve de upper bound para
-    a aproximação CUR proposta em FTTransformerClassifier.
-
-    Reutiliza FeatureTokenizer e InterInstanceAttentionCUR existentes;
-    compatível com fit_model() e eval_with_context() (landmark_idx=None).
-    """
+class SAINTClassifierCLSOnly(nn.Module):
+    """[HISTÓRICO] Versão usada nos resultados anteriores a 2026-09-18:
+    tokenizador linear do FT-Transformer + SAINTBlock (inter-instâncias só no
+    CLS) + cabeça MLP. Mantida apenas para reproduzir/inspecionar resultados
+    antigos; NÃO é fiel ao artigo (ver docs/model_references.md)."""
 
     def __init__(self, n_features: int, d_model: int = 64, n_heads: int = 4,
                  n_layers: int = 2, tau_ratio: float = 0.1, dropout: float = 0.0):
@@ -549,27 +671,11 @@ class SAINTClassifier(nn.Module):
 
     def forward(self, x: torch.Tensor,
                 landmark_idx: Optional[torch.Tensor] = None) -> torch.Tensor:
-        """
-        Parâmetros
-        ----------
-        x : tensor [n, d_features]
-        landmark_idx : ignorado (SAINT usa atenção completa); aceito para compatibilidade
-                       com fit_model() e eval_with_context().
-
-        Retorna
-        -------
-        logits : tensor [n]
-        """
         n = x.shape[0]
-        h = self.tokenizer(x)                           # [n, d, D]
-        cls = self.cls_token.expand(n, -1, -1)          # [n, 1, D]
-        h = torch.cat([cls, h], dim=1)                  # [n, d+1, D]
-
+        h = torch.cat([self.cls_token.expand(n, -1, -1), self.tokenizer(x)], dim=1)
         for block in self.blocks:
             h = block(h)
-
-        cls_embed = self.norm_cls(h[:, 0, :])           # [n, D]
-        return self.head(cls_embed).squeeze(-1)          # [n]
+        return self.head(self.norm_cls(h[:, 0, :])).squeeze(-1)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
