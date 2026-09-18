@@ -215,6 +215,7 @@ class FTTransformer(BaseEstimator, ClassifierMixin):
         val_fraction: float = 0.10,
         device: str | None = None,
         random_state: int = 42,
+        min_epochs: int = 0,
     ) -> None:
         self.embedding_dim = embedding_dim
         self.num_blocks = num_blocks
@@ -233,6 +234,8 @@ class FTTransformer(BaseEstimator, ClassifierMixin):
         self.val_fraction = val_fraction
         self.device = device
         self.random_state = random_state
+        # piso de épocas antes de a parada antecipada poder disparar (2026-09-18)
+        self.min_epochs = min_epochs
 
     def _get_device(self) -> torch.device:
         if self.device is not None:
@@ -344,7 +347,7 @@ class FTTransformer(BaseEstimator, ClassifierMixin):
                     no_improve = 0
                 else:
                     no_improve += 1
-                    if no_improve >= self.patience:
+                    if no_improve >= self.patience and (epoch + 1) >= self.min_epochs:
                         logger.info("Early stopping at epoch %d (val_loss=%.4f).", epoch, val_loss)
                         break
 

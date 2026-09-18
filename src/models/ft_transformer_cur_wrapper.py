@@ -81,7 +81,24 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
         m_landmarks: int | None = None,
         pinv_grad: bool = False,
         selection_method: str = "colnorm",
+        minibatch_landmarks: str = "per_batch",
+        predict_mode: str = "full_context",
+        min_epochs: int = 0,
     ):
+        # minibatch_landmarks: só importa quando batch_size < n_treino.
+        #   "per_batch" (histórico): landmarks sorteados dentro de cada lote.
+        #   "global": os m landmarks (colnorm sobre o treino inteiro) são anexados
+        #             a cada lote — contexto "lote ∪ landmarks", mesmos landmarks
+        #             do treino à inferência.
+        # predict_mode:
+        #   "full_context" (histórico, Tiers): um forward sobre [X_train ‖ X_test].
+        #   "streaming": resumo de Nyström calculado só com o treino (softmax
+        #             online, em blocos); predições independentes entre si e
+        #             memória O(bloco). É a rota do benchmark da Tabela 19.
+        # min_epochs: piso de épocas antes de a parada antecipada poder disparar.
+        self.minibatch_landmarks = minibatch_landmarks
+        self.predict_mode = predict_mode
+        self.min_epochs = min_epochs
         # Seletor de landmarks (subconjunto fixo de instâncias de treino usadas
         # como landmark-keys). Padrão "colnorm"; as subclasses definem os demais.
         # Avaliado no Apêndice de ablação de seleção (paralelo ao Nyström-SVM).
@@ -187,6 +204,8 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
         X_tr_t, y_tr_t = self._to_tensor(X_tr, y_tr)
         X_val_t, y_val_t = self._to_tensor(X_val, y_val)
 
+        use_global = (self.minibatch_landmarks == "global" and self.batch_size is not None
+                      and self.batch_size < len(idx_tr))
         fit_model(
             self._model, X_tr_t, y_tr_t, X_val_t, y_val_t,
             landmark_idx=self._landmark_idx_,
@@ -194,6 +213,8 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
             weight_decay=self.weight_decay,
             early_stop_metric=self.early_stop_metric,
             batch_size=self.batch_size,
+            global_landmark_rows=X_tr_t[self._landmark_idx_] if use_global else None,
+            min_epochs=self.min_epochs,
         )
 
         # Armazena X_train_ completo como contexto para inferência
@@ -215,11 +236,66 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
         self.sparsity_ratio_ = 1.0 - m_eff / n
         self.n_support_ = m_eff   # landmarks usados como keys
 
+        if self.predict_mode == "streaming":
+            self._precompute_train_summary()
         return self
+
+    # ── Rota de predição streaming (resumo só do treino) ─────────────────────
+    @torch.no_grad()
+    def _precompute_train_summary(self, chunk_size: int | None = None):
+        """Congela o resumo de Nyström usando SÓ X_train_: K_m e U⁺·(R·V),
+        com softmax online por blocos (nunca materializa o contexto inteiro)."""
+        from src.models.ft_transformer_model import _truncated_pinv
+        underlying = self._model; attn = underlying.inter_attn
+        underlying.eval()
+        bs = chunk_size or self.batch_size or 1024
+        idx = self._landmark_idx_full_
+        X_train_np = self.X_train_; n_tr = len(X_train_np)
+        H, dh = attn.n_heads, attn.d_head
+        cls_lm = underlying.get_cls_embeddings(self._to_tensor(X_train_np[idx.cpu().numpy()]))
+        m = cls_lm.shape[0]
+        Q_m = attn.q_proj(cls_lm).view(m, H, dh).permute(1, 0, 2)
+        K_m = attn.k_proj(cls_lm).view(m, H, dh).permute(1, 0, 2)
+        W = torch.softmax(Q_m @ K_m.transpose(-1, -2) / attn.scale, dim=-1)
+        U_inv = torch.stack([_truncated_pinv(W[h], attn.tau_ratio) for h in range(H)], dim=0)
+        running_max = torch.full((H, m), float("-inf"), device=Q_m.device)
+        running_sum = torch.zeros((H, m), device=Q_m.device)
+        running_out = torch.zeros((H, m, dh), device=Q_m.device)
+        for s in range(0, n_tr, bs):
+            cls_chunk = underlying.get_cls_embeddings(self._to_tensor(X_train_np[s:s + bs]))
+            c = cls_chunk.shape[0]
+            K_c = attn.k_proj(cls_chunk).view(c, H, dh).permute(1, 0, 2)
+            V_c = attn.v_proj(cls_chunk).view(c, H, dh).permute(1, 0, 2)
+            scores = Q_m @ K_c.transpose(-1, -2) / attn.scale
+            new_max = torch.maximum(running_max, scores.max(dim=-1).values)
+            corr = torch.exp(running_max - new_max)
+            p = torch.exp(scores - new_max.unsqueeze(-1))
+            running_sum = running_sum * corr + p.sum(dim=-1)
+            running_out = running_out * corr.unsqueeze(-1) + p @ V_c
+            running_max = new_max
+        self._stream_K_m = K_m
+        self._stream_summary = U_inv @ (running_out / running_sum.unsqueeze(-1))
+
+    @torch.no_grad()
+    def _logits_streaming(self, X: np.ndarray) -> np.ndarray:
+        underlying = self._model; attn = underlying.inter_attn
+        underlying.eval()
+        bs = self.batch_size or 1024
+        parts = []
+        for s in range(0, len(X), bs):
+            cls = underlying.get_cls_embeddings(self._to_tensor(X[s:s + bs]))
+            c = cls.shape[0]
+            Q = attn.q_proj(cls).view(c, attn.n_heads, attn.d_head).permute(1, 0, 2)
+            C = torch.softmax(Q @ self._stream_K_m.transpose(-1, -2) / attn.scale, dim=-1)
+            out = (C @ self._stream_summary).permute(1, 0, 2).reshape(c, attn.d_model)
+            out = attn.norm(attn.out_proj(out) + cls)
+            parts.append(underlying.head(out).squeeze(-1).cpu().numpy())
+        return np.concatenate(parts)
 
     @torch.no_grad()
     def _logits(self, X: np.ndarray) -> np.ndarray:
-        """Logits para X_test usando X_train_ como contexto.
+        """Logits para X_test. predict_mode="streaming" usa o resumo congelado do
+        treino; "full_context" (histórico) faz um forward sobre [X_train ‖ X_test].
 
         Inferência transdutiva full-context num único forward — mesmo contrato do
         SAINT e de eval_with_context no fit. `batch_size` governa apenas o TREINO;
@@ -227,6 +303,8 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
         (``m_landmarks``), mantendo a inferência sub-quadrática mesmo carregando
         todo o contexto de treino — o custo que no SAINT é O(N²).
         """
+        if self.predict_mode == "streaming":
+            return self._logits_streaming(X)
         self._model.eval()
         n_ctx = len(self.X_train_)
         X_ctx = np.concatenate([self.X_train_, X], axis=0)

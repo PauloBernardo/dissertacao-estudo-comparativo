@@ -687,8 +687,18 @@ def train_epoch(model: FTTransformerClassifier, X_train: torch.Tensor,
                 criterion: nn.Module,
                 landmark_idx: Optional[torch.Tensor] = None,
                 max_grad_norm: float = 1.0,
-                batch_size: int | None = None) -> float:
-    """Gradient descent — mini-batch se batch_size fornecido, senão batch completo."""
+                batch_size: int | None = None,
+                global_landmark_rows: Optional[torch.Tensor] = None) -> float:
+    """Gradient descent — mini-batch se batch_size fornecido, senão batch completo.
+
+    global_landmark_rows : [m, p] ou None
+        Se fornecido (modo mini-lote com landmarks GLOBAIS, 2026-09-18), as m
+        linhas de landmark do conjunto de treino inteiro são anexadas a cada
+        lote; a atenção de Nyström usa-as como landmarks e o contexto do lote
+        passa a ser "lote ∪ landmarks". Só as B primeiras saídas entram na perda.
+        Se None (comportamento histórico), os landmarks são sorteados DENTRO de
+        cada lote (10% do lote) — regime usado apenas no benchmark de memória.
+    """
     n = X_train.shape[0]
     if batch_size is None or batch_size >= n:
         # comportamento original: batch completo
@@ -715,14 +725,20 @@ def train_epoch(model: FTTransformerClassifier, X_train: torch.Tensor,
         X_b, y_b = X_train[idx], y_train[idx]
         B = X_b.shape[0]
 
-        if m_per_batch is not None:
+        if global_landmark_rows is not None:
+            # landmarks globais: anexa as m linhas ao lote, índices apontam para elas
+            m = global_landmark_rows.shape[0]
+            X_in = torch.cat([X_b, global_landmark_rows], dim=0)
+            lm_idx = torch.arange(B, B + m, device=X_b.device)
+        elif m_per_batch is not None:
+            X_in = X_b
             m = min(m_per_batch, B)
             lm_idx = torch.randperm(B, device=X_b.device)[:m]
         else:
-            lm_idx = None
+            X_in, lm_idx = X_b, None
 
         optimizer.zero_grad()
-        logits = model(X_b, landmark_idx=lm_idx)
+        logits = model(X_in, landmark_idx=lm_idx)[:B]
         loss = criterion(logits, y_b)
         if torch.isfinite(loss):
             loss.backward()
@@ -767,7 +783,9 @@ def fit_model(model: FTTransformerClassifier,
               lr: float = 1e-3, epochs: int = 300, patience: int = 30,
               weight_decay: float = 1e-4,
               early_stop_metric: str = "val_acc",
-              batch_size: int | None = None) -> dict:
+              batch_size: int | None = None,
+              global_landmark_rows: Optional[torch.Tensor] = None,
+              min_epochs: int = 0) -> dict:
     """
     Treina o modelo com early stopping em uma métrica de validação.
 
@@ -809,7 +827,8 @@ def fit_model(model: FTTransformerClassifier,
 
     for epoch in range(epochs):
         train_epoch(model, X_train_t, y_train_t, optimizer, criterion,
-                    landmark_idx, batch_size=batch_size)
+                    landmark_idx, batch_size=batch_size,
+                    global_landmark_rows=global_landmark_rows)
 
         # Validação: para modelos com inter-instance attention (SAINT, FT-CUR)
         # passamos [X_train || X_val] para que o contexto seja o mesmo da inferência.
@@ -825,6 +844,12 @@ def fit_model(model: FTTransformerClassifier,
                     logits_chunks = []
                     for s in range(0, X_ctx_val.shape[0], batch_size):
                         chunk = X_ctx_val[s:s + batch_size]
+                        if global_landmark_rows is not None:
+                            c = chunk.shape[0]
+                            chunk_in = torch.cat([chunk, global_landmark_rows], dim=0)
+                            lm = torch.arange(c, c + global_landmark_rows.shape[0], device=chunk.device)
+                            logits_chunks.append(model(chunk_in, landmark_idx=lm)[:c])
+                            continue
                         if use_lm_in_val:
                             m = max(2, round(0.10 * chunk.shape[0]))
                             lm = torch.arange(m, device=chunk.device)
@@ -864,7 +889,9 @@ def fit_model(model: FTTransformerClassifier,
             no_improve = 0
         else:
             no_improve += 1
-            if no_improve >= patience:
+            # min_epochs: a parada antecipada só pode disparar depois dele
+            # (piso de passos para datasets em que uma época é um único passo)
+            if no_improve >= patience and (epoch + 1) >= min_epochs:
                 break
 
     if best_state is not None:

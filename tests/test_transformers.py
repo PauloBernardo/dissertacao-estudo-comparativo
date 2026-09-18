@@ -452,3 +452,51 @@ class TestSAINTFaithful:
         clf.fit(X, y)
         assert clf.predict(X).shape == (120,)
         assert clf.predict_proba(X).shape == (120, 2)
+
+
+class TestFTCURMinibatchGlobalAndStreaming:
+    """FT-CUR: mini-lote com landmarks globais e rota de predição streaming (2026-09-18)."""
+
+    def _data(self, n=300, p=5, seed=0):
+        rng = np.random.RandomState(seed)
+        X = rng.randn(n, p); y = (X[:, 0] + 0.5 * X[:, 1] > 0).astype(int)
+        return X, y
+
+    def test_global_minibatch_fits_and_predicts(self):
+        from src.models.ft_transformer_cur_wrapper import FTTransformerCURColnorm
+        X, y = self._data()
+        m = FTTransformerCURColnorm(d_model=8, n_heads=2, n_layers=1, m_ratio=0.1, epochs=3,
+                                    patience=2, batch_size=64, minibatch_landmarks="global",
+                                    random_state=0).fit(X, y)
+        assert m.predict(X[:10]).shape == (10,)
+
+    def test_streaming_predictions_are_independent_of_test_composition(self):
+        from src.models.ft_transformer_cur_wrapper import FTTransformerCURColnorm
+        X, y = self._data()
+        m = FTTransformerCURColnorm(d_model=8, n_heads=2, n_layers=1, m_ratio=0.1, epochs=3,
+                                    patience=2, batch_size=None, predict_mode="streaming",
+                                    random_state=0).fit(X, y)
+        Xte = self._data(seed=1)[0][:40]
+        together = m._logits(Xte)
+        alone = np.concatenate([m._logits(Xte[:1]), m._logits(Xte[1:])])
+        np.testing.assert_allclose(together, alone, rtol=1e-5, atol=1e-6)
+        # a rota histórica, por construção, depende do lote de teste (só documenta o contraste)
+        m.predict_mode = "full_context"
+        assert m._logits(Xte).shape == (40,)
+
+    def test_min_epochs_delays_early_stopping(self):
+        from src.models.ft_transformer_cur_wrapper import FTTransformerCURColnorm
+        import src.models.ft_transformer_model as M
+        X, y = self._data()
+        captured = {}
+        orig = M.fit_model
+        def spy(*a, **k):
+            info = orig(*a, **k); captured['n'] = info['n_epochs']; return info
+        import src.models.ft_transformer_cur_wrapper as W
+        W.fit_model = spy
+        try:
+            FTTransformerCURColnorm(d_model=8, n_heads=2, n_layers=1, epochs=30, patience=1,
+                                    min_epochs=20, random_state=0).fit(X, y)
+        finally:
+            W.fit_model = orig
+        assert captured['n'] >= 20

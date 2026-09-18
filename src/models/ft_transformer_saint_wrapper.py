@@ -70,7 +70,9 @@ class SAINTColnorm(BaseEstimator, ClassifierMixin):
         dim_head: int = 16,
         attn_dropout: float = 0.1,
         ff_dropout: float = 0.1,
+        min_epochs: int = 0,
     ):
+        self.min_epochs = min_epochs
         # dim_head / dropouts: valores do artigo (Apêndice) e do código de referência.
         self.dim_head     = dim_head
         self.attn_dropout = attn_dropout
@@ -122,6 +124,7 @@ class SAINTColnorm(BaseEstimator, ClassifierMixin):
             weight_decay=self.weight_decay,
             early_stop_metric=self.early_stop_metric,
             batch_size=self.batch_size,  # mini-batch: atenção B×B limitada pelo orçamento de memória
+            min_epochs=self.min_epochs,
         )
 
         self.X_train_ = X
