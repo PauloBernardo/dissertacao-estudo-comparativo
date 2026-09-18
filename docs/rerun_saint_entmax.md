@@ -41,14 +41,16 @@ números de TODOS os Transformers nessa ablação mudam.
    # Ablação A: os SEIS Transformers foram re-executados por transferência → substitui o arquivo inteiro
    cp results/ablation_a_transformers.json results/ablation_a_transformers_pre_${TAG}_backup.json
    cp results/rerun_saint_entmax_ablA.json results/ablation_a_transformers.json
-   # Benchmark: substituir as entradas das três variantes
-   python scripts/merge_rerun_results.py --target results/transformer_scaling.json --source results/rerun_saint_entmax_scaling.json --variants SAINT_minibatch SAINT_fullbatch FTTransformer_entmax --tag $TAG
+   # Benchmark (Tabela 19): a fonte canônica é results/table19_results.json (era Downloads/table19_results.json)
+   python scripts/merge_rerun_results.py --target results/table19_results.json --source results/rerun_saint_entmax_table19.json --variants SAINT_minibatch SAINT_fullbatch FTTransformer_entmax --tag $TAG
+   python scripts/make_table19.py --input results/table19_results.json --output ../dissertacao-latex/tables/benchmark_transformers_memory.tex --n-values 1000,5000,10000,20000,50000
+   # figuras do benchmark: scratch/regen_figures/plot_scaling.py (aponta para Downloads/table19_results.json — trocar para results/table19_results.json)
    ```
    Se `tier2_transformers_merged.json` ou os dumps `(1)/(2)` forem usados por algum gerador, aplicar o mesmo merge neles
    (o extrator `extract_tier2_fixed_params.py` lê `tier2_transformers*.json` — todos devem conter os registros novos, ou apagar os dumps antigos).
 4. Regerar: `generate_analysis.py`, `generate_metrics_tables.py`, `generate_ablation_tables.py`, `generate_ablation_figs.py`,
    `generate_report_figs.py`, `generate_tier2_n5000_tables.py`/`analyze_tier2_n5000.py`, `compare_tabzilla.py`,
-   `plot_decision_surfaces.py` (SAINT), tabela do benchmark de Transformers.
+   `plot_decision_surfaces.py` (SAINT), `make_table19.py` (Tabela 19).
 5. Copiar as tabelas/figuras para `dissertacao-latex/tables` e `Figuras`, e **reaplicar as edições manuais**:
    linhas dos Transformers em `tier2_sparsity.tex`; legenda longa de `benchmark_lssvm.tex`.
 6. Revisar na dissertação os trechos com números de SAINT / FT-Entmax / Ablação A:
