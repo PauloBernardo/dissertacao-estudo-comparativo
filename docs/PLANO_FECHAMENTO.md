@@ -41,7 +41,8 @@ sessão até a defesa. Um passo de cada vez; marcar `[x]` ao concluir e anotar a
 ## 3. VERSÃO 2 — re-executar os seis Transformers sob o protocolo dos artigos (decisão depois do piloto)
 Protocolo proposto (`PROTOCOLS["paper"]` em `scripts/pilot_transformer_budget.py`):
 AdamW, lr 1e-4, sem agenda; lote 256; parada após 16 épocas sem melhora na validação, **piso de 200 épocas** (única regra nossa: nos datasets em que 1 época = 1 passo), teto 1000; melhor ponto de validação; decaimento de peso por artigo (1e-5 FT, 0,01 SAINT); arquiteturas e grades como estão. FT-CUR: decidir entre lote completo (desenho original) e mini-lote com landmarks globais (`minibatch_landmarks="global"` + `predict_mode="streaming"`).
-- [ ] **2.1** Piloto na CPU: `python scripts/pilot_transformer_budget.py --datasets TWS HAB AI4I BANK TELCO --seeds 3` (≈3–4 h). Responde: o piso tira os modelos do platô? lr 1e-4 basta? FT-CUR mini-lote global se sustenta em F1? custo por ajuste → horas de GPU.
+- [x] **2.1** Piloto — CONCLUÍDO 2026-09-18 20:47 (ver §3.1/3.2 abaixo).
+- [ ] **2.1-bis** Piloto na CPU: `python scripts/pilot_transformer_budget.py --datasets TWS HAB AI4I BANK TELCO --seeds 3` (≈3–4 h). Responde: o piso tira os modelos do platô? lr 1e-4 basta? FT-CUR mini-lote global se sustenta em F1? custo por ajuste → horas de GPU.
 - [ ] **2.2** Decidir alcance: (a) seis Transformers em tudo (Tier 1, Tier 2, Ablações A–D, Tabela 19): estimativa 120–200 h de GPU (publicado consumiu ≈40 h: 10,6 Tier 1 + 17,8 Tier 2 + 5,9 Abl. A + 4,6 Abl. B/C + 1,2 N=5000); (b) só SAINT e FT-CUR nos Tiers + ablação de orçamento nos sintéticos para os seis: ≈30–40 h.
 - [ ] **2.3** Implementar o perfil de protocolo em `src/tuning/grids.py` (novo conjunto de `fixed`), notebook Kaggle por fases (copiar o esquema do atual), rodar.
 - [ ] **2.4** Merge em JSONs NOVOS (não sobrescrever os da versão 1), regerar em uma cópia da tese, comparar as conclusões; então decidir se a versão 2 substitui a 1 ou entra como capítulo/apêndice.
@@ -53,3 +54,45 @@ AdamW, lr 1e-4, sem agenda; lote 256; parada após 16 épocas sem melhora na val
 - Tabelas com edição manual que os geradores não reproduzem: linhas dos Transformers em `tier2_sparsity.tex`; legenda longa de `benchmark_lssvm.tex`; `resizebox` em `ablation_a/b.tex`; `Tier~1` nas legendas curtas. O script reaplica todas exceto a legenda do `benchmark_lssvm.tex` (não é regerada).
 - `generate_nemenyi_analysis.py` lê os ranks com ponto decimal → rodar ANTES de `normalize_decimals.py`.
 - O notebook Kaggle clona `main` por padrão: sempre fazer checkout da branch de trabalho.
+
+### 3.1 Resultado do piloto (2026-09-18, 3 sementes; TWS/HAB na CPU, AI4I/BANK/TELCO na GPU MX350; `results/pilot_transformer_budget.json`)
+F1-macro (épocas efetivas, segundos por ajuste):
+
+| dataset | modelo | publicado | artigos lr 1e-4 | artigos lr 1e-3 |
+|---|---|---|---|---|
+| TWS | FT_softmax | 0.645 (9 ép., 1 s) | 0.805 (299 ép., 4 s) | 0.961 (222 ép., 3 s) |
+| TWS | SAINT | 0.547 (22 ép., 0 s) | 0.655 (200 ép., 2 s) | 0.922 (207 ép., 3 s) |
+| TWS | FTCUR_full | 0.642 (13 ép., 0 s) | 0.626 (211 ép., 2 s) | 0.774 (235 ép., 2 s) |
+| TWS | FTCUR_mb_global | 0.642 (13 ép., 0 s) | 0.621 (208 ép., 2 s) | 0.760 (214 ép., 2 s) |
+| HAB | FT_softmax | 0.511 (9 ép., 0 s) | 0.446 (200 ép., 2 s) | 0.594 (200 ép., 2 s) |
+| HAB | SAINT | 0.514 (29 ép., 0 s) | 0.591 (227 ép., 3 s) | 0.621 (200 ép., 2 s) |
+| HAB | FTCUR_full | 0.608 (16 ép., 0 s) | 0.569 (209 ép., 2 s) | 0.608 (200 ép., 2 s) |
+| HAB | FTCUR_mb_global | 0.608 (16 ép., 0 s) | 0.569 (209 ép., 2 s) | 0.608 (200 ép., 2 s) |
+| AI4I | FT_softmax | 0.771 (14 ép., 1 s) | 0.887 (200 ép., 10 s) | 0.882 (200 ép., 12 s) |
+| AI4I | SAINT | 0.829 (37 ép., 1 s) | 0.850 (205 ép., 11 s) | 0.875 (203 ép., 12 s) |
+| AI4I | FTCUR_full | 0.823 (36 ép., 1 s) | 0.835 (425 ép., 12 s) | 0.881 (203 ép., 6 s) |
+| AI4I | FTCUR_mb_global | 0.823 (36 ép., 1 s) | 0.846 (313 ép., 25 s) | 0.888 (200 ép., 16 s) |
+| BANK | FT_softmax | 0.710 (28 ép., 3 s) | 0.688 (200 ép., 28 s) | 0.669 (200 ép., 30 s) |
+| BANK | SAINT | 0.672 (28 ép., 2 s) | 0.677 (204 ép., 31 s) | 0.680 (201 ép., 30 s) |
+| BANK | FTCUR_full | 0.602 (40 ép., 3 s) | 0.684 (392 ép., 26 s) | 0.685 (200 ép., 13 s) |
+| BANK | FTCUR_mb_global | 0.602 (40 ép., 3 s) | 0.682 (200 ép., 53 s) | 0.703 (200 ép., 49 s) |
+| TELCO | FT_softmax | 0.690 (18 ép., 2 s) | 0.708 (200 ép., 35 s) | 0.686 (202 ép., 32 s) |
+| TELCO | SAINT | 0.702 (28 ép., 3 s) | 0.709 (200 ép., 32 s) | 0.704 (200 ép., 33 s) |
+| TELCO | FTCUR_full | 0.716 (40 ép., 3 s) | 0.701 (280 ép., 21 s) | 0.712 (200 ép., 15 s) |
+| TELCO | FTCUR_mb_global | 0.716 (40 ép., 3 s) | 0.708 (200 ép., 53 s) | 0.691 (200 ép., 55 s) |
+
+**Leituras.** (a) Tier 1 é orçamento, não viés indutivo: espiral FT-Softmax 0,645→0,961, SAINT 0,547→0,922 (LSSVM 0,994). (b) lr 1e-4 dos artigos exige piso muito maior que 200 épocas nas bases pequenas; lr 1e-3 com a paciência dos artigos é o que sai do platô. (c) No regime N=2000, FT-Softmax e SAINT quase não mudam (já tinham 80–160 passos); quem ganha é o FT-CUR em lote completo (BANK 0,602→0,685), que tinha 40 passos. (d) FT-CUR mini-lote com landmarks globais iguala ou supera o lote completo (BANK 0,703) — candidato a modo principal, com custo O(N·m) genuíno. (e) FT-Softmax no BANK cai um pouco com mais épocas (0,710→0,669): paciência 16 + piso 200 deixa sobreajustar; calibrar teto/paciência.
+
+### 3.2 Conta de GPU (T4) para a versão 2
+Fator de custo por ajuste (protocolo dos artigos lr 1e-3 ÷ publicado, N=2000): FT ×11,5; SAINT ×11,6; FT-CUR lote completo ×4,9; FT-CUR mini-lote global ×18,4. Nos datasets pequenos (1 passo/época) ≈ ×20.
+Publicado (T4): Tier 1 10,6 h; Tier 2 17,8 h; Abl. A 5,9 h; Abl. B/C 4,6 h; N=5000 1,2 h; total ≈ 40 h.
+
+| Opção | O que muda | GPU estimada | Kaggle (30 h/semana) |
+|---|---|---|---|
+| A | tudo como a v1: grade + 5 folds + 30 sementes, seis modelos | ≈ 560 h | 19 semanas — inviável |
+| B | idem com 10 sementes | ≈ 190 h | 6–7 semanas |
+| C | **configuração fixa por modelo (padrão dos artigos / moda da v1), sem grade**, 30 sementes, seis modelos | ≈ 15–20 h | 1 semana |
+| D | só SAINT e FT-CUR com grade + 5 folds, 30 sementes | ≈ 45 h (SAINT) + 80–145 h (FT-CUR) | 4–6 semanas |
+| E | C + grade só no par SAINT/FT-CUR no Tier 2 | ≈ 60–80 h | 2–3 semanas |
+
+Recomendação: **C** (é o desenho do artigo do FT-Transformer: "default configuration performs on par with tuned"), declarando que na v2 os Transformers usam configuração fixa enquanto os LSSVMs mantêm a grade — assimetria oposta à atual (hoje a grade dos Transformers tem 6–12 configurações contra 36–75 dos LSSVMs) e menos grave, pois o que a v2 quer medir é o efeito do orçamento de treino. Abl. A já é por transferência (barata). Decisão pendente.
