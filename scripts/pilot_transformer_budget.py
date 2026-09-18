@@ -20,6 +20,7 @@ from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import f1_score
 from src.data.loaders import DatasetLoader
+from src.experiments.reproducibility import set_global_seed
 
 PROTOCOLS = {
     # (lr, batch FT, batch SAINT, batch FT-CUR, epochs, patience, min_epochs)
@@ -78,6 +79,7 @@ def main():
                 for model in a.models:
                     t0 = time.time()
                     try:
+                        set_global_seed(seed)   # torch/numpy/random — como nos runners oficiais
                         m = make(model, P, seed).fit(Xtr, ytr)
                         f1 = f1_score(yte, m.predict(Xte), average="macro")
                         n_ep = getattr(m, "n_iter_", getattr(m, "n_epochs_", None))
