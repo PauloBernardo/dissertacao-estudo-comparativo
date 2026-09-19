@@ -314,6 +314,10 @@ class FTTransformer(BaseEstimator, ClassifierMixin):
         best_val_loss = float("inf")
         best_state = None
         no_improve = 0
+        # best_epoch_: época do checkpoint restaurado; n_steps_: passos de gradiente.
+        # Com batch_size >= n_train (Tier 1), uma época é UM passo.
+        best_epoch = 0
+        n_steps = 0
         self.train_losses_: list[float] = []
 
         for epoch in range(self.max_epochs):
@@ -331,6 +335,7 @@ class FTTransformer(BaseEstimator, ClassifierMixin):
                 opt.step()
                 epoch_loss += loss.item()
                 n_batches += 1
+                n_steps += 1
 
             self.train_losses_.append(epoch_loss / max(n_batches, 1))
 
@@ -344,6 +349,7 @@ class FTTransformer(BaseEstimator, ClassifierMixin):
                 if val_loss < best_val_loss - 1e-6:
                     best_val_loss = val_loss
                     best_state = {k: v.clone() for k, v in self.model_.state_dict().items()}
+                    best_epoch = epoch + 1
                     no_improve = 0
                 else:
                     no_improve += 1
@@ -355,6 +361,11 @@ class FTTransformer(BaseEstimator, ClassifierMixin):
             self.model_.load_state_dict(best_state)
 
         self.n_iter_ = epoch + 1
+        self.n_epochs_ = epoch + 1
+        self.best_epoch_ = best_epoch
+        self.n_steps_ = n_steps
+        self.steps_per_epoch_ = max(1, -(-n_train // self.batch_size))
+        self.stopped_early_ = (epoch + 1) < self.max_epochs
         return self
 
     @torch.no_grad()

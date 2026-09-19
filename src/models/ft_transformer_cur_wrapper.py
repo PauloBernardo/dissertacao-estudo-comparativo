@@ -217,6 +217,10 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
             min_epochs=self.min_epochs,
         )
         self.n_epochs_ = int(info['n_epochs'])
+        self.best_epoch_ = int(info.get('best_epoch', 0))
+        self.n_steps_ = int(info.get('n_steps', 0))
+        self.steps_per_epoch_ = int(info.get('steps_per_epoch', 1))
+        self.stopped_early_ = bool(info.get('stopped_early', False))
 
         # Armazena X_train_ completo como contexto para inferência
         # e recalcula landmarks sobre ele (índices agora referem X_train_)

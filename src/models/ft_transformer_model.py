@@ -875,14 +875,22 @@ def fit_model(model: FTTransformerClassifier,
     best_score = float("inf") if early_stop_metric == "val_loss" else -float("inf")
     best_state = None
     no_improve = 0
+    # best_epoch: época (1-indexada) do checkpoint restaurado ao fim. É a medida
+    # que diz se o teto/paciência apertou — n_epochs só diz onde o laço parou.
+    best_epoch = 0
+    n_steps = 0
     t0 = time.time()
 
     uses_inter = getattr(model, 'use_inter_instance', True)
+
+    n_fit = X_train_t.shape[0]
+    steps_per_epoch = 1 if batch_size is None else max(1, -(-n_fit // batch_size))
 
     for epoch in range(epochs):
         train_epoch(model, X_train_t, y_train_t, optimizer, criterion,
                     landmark_idx, batch_size=batch_size,
                     global_landmark_rows=global_landmark_rows)
+        n_steps += steps_per_epoch
 
         # Validação: para modelos com inter-instance attention (SAINT, FT-CUR)
         # passamos [X_train || X_val] para que o contexto seja o mesmo da inferência.
@@ -940,6 +948,7 @@ def fit_model(model: FTTransformerClassifier,
         if better:
             best_score = score
             best_state = {k: v.clone() for k, v in model.state_dict().items()}
+            best_epoch = epoch + 1
             no_improve = 0
         else:
             no_improve += 1
@@ -955,6 +964,10 @@ def fit_model(model: FTTransformerClassifier,
         f'best_{early_stop_metric}': best_score,
         'early_stop_metric': early_stop_metric,
         'n_epochs': epoch + 1,
+        'best_epoch': best_epoch,
+        'n_steps': n_steps,
+        'steps_per_epoch': steps_per_epoch,
+        'stopped_early': (epoch + 1) < epochs,
         'train_time_s': time.time() - t0,
     }
 

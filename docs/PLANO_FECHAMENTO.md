@@ -231,3 +231,75 @@ dimensão do \emph{token} {32, 64, 128, 192}; cabeças {2, 4, 8}; \emph{attentio
 lote 256, teto 300 épocas, paciência 16 sobre a validação com piso de 100 épocas, melhor ponto de validação.
 
 Antiga recomendação (mantida como registro): **C** (é o desenho do artigo do FT-Transformer: "default configuration performs on par with tuned"), declarando que na v2 os Transformers usam configuração fixa enquanto os LSSVMs mantêm a grade — assimetria oposta à atual (hoje a grade dos Transformers tem 6–12 configurações contra 36–75 dos LSSVMs) e menos grave, pois o que a v2 quer medir é o efeito do orçamento de treino. Abl. A já é por transferência (barata). Decisão pendente.
+
+---
+
+## Ablação de orçamento de otimização — desenho e achados de 2026-09-19
+
+Substitui o desenho esboçado nos itens 1.6 e 1.12 (que previa congelar hiperparâmetros e variar
+épocas). Aquele desenho **não é válido**, pelo motivo levantado pelo orientando: a seleção da grade
+acontece *sob* o orçamento apertado, então favorece o que treina rápido, e congelar a escolha
+subestimaria o efeito do orçamento.
+
+### Evidência do viés de seleção (dados já existentes)
+
+- SAINT escolhe `n_layers=1` em **53%** (Tier 1) e **63%** (Tier 2), contra 33% do uniforme — a
+  configuração mais rasa, a mais rápida de treinar.
+- Nas quatro variantes FT a seleção é **quase uniforme** (16–20% nas seis células; uniforme = 16,7%):
+  em 40 épocas o escore de CV não distingue arquitetura. A moda que `extract_tier2_fixed_params.py`
+  calcula é, nesses casos, moda de ruído.
+- top-k e sparsemax puxam no sentido oposto (4 blocos/4 cabeças em 28%/21%), então o viés não tem
+  direção única — mais uma razão para deixar a grade re-selecionar dentro de cada braço.
+- Confirmação direta: no teste local HAB/seed0, ao trocar 40/6 por 200/16 a arquitetura escolhida
+  mudou (FT-softmax 3 blocos/4 cabeças → 2/2; SAINT 2 cabeças → 4).
+- Corolário inesperado: reproduzindo HAB/seed0 em outra placa, FT-softmax bate exatamente (0,6510)
+  mas o SAINT cai para 0,4250 contra 0,5671 publicado, **porque a grade escolheu outra arquitetura**.
+  Com o escore de CV empatado, ruído numérico inverte o argmax. Não é divergência de versão; é
+  sintoma do mesmo achado.
+
+### Correção do enquadramento: quem para o treino é a paciência, não o teto
+
+Os `n_epochs` do piloto sob o protocolo publicado mostram que o teto de 40 quase nunca é alcançado nas
+bases pequenas: FT-softmax para no TWS em 10/9/8 e no HAB em 10/7/11; FT-CUR no TWS em 18/10/10.
+Com lote 512 ≥ conjunto de ajuste, **uma época é um passo de gradiente**, então o critério efetivo é
+"pare após 6 passos sem melhora de `val_loss`". Todo texto que disser "teto de 40 épocas apertou"
+está errado — o correto é "a paciência de 6 cortou em 7–30 passos".
+
+### A assimetria que sustenta a Seção 5.7 (já com dado em mão)
+
+| | LSSVM (ADMM) | Transformers |
+|---|---|---|
+| regra de parada | tolerância nos resíduos primal/dual, `tol=1e-6` | paciência sobre `val_loss` |
+| o que ela certifica | proximidade do ótimo do problema posto | que parou de melhorar em amostra retida |
+| teto | 500 iterações | 40 épocas |
+| teto aperta? | **não** — braço "teto 500" em `results/admm_stability_knobs.json`: CREDIT trunca em 500 contra 673–812 do livre e o F1 é idêntico até a 4ª casa; HIGGS50K converge em ~80 | a medir |
+
+### Instrumentação adicionada
+
+`best_epoch` (época do checkpoint restaurado), `n_steps`, `steps_per_epoch` e `stopped_early` passaram
+a ser gravados nos dois laços de treino (`ft_transformer_model.py` para SAINT/FT-CUR;
+`transformers/ft_transformer.py` tem laço próprio) e expostos pelos wrappers. Os runners de Tier 1 e
+Tier 2 ganharam `--budget-epochs/--budget-patience/--budget-min-epochs`, aplicados aos `fixed` de cada
+variante respeitando as duas convenções de chave (`max_epochs` no FT, `epochs` no SAINT/FT-CUR), e
+gravam as métricas no registro junto de `budget_override`.
+
+`min_epochs` fica DESLIGADO: forçar piso destruiria a medição de onde a paciência dispara — foi o que
+inviabilizou o piloto de 18/09 para fins de custo (usava `min_epochs=200`).
+
+### Execução: `notebooks/budget_ablation_2gpu_kaggle.ipynb`
+
+Braço novo = `--budget-epochs 200 --budget-patience 16` (paciência dos artigos), com a grade
+re-selecionada dentro do braço. O braço de 40/6 **não** é reexecutado: `results/tier1_gridcv.json` e
+`results/tier2_transformers.json` já são esse braço; o pareamento usa as sementes 0–9.
+
+1. **Calibração** (células 1–5, ≈1h30): 2 sementes, Tier 1 completo + Tier 2 em BANK/HIGGS50K/TELCO,
+   nos dois orçamentos. Mede a razão de custo real e serve de controle de reprodutibilidade.
+2. **Leitura** (célula 6): razão de custo, `best_epoch`/`n_epochs`/passos por modelo e braço, quantos
+   bateram no teto, e extrapolação da execução completa.
+3. **Completo** (células 7–8): 10 sementes, Tier 1 (10 datasets) e Tier 2 (6 datasets).
+
+Sanidade local (MX350, 2026-09-19): razão de custo 1,7× no HAB (não 5×, porque a paciência ainda
+dispara antes do teto). No Tier 2/TELCO, FT-softmax com 200/16 parou na época 24 com `best_epoch=8`
+— indício de que no Tier 2 o orçamento **não** aperta, coerente com o piloto (em N=2000 mais épocas
+não ajudavam e no BANK pioravam). Se a calibração confirmar, a Seção 5.7 fica: orçamento aperta no
+Tier 1 (1 passo/época) e não aperta no Tier 2, o que delimita a conclusão em vez de ampliá-la.

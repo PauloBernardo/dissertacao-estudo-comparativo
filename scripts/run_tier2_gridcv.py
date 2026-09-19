@@ -126,9 +126,47 @@ def _subsample(X: np.ndarray, y: np.ndarray, n_total_cap: int,
     return X[idx], y[idx]
 
 
+# ── Override de orçamento de otimização (seção 5.7) ─────────────────────────
+# BUDGET_OVERRIDE é preenchido por --budget-epochs/--budget-patience e aplicado
+# aos `fixed` de CADA variante de Transformer. A grade de arquitetura continua
+# sendo re-selecionada DENTRO de cada braço: congelar os params selecionados sob
+# o orçamento apertado enviesaria o efeito para baixo (a seleção favorece as
+# configurações que treinam rápido — SAINT escolhe n_layers=1 em 53-63%).
+BUDGET_OVERRIDE: dict[str, int] = {}
+
+# Nome da chave de teto varia por wrapper: FT usa max_epochs, SAINT/FT-CUR usam epochs.
+_EPOCH_KEYS = ("max_epochs", "epochs")
+
+
+def _apply_budget(fixed: dict) -> dict:
+    """Aplica BUDGET_OVERRIDE em `fixed`, respeitando o nome de chave do wrapper."""
+    if not BUDGET_OVERRIDE:
+        return fixed
+    out = dict(fixed)
+    if "epochs" in BUDGET_OVERRIDE:
+        for k in _EPOCH_KEYS:
+            if k in out:
+                out[k] = BUDGET_OVERRIDE["epochs"]
+    if "patience" in BUDGET_OVERRIDE and "patience" in out:
+        out["patience"] = BUDGET_OVERRIDE["patience"]
+    if "min_epochs" in BUDGET_OVERRIDE and any(k in out for k in _EPOCH_KEYS):
+        out["min_epochs"] = BUDGET_OVERRIDE["min_epochs"]
+    return out
+
+
+def _budget_attrs(clf) -> dict:
+    """Coleta as métricas de orçamento do estimador reajustado (se expostas)."""
+    keys = ("n_epochs_", "best_epoch_", "n_steps_", "steps_per_epoch_", "stopped_early_")
+    out = {k.rstrip("_"): getattr(clf, k) for k in keys if hasattr(clf, k)}
+    if out:
+        out = {k: (bool(v) if k == "stopped_early" else int(v)) for k, v in out.items()}
+        out["budget_override"] = dict(BUDGET_OVERRIDE) or None
+    return out
+
+
 def _build_pipeline(variant: str, seed: int) -> tuple[Pipeline, dict]:
     cfg   = GRIDS[variant]
-    fixed = dict(cfg["fixed"])
+    fixed = _apply_budget(dict(cfg["fixed"]))
     estimator, _ = _build_model(cfg["model_name"], fixed, label_format="signed")
     if hasattr(estimator, "set_params") and "random_state" in estimator.get_params():
         estimator.set_params(random_state=seed)
@@ -260,6 +298,7 @@ def run_one(variant: str, dataset: str, seed: int, n_train: int) -> dict[str, An
             "predict_time_s":    predict_time,
             **test_metrics,
             **sparsity,
+            **_budget_attrs(clf),
         })
 
     except Exception as exc:
@@ -282,8 +321,25 @@ def main() -> int:
     p.add_argument("--datasets", nargs="+", default=TIER2_DATASETS)
     p.add_argument("--seeds",    nargs="+", type=int, default=DEFAULT_SEEDS)
     p.add_argument("--output",   type=Path, default=OUTPUT_FILE)
+    p.add_argument("--budget-epochs", type=int, default=None,
+                   help="Sobrescreve o teto de epocas dos Transformers (secao 5.7).")
+    p.add_argument("--budget-patience", type=int, default=None,
+                   help="Sobrescreve a paciencia dos Transformers (secao 5.7).")
+    p.add_argument("--budget-min-epochs", type=int, default=None,
+                   help="Piso de epocas antes de a paciencia poder disparar.")
     p.add_argument("--log-level", default="INFO")
     args = p.parse_args()
+
+    # Orçamento de otimização (seção 5.7): preenche o override global ANTES de
+    # qualquer _build_pipeline. Vazio = protocolo publicado (40 épocas, paciência 6).
+    for _cli, _key in (("budget_epochs", "epochs"),
+                       ("budget_patience", "patience"),
+                       ("budget_min_epochs", "min_epochs")):
+        _v = getattr(args, _cli, None)
+        if _v is not None:
+            BUDGET_OVERRIDE[_key] = int(_v)
+    if BUDGET_OVERRIDE:
+        print(f"[orçamento] override ativo: {BUDGET_OVERRIDE}", flush=True)
 
     logging.basicConfig(
         level=logging.WARNING,
