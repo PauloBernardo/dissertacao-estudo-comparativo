@@ -786,7 +786,14 @@ def train_epoch(model: FTTransformerClassifier, X_train: torch.Tensor,
     # mini-batch: inter-instance attention opera dentro de cada batch.
     # Se landmark_idx fornecido (FT-CUR), fixa m = 10% do batch_size — constante
     # independente de N, mantendo O(B×m) com memória previsível.
-    m_per_batch = max(2, round(0.10 * batch_size)) if landmark_idx is not None else None
+    # m por lote: honra o m_ratio efetivo dos landmarks escolhidos no fit
+    # (len(landmark_idx)/n). Até 2026-09-19 era fixo em 10% do batch_size, o que
+    # ignorava silenciosamente o m_ratio varrido pela grade em {0,10; 0,20}.
+    if landmark_idx is not None:
+        m_ratio_eff = len(landmark_idx) / max(n, 1)
+        m_per_batch = max(2, round(m_ratio_eff * batch_size))
+    else:
+        m_per_batch = None
 
     model.train()
     perm = torch.randperm(n, device=X_train.device)

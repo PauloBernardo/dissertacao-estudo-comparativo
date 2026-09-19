@@ -551,6 +551,53 @@ class FarthestPointSelector(LandmarkSelector):
         return self
 
 
+class InverseNormSelector(LandmarkSelector):
+    """
+    Amostragem proporcional a 1/‖x_i‖²: substituto O(nd) da norma de coluna VERDADEIRA.
+
+    Motivação (medida em 2026-09-19, `scripts/study_colnorm_criterion.py`): o
+    `ColumnNormSelector` amostra ∝ ‖x_i‖² no espaço de entrada, e com kernel RBF isso
+    é quase perfeitamente ANTICORRELACIONADO com a norma de coluna real ‖K[:,i]‖²
+    (Spearman −0,96 em σ=2 e −1,00 em σ=5 e 8, nos dez datasets do Tier 1). A razão é
+    geométrica: norma grande = ponto periférico = longe de todos = coluna de kernel de
+    norma pequena.
+
+    Invertendo a probabilidade recupera-se o critério de Drineas, Kannan & Mahoney (2006) sem
+    montar a matriz N×N. Verificado pelo erro de reconstrução de Nyström: as duas vias
+    dão praticamente o mesmo (BCW, m/n=5%: 0,0680 invertido contra 0,0689 com o kernel
+    explícito; 10%: 0,0458 contra 0,0451; 30%: 0,0227 contra 0,0223).
+
+    ATENÇÃO — não use ordenação pura ("os m menores ‖x_i‖²"). Embora o posto seja
+    perfeitamente invertido, tomar o topo concentra todos os landmarks no miolo denso e
+    destrói a cobertura: no mesmo teste, o erro sobe para 0,1472 contra 0,0621 da
+    amostragem aleatória. É a amostragem probabilística que preserva dispersão.
+    """
+
+    def __init__(self, n_landmarks: int, random_state: Optional[int] = None,
+                 eps: float = 1e-12):
+        super().__init__(n_landmarks, random_state)
+        self.eps = eps
+        self.norms_ = None
+
+    def fit(self, X: np.ndarray) -> 'InverseNormSelector':
+        n_samples = X.shape[0]
+        if self.n_landmarks > n_samples:
+            raise ValueError(f"n_landmarks ({self.n_landmarks}) > n_samples ({n_samples})")
+
+        self.norms_ = np.sum(X ** 2, axis=1)
+        # eps protege o ponto na origem (norma 0), que teria peso infinito.
+        w = 1.0 / np.maximum(self.norms_, self.eps)
+        total = w.sum()
+        probs = np.ones(n_samples) / n_samples if not np.isfinite(total) or total <= 0 else w / total
+        probs = np.maximum(probs, 0)
+        probs /= probs.sum()
+
+        rng = np.random.RandomState(self.random_state)
+        self.indices_ = np.sort(rng.choice(n_samples, size=self.n_landmarks,
+                                           replace=False, p=probs))
+        return self
+
+
 def get_selector(method: str, n_landmarks: int, random_state: Optional[int] = None,
                  **kwargs) -> LandmarkSelector:
     """
@@ -560,7 +607,7 @@ def get_selector(method: str, n_landmarks: int, random_state: Optional[int] = No
     ----------
     method : str
         Método de seleção: 'random', 'kmeans', 'obl_reflection', 'quasi_opposite',
-        'leverage', 'colnorm', 'fps'
+        'leverage', 'colnorm', 'colnorm_inv', 'fps'
     n_landmarks : int
         Número de landmarks
     random_state : int, opcional
@@ -588,6 +635,7 @@ def get_selector(method: str, n_landmarks: int, random_state: Optional[int] = No
         'quasi_opposite': QuasiOppositeSelector,
         'leverage': LeverageScoreSelector,
         'colnorm': ColumnNormSelector,
+        'colnorm_inv': InverseNormSelector,
         'fps': FarthestPointSelector,
     }
 
@@ -615,7 +663,7 @@ if __name__ == "__main__":
     print()
 
     for method in ['random', 'kmeans', 'obl_reflection', 'quasi_opposite',
-                    'leverage', 'colnorm', 'fps']:
+                    'leverage', 'colnorm', 'colnorm_inv', 'fps']:
         selector = get_selector(method, n_landmarks, random_state=42)
         selector.fit(X)
 
