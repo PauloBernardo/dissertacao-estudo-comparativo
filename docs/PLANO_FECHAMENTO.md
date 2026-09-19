@@ -1,4 +1,13 @@
-# Plano de fechamento da dissertação — versão 1 (protocolo publicado) e versão 2 (protocolo dos artigos)
+# Plano de fechamento da dissertação
+
+**Decisão estruturante (2026-09-18, do autor):** o protocolo principal **permanece GridSearchCV por
+semente + 30 sementes**. O trunfo da dissertação não é ganhar alguns pontos de F1, é ser um estudo
+robusto e reproduzível: com busca por semente, cada semente tuna e avalia de forma independente, e é
+isso que sustenta o desenho pareado do Friedman/Nemenyi. Optuna tunado uma vez por dataset acoplaria as
+30 sementes a uma única busca estocástica — mais barato e com F1 possivelmente maior, mas menos
+reprodutível e com menos poder estatístico. Portanto: **nada do que já foi rodado é descartado**; o
+achado do orçamento de treino entra como análise (Seção 5.7) e o protocolo alternativo entra como
+**apêndice complementar**, não como substituto.
 
 Última atualização: 2026-09-18 (sessão de auditoria). Este documento é o ponto de partida de cada
 sessão até a defesa. Um passo de cada vez; marcar `[x]` ao concluir e anotar a data.
@@ -36,17 +45,40 @@ sessão até a defesa. Um passo de cada vez; marcar `[x]` ao concluir e anotar a
 - [ ] **1.8** Texto — suavizar: "data-hungry" → "sob orçamento fixo de 40 épocas"; "FT-CUR empata com SAINT" → "sob o mesmo orçamento"; verbos do Resumo/Conclusão em linha com o poder do Nemenyi (CD ≈ 9,4).
 - [ ] **1.9** Itens do juízo de valor ainda abertos: parágrafo "o que fica de meu" (Intro + Conclusão); limitação do orçamento de tuning assimétrico (LSSVM 36–75 configs vs Transformers 6); título ("formulações duais" no plural); Folha de Aprovação (membros); parágrafos longos da Discussão; apêndice de reprodutibilidade (commit + mapa JSON→tabela + script).
 - [ ] **1.10** Nota no Cap. 5: variantes de mini-lote da Tabela 19 são configurações de custo, sem F1 avaliado; rota streaming verificada equivalente (Δ ≤ 0,008).
+- [ ] **1.12** **Seção 5.7 — unificar o orçamento de otimização nas duas famílias.** A seção hoje é
+  "O Orçamento de Iterações como Explicação da Ablação D" (só ADMM). Renomear para algo como
+  "O Orçamento de Otimização: Iterações do ADMM e Épocas dos Transformers" e acrescentar uma subseção com:
+  (a) o mecanismo — com lote ≥ N, uma época = um passo de gradiente; o protocolo dá 7–30 passos no Tier 1
+  e 40 (FT-CUR em lote completo) a 160 (FT) no Tier 2, com a paciência 6 cortando dentro do platô
+  (medido: FT-Softmax para na época 7–19, SAINT na 9–30, em validação de 21–43 pontos);
+  (b) a evidência — ablação de orçamento (espiral: FT-Softmax 0,645→0,961 e SAINT 0,547→0,922 com 400
+  épocas; HAB muda pouco) e a taxa de colapso do SAINT fiel no Tier 1 concentrada nos sintéticos
+  geométricos e no HAB, com as medianas das sementes que treinam competitivas;
+  (c) o paralelo explícito com o ADMM — mesmo mecanismo (orçamento fixo em iterações que não é invariante
+  à escala do problema), mesmos dois caminhos (mais orçamento × outro ponto que converge no orçamento),
+  e a mesma conclusão de que o caminho robusto é dar orçamento;
+  (d) a ressalva de leitura — as comparações *dentro* da família Transformer permanecem válidas (mesmo
+  orçamento para os seis), a comparação com LSSVM/XGBoost (resolvidos ao ótimo) é que fica enviesada.
+- [ ] **1.13** **Novo apêndice (5º) — "Protocolo de treino alternativo para os Transformers".** Apêndice
+  complementar, explicitamente fora do protocolo principal: descreve o protocolo ancorado nos artigos
+  (FT-Transformer: AdamW, Optuna/TPE com orçamento em iterações, *lr* LogUniform[1e-5,1e-3], paciência 16,
+  sem teto; SAINT: 100 épocas, melhor ponto de validação), apresenta o piloto (§3.1) e o estudo F3 (§3.3)
+  como *probe* de robustez, e conclui se as conclusões do corpo mudam. Deixar claro por que NÃO substitui
+  o protocolo principal (item acima: reprodutibilidade e desenho pareado).
 - [ ] **1.11** Recompilar; conferir log (0 overfull, 0 undefined); memória do projeto atualizada; commit + push (dados, tabelas, docs).
 
-## 3. VERSÃO 2 — re-executar os seis Transformers sob o protocolo dos artigos (decisão depois do piloto)
+## 3. ESTUDO COMPLEMENTAR (apêndice) — protocolo de treino ancorado nos artigos
+**Não substitui o corpo.** Entra como o 5º apêndice (item 1.13): mostra o que acontece quando os
+Transformers recebem o orçamento de treino dos artigos, medindo se as conclusões do estudo principal
+se sustentam. O protocolo principal (GridSearchCV por semente, 30 sementes) permanece intocado.
 Protocolo proposto (`PROTOCOLS["paper"]` em `scripts/pilot_transformer_budget.py`):
 AdamW, lr 1e-4, sem agenda; lote 256; parada após 16 épocas sem melhora na validação, **piso de 200 épocas** (única regra nossa: nos datasets em que 1 época = 1 passo), teto 1000; melhor ponto de validação; decaimento de peso por artigo (1e-5 FT, 0,01 SAINT); arquiteturas e grades como estão. FT-CUR: decidir entre lote completo (desenho original) e mini-lote com landmarks globais (`minibatch_landmarks="global"` + `predict_mode="streaming"`).
 - [x] **2.1** Piloto — CONCLUÍDO 2026-09-18 20:47 (ver §3.1/3.2 abaixo).
 - [ ] **2.1-bis** Piloto na CPU: `python scripts/pilot_transformer_budget.py --datasets TWS HAB AI4I BANK TELCO --seeds 3` (≈3–4 h). Responde: o piso tira os modelos do platô? lr 1e-4 basta? FT-CUR mini-lote global se sustenta em F1? custo por ajuste → horas de GPU.
 - [ ] **2.2** Decidir alcance: (a) seis Transformers em tudo (Tier 1, Tier 2, Ablações A–D, Tabela 19): estimativa 120–200 h de GPU (publicado consumiu ≈40 h: 10,6 Tier 1 + 17,8 Tier 2 + 5,9 Abl. A + 4,6 Abl. B/C + 1,2 N=5000); (b) só SAINT e FT-CUR nos Tiers + ablação de orçamento nos sintéticos para os seis: ≈30–40 h.
 - [ ] **2.3** Implementar o perfil de protocolo em `src/tuning/grids.py` (novo conjunto de `fixed`), notebook Kaggle por fases (copiar o esquema do atual), rodar.
-- [ ] **2.4** Merge em JSONs NOVOS (não sobrescrever os da versão 1), regerar em uma cópia da tese, comparar as conclusões; então decidir se a versão 2 substitui a 1 ou entra como capítulo/apêndice.
-- [ ] **2.5** Se substituir: revisar todo o Cap. 5 e a Conclusão; se não: registrar como trabalho futuro com os números do piloto.
+- [ ] **2.4** Merge em JSONs NOVOS (jamais sobrescrever os da versão 1); tabelas próprias, prefixo `apx_protocolo_`; comparar conclusão por conclusão com o corpo.
+- [ ] **2.5** Escrever o apêndice (item 1.13) com esses números; no corpo, apenas a referência cruzada a partir da Seção 5.7.
 
 ## 4. Regras que já custaram caro (não esquecer)
 - Chavear registros por `variant`, não por `model`. Fontes canônicas: `tier1_gridcv.json`, `tier2_gridcv.json` + `tier2_transformers.json`, `tier2_fixedparams_n5000_*.json`, `ablation_{a_scaling,a_transformers,b_noise,c_mk5}.json`, `table19_results.json`.
@@ -125,7 +157,9 @@ Custo dos SEIS Transformers em Tier 1 + Tier 2 + Abl. B/C (Abl. A é transferên
 | **F3 — Optuna 30 trials × 3 splits + 30 sementes** | 120 | 42 h | 125 h | 1,4 sem |
 | F4 — Optuna 50 trials × 3 splits + 30 sementes | 180 | 63 h | 188 h | 2,1 sem |
 
-**Recomendação: F3.** O objetivo de cada \emph{trial} é o F1-macro médio de validação em 3 \emph{splits},
+**Escolhido para o apêndice: F3** (≈42 h de T4 ou ≈125 h na MX350 local, ≈5 dias contínuos).
+Como é apêndice, pode rodar depois de a versão 1 estar fechada e compilada, sem bloquear a defesa.
+O objetivo de cada \emph{trial} é o F1-macro médio de validação em 3 \emph{splits},
 o que evita que a configuração fique colada à partição da semente 0 (no artigo o problema não existe,
 porque há uma única partição por dataset; aqui cada semente re-particiona). Cabe em ≈5 dias na MX350
 local ou ≈1,5 semana de cota do Kaggle. F1 é o plano B se o tempo apertar.
