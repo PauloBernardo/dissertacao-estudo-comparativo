@@ -40,6 +40,8 @@ TABLES_DIR = ROOT / "results" / "tables"
 
 MODEL_ORDER = [
     "NystromLSSVMColnorm",
+    "ADMMNystromLSSVM",
+    "FISTANystrom",
     "StandardLSSVM",
     "DualFISTA",
     "IPLSSVmOriginal",
@@ -71,6 +73,8 @@ MODEL_LABELS: dict[str, str] = {
     "FISTANesterov":       "LSSVM-FISTA",
     "DualFISTA":           "LSSVM-DualFISTA",
     "NystromLSSVMColnorm": "LSSVM-Nyström",
+    "ADMMNystromLSSVM":    "ADMM-Nyström",
+    "FISTANystrom":        "FISTA-Nyström",
     "XGBoost":             "XGBoost",
     "FTTransformer_softmax":  "FT-Softmax",
     "FTTransformer_topk":     "FT-TopK",

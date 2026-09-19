@@ -29,15 +29,17 @@ SYNTH_DS    = ["TWS", "TWM", "TWC"]
 MODEL_LABEL = {
     "StandardLSSVM":          "LSSVM-Std",
     "PCPLSSVm":               "LSSVM-PCP",
-    "FSALSSVm":               "LSSVM-FSA",
-    "IPLSSVm":                "LSSVM-IP",
+    "FSALSSVmOriginal":       "LSSVM-FSA",
+    "IPLSSVmOriginal":        "LSSVM-IP",
     "PruningLSSVM":           "LSSVM-Prun",
-    "OppositeMapsLSSVM":      "LSSVM-OppM",
+    "OppositeMapsOriginalLSSVM":"LSSVM-OppM",
     "ADMMNesterovLSSVM":      "LSSVM-ADMM",
     "ADMMElasticNet":         "LSSVM-ADMM-EN",
     "FISTANesterov":          "LSSVM-FISTA",
     "DualFISTA":              "DualFISTA★",
     "NystromLSSVMColnorm":    "Nystřöm-SVM★",
+    "ADMMNystromLSSVM":       "ADMM-Nyström★",
+    "FISTANystrom":           "FISTA-Nyström★",
     "FTTransformerCURColnorm":"FT-CUR★",
     "FTTransformer_softmax":  "FT-Softmax",
     "FTTransformer_topk":     "FT-TopK",
@@ -47,9 +49,11 @@ MODEL_LABEL = {
     "XGBoost":                "XGBoost",
 }
 
-PROPOSED   = {"DualFISTA", "NystromLSSVMColnorm", "FTTransformerCURColnorm"}
+PROPOSED   = {"DualFISTA", "NystromLSSVMColnorm", "FTTransformerCURColnorm",
+              "ADMMNystromLSSVM", "FISTANystrom"}
 ADMM_FAM   = {"ADMMNesterovLSSVM", "ADMMElasticNet", "FISTANesterov"}
-LSSVM_BL   = {"StandardLSSVM", "PCPLSSVm", "FSALSSVm", "IPLSSVm", "PruningLSSVM", "OppositeMapsLSSVM"}
+LSSVM_BL   = {"StandardLSSVM", "PCPLSSVm", "FSALSSVmOriginal", "IPLSSVmOriginal",
+              "PruningLSSVM", "OppositeMapsOriginalLSSVM"}
 FT_BL      = {"FTTransformer_softmax", "FTTransformer_topk", "FTTransformer_entmax",
                "FTTransformer_sparsemax", "SAINTColnorm"}
 GEN_BL     = {"XGBoost"}
@@ -59,6 +63,8 @@ COLOR_MAP = {
     "NystromLSSVMColnorm":    "#2ca02c",
     "FTTransformerCURColnorm":"#ff7f0e",
     "XGBoost":                "#e377c2",
+    "ADMMNystromLSSVM":       "#8c564b",
+    "FISTANystrom":           "#17becf",
 }
 
 
@@ -126,6 +132,8 @@ def main() -> None:
         mpatches.Patch(color="#9467bd", label="ADMM/FISTA family"),
         mpatches.Patch(color="#d62728", label="DualFISTA (proposto)"),
         mpatches.Patch(color="#2ca02c", label="Nyström-SVM (proposto)"),
+        mpatches.Patch(color="#8c564b", label="ADMM-Nyström (proposto)"),
+        mpatches.Patch(color="#17becf", label="FISTA-Nyström (proposto)"),
         mpatches.Patch(color="#ff7f0e", label="FT-CUR (proposto)"),
         mpatches.Patch(color="#e377c2", label="XGBoost"),
     ]
@@ -139,8 +147,9 @@ def main() -> None:
 
     # ── Figure 2: Sparsity trade-off ─────────────────────────────────────────
     SPARSE_MODELS = ["ADMMNesterovLSSVM", "ADMMElasticNet", "FISTANesterov",
-                     "DualFISTA", "FSALSSVm", "IPLSSVm", "PruningLSSVM",
-                     "OppositeMapsLSSVM", "NystromLSSVMColnorm"]
+                     "DualFISTA", "FSALSSVmOriginal", "IPLSSVmOriginal", "PruningLSSVM",
+                     "OppositeMapsOriginalLSSVM", "NystromLSSVMColnorm",
+                     "ADMMNystromLSSVM", "FISTANystrom", "PCPLSSVm"]
 
     spar_stats: dict = {}
     for r in t1:
@@ -155,7 +164,25 @@ def main() -> None:
         spar_stats[m]["f1"].append(r.get("test_f1_macro", float("nan")))
         spar_stats[m]["spar"].append((r.get("sparsity_ratio") or 0) * 100)
 
-    fig, ax = plt.subplots(figsize=(8, 6))
+    # offsets manuais (dx, dy em pontos, ha) -- o aglomerado em 58-83% de
+    # esparsidade tem 8 modelos muito proximos entre si (F1 0,82-0,843);
+    # offset fixo nao separa os rotulos.
+    LABEL_OFFSETS = {
+        "ADMMNesterovLSSVM":          (-6, 6, "right"),
+        "ADMMElasticNet":             (-6, -14, "right"),
+        "FISTANesterov":              (0, -14, "center"),
+        "DualFISTA":                  (0, 10, "center"),
+        "PruningLSSVM":               (-6, -16, "right"),
+        "IPLSSVmOriginal":            (0, 10, "center"),
+        "FSALSSVmOriginal":           (10, 18, "left"),
+        "PCPLSSVm":                   (-8, 10, "right"),
+        "NystromLSSVMColnorm":        (8, 18, "left"),
+        "FISTANystrom":               (-8, -16, "right"),
+        "ADMMNystromLSSVM":           (8, -22, "left"),
+        "OppositeMapsOriginalLSSVM":  (10, -30, "left"),
+    }
+
+    fig, ax = plt.subplots(figsize=(9, 6.5))
     for m in SPARSE_MODELS:
         if m not in spar_stats:
             continue
@@ -169,8 +196,9 @@ def main() -> None:
         ax.errorbar(sp_mean, f1_mean, xerr=sp_std, yerr=f1_std,
                     fmt=mrk, color=col, markersize=10 if m in PROPOSED else 7,
                     capsize=4, linewidth=1.2, zorder=5 if m in PROPOSED else 3)
-        offset_y = 0.004 if m not in {"FISTANesterov", "ADMMElasticNet"} else -0.009
-        ax.annotate(lbl, (sp_mean, f1_mean + offset_y), fontsize=7.5, ha="center")
+        dx, dy, ha = LABEL_OFFSETS.get(m, (0, 10, "center"))
+        ax.annotate(lbl, (sp_mean, f1_mean), xytext=(dx, dy), textcoords="offset points",
+                    fontsize=7.5, ha=ha)
 
     ax.set_xlabel("Esparsidade média (%)", fontsize=10)
     ax.set_ylabel("F1-macro médio", fontsize=10)
