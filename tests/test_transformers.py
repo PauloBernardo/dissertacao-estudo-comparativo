@@ -500,3 +500,34 @@ class TestFTCURMinibatchGlobalAndStreaming:
         finally:
             W.fit_model = orig
         assert captured['n'] >= 20
+
+
+class TestSAINTStyleReference:
+    """O padrão do SAINT é o estilo do código de referência (auditoria 2026-09-18)."""
+
+    def test_default_style_is_reference_prenorm(self):
+        from src.models.ft_transformer_model import SAINTClassifier
+        m = SAINTClassifier(n_features=5, d_model=8, n_heads=2, n_layers=1, dim_head=4)
+        st = m.stages[0]
+        assert st.style == "reference"
+        # FF2 e LN3/LN4 operam sobre a linha achatada (n+1)·d, como no RowColTransformer
+        assert st.ln3.normalized_shape == ((5 + 1) * 8,)
+        assert st.ff2.net[0].in_features == (5 + 1) * 8
+        # atenção de linha com dim_head próprio (64 no código oficial)
+        assert st.misa.to_qkv.out_features == 3 * 2 * 64
+
+    def test_paper_eq_style_is_postnorm_per_token(self):
+        from src.models.ft_transformer_model import SAINTClassifier
+        st = SAINTClassifier(n_features=5, d_model=8, n_heads=2, n_layers=1,
+                            dim_head=4, style="paper_eq").stages[0]
+        assert st.ln3.normalized_shape == (8,)
+        assert st.ff2.net[0].in_features == 8
+
+    def test_both_styles_train(self):
+        from src.models.ft_transformer_saint_wrapper import SAINTColnorm
+        rng = np.random.RandomState(0)
+        X = rng.randn(120, 4); y = (X[:, 0] > 0).astype(int)
+        for style in ("reference", "paper_eq"):
+            clf = SAINTColnorm(d_model=8, n_heads=2, n_layers=1, epochs=3, patience=2,
+                               batch_size=64, style=style, random_state=0).fit(X, y)
+            assert clf.predict(X).shape == (120,)

@@ -510,15 +510,35 @@ class SAINTContinuousEmbedding(nn.Module):
         return out
 
 
-class _FeedForward(nn.Module):
-    """FF do SAINT: duas camadas FC com GELU (Seção 3.1)."""
+class _GEGLU(nn.Module):
+    """GEGLU (Shazeer, 2020): divide a projeção em dois e usa metade como porta."""
 
-    def __init__(self, dim: int, mult: int = 4, dropout: float = 0.0):
+    def forward(self, x):
+        x, gate = x.chunk(2, dim=-1)
+        return x * nn.functional.gelu(gate)
+
+
+class _FeedForward(nn.Module):
+    """FF do SAINT.
+
+    ``gated=True`` reproduz o código de referência (``Linear(dim, dim*mult*2)`` →
+    GEGLU → ``Linear(dim*mult, dim)``); ``gated=False`` é a leitura literal da
+    Seção 3.1 do artigo ("duas camadas FC com não-linearidade GELU").
+    """
+
+    def __init__(self, dim: int, mult: int = 4, dropout: float = 0.0,
+                 gated: bool = True):
         super().__init__()
-        self.net = nn.Sequential(
-            nn.Linear(dim, dim * mult), nn.GELU(), nn.Dropout(dropout),
-            nn.Linear(dim * mult, dim), nn.Dropout(dropout),
-        )
+        if gated:
+            self.net = nn.Sequential(
+                nn.Linear(dim, dim * mult * 2), _GEGLU(), nn.Dropout(dropout),
+                nn.Linear(dim * mult, dim),
+            )
+        else:
+            self.net = nn.Sequential(
+                nn.Linear(dim, dim * mult), nn.GELU(), nn.Dropout(dropout),
+                nn.Linear(dim * mult, dim), nn.Dropout(dropout),
+            )
 
     def forward(self, x):
         return self.net(x)
@@ -549,34 +569,65 @@ class _SAINTAttention(nn.Module):
 
 
 class SAINTStage(nn.Module):
-    """Um estágio do SAINT (Eqs. 1–2 do artigo):
+    """Um estágio do SAINT.
 
-        z1 = LN(MSA(x))  + x          z2 = LN(FF1(z1)) + z1
-        z3 = LN(MISA({z2}_batch)) + z2   r = LN(FF2(z3)) + z3
+    ``style="reference"`` (padrão) reproduz o ``RowColTransformer`` do código
+    oficial (``somepago/saint``, ``models/model.py``, estilo ``colrow``):
 
-    MISA (Alg. 1): reshape [b, n, d] → [1, b, n·d], self-attention entre as
-    b linhas do lote, reshape de volta. Todos os tokens de todas as amostras
-    do lote se comunicam — não apenas o CLS.
+        x = x + MSA(LN(x));            x = x + FF1(LN(x))
+        r = rearrange(x, 'b n d -> 1 b (n d)')
+        r = r + MISA(LN(r));           r = r + FF2(LN(r))     # FF2 na linha achatada
+        x = rearrange(r, '1 b (n d) -> b n d')
+
+    isto é, **pré-normalização**, FFN com GEGLU, ``dim_head=64`` na atenção de
+    linha e FF2 operando sobre a linha concatenada $(n\,d)$.
+
+    ``style="paper_eq"`` segue literalmente as Equações 1–2 do artigo
+    (**pós-normalização**, ``LN(f(x)) + x``), com FFN GELU e FF2 por token.
+    As duas leituras divergem porque o texto do artigo e a implementação que
+    produziu seus resultados não coincidem nesse ponto; a pós-normalização sem
+    aquecimento é instável em taxas de aprendizado altas, o que se mede na
+    ablação de estilo (Apêndice de protocolo).
     """
 
     def __init__(self, n_tokens: int, d_model: int, n_heads: int,
                  dim_head: int = 16, attn_dropout: float = 0.1,
-                 ff_dropout: float = 0.1):
+                 ff_dropout: float = 0.1, style: str = "reference",
+                 row_dim_head: int = 64):
         super().__init__()
+        if style not in ("reference", "paper_eq"):
+            raise ValueError(f"style inválido: {style!r}")
+        self.style = style
+        row_dim = n_tokens * d_model
+        gated = style == "reference"
         self.msa = _SAINTAttention(d_model, n_heads, dim_head, attn_dropout)
+        self.ff1 = _FeedForward(d_model, dropout=ff_dropout, gated=gated)
         self.ln1 = nn.LayerNorm(d_model)
-        self.ff1 = _FeedForward(d_model, dropout=ff_dropout)
         self.ln2 = nn.LayerNorm(d_model)
-        self.misa = _SAINTAttention(n_tokens * d_model, n_heads, dim_head, attn_dropout)
-        self.ln3 = nn.LayerNorm(d_model)
-        self.ff2 = _FeedForward(d_model, dropout=ff_dropout)
-        self.ln4 = nn.LayerNorm(d_model)
+        if style == "reference":
+            self.misa = _SAINTAttention(row_dim, n_heads, row_dim_head, attn_dropout)
+            self.ff2 = _FeedForward(row_dim, dropout=ff_dropout, gated=True)
+            self.ln3 = nn.LayerNorm(row_dim)
+            self.ln4 = nn.LayerNorm(row_dim)
+        else:
+            self.misa = _SAINTAttention(row_dim, n_heads, dim_head, attn_dropout)
+            self.ff2 = _FeedForward(d_model, dropout=ff_dropout, gated=False)
+            self.ln3 = nn.LayerNorm(d_model)
+            self.ln4 = nn.LayerNorm(d_model)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:   # x: [b, n, d]
         b, n, d = x.shape
+        if self.style == "reference":
+            x = x + self.msa(self.ln1(x))
+            x = x + self.ff1(self.ln2(x))
+            r = x.reshape(1, b, n * d)
+            r = r + self.misa(self.ln3(r))
+            r = r + self.ff2(self.ln4(r))
+            return r.reshape(b, n, d)
+        # paper_eq: Equações 1–2 (pós-normalização)
         z1 = self.ln1(self.msa(x)) + x
         z2 = self.ln2(self.ff1(z1)) + z1
-        row = z2.reshape(1, b, n * d)                     # Alg. 1: 1 × b × (n·d)
+        row = z2.reshape(1, b, n * d)
         z3 = self.ln3(self.misa(row).reshape(b, n, d)) + z2
         return self.ln4(self.ff2(z3)) + z3
 
@@ -603,16 +654,19 @@ class SAINTClassifier(nn.Module):
                  n_layers: int = 1, dim_head: int = 16,
                  attn_dropout: float = 0.1, ff_dropout: float = 0.1,
                  head_hidden: int = 1000, embed_hidden: int = 100,
-                 tau_ratio: float = 0.1, dropout: float | None = None):
+                 tau_ratio: float = 0.1, dropout: float | None = None,
+                 style: str = "reference", row_dim_head: int = 64):
         super().__init__()
         if dropout is not None:            # compatibilidade com assinatura antiga
             attn_dropout = ff_dropout = dropout
+        self.style = style
         self.embed = SAINTContinuousEmbedding(n_features, d_model, embed_hidden)
         self.cls_token = nn.Parameter(torch.zeros(1, 1, d_model))
         nn.init.normal_(self.cls_token, std=0.02)
         n_tokens = n_features + 1
         self.stages = nn.ModuleList([
-            SAINTStage(n_tokens, d_model, n_heads, dim_head, attn_dropout, ff_dropout)
+            SAINTStage(n_tokens, d_model, n_heads, dim_head, attn_dropout,
+                       ff_dropout, style=style, row_dim_head=row_dim_head)
             for _ in range(n_layers)
         ])
         self.head = nn.Sequential(

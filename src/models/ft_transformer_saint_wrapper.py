@@ -71,8 +71,13 @@ class SAINTColnorm(BaseEstimator, ClassifierMixin):
         attn_dropout: float = 0.1,
         ff_dropout: float = 0.1,
         min_epochs: int = 0,
+        style: str = "reference",
     ):
         self.min_epochs = min_epochs
+        # "reference" = RowColTransformer do código oficial (pré-norma, GEGLU,
+        # dim_head 64 na atenção de linha, FF2 na linha achatada);
+        # "paper_eq" = Equações 1–2 do artigo (pós-norma). Ver SAINTStage.
+        self.style = style
         # dim_head / dropouts: valores do artigo (Apêndice) e do código de referência.
         self.dim_head     = dim_head
         self.attn_dropout = attn_dropout
@@ -112,6 +117,7 @@ class SAINTColnorm(BaseEstimator, ClassifierMixin):
             dim_head=self.dim_head,
             attn_dropout=self.attn_dropout,
             ff_dropout=self.ff_dropout,
+            style=self.style,
         ).to(DEVICE)
 
         X_tr_t, y_tr_t = self._to_tensor(X_tr, y_tr)
