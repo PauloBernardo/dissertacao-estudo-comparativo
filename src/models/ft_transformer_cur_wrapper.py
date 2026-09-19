@@ -171,6 +171,16 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
         X : (n, d)  float64, já normalizado
         y : (n,)    int  ∈ {0, 1}
         """
+        # Semeia o TORCH, não só o numpy. O RandomState acima governa a seleção de
+        # landmarks e o split de validação, mas a inicialização de pesos e o dropout
+        # vêm do RNG global do torch — que avançava entre execuções, tornando este
+        # modelo NÃO determinístico com a mesma random_state. Medido em 2026-09-19:
+        # o ruído de execução com semente fixa chegava a 85% do desvio entre as 30
+        # sementes (HAB) e 49-55% (AI4I). O FTTransformer (variantes FT) já semeava.
+        if self.random_state is not None:
+            torch.manual_seed(self.random_state)
+            if torch.cuda.is_available():
+                torch.cuda.manual_seed_all(self.random_state)
         rng = np.random.RandomState(self.random_state)
         n = X.shape[0]
         n_val = max(1, round(self.val_fraction * n))

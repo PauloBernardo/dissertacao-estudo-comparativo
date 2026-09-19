@@ -303,3 +303,61 @@ dispara antes do teto). No Tier 2/TELCO, FT-softmax com 200/16 parou na época 2
 — indício de que no Tier 2 o orçamento **não** aperta, coerente com o piloto (em N=2000 mais épocas
 não ajudavam e no BANK pioravam). Se a calibração confirmar, a Seção 5.7 fica: orçamento aperta no
 Tier 1 (1 passo/época) e não aperta no Tier 2, o que delimita a conclusão em vez de ampliá-la.
+
+---
+
+## FT-CUR e SAINT não eram determinísticos (achado de 2026-09-19)
+
+Verificação pedida pelo orientando ("parece que tá vivendo 2 tipos dele aqui"). A suspeita estava
+certa, mas a causa principal não era bifurcação de modelo: era **semeadura incompleta**.
+
+### O bug
+
+`FTTransformerCURColnorm.fit` e `SAINTColnorm.fit` semeavam só o numpy
+(`np.random.RandomState(random_state)`), que governa a seleção de landmarks e o split de validação, e
+**nunca semeavam o torch**, que governa a inicialização de pesos e o dropout. O `FTTransformer` das
+variantes FT já chamava `torch.manual_seed` (`transformers/ft_transformer.py:281`); os dois wrappers de
+atenção inter-instâncias, não.
+
+Consequência medida (AI4I, semente 0, três execuções idênticas): FT-CUR devolvia F1 0,8859 / 0,8953 /
+0,8859 com `best_epoch` 73 / 149 / 89; SAINT devolvia 0,9107 / 0,8924 / 0,8579. O FT-softmax repetia
+0,8932 nas três.
+
+**Magnitude.** Ruído de execução com semente FIXA, como fração do desvio padrão entre as 30 sementes
+publicadas: HAB 85% (FT-CUR) e 78% (SAINT); AI4I 55% e 49%. Ou seja, de metade a quase todo o "desvio
+entre sementes" desses dois modelos era ruído de inicialização, não variância de partição — e as barras
+de erro deles não são comparáveis às dos outros 18 modelos.
+
+**Corrigido** com `torch.manual_seed` + `torch.cuda.manual_seed_all` nos dois `fit`. Verificado:
+determinístico com a mesma semente, e ainda variando entre sementes.
+
+**Não enviesa as médias** (o ruído é simétrico), então as conclusões publicadas seguem válidas; o que
+está errado é a *atribuição* da incerteza e a afirmação de reprodutibilidade. Consequências a escrever:
+(a) o apêndice de reprodutibilidade (item 1.9) não pode afirmar que a mesma semente reproduz os números
+de FT-CUR e SAINT publicados; (b) a tabela de estabilidade precisa de uma nota; (c) no Nemenyi o ruído
+extra nos ranks desses dois é conservador, não otimista.
+
+Também corrige um diagnóstico meu anterior: a divergência do SAINT em HAB/seed0 (0,5671 publicado
+contra 0,4250 local) foi atribuída a "ruído numérico entre placas". Não era placa; era esta linha.
+
+### Os quatro interruptores do FT-CUR, agora medidos sem o ruído
+
+Com a semeadura corrigida, 4 datasets × 3 sementes, arquitetura fixa
+(`results/probe_ftcur_switches_local.json`):
+
+| interruptor | idêntico ao braço do estudo | veredito |
+|---|---|---|
+| `predict_mode="streaming"` | 12/12 | não-operação; Δ = 0 exato — confirma a equivalência do item 1.10 |
+| `minibatch_landmarks="global"` | 12/12 | não-operação com lote completo, como a docstring diz |
+| `pinv_grad=True` | 2/12 | **bifurcação real**: ΔF1 +0,0056 em média (−0,017 a +0,048) |
+
+`pinv_grad=True` é a pseudo-inversa Newton-Schulz **diferenciável**, isto é, o Nyströmformer original;
+o estudo roda com ela destacada (`no_grad`). Continua sendo o item pendente de auditoria do FT-CUR, e
+agora está quantificado: efeito pequeno e de sinal misto, logo é questão de declarar a escolha, não de
+refazer o estudo.
+
+Os outros dois modos de atenção do módulo (`cur_full`, que materializa a matriz n×n em O(n²), e
+`linear_cur`) são **inalcançáveis pelo estudo**: o único construtor de `FTTransformerClassifier` é o
+wrapper do FT-CUR, que fixa `attn_mode="nystrom"`, e nenhum script ou grade passa `attn_mode`. O
+`cur_full` só é o default do `nn.Module`, e `SAINTBlock`/`SAINTClassifierCLSOnly` existem apenas para
+proveniência da versão só-CLS, sem uso em script algum.
