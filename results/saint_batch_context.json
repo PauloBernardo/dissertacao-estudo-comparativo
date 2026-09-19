@@ -1,0 +1,602 @@
+[
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 2000,
+  "mode": "mb1024",
+  "seed": 0,
+  "f1": 0.3470319634703196,
+  "epochs": 10,
+  "fit_s": 6.6,
+  "error": null
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 2000,
+  "mode": "mb1024",
+  "seed": 1,
+  "f1": 0.3470319634703196,
+  "epochs": 13,
+  "fit_s": 6.3,
+  "error": null
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 2000,
+  "mode": "mb1024",
+  "seed": 2,
+  "f1": 0.3470319634703196,
+  "epochs": 10,
+  "fit_s": 4.8,
+  "error": null
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 2000,
+  "mode": "mb1024",
+  "seed": 3,
+  "f1": 0.3470319634703196,
+  "epochs": 9,
+  "fit_s": 4.4,
+  "error": null
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 2000,
+  "mode": "mb1024",
+  "seed": 4,
+  "f1": 0.6135976313379574,
+  "epochs": 35,
+  "fit_s": 16.2,
+  "error": null
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 2000,
+  "mode": "full",
+  "seed": 0,
+  "f1": 0.3470319634703196,
+  "epochs": 19,
+  "fit_s": 10.3,
+  "error": null
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 2000,
+  "mode": "full",
+  "seed": 1,
+  "f1": 0.3470319634703196,
+  "epochs": 12,
+  "fit_s": 6.7,
+  "error": null
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 2000,
+  "mode": "full",
+  "seed": 2,
+  "f1": 0.3470319634703196,
+  "epochs": 20,
+  "fit_s": 10.8,
+  "error": null
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 2000,
+  "mode": "full",
+  "seed": 3,
+  "f1": 0.319047619047619,
+  "epochs": 28,
+  "fit_s": 15.1,
+  "error": null
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 2000,
+  "mode": "full",
+  "seed": 4,
+  "f1": 0.3470319634703196,
+  "epochs": 27,
+  "fit_s": 14.5,
+  "error": null
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 5000,
+  "mode": "mb1024",
+  "seed": 0,
+  "f1": 0.34704448507007923,
+  "epochs": 8,
+  "fit_s": 9.7,
+  "error": null
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 5000,
+  "mode": "mb1024",
+  "seed": 1,
+  "f1": 0.7117293828028838,
+  "epochs": 40,
+  "fit_s": 46.0,
+  "error": null
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 5000,
+  "mode": "mb1024",
+  "seed": 2,
+  "f1": 0.6820040385129539,
+  "epochs": 31,
+  "fit_s": 35.5,
+  "error": null
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 5000,
+  "mode": "mb1024",
+  "seed": 3,
+  "f1": 0.6816141602605772,
+  "epochs": 38,
+  "fit_s": 43.4,
+  "error": null
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 5000,
+  "mode": "mb1024",
+  "seed": 4,
+  "f1": 0.34704448507007923,
+  "epochs": 8,
+  "fit_s": 9.7,
+  "error": null
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 5000,
+  "mode": "full",
+  "seed": 0,
+  "f1": null,
+  "epochs": null,
+  "fit_s": 0.9,
+  "error": "CUDA out of memory. Tried to allocate 246.00 MiB. GPU 0 has a total capacity of 1.95 GiB of which 237.50 MiB is free. In"
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 5000,
+  "mode": "full",
+  "seed": 1,
+  "f1": null,
+  "epochs": null,
+  "fit_s": 0.8,
+  "error": "CUDA out of memory. Tried to allocate 246.00 MiB. GPU 0 has a total capacity of 1.95 GiB of which 73.50 MiB is free. Inc"
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 5000,
+  "mode": "full",
+  "seed": 2,
+  "f1": null,
+  "epochs": null,
+  "fit_s": 0.7,
+  "error": "CUDA out of memory. Tried to allocate 246.00 MiB. GPU 0 has a total capacity of 1.95 GiB of which 93.50 MiB is free. Inc"
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 5000,
+  "mode": "full",
+  "seed": 3,
+  "f1": null,
+  "epochs": null,
+  "fit_s": 0.6,
+  "error": "CUDA out of memory. Tried to allocate 246.00 MiB. GPU 0 has a total capacity of 1.95 GiB of which 93.50 MiB is free. Inc"
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 5000,
+  "mode": "full",
+  "seed": 4,
+  "f1": null,
+  "epochs": null,
+  "fit_s": 0.6,
+  "error": "CUDA out of memory. Tried to allocate 246.00 MiB. GPU 0 has a total capacity of 1.95 GiB of which 93.50 MiB is free. Inc"
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 2000,
+  "mode": "mb1024",
+  "seed": 0,
+  "f1": 0.43774574049803405,
+  "epochs": 12,
+  "fit_s": 10.2,
+  "error": null
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 2000,
+  "mode": "mb1024",
+  "seed": 1,
+  "f1": 0.6817210270645385,
+  "epochs": 40,
+  "fit_s": 32.6,
+  "error": null
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 2000,
+  "mode": "mb1024",
+  "seed": 2,
+  "f1": 0.43774574049803405,
+  "epochs": 14,
+  "fit_s": 11.9,
+  "error": null
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 2000,
+  "mode": "mb1024",
+  "seed": 3,
+  "f1": 0.43774574049803405,
+  "epochs": 19,
+  "fit_s": 15.9,
+  "error": null
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 2000,
+  "mode": "mb1024",
+  "seed": 4,
+  "f1": 0.43774574049803405,
+  "epochs": 14,
+  "fit_s": 11.8,
+  "error": null
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 2000,
+  "mode": "full",
+  "seed": 0,
+  "f1": 0.43774574049803405,
+  "epochs": 16,
+  "fit_s": 15.7,
+  "error": null
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 2000,
+  "mode": "full",
+  "seed": 1,
+  "f1": 0.43774574049803405,
+  "epochs": 14,
+  "fit_s": 13.8,
+  "error": null
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 2000,
+  "mode": "full",
+  "seed": 2,
+  "f1": 0.43774574049803405,
+  "epochs": 18,
+  "fit_s": 17.7,
+  "error": null
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 2000,
+  "mode": "full",
+  "seed": 3,
+  "f1": 0.43774574049803405,
+  "epochs": 40,
+  "fit_s": 38.5,
+  "error": null
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 2000,
+  "mode": "full",
+  "seed": 4,
+  "f1": 0.43774574049803405,
+  "epochs": 27,
+  "fit_s": 26.1,
+  "error": null
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 5000,
+  "mode": "mb1024",
+  "seed": 0,
+  "f1": 0.43782791185729275,
+  "epochs": 12,
+  "fit_s": 25.0,
+  "error": null
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 5000,
+  "mode": "mb1024",
+  "seed": 1,
+  "f1": 0.6828673364084459,
+  "epochs": 40,
+  "fit_s": 80.5,
+  "error": null
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 5000,
+  "mode": "mb1024",
+  "seed": 2,
+  "f1": 0.6521671397344295,
+  "epochs": 40,
+  "fit_s": 80.7,
+  "error": null
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 5000,
+  "mode": "mb1024",
+  "seed": 3,
+  "f1": 0.43782791185729275,
+  "epochs": 8,
+  "fit_s": 17.1,
+  "error": null
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 5000,
+  "mode": "mb1024",
+  "seed": 4,
+  "f1": 0.43782791185729275,
+  "epochs": 16,
+  "fit_s": 32.9,
+  "error": null
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 5000,
+  "mode": "full",
+  "seed": 0,
+  "f1": null,
+  "epochs": null,
+  "fit_s": 0.6,
+  "error": "CUDA out of memory. Tried to allocate 124.00 MiB. GPU 0 has a total capacity of 1.95 GiB of which 91.50 MiB is free. Inc"
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 5000,
+  "mode": "full",
+  "seed": 1,
+  "f1": null,
+  "epochs": null,
+  "fit_s": 0.3,
+  "error": "CUDA out of memory. Tried to allocate 124.00 MiB. GPU 0 has a total capacity of 1.95 GiB of which 91.50 MiB is free. Inc"
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 5000,
+  "mode": "full",
+  "seed": 2,
+  "f1": null,
+  "epochs": null,
+  "fit_s": 0.3,
+  "error": "CUDA out of memory. Tried to allocate 124.00 MiB. GPU 0 has a total capacity of 1.95 GiB of which 91.50 MiB is free. Inc"
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 5000,
+  "mode": "full",
+  "seed": 3,
+  "f1": null,
+  "epochs": null,
+  "fit_s": 0.3,
+  "error": "CUDA out of memory. Tried to allocate 124.00 MiB. GPU 0 has a total capacity of 1.95 GiB of which 91.50 MiB is free. Inc"
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 5000,
+  "mode": "full",
+  "seed": 4,
+  "f1": null,
+  "epochs": null,
+  "fit_s": 0.3,
+  "error": "CUDA out of memory. Tried to allocate 124.00 MiB. GPU 0 has a total capacity of 1.95 GiB of which 91.50 MiB is free. Inc"
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 2000,
+  "mode": "mb1024",
+  "seed": 0,
+  "f1": 0.5577297015908013,
+  "epochs": 33,
+  "fit_s": 20.0,
+  "error": null
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 2000,
+  "mode": "mb1024",
+  "seed": 1,
+  "f1": 0.6613797549967763,
+  "epochs": 26,
+  "fit_s": 15.7,
+  "error": null
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 2000,
+  "mode": "mb1024",
+  "seed": 2,
+  "f1": 0.7112666576928254,
+  "epochs": 40,
+  "fit_s": 24.0,
+  "error": null
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 2000,
+  "mode": "mb1024",
+  "seed": 3,
+  "f1": 0.46905940594059403,
+  "epochs": 37,
+  "fit_s": 22.3,
+  "error": null
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 2000,
+  "mode": "mb1024",
+  "seed": 4,
+  "f1": 0.46905940594059403,
+  "epochs": 12,
+  "fit_s": 7.6,
+  "error": null
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 2000,
+  "mode": "full",
+  "seed": 0,
+  "f1": 0.46905940594059403,
+  "epochs": 24,
+  "fit_s": 16.9,
+  "error": null
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 2000,
+  "mode": "full",
+  "seed": 1,
+  "f1": 0.46905940594059403,
+  "epochs": 36,
+  "fit_s": 25.2,
+  "error": null
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 2000,
+  "mode": "full",
+  "seed": 2,
+  "f1": 0.6880165711320747,
+  "epochs": 40,
+  "fit_s": 28.0,
+  "error": null
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 2000,
+  "mode": "full",
+  "seed": 3,
+  "f1": 0.46905940594059403,
+  "epochs": 11,
+  "fit_s": 7.9,
+  "error": null
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 2000,
+  "mode": "full",
+  "seed": 4,
+  "f1": 0.46905940594059403,
+  "epochs": 40,
+  "fit_s": 27.9,
+  "error": null
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 5000,
+  "mode": "mb1024",
+  "seed": 0,
+  "f1": 0.6759789466895496,
+  "epochs": 34,
+  "fit_s": 50.8,
+  "error": null
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 5000,
+  "mode": "mb1024",
+  "seed": 1,
+  "f1": 0.7024445525857829,
+  "epochs": 20,
+  "fit_s": 30.2,
+  "error": null
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 5000,
+  "mode": "mb1024",
+  "seed": 2,
+  "f1": 0.6248015310941507,
+  "epochs": 31,
+  "fit_s": 46.4,
+  "error": null
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 5000,
+  "mode": "mb1024",
+  "seed": 3,
+  "f1": 0.6932377618272048,
+  "epochs": 35,
+  "fit_s": 52.3,
+  "error": null
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 5000,
+  "mode": "mb1024",
+  "seed": 4,
+  "f1": 0.6381189192538885,
+  "epochs": 24,
+  "fit_s": 36.1,
+  "error": null
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 5000,
+  "mode": "full",
+  "seed": 0,
+  "f1": null,
+  "epochs": null,
+  "fit_s": 0.4,
+  "error": "CUDA out of memory. Tried to allocate 246.00 MiB. GPU 0 has a total capacity of 1.95 GiB of which 87.50 MiB is free. Inc"
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 5000,
+  "mode": "full",
+  "seed": 1,
+  "f1": null,
+  "epochs": null,
+  "fit_s": 0.1,
+  "error": "CUDA out of memory. Tried to allocate 246.00 MiB. GPU 0 has a total capacity of 1.95 GiB of which 87.50 MiB is free. Inc"
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 5000,
+  "mode": "full",
+  "seed": 2,
+  "f1": null,
+  "epochs": null,
+  "fit_s": 0.2,
+  "error": "CUDA out of memory. Tried to allocate 246.00 MiB. GPU 0 has a total capacity of 1.95 GiB of which 87.50 MiB is free. Inc"
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 5000,
+  "mode": "full",
+  "seed": 3,
+  "f1": null,
+  "epochs": null,
+  "fit_s": 0.2,
+  "error": "CUDA out of memory. Tried to allocate 246.00 MiB. GPU 0 has a total capacity of 1.95 GiB of which 87.50 MiB is free. Inc"
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 5000,
+  "mode": "full",
+  "seed": 4,
+  "f1": null,
+  "epochs": null,
+  "fit_s": 0.2,
+  "error": "CUDA out of memory. Tried to allocate 246.00 MiB. GPU 0 has a total capacity of 1.95 GiB of which 87.50 MiB is free. Inc"
+ }
+]

@@ -54,7 +54,7 @@ sessão até a defesa. Um passo de cada vez; marcar `[x]` ao concluir e anotar a
 8. **Piloto do protocolo dos artigos lançado** (19:53, CPU, 3 sementes, TWS/HAB/AI4I/BANK/TELCO): saída incremental em `results/pilot_transformer_budget.json`, log em scratchpad da sessão. Ver §3.
 
 ## 2. VERSÃO 1 — fechar com implementações fiéis, protocolo publicado, limitação declarada
-- [ ] **1.0a** **Kaggle: FT-Entmax** — notebook `notebooks/entmax_rerun_2gpu_kaggle.ipynb` (duas T4, sem
+- [x] **1.0a** [CONCLUÍDO 19/09 — entmax rodado nas 5 fases restantes em duas T4; Tier 1 já vinha da sessão anterior.] **Kaggle: FT-Entmax** — notebook `notebooks/entmax_rerun_2gpu_kaggle.ipynb` (duas T4, sem
   Tier 1, sem SAINT). Saídas `results/entmax_{tier2,n5000,ablA,ablBC,table19}.json`. O Tier 1 do entmax já
   está mesclado em `results/tier1_gridcv.json` (300 registros; F1 0,7424; zeros 0,0798) e os 9 parquets
   derivados foram versionados para eliminar escrita concorrente em `data/raw/`.
@@ -63,7 +63,7 @@ sessão até a defesa. Um passo de cada vez; marcar `[x]` ao concluir e anotar a
   Transformers sem o SAINT e a Tabela 19 só a variante do entmax. Tier 1 do entmax já está em
   `~/Downloads/rerun_saint_entmax_tier1.json` (600 registros, inclui SAINT `paper_eq` que **não** se usa).
   Os registros de SAINT dos JSONs desta execução são descartados.
-- [ ] **1.0b** **SAINT com `style="reference"`** — notebook pronto:
+- [x] **1.0b** [CONCLUÍDO 19/09 — SAINT `style="reference"` rodado nas 6 fases (300+180+180+60+180+14 registros, zero erro).] **SAINT com `style="reference"`** — notebook pronto:
   `notebooks/saint_reference_2gpu_kaggle.ipynb` (duas T4; Tier 1, Tier 2, Ablação D, acréscimo do SAINT à
   Ablação A já rodada, Ablações B/C e as duas linhas da Tabela 19 em uma placa). Saídas
   `results/saint_{tier1,tier2,n5000,ablA,ablBC,table19}.json`. A célula 2 verifica o estilo no clone.
@@ -71,7 +71,7 @@ sessão até a defesa. Um passo de cada vez; marcar `[x]` ao concluir e anotar a
   Tier 1/GCR 104 s por semente, Tier 2/BANK 270 s por semente, 31 ajustes cada).
   **A Tabela 19 tem de ficar na T4**: o SAINT em lote completo estoura os 2 GB da MX350 em N=10 000.
   Se o resto rodar local, declarar em nota de rodapé que o SAINT foi executado em outra GPU.
-- [ ] **1.1** Kaggle: concluir as 6 fases do notebook; baixar os JSONs para `results/`.
+- [x] **1.1** [CONCLUÍDO 19/09 — todos os JSONs baixados e validados (completude conferida por fase).] Kaggle: concluir as 6 fases do notebook; baixar os JSONs para `results/`.
 - [x] **1.2a** **FT-Entmax mesclado e tabelas regeneradas (2026-09-19).** Todas as fases (Tier 1, Tier 2,
   Ablação D, Ablações A/B/C, Tabela 19) mescladas nos JSONs canônicos com backups `*_pre_entmax_backup.json`;
   dumps antigos do Tier 2 movidos para `results/_dumps_antigos/`. Pipeline rodado, PDF com 133 páginas, log limpo.
@@ -83,19 +83,29 @@ sessão até a defesa. Um passo de cada vez; marcar `[x]` ao concluir e anotar a
   último (0,716).
   **Texto já ajustado:** nova subseção §Dose-resposta da esparsidade de atenção (`sec:esparsidade_tier2_dose`),
   bullets do Tier 1 e do Tier 2, esparsidade do Tier 2, eficiência, Discussão, Conclusão item 2, Resumo e Abstract.
-- [ ] **1.2b** Após o SAINT: refazer o merge só do SAINT, regenerar e **reescrever a Ablação A inteira**
+- [x] **1.2b** [CONCLUÍDO 19/09 — merge do SAINT e Ablação A reescrita.] Após o SAINT: refazer o merge só do SAINT, regenerar e **reescrever a Ablação A inteira**
   (item 1.4) — o parágrafo atual cita os Δ antigos (FT-Softmax +0,190, FT-Sparsemax +0,262, SAINT +0,014),
   todos substituídos pelos novos (+0,106, +0,123, e o do SAINT a sair).
-- [ ] **1.2** `bash scripts/post_rerun_saint_entmax.sh` (faz merge, regenera, copia, normaliza, Nemenyi, reaplica edições manuais, compila). Conferir o resumo de diffs que ele imprime.
-- [ ] **1.3** Texto — números de SAINT e FT-Entmax: Cap. Resultados (Tier 1 bullets e Friedman; §esparsidade Transformers; Tier 2 bullets, esparsidade e métricas; Ablação D §SAINT; benchmark inter-instâncias), Conclusão (itens 1, 2, 5, 6), Apêndice (Nemenyi, métricas complementares), Resumo/Abstract só se alguma conclusão mudar.
-- [ ] **1.4** Texto — Ablação A inteira dos Transformers (agora por transferência; os seis mudam). Reescrever o parágrafo da espiral/SAINT e a decomposição por semente com os dados novos.
+- [x] **1.2** [CONCLUÍDO 19/09 — pipeline rodado duas vezes (entmax e SAINT); PDF 133 p., log limpo.] `bash scripts/post_rerun_saint_entmax.sh` (faz merge, regenera, copia, normaliza, Nemenyi, reaplica edições manuais, compila). Conferir o resumo de diffs que ele imprime.
+- [x] **1.3** [CONCLUÍDO 19/09 — Tier 1 bullets, Tier 2 bullets, esparsidade, métricas (Spearman), Ablação D, eficiência, Conclusão itens 1/2/5, Resumo e Abstract.] Texto — números de SAINT e FT-Entmax: Cap. Resultados (Tier 1 bullets e Friedman; §esparsidade Transformers; Tier 2 bullets, esparsidade e métricas; Ablação D §SAINT; benchmark inter-instâncias), Conclusão (itens 1, 2, 5, 6), Apêndice (Nemenyi, métricas complementares), Resumo/Abstract só se alguma conclusão mudar.
+- [x] **1.4** [CONCLUÍDO 19/09 — dois parágrafos do platô da espiral substituídos; o platô era artefato da versão só-CLS.] Texto — Ablação A inteira dos Transformers (agora por transferência; os seis mudam). Reescrever o parágrafo da espiral/SAINT e a decomposição por semente com os dados novos.
 - [ ] **1.5** Texto — limitação do orçamento de treino: (a) Metodologia §Ambiente/Transformers: uma frase com os passos efetivos por tier e a referência aos regimes dos artigos; (b) Limitações: item novo; (c) Trabalhos futuros: protocolo em passos alinhado aos artigos (= versão 2).
 - [ ] **1.6** Apêndice curto "Ablação de orçamento de treino": tabela espiral/HAB × {protocolo, 40 ép. lote 32, 400 ép.} para FT-Softmax e SAINT (dados desta sessão; ideal repetir em GPU com 10 sementes nos 3 sintéticos e nos 6 modelos — ~1 h de GPU).
 - [ ] **1.7** Texto — Ablação D: parágrafo de validação por re-tuning do FT-CUR no BANK (item 1.6 acima do §1), espelhando o do ADMM-Nyström; qualificar "SAINT é o que mais se beneficia de N" (depende do BANK; sobrevive ao re-tuning nesse dataset).
 - [ ] **1.8** Texto — suavizar: "data-hungry" → "sob orçamento fixo de 40 épocas"; "FT-CUR empata com SAINT" → "sob o mesmo orçamento"; verbos do Resumo/Conclusão em linha com o poder do Nemenyi (CD ≈ 9,4).
 - [ ] **1.9** Itens do juízo de valor ainda abertos: parágrafo "o que fica de meu" (Intro + Conclusão); limitação do orçamento de tuning assimétrico (LSSVM 36–75 configs vs Transformers 6); título ("formulações duais" no plural); Folha de Aprovação (membros); parágrafos longos da Discussão; apêndice de reprodutibilidade (commit + mapa JSON→tabela + script).
 - [ ] **1.10** Nota no Cap. 5: variantes de mini-lote da Tabela 19 são configurações de custo, sem F1 avaliado; rota streaming verificada equivalente (Δ ≤ 0,008).
-- [ ] **1.12** **Seção 5.7 — unificar o orçamento de otimização nas duas famílias.** A seção hoje é
+- [ ] **1.12** **Seção 5.7 — unificar o orçamento de otimização nas duas famílias.**
+  *Insumos já medidos (19/09):* (a) passos de gradiente por época por regime e modelo (Tier 1: 1 para todos;
+  Tier 2: 4 FT / 2 SAINT / 1 FT-CUR; N=5000: 8 / 4 / 1); (b) ablação de orçamento na espiral e no HAB
+  (FT-Softmax 0,645→0,961 e SAINT 0,547→0,922 com 400 épocas); (c) épocas em que a paciência 6 corta
+  (FT-Softmax 7–19, SAINT 9–30); (d) taxa de colapso do SAINT × dificuldade do \textit{dataset}
+  (Spearman $-0{,}63$, $p = 0{,}009$; não correlaciona com $p$ nem com $N$); (e) FT-CUR: mais passos **não**
+  ampliam o ganho com $N$ (`results/ftcur_batch_confound.json`) → gargalo é a fidelidade do resumo;
+  (f) SAINT em mini-lote ganha $+0{,}097$ ao dobrar $N$ (`results/saint_batch_context.json`), mas o braço
+  de lote completo em $N=5000$ **não rodou** (VRAM de 2 GB na MX350) — logo, no lado do SAINT, passos e
+  contexto ficam \emph{confundidos}. Escrever sem atribuir o mecanismo ao SAINT, ou rodar os 15 ajustes
+  faltantes numa T4 antes. A seção hoje é
   "O Orçamento de Iterações como Explicação da Ablação D" (só ADMM). Renomear para algo como
   "O Orçamento de Otimização: Iterações do ADMM e Épocas dos Transformers" e acrescentar uma subseção com:
   (a) o mecanismo — com lote ≥ N, uma época = um passo de gradiente; o protocolo dá 7–30 passos no Tier 1

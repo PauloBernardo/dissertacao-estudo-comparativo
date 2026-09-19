@@ -1,3 +1,3 @@
 Friedman test (Tier 2 — Transformers)
-Statistic: 12.4762
-p-value:   0.028814
+Statistic: 16.6667
+p-value:   0.005177

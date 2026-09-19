@@ -1,0 +1,132 @@
+[
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 3000,
+  "mode": "mb1024",
+  "seed": 0,
+  "f1": 0.34687658710005076,
+  "epochs": 10,
+  "fit_s": 8.1,
+  "error": null
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 3000,
+  "mode": "mb1024",
+  "seed": 1,
+  "f1": 0.34687658710005076,
+  "epochs": 9,
+  "fit_s": 6.5,
+  "error": null
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 3000,
+  "mode": "mb1024",
+  "seed": 2,
+  "f1": 0.34687658710005076,
+  "epochs": 12,
+  "fit_s": 8.6,
+  "error": null
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 3000,
+  "mode": "mb1024",
+  "seed": 3,
+  "f1": 0.34687658710005076,
+  "epochs": 7,
+  "fit_s": 5.2,
+  "error": null
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 3000,
+  "mode": "mb1024",
+  "seed": 4,
+  "f1": 0.34687658710005076,
+  "epochs": 8,
+  "fit_s": 5.9,
+  "error": null
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 3000,
+  "mode": "full",
+  "seed": 0,
+  "f1": 0.34870847466752813,
+  "epochs": 7,
+  "fit_s": 5.6,
+  "error": null
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 3000,
+  "mode": "full",
+  "seed": 1,
+  "f1": 0.34687658710005076,
+  "epochs": 15,
+  "fit_s": 11.6,
+  "error": null
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 3000,
+  "mode": "full",
+  "seed": 2,
+  "f1": 0.6013108147057327,
+  "epochs": 31,
+  "fit_s": 23.6,
+  "error": null
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 3000,
+  "mode": "full",
+  "seed": 3,
+  "f1": 0.34687658710005076,
+  "epochs": 12,
+  "fit_s": 9.4,
+  "error": null
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 3000,
+  "mode": "full",
+  "seed": 4,
+  "f1": 0.34687658710005076,
+  "epochs": 16,
+  "fit_s": 12.4,
+  "error": null
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 3000,
+  "mode": "mb1024",
+  "seed": 0,
+  "f1": 0.4379370629370629,
+  "epochs": 16,
+  "fit_s": 20.1,
+  "error": null
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 3000,
+  "mode": "mb1024",
+  "seed": 1,
+  "f1": 0.4379370629370629,
+  "epochs": 10,
+  "fit_s": 12.9,
+  "error": null
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 3000,
+  "mode": "mb1024",
+  "seed": 2,
+  "f1": 0.642186569885834,
+  "epochs": 29,
+  "fit_s": 36.0,
+  "error": null
+ }
+]

@@ -1,0 +1,842 @@
+[
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 2000,
+  "seed": 0,
+  "mode": "full",
+  "f1": 0.6231,
+  "epochs": 20,
+  "fit_s": 3.5,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 2,
+   "n_layers": 1
+  }
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 2000,
+  "seed": 1,
+  "mode": "full",
+  "f1": 0.6205,
+  "epochs": 34,
+  "fit_s": 3.0,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 2,
+   "n_layers": 1
+  }
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 2000,
+  "seed": 2,
+  "mode": "full",
+  "f1": 0.6069,
+  "epochs": 26,
+  "fit_s": 2.3,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 2,
+   "n_layers": 1
+  }
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 2000,
+  "seed": 3,
+  "mode": "full",
+  "f1": 0.6586,
+  "epochs": 21,
+  "fit_s": 1.9,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 2,
+   "n_layers": 1
+  }
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 2000,
+  "seed": 4,
+  "mode": "full",
+  "f1": 0.6087,
+  "epochs": 17,
+  "fit_s": 1.5,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 2,
+   "n_layers": 1
+  }
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 2000,
+  "seed": 0,
+  "mode": "mb1024",
+  "f1": 0.6299,
+  "epochs": 15,
+  "fit_s": 2.1,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 2,
+   "n_layers": 1
+  }
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 2000,
+  "seed": 1,
+  "mode": "mb1024",
+  "f1": 0.6295,
+  "epochs": 23,
+  "fit_s": 3.0,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 2,
+   "n_layers": 1
+  }
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 2000,
+  "seed": 2,
+  "mode": "mb1024",
+  "f1": 0.6068,
+  "epochs": 26,
+  "fit_s": 3.5,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 2,
+   "n_layers": 1
+  }
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 2000,
+  "seed": 3,
+  "mode": "mb1024",
+  "f1": 0.6491,
+  "epochs": 24,
+  "fit_s": 3.4,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 2,
+   "n_layers": 1
+  }
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 2000,
+  "seed": 4,
+  "mode": "mb1024",
+  "f1": 0.6316,
+  "epochs": 19,
+  "fit_s": 2.7,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 2,
+   "n_layers": 1
+  }
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 5000,
+  "seed": 0,
+  "mode": "full",
+  "f1": 0.65,
+  "epochs": 40,
+  "fit_s": 10.9,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 2,
+   "n_layers": 1
+  }
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 5000,
+  "seed": 1,
+  "mode": "full",
+  "f1": 0.6601,
+  "epochs": 36,
+  "fit_s": 9.8,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 2,
+   "n_layers": 1
+  }
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 5000,
+  "seed": 2,
+  "mode": "full",
+  "f1": 0.6429,
+  "epochs": 25,
+  "fit_s": 6.9,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 2,
+   "n_layers": 1
+  }
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 5000,
+  "seed": 3,
+  "mode": "full",
+  "f1": 0.659,
+  "epochs": 40,
+  "fit_s": 10.9,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 2,
+   "n_layers": 1
+  }
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 5000,
+  "seed": 4,
+  "mode": "full",
+  "f1": 0.6385,
+  "epochs": 28,
+  "fit_s": 7.7,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 2,
+   "n_layers": 1
+  }
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 5000,
+  "seed": 0,
+  "mode": "mb1024",
+  "f1": 0.6572,
+  "epochs": 29,
+  "fit_s": 19.3,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 2,
+   "n_layers": 1
+  }
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 5000,
+  "seed": 1,
+  "mode": "mb1024",
+  "f1": 0.6618,
+  "epochs": 15,
+  "fit_s": 9.9,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 2,
+   "n_layers": 1
+  }
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 5000,
+  "seed": 2,
+  "mode": "mb1024",
+  "f1": 0.6472,
+  "epochs": 14,
+  "fit_s": 9.3,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 2,
+   "n_layers": 1
+  }
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 5000,
+  "seed": 3,
+  "mode": "mb1024",
+  "f1": 0.6569,
+  "epochs": 21,
+  "fit_s": 13.8,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 2,
+   "n_layers": 1
+  }
+ },
+ {
+  "dataset": "HIGGS50K",
+  "n_train": 5000,
+  "seed": 4,
+  "mode": "mb1024",
+  "f1": 0.6621,
+  "epochs": 26,
+  "fit_s": 17.1,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 2,
+   "n_layers": 1
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 2000,
+  "seed": 0,
+  "mode": "full",
+  "f1": 0.6963,
+  "epochs": 21,
+  "fit_s": 5.2,
+  "params": {
+   "m_ratio": 0.1,
+   "n_heads": 4,
+   "n_layers": 3
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 2000,
+  "seed": 1,
+  "mode": "full",
+  "f1": 0.6746,
+  "epochs": 40,
+  "fit_s": 9.9,
+  "params": {
+   "m_ratio": 0.1,
+   "n_heads": 4,
+   "n_layers": 3
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 2000,
+  "seed": 2,
+  "mode": "full",
+  "f1": 0.6118,
+  "epochs": 21,
+  "fit_s": 5.3,
+  "params": {
+   "m_ratio": 0.1,
+   "n_heads": 4,
+   "n_layers": 3
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 2000,
+  "seed": 3,
+  "mode": "full",
+  "f1": 0.677,
+  "epochs": 33,
+  "fit_s": 8.2,
+  "params": {
+   "m_ratio": 0.1,
+   "n_heads": 4,
+   "n_layers": 3
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 2000,
+  "seed": 4,
+  "mode": "full",
+  "f1": 0.6885,
+  "epochs": 38,
+  "fit_s": 9.4,
+  "params": {
+   "m_ratio": 0.1,
+   "n_heads": 4,
+   "n_layers": 3
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 2000,
+  "seed": 0,
+  "mode": "mb1024",
+  "f1": 0.7117,
+  "epochs": 19,
+  "fit_s": 5.8,
+  "params": {
+   "m_ratio": 0.1,
+   "n_heads": 4,
+   "n_layers": 3
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 2000,
+  "seed": 1,
+  "mode": "mb1024",
+  "f1": 0.675,
+  "epochs": 40,
+  "fit_s": 12.3,
+  "params": {
+   "m_ratio": 0.1,
+   "n_heads": 4,
+   "n_layers": 3
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 2000,
+  "seed": 2,
+  "mode": "mb1024",
+  "f1": 0.637,
+  "epochs": 15,
+  "fit_s": 4.7,
+  "params": {
+   "m_ratio": 0.1,
+   "n_heads": 4,
+   "n_layers": 3
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 2000,
+  "seed": 3,
+  "mode": "mb1024",
+  "f1": 0.6788,
+  "epochs": 22,
+  "fit_s": 6.8,
+  "params": {
+   "m_ratio": 0.1,
+   "n_heads": 4,
+   "n_layers": 3
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 2000,
+  "seed": 4,
+  "mode": "mb1024",
+  "f1": 0.6909,
+  "epochs": 24,
+  "fit_s": 7.4,
+  "params": {
+   "m_ratio": 0.1,
+   "n_heads": 4,
+   "n_layers": 3
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 5000,
+  "seed": 0,
+  "mode": "full",
+  "f1": 0.7037,
+  "epochs": 40,
+  "fit_s": 24.9,
+  "params": {
+   "m_ratio": 0.1,
+   "n_heads": 4,
+   "n_layers": 3
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 5000,
+  "seed": 1,
+  "mode": "full",
+  "f1": 0.6873,
+  "epochs": 40,
+  "fit_s": 24.9,
+  "params": {
+   "m_ratio": 0.1,
+   "n_heads": 4,
+   "n_layers": 3
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 5000,
+  "seed": 2,
+  "mode": "full",
+  "f1": 0.6503,
+  "epochs": 32,
+  "fit_s": 20.0,
+  "params": {
+   "m_ratio": 0.1,
+   "n_heads": 4,
+   "n_layers": 3
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 5000,
+  "seed": 3,
+  "mode": "full",
+  "f1": 0.661,
+  "epochs": 33,
+  "fit_s": 20.6,
+  "params": {
+   "m_ratio": 0.1,
+   "n_heads": 4,
+   "n_layers": 3
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 5000,
+  "seed": 4,
+  "mode": "full",
+  "f1": 0.6765,
+  "epochs": 40,
+  "fit_s": 24.9,
+  "params": {
+   "m_ratio": 0.1,
+   "n_heads": 4,
+   "n_layers": 3
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 5000,
+  "seed": 0,
+  "mode": "mb1024",
+  "f1": 0.6986,
+  "epochs": 16,
+  "fit_s": 15.7,
+  "params": {
+   "m_ratio": 0.1,
+   "n_heads": 4,
+   "n_layers": 3
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 5000,
+  "seed": 1,
+  "mode": "mb1024",
+  "f1": 0.6932,
+  "epochs": 24,
+  "fit_s": 23.4,
+  "params": {
+   "m_ratio": 0.1,
+   "n_heads": 4,
+   "n_layers": 3
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 5000,
+  "seed": 2,
+  "mode": "mb1024",
+  "f1": 0.6614,
+  "epochs": 29,
+  "fit_s": 28.3,
+  "params": {
+   "m_ratio": 0.1,
+   "n_heads": 4,
+   "n_layers": 3
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 5000,
+  "seed": 3,
+  "mode": "mb1024",
+  "f1": 0.6724,
+  "epochs": 30,
+  "fit_s": 29.4,
+  "params": {
+   "m_ratio": 0.1,
+   "n_heads": 4,
+   "n_layers": 3
+  }
+ },
+ {
+  "dataset": "CREDIT",
+  "n_train": 5000,
+  "seed": 4,
+  "mode": "mb1024",
+  "f1": 0.6819,
+  "epochs": 21,
+  "fit_s": 20.6,
+  "params": {
+   "m_ratio": 0.1,
+   "n_heads": 4,
+   "n_layers": 3
+  }
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 2000,
+  "seed": 0,
+  "mode": "full",
+  "f1": 0.5994,
+  "epochs": 32,
+  "fit_s": 5.2,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 2
+  }
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 2000,
+  "seed": 1,
+  "mode": "full",
+  "f1": 0.4691,
+  "epochs": 40,
+  "fit_s": 6.6,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 2
+  }
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 2000,
+  "seed": 2,
+  "mode": "full",
+  "f1": 0.7028,
+  "epochs": 40,
+  "fit_s": 6.7,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 2
+  }
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 2000,
+  "seed": 3,
+  "mode": "full",
+  "f1": 0.4681,
+  "epochs": 20,
+  "fit_s": 3.3,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 2
+  }
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 2000,
+  "seed": 4,
+  "mode": "full",
+  "f1": 0.6327,
+  "epochs": 40,
+  "fit_s": 6.7,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 2
+  }
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 2000,
+  "seed": 0,
+  "mode": "mb1024",
+  "f1": 0.6705,
+  "epochs": 40,
+  "fit_s": 9.7,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 2
+  }
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 2000,
+  "seed": 1,
+  "mode": "mb1024",
+  "f1": 0.7341,
+  "epochs": 37,
+  "fit_s": 8.7,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 2
+  }
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 2000,
+  "seed": 2,
+  "mode": "mb1024",
+  "f1": 0.6817,
+  "epochs": 37,
+  "fit_s": 8.7,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 2
+  }
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 2000,
+  "seed": 3,
+  "mode": "mb1024",
+  "f1": 0.7541,
+  "epochs": 36,
+  "fit_s": 8.3,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 2
+  }
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 2000,
+  "seed": 4,
+  "mode": "mb1024",
+  "f1": 0.674,
+  "epochs": 39,
+  "fit_s": 8.9,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 2
+  }
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 5000,
+  "seed": 0,
+  "mode": "full",
+  "f1": 0.6224,
+  "epochs": 40,
+  "fit_s": 20.1,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 2
+  }
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 5000,
+  "seed": 1,
+  "mode": "full",
+  "f1": 0.4689,
+  "epochs": 40,
+  "fit_s": 20.1,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 2
+  }
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 5000,
+  "seed": 2,
+  "mode": "full",
+  "f1": 0.6972,
+  "epochs": 40,
+  "fit_s": 20.1,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 2
+  }
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 5000,
+  "seed": 3,
+  "mode": "full",
+  "f1": 0.7433,
+  "epochs": 40,
+  "fit_s": 20.1,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 2
+  }
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 5000,
+  "seed": 4,
+  "mode": "full",
+  "f1": 0.6687,
+  "epochs": 40,
+  "fit_s": 20.1,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 2
+  }
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 5000,
+  "seed": 0,
+  "mode": "mb1024",
+  "f1": 0.7118,
+  "epochs": 36,
+  "fit_s": 43.6,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 2
+  }
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 5000,
+  "seed": 1,
+  "mode": "mb1024",
+  "f1": 0.7455,
+  "epochs": 26,
+  "fit_s": 31.6,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 2
+  }
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 5000,
+  "seed": 2,
+  "mode": "mb1024",
+  "f1": 0.719,
+  "epochs": 26,
+  "fit_s": 31.6,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 2
+  }
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 5000,
+  "seed": 3,
+  "mode": "mb1024",
+  "f1": 0.7385,
+  "epochs": 20,
+  "fit_s": 24.9,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 2
+  }
+ },
+ {
+  "dataset": "BANK",
+  "n_train": 5000,
+  "seed": 4,
+  "mode": "mb1024",
+  "f1": 0.6627,
+  "epochs": 23,
+  "fit_s": 28.9,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 2
+  }
+ }
+]
