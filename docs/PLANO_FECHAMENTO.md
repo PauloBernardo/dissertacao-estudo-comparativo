@@ -464,3 +464,41 @@ critério fixo no espaço de entrada pode ser o correto. Coerente com a ablaçã
 em N ≤ 5000 a matriz K é trivial (25M floats). Isso permitiria responder, com um seletor a mais na
 ablação já planejada, se o critério fiel de Drineas bate o random — pergunta que hoje a tese responde
 apenas por citação de terceiros. Custo estimado: ~2,5 h de ajuste (1,25 h em 2 placas) no Tier 1.
+
+### FT-CUR em mini-lote: o seletor importa, e o `colnorm` é o pior (2026-09-19)
+
+`scripts/study_ftcur_minibatch_selection.py`, dados em `results/ftcur_minibatch_selection.json`.
+Mini-lote forçado (`batch_size=512` contra `n_fit=1120`), `m_ratio` fixo em 10%, 4 datasets do Tier 2
+× 5 sementes = 20 pares. Inclui o novo seletor `colnorm_inv` (∝ 1/‖x_i‖²), que reproduz a norma de
+coluna verdadeira do kernel em O(nd).
+
+| braço | F1 | vs per_batch | vs global+random |
+|---|---|---|---|
+| per_batch (histórico; landmarks do fit são DESCARTADOS) | 0,7309 | — | |
+| global + random | 0,7309 | +0,0000 (p=0,96) | — |
+| global + colnorm_inv | 0,7248 | −0,0061 (p=0,25) | −0,0061 (p=0,20) |
+| global + colnorm | 0,7170 | −0,0139 (p=0,044) | −0,0140 (p=0,071) |
+
+Friedman entre os quatro: p = 0,060. Sob Holm, o p = 0,044 não sobrevive à multiplicidade — é sinal de
+direção, não prova.
+
+Três leituras:
+
+1. **Reamostragem não traz nada.** `per_batch` (sorteio novo a cada lote) e `global+random` (conjunto
+   fixo) empatam exatamente. Uma leitura parcial com apenas BANK e TELCO sugeria o contrário; com os 20
+   pares a diferença é zero.
+2. **Inverter conserta o dano, mas o teto é o sorteio uniforme.** `colnorm_inv` supera o `colnorm` em
+   +0,0078 (12/20), o que devolve o critério ao empate com o random, e não o faz superá-lo.
+3. **O `colnorm` é o único braço abaixo da linha de base.** Coerente com as outras três vias medidas
+   hoje: empate dos quatro seletores em lote completo (colnorm −0,0012, p=0,83); em reconstrução de
+   Nyström o critério fiel não bate o que está em uso e nenhum bate o k-means; e aqui ele é o pior.
+
+**O que isso muda na tese.** Nada no corpo: Tier 1, Tier 2 e Ablação D rodam todos em lote completo
+(n_fit máximo 4.000 contra `batch_size=4096`), então ali o `colnorm` é aplicado de verdade e o resultado
+é o empate já publicado. Muda a **Tabela 19**, que roda em mini-lote com N até 50.000: lá, no caminho
+`per_batch`, o seletor descrito no texto nunca é usado (sorteio uniforme dentro do lote), e no caminho
+`global` ele é a pior das quatro opções.
+
+**Correção pendente no código (não aplicada):** a Ablação D passa por 96 amostras de folga
+(n_fit = 4.000 contra batch 4.096). Se `val_fraction` ou N mudarem, ela cruza para o caminho de
+mini-lote sem aviso. Vale uma asserção ou um log quando o caminho de mini-lote for acionado.
