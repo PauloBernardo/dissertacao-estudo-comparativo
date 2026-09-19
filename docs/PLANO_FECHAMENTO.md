@@ -54,14 +54,19 @@ sessão até a defesa. Um passo de cada vez; marcar `[x]` ao concluir e anotar a
 8. **Piloto do protocolo dos artigos lançado** (19:53, CPU, 3 sementes, TWS/HAB/AI4I/BANK/TELCO): saída incremental em `results/pilot_transformer_budget.json`, log em scratchpad da sessão. Ver §3.
 
 ## 2. VERSÃO 1 — fechar com implementações fiéis, protocolo publicado, limitação declarada
-- [ ] **1.0a** **Kaggle, em curso: só FT-Entmax.** O notebook `saint_entmax_rerun_kaggle.ipynb` foi
+- [ ] **1.0a** **Kaggle: FT-Entmax** — notebook `notebooks/entmax_rerun_2gpu_kaggle.ipynb` (duas T4, sem
+  Tier 1, sem SAINT). Saídas `results/entmax_{tier2,n5000,ablA,ablBC,table19}.json`. O Tier 1 do entmax já
+  está mesclado em `results/tier1_gridcv.json` (300 registros; F1 0,7424; zeros 0,0798) e os 9 parquets
+  derivados foram versionados para eliminar escrita concorrente em `data/raw/`.
+  *(Histórico do item original:)* **Kaggle, em curso: só FT-Entmax.** O notebook `saint_entmax_rerun_kaggle.ipynb` foi
   alterado (commit `ab7e79d`) para rodar apenas `FTTransformer_entmax`; a Ablação A roda os **cinco**
   Transformers sem o SAINT e a Tabela 19 só a variante do entmax. Tier 1 do entmax já está em
   `~/Downloads/rerun_saint_entmax_tier1.json` (600 registros, inclui SAINT `paper_eq` que **não** se usa).
   Os registros de SAINT dos JSONs desta execução são descartados.
-- [ ] **1.0b** **SAINT depois, com `style="reference"`** (padrão desde `d6667a6`). Fases: Tier 1, Tier 2,
-  Ablação D, Ablações B/C, acrescentar o SAINT à Ablação A já rodada (script resumível, chaveado por
-  (variant, dataset, seed)) e as duas linhas de SAINT na Tabela 19.
+- [ ] **1.0b** **SAINT com `style="reference"`** — notebook pronto:
+  `notebooks/saint_reference_2gpu_kaggle.ipynb` (duas T4; Tier 1, Tier 2, Ablação D, acréscimo do SAINT à
+  Ablação A já rodada, Ablações B/C e as duas linhas da Tabela 19 em uma placa). Saídas
+  `results/saint_{tier1,tier2,n5000,ablA,ablBC,table19}.json`. A célula 2 verifica o estilo no clone.
   Custo medido: **≈9 h na T4** ou **≈25 h na MX350 local** (medido com o runner oficial e o estilo novo:
   Tier 1/GCR 104 s por semente, Tier 2/BANK 270 s por semente, 31 ajustes cada).
   **A Tabela 19 tem de ficar na T4**: o SAINT em lote completo estoura os 2 GB da MX350 em N=10 000.
