@@ -72,6 +72,20 @@ sessão até a defesa. Um passo de cada vez; marcar `[x]` ao concluir e anotar a
   **A Tabela 19 tem de ficar na T4**: o SAINT em lote completo estoura os 2 GB da MX350 em N=10 000.
   Se o resto rodar local, declarar em nota de rodapé que o SAINT foi executado em outra GPU.
 - [ ] **1.1** Kaggle: concluir as 6 fases do notebook; baixar os JSONs para `results/`.
+- [x] **1.2a** **FT-Entmax mesclado e tabelas regeneradas (2026-09-19).** Todas as fases (Tier 1, Tier 2,
+  Ablação D, Ablações A/B/C, Tabela 19) mescladas nos JSONs canônicos com backups `*_pre_entmax_backup.json`;
+  dumps antigos do Tier 2 movidos para `results/_dumps_antigos/`. Pipeline rodado, PDF com 133 páginas, log limpo.
+  **O que mudou:** Tier 2 do entmax 0,7010 → 0,7090 (zeros 0,064 → 0,205); ele passa a ser o **2º melhor
+  \textit{rank} do Tier 2** (3,33, atrás só do XGBoost) e supera o \textit{softmax} nos 6 datasets
+  ($p = 0{,}011$ sobre 180 pares), embora bem abaixo da CD de 9,4. Tier 1 inalterado (0,7424; empate com o
+  \textit{softmax}, $p = 0{,}75$). Tabela 19: treino 2,5× o \textit{softmax} (era "várias vezes").
+  Ablação A: os cinco Transformers mudaram (agora por transferência) — FT-Sparsemax lidera (0,774), FT-CUR
+  último (0,716).
+  **Texto já ajustado:** nova subseção §Dose-resposta da esparsidade de atenção (`sec:esparsidade_tier2_dose`),
+  bullets do Tier 1 e do Tier 2, esparsidade do Tier 2, eficiência, Discussão, Conclusão item 2, Resumo e Abstract.
+- [ ] **1.2b** Após o SAINT: refazer o merge só do SAINT, regenerar e **reescrever a Ablação A inteira**
+  (item 1.4) — o parágrafo atual cita os Δ antigos (FT-Softmax +0,190, FT-Sparsemax +0,262, SAINT +0,014),
+  todos substituídos pelos novos (+0,106, +0,123, e o do SAINT a sair).
 - [ ] **1.2** `bash scripts/post_rerun_saint_entmax.sh` (faz merge, regenera, copia, normaliza, Nemenyi, reaplica edições manuais, compila). Conferir o resumo de diffs que ele imprime.
 - [ ] **1.3** Texto — números de SAINT e FT-Entmax: Cap. Resultados (Tier 1 bullets e Friedman; §esparsidade Transformers; Tier 2 bullets, esparsidade e métricas; Ablação D §SAINT; benchmark inter-instâncias), Conclusão (itens 1, 2, 5, 6), Apêndice (Nemenyi, métricas complementares), Resumo/Abstract só se alguma conclusão mudar.
 - [ ] **1.4** Texto — Ablação A inteira dos Transformers (agora por transferência; os seis mudam). Reescrever o parágrafo da espiral/SAINT e a decomposição por semente com os dados novos.

@@ -1,0 +1,86 @@
+[
+  {
+    "variant": "FTTransformer_entmax",
+    "n": 500,
+    "skipped": false,
+    "fit_s_median": 1.236,
+    "ram_delta_mb_median": 0.2,
+    "vram_mb_median": 74.8,
+    "pred_oom": false,
+    "pred_ms_median": 15.136,
+    "pred_ram_mb_median": 0.0,
+    "pred_vram_mb_median": 50.0
+  },
+  {
+    "variant": "FTTransformer_entmax",
+    "n": 1000,
+    "skipped": false,
+    "fit_s_median": 2.613,
+    "ram_delta_mb_median": 0.1,
+    "vram_mb_median": 74.8,
+    "pred_oom": false,
+    "pred_ms_median": 15.524,
+    "pred_ram_mb_median": 0.0,
+    "pred_vram_mb_median": 50.0
+  },
+  {
+    "variant": "FTTransformer_entmax",
+    "n": 2000,
+    "skipped": false,
+    "fit_s_median": 4.937,
+    "ram_delta_mb_median": 0.1,
+    "vram_mb_median": 74.9,
+    "pred_oom": false,
+    "pred_ms_median": 14.822,
+    "pred_ram_mb_median": 0.0,
+    "pred_vram_mb_median": 50.0
+  },
+  {
+    "variant": "FTTransformer_entmax",
+    "n": 5000,
+    "skipped": false,
+    "fit_s_median": 9.256,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 75.7,
+    "pred_oom": false,
+    "pred_ms_median": 14.815,
+    "pred_ram_mb_median": 0.0,
+    "pred_vram_mb_median": 49.9
+  },
+  {
+    "variant": "FTTransformer_entmax",
+    "n": 10000,
+    "skipped": false,
+    "fit_s_median": 20.185,
+    "ram_delta_mb_median": 0.0,
+    "vram_mb_median": 83.4,
+    "pred_oom": false,
+    "pred_ms_median": 15.463,
+    "pred_ram_mb_median": 0.0,
+    "pred_vram_mb_median": 52.5
+  },
+  {
+    "variant": "FTTransformer_entmax",
+    "n": 20000,
+    "skipped": false,
+    "fit_s_median": 36.913,
+    "ram_delta_mb_median": 1.0,
+    "vram_mb_median": 149.5,
+    "pred_oom": false,
+    "pred_ms_median": 15.325,
+    "pred_ram_mb_median": 0.0,
+    "pred_vram_mb_median": 56.6
+  },
+  {
+    "variant": "FTTransformer_entmax",
+    "n": 50000,
+    "skipped": false,
+    "fit_s_median": 94.741,
+    "ram_delta_mb_median": 4.5,
+    "vram_mb_median": 340.3,
+    "pred_oom": false,
+    "pred_ms_median": 15.651,
+    "pred_ram_mb_median": 0.0,
+    "pred_vram_mb_median": 76.5
+  }
+]
