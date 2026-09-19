@@ -97,4 +97,43 @@ As horas abaixo são em **T4 (Kaggle)**; a MX350 local é ≈3× mais lenta (T4 
 | D | só SAINT e FT-CUR com grade + 5 folds, 30 sementes | ≈ 125–190 h → 4–6 semanas | ≈ 400–570 h |
 | E | C + grade só no par SAINT/FT-CUR no Tier 2 | ≈ 60–80 h → 2–3 semanas | ≈ 200 h |
 
-Recomendação: **C** (é o desenho do artigo do FT-Transformer: "default configuration performs on par with tuned"), declarando que na v2 os Transformers usam configuração fixa enquanto os LSSVMs mantêm a grade — assimetria oposta à atual (hoje a grade dos Transformers tem 6–12 configurações contra 36–75 dos LSSVMs) e menos grave, pois o que a v2 quer medir é o efeito do orçamento de treino. Abl. A já é por transferência (barata). Decisão pendente.
+### 3.3 Optuna — a opção que segue o artigo e resolve o desvio de \emph{lr}
+O FT-Transformer **não** usa grade: usa Optuna (TPE), orçamento em **iterações** (100 no espaço A, 50 no B),
+tuna **uma vez por dataset** sobre a partição de validação e depois roda **15 sementes** com a configuração
+vencedora (Seção 5.2 e Apêndice E.4 do artigo). O espaço (Tabela 13) inclui camadas [1,4], dimensão de
+\emph{embedding} [64,512], três \emph{dropouts}, fator da FFN, **\emph{lr} LogUniform[1e-5, 1e-3]** e
+\emph{weight decay} LogUniform[1e-6, 1e-3].
+
+Três consequências para a versão 2:
+1. **O desvio de \emph{lr} deixa de existir.** Em vez de nós escolhermos 1e-3 (contra o 1e-4 "padrão"),
+   o \emph{lr} entra no espaço de busca do próprio artigo, cujo topo é exatamente 1e-3 — o valor que o
+   piloto mostra ser o que sai do platô nas bases pequenas. Nenhuma regra nossa sobra no protocolo.
+2. **Resolve a assimetria de \emph{tuning}** apontada na revisão: hoje os Transformers têm 6–12
+   configurações (só blocos × cabeças) contra 36–75 dos LSSVMs. Com 30–50 \emph{trials} sobre um espaço
+   que inclui \emph{lr}, \emph{dropout}, profundidade e dimensão, passam a ter busca comparável ou mais rica.
+3. **O custo é viável**, porque tunar uma vez por (modelo, dataset) troca `30 × 61 ajustes` por
+   `n_trials + 30`. O repositório já tem `src/tuning/bayesian.py` (Optuna 4.8 instalado).
+
+Custo dos SEIS Transformers em Tier 1 + Tier 2 + Abl. B/C (Abl. A é transferência; N=5000 é config fixa, ≈1 h):
+
+| Opção | Ajustes por (modelo, dataset) | T4 | MX350 | Kaggle 30 h/sem |
+|---|---|---|---|---|
+| A — grade × 5 folds × 30 sementes (como a v1) | 930 | 338 h | 1013 h | 11,3 sem |
+| C — configuração fixa, 30 sementes | 30 | 10 h | 31 h | 0,3 sem |
+| **F1 — Optuna 30 trials (1 split) + 30 sementes** | 60 | 21 h | 63 h | 0,7 sem |
+| F2 — Optuna 50 trials (1 split) + 30 sementes | 80 | 28 h | 83 h | 0,9 sem |
+| **F3 — Optuna 30 trials × 3 splits + 30 sementes** | 120 | 42 h | 125 h | 1,4 sem |
+| F4 — Optuna 50 trials × 3 splits + 30 sementes | 180 | 63 h | 188 h | 2,1 sem |
+
+**Recomendação: F3.** O objetivo de cada \emph{trial} é o F1-macro médio de validação em 3 \emph{splits},
+o que evita que a configuração fique colada à partição da semente 0 (no artigo o problema não existe,
+porque há uma única partição por dataset; aqui cada semente re-particiona). Cabe em ≈5 dias na MX350
+local ou ≈1,5 semana de cota do Kaggle. F1 é o plano B se o tempo apertar.
+
+Espaço de busca proposto (adaptado da Tabela 13 aos tamanhos deste estudo): camadas UniformInt[1,4];
+dimensão do \emph{token} {32, 64, 128, 192}; cabeças {2, 4, 8}; \emph{attention/FFN dropout} Uniform[0, 0,5];
+\emph{lr} LogUniform[1e-5, 1e-3]; \emph{weight decay} LogUniform[1e-6, 1e-3]; para o FT-CUR, \emph{m\_ratio}
+{0,05; 0,1; 0,2} e modo de lote fixo em mini-lote 256 com \emph{landmarks} globais. Orçamento de treino:
+lote 256, teto 300 épocas, paciência 16 sobre a validação com piso de 100 épocas, melhor ponto de validação.
+
+Antiga recomendação (mantida como registro): **C** (é o desenho do artigo do FT-Transformer: "default configuration performs on par with tuned"), declarando que na v2 os Transformers usam configuração fixa enquanto os LSSVMs mantêm a grade — assimetria oposta à atual (hoje a grade dos Transformers tem 6–12 configurações contra 36–75 dos LSSVMs) e menos grave, pois o que a v2 quer medir é o efeito do orçamento de treino. Abl. A já é por transferência (barata). Decisão pendente.
