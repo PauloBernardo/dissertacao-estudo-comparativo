@@ -569,7 +569,7 @@ class _SAINTAttention(nn.Module):
 
 
 class SAINTStage(nn.Module):
-    """Um estágio do SAINT.
+    r"""Um estágio do SAINT.
 
     ``style="reference"`` (padrão) reproduz o ``RowColTransformer`` do código
     oficial (``somepago/saint``, ``models/model.py``, estilo ``colrow``):
