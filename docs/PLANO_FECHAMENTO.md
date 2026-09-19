@@ -398,3 +398,69 @@ Risco a vigiar na releitura: a seleção de grade passa a ser determinística, e
 não separa as arquiteturas (16–20% nas seis células), as arquiteturas escolhidas VÃO mudar. As médias
 não devem se mover muito (o ruído era simétrico), mas números citados no texto precisam ser reconferidos
 um por um — em especial a posição do FT-CUR entre os Transformers no Tier 1 e a média do SAINT.
+
+---
+
+## O que o seletor `colnorm` realmente mede (2026-09-19)
+
+Pergunta do orientando sobre a seleção de landmarks, o eixo mais trabalhado no Nyström-LSSVM.
+Script reproduzível: `scripts/study_colnorm_criterion.py`; dados em `results/colnorm_criterion.json`.
+
+### Não há assimetria entre os dois modelos
+
+Tanto o Nyström-LSSVM quanto o FT-CUR usam `colnorm` = amostragem ∝ ‖x_i‖² no espaço de **entrada**.
+Em `nystrom.py` a escolha é explícita: só `leverage` recebe o kernel, justamente "to avoid computing the
+full N×N kernel matrix (O(n²) memory)". Minha suposição inicial de que o LSSVM usava a matriz kernel
+verdadeira estava **errada**.
+
+### O critério é anticorrelacionado com o que o nome promete
+
+Spearman entre ‖x_i‖² e ‖K[:,i]‖² (a norma de coluna de Drineas), 10 datasets do Tier 1:
+
+| σ | ρ com a norma de coluna | ρ com o leverage de posto m |
+|---|---|---|
+| 0,1 | −0,28 | −0,17 |
+| 0,5 | −0,67 | −0,20 |
+| 2,0 | −0,96 (8/10 abaixo de −0,9) | **+0,80** |
+| 5,0 | −1,00 (9/10) | **+0,82** |
+| 8,0 | −1,00 (10/10) | **+0,82** |
+
+Faz sentido geométrico: com RBF e dados padronizados, ‖x_i‖ grande = ponto periférico = longe de todos =
+coluna de kernel de norma **pequena**. Os dois critérios são opostos.
+
+**O regime importa, e é favorável ao achado.** O σ que o GridSearchCV seleciona: Tier 1 modal 8,0 (43%),
+depois 0,5 (30%) e 2,0 (17%); Tier 2 **100% em 5,0**. Ou seja o Tier 2 está inteiramente no regime em que
+ρ ≈ −1,00, e no Tier 1 a maioria (σ ≥ 1,5, ≈68%) também. A ressalva honesta é o σ = 0,5 do Tier 1, onde
+a anticorrelação é moderada (−0,67) e a correlação com leverage **desaparece** (−0,20); e em σ = 0,1 o
+kernel é quase a identidade e nada se mede.
+
+### Duas consequências para o texto
+
+1. **A nota de rodapé de `Capitulo3.tex:82` pode passar de hedge a fato medido.** Hoje ela diz que ‖x_i‖²
+   "não coincide" com a norma de coluna da matriz derivada. Não é questão de não coincidir: para σ ≥ 2
+   é praticamente o **inverso** (ρ = −1,00).
+2. **A mesma nota precisa ser corrigida num ponto.** Ela afirma que o critério "não é uma aproximação dos
+   *leverage scores*". Para σ ≥ 2 ele é justamente isso, e bom: ρ ≈ +0,82. Ambos selecionam pontos
+   atípicos. Isso responde em parte a lacuna que o próprio `Apendice1.tex:347` declara (ausência de
+   comparação empírica com leverage): no regime de operação, `colnorm` **já é** um substituto barato de
+   leverage, com ρ ≈ +0,8, sem pagar a SVD.
+
+### E explica o resultado nulo, que já está na tese
+
+`Apendice1.tex:319` reporta que nos dois regimes de escassez o `colnorm` é o **pior** seletor. Agora há
+mecanismo: ele é um proxy de leverage, e a análise de \citeonline{zhang2008improved} — já citada no
+mesmo apêndice — diz que o que governa o erro de Nyström é o erro de **quantização** (k-means), não a
+importância espectral (leverage). Um critério tipo-leverage é, portanto, *previsto* a não ajudar. O nulo
+deixa de ser coincidência e passa a ser consequência.
+
+Para o FT-CUR o argumento é mais forte ainda, e o `Apendice1.tex:331` já aponta na direção certa: a
+matriz-alvo é a atenção **aprendida**, que não existe antes do treino e muda a cada passo, logo nenhum
+critério fixo no espaço de entrada pode ser o correto. Coerente com a ablação: random 0,7447, colnorm
+0,7435, kmeans 0,7432, opposite 0,7405 — e colnorm − random = −0,0012 com p = 0,83.
+
+### Oportunidade barata (opcional)
+
+`ColumnNormSelector` já aceita `kernel=`. Passar o kernel implementa a norma de coluna **verdadeira**, e
+em N ≤ 5000 a matriz K é trivial (25M floats). Isso permitiria responder, com um seletor a mais na
+ablação já planejada, se o critério fiel de Drineas bate o random — pergunta que hoje a tese responde
+apenas por citação de terceiros. Custo estimado: ~2,5 h de ajuste (1,25 h em 2 placas) no Tier 1.
