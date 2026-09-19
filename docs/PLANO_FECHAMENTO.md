@@ -54,9 +54,18 @@ sessão até a defesa. Um passo de cada vez; marcar `[x]` ao concluir e anotar a
 8. **Piloto do protocolo dos artigos lançado** (19:53, CPU, 3 sementes, TWS/HAB/AI4I/BANK/TELCO): saída incremental em `results/pilot_transformer_budget.json`, log em scratchpad da sessão. Ver §3.
 
 ## 2. VERSÃO 1 — fechar com implementações fiéis, protocolo publicado, limitação declarada
-- [ ] **1.0** **Refazer a fase do SAINT no Kaggle com `style="reference"`** (commit `d6667a6` ou posterior).
-  O FT-Entmax já rodado é aproveitável: fazer o merge dele com `--variants FTTransformer_entmax` e refazer
-  só `SAINTColnorm`. Conferir na célula 2 que o clone tem `SAINTStage` com `style` (o padrão já é `reference`).
+- [ ] **1.0a** **Kaggle, em curso: só FT-Entmax.** O notebook `saint_entmax_rerun_kaggle.ipynb` foi
+  alterado (commit `ab7e79d`) para rodar apenas `FTTransformer_entmax`; a Ablação A roda os **cinco**
+  Transformers sem o SAINT e a Tabela 19 só a variante do entmax. Tier 1 do entmax já está em
+  `~/Downloads/rerun_saint_entmax_tier1.json` (600 registros, inclui SAINT `paper_eq` que **não** se usa).
+  Os registros de SAINT dos JSONs desta execução são descartados.
+- [ ] **1.0b** **SAINT depois, com `style="reference"`** (padrão desde `d6667a6`). Fases: Tier 1, Tier 2,
+  Ablação D, Ablações B/C, acrescentar o SAINT à Ablação A já rodada (script resumível, chaveado por
+  (variant, dataset, seed)) e as duas linhas de SAINT na Tabela 19.
+  Custo medido: **≈9 h na T4** ou **≈25 h na MX350 local** (medido com o runner oficial e o estilo novo:
+  Tier 1/GCR 104 s por semente, Tier 2/BANK 270 s por semente, 31 ajustes cada).
+  **A Tabela 19 tem de ficar na T4**: o SAINT em lote completo estoura os 2 GB da MX350 em N=10 000.
+  Se o resto rodar local, declarar em nota de rodapé que o SAINT foi executado em outra GPU.
 - [ ] **1.1** Kaggle: concluir as 6 fases do notebook; baixar os JSONs para `results/`.
 - [ ] **1.2** `bash scripts/post_rerun_saint_entmax.sh` (faz merge, regenera, copia, normaliza, Nemenyi, reaplica edições manuais, compila). Conferir o resumo de diffs que ele imprime.
 - [ ] **1.3** Texto — números de SAINT e FT-Entmax: Cap. Resultados (Tier 1 bullets e Friedman; §esparsidade Transformers; Tier 2 bullets, esparsidade e métricas; Ablação D §SAINT; benchmark inter-instâncias), Conclusão (itens 1, 2, 5, 6), Apêndice (Nemenyi, métricas complementares), Resumo/Abstract só se alguma conclusão mudar.
