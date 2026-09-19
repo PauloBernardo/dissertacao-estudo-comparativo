@@ -382,12 +382,24 @@ class FTTransformerClassifier(nn.Module):
     def __init__(self, n_features: int, d_model: int = 64, n_heads: int = 4,
                  n_layers: int = 2, use_inter_instance: bool = True,
                  tau_ratio: float = 0.1, dropout: float = 0.0,
-                 attn_mode: str = "cur_full", pinv_grad: bool = False):
+                 attn_mode: str = "nystrom", pinv_grad: bool = False):
         """
         attn_mode:
-          "cur_full"    — original: materializa A completa (O(n²d)), CUR como pós-processamento
-          "nystrom"     — opção 1: Nyströmformer, nunca materializa A (O(nmd))
-          "linear_cur"  — opção 3: kernel ELU+1 + CUR (O(nmd), sem softmax)
+          "nystrom"     — PADRÃO e o usado no estudo: Nyströmformer, nunca materializa
+                          A; softmax separado em C, R e W. Custo O(nmd).
+          "cur_full"    — REFERÊNCIA APENAS, jamais no estudo: materializa A ∈ R^{n×n}
+                          e aplica CUR como pós-processamento. Custo O(n²d), o que anula
+                          a razão de existir do FT-CUR — o ganho é justamente não pagar
+                          O(n²). Serve para medir o erro de aproximação do caminho
+                          honesto em n pequeno, porque aqui a CUR incide sobre a matriz
+                          de atenção VERDADEIRA, enquanto "nystrom" normaliza C, R e W
+                          separadamente (são aproximações diferentes).
+          "linear_cur"  — kernel ELU+1 + CUR (O(nmd), sem softmax). Não usado no estudo.
+
+        O padrão era "cur_full" até 2026-09-19, o que era uma armadilha: qualquer
+        construtor que omitisse attn_mode caía no caminho O(n²) sem aviso. O único
+        construtor do estudo (FTTransformerCURColnorm) sempre passou "nystrom"
+        explicitamente, então nenhum resultado publicado foi afetado.
         """
         super().__init__()
 
@@ -415,7 +427,12 @@ class FTTransformerClassifier(nn.Module):
                 "nystrom":    InterInstanceAttentionNystrom,
                 "linear_cur": InterInstanceAttentionLinearCUR,
             }
-            cls = _ATTN.get(attn_mode, InterInstanceAttentionCUR)
+            if attn_mode not in _ATTN:
+                raise ValueError(
+                    f"attn_mode inválido: {attn_mode!r}. Use um de {sorted(_ATTN)}. "
+                    "Antes havia fallback silencioso para 'cur_full' (O(n²))."
+                )
+            cls = _ATTN[attn_mode]
             attn_kwargs = dict(tau_ratio=tau_ratio, dropout=dropout)
             # pinv_grad (pinv diferenciável) implementado por ora só na variante
             # "nystrom" — a usada no estudo (FT-CUR = attn_mode="nystrom").

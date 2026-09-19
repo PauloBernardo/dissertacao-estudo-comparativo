@@ -361,3 +361,40 @@ Os outros dois modos de atenção do módulo (`cur_full`, que materializa a matr
 wrapper do FT-CUR, que fixa `attn_mode="nystrom"`, e nenhum script ou grade passa `attn_mode`. O
 `cur_full` só é o default do `nn.Module`, e `SAINTBlock`/`SAINTClassifierCLSOnly` existem apenas para
 proveniência da versão só-CLS, sem uso em script algum.
+
+### Armadilha do n×n fechada, e a conta do retrabalho
+
+O padrão de `attn_mode` em `FTTransformerClassifier` era `"cur_full"`, que materializa
+A ∈ ℝ^{n×n} e custa O(n²d) — o que **anula a razão de existir do FT-CUR**, cujo ganho é justamente não
+pagar O(n²). Nenhum resultado publicado foi afetado (o wrapper sempre passou `"nystrom"`
+explicitamente, e é o único construtor no repositório), mas era armadilha para código futuro. Em
+2026-09-19 o padrão passou a ser `"nystrom"` e o *fallback* silencioso do dispatcher virou `ValueError`.
+
+`cur_full` fica como **referência apenas**: a CUR ali incide sobre a matriz de atenção verdadeira,
+enquanto `"nystrom"` normaliza C, R e W separadamente, então comparar os dois mede o erro de
+aproximação do caminho honesto — em n pequeno, e nunca como modelo do estudo.
+
+### Campanha de reexecução (consequência da semeadura)
+
+Contando só os arquivos que alimentam tabela ou figura, e apenas as variantes afetadas
+(`SAINTColnorm`, `FTTransformerCURColnorm` e os três seletores `FTTransformerCUR{Random,Kmeans,Opposite}`):
+
+| alvo | h de ajuste | em 2 T4 |
+|---|---|---|
+| Tier 1 (`tier1_gridcv.json`) | 3,30 | |
+| Tier 2 (`tier2_transformers.json`) | 5,78 | |
+| Ablação D (`tier2_fixedparams_n5000_transformers.json`) | 0,34 | |
+| Ablações A, B, C | 1,94 | |
+| Tabela 19 | ~0 | |
+| apêndice de seleção de landmarks (`ftcur_sel_tier1.json`, `ftcur_scarce_m10_geo.json`) | 10,02 | |
+| **subtotal, protocolo publicado 40/6** | **21,4** | **10,7 h** |
+| braço de orçamento 200/16, 30 sementes (Tier 1 + Tier 2) | 42,6 | 21,3 h |
+| **campanha completa** | **64,0** | **32 h ≈ 3 sessões** |
+
+Ganho colateral: com os dois braços semeados corretamente, o pareamento do experimento de orçamento
+fica limpo e dispensa a declaração de assimetria entre arma publicada e arma nova.
+
+Risco a vigiar na releitura: a seleção de grade passa a ser determinística, e como o escore de CV quase
+não separa as arquiteturas (16–20% nas seis células), as arquiteturas escolhidas VÃO mudar. As médias
+não devem se mover muito (o ruído era simétrico), mas números citados no texto precisam ser reconferidos
+um por um — em especial a posição do FT-CUR entre os Transformers no Tier 1 e a média do SAINT.
