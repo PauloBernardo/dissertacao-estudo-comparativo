@@ -134,6 +134,28 @@ def _subsample(X: np.ndarray, y: np.ndarray, n_total_cap: int,
 # configurações que treinam rápido — SAINT escolhe n_layers=1 em 53-63%).
 BUDGET_OVERRIDE: dict[str, int] = {}
 
+# ── Override da grade de lr (assimetria de tuning, seção 5.7) ────────────────
+# Os Transformers são a única família cuja taxa de aprendizado NÃO é ajustada:
+# `lr` é fixa em 1e-3 nos seis, enquanto os LSSVMs varrem 18-120 configurações de
+# sigma/tau/lambda e o XGBoost varre learning_rate. O piloto mostra que o ótimo de lr
+# depende do dataset (TWS: SAINT +0,259 de 1e-4 para 1e-3; BANK: FT-softmax -0,033),
+# então congelar não se defende. Esta lista, quando preenchida, PROMOVE lr de fixo a
+# eixo da grade — multiplicando o tamanho da grade por len(LR_GRID).
+LR_GRID: list[float] = []
+
+def _grid_size(variant: str) -> int:
+    """Tamanho efetivo da grade, contando a lr quando ela foi promovida a eixo.
+
+    `grid_size()` de src.tuning.grids lê apenas cfg["grid"], então sozinho ele
+    subnotificaria a grade nas execuções com --grid-lr.
+    """
+    n = grid_size(variant)
+    if LR_GRID and "lr" in GRIDS[variant]["fixed"]:
+        n *= len(LR_GRID)
+    return n
+
+
+
 # Nome da chave de teto varia por wrapper: FT usa max_epochs, SAINT/FT-CUR usam epochs.
 _EPOCH_KEYS = ("max_epochs", "epochs")
 
@@ -172,6 +194,10 @@ def _build_pipeline(variant: str, seed: int) -> tuple[Pipeline, dict]:
         estimator.set_params(random_state=seed)
     pipeline   = Pipeline([("scaler", StandardScaler()), ("clf", estimator)])
     param_grid = {f"clf__{k}": v for k, v in cfg["grid"].items()}
+    if LR_GRID and "lr" in fixed:
+        # lr sai dos fixos e entra na grade; o estimador já foi construído com o valor
+        # antigo, mas o GridSearchCV o sobrescreve via set_params em cada candidato.
+        param_grid["clf__lr"] = list(LR_GRID)
     return pipeline, param_grid
 
 
@@ -244,7 +270,7 @@ def run_one(variant: str, dataset: str, seed: int, n_train: int) -> dict[str, An
         "dataset":        dataset,
         "seed":           seed,
         "label_format":   label_format,
-        "grid_size":      grid_size(variant),
+        "grid_size":      _grid_size(variant),
         "n_train_target": n_train,
     }
 
@@ -327,6 +353,8 @@ def main() -> int:
                    help="Sobrescreve a paciencia dos Transformers (secao 5.7).")
     p.add_argument("--budget-min-epochs", type=int, default=None,
                    help="Piso de epocas antes de a paciencia poder disparar.")
+    p.add_argument("--grid-lr", type=float, nargs="+", default=None,
+                   help="Promove lr a eixo da grade com estes valores (ex.: 1e-4 3e-4 1e-3).")
     p.add_argument("--log-level", default="INFO")
     args = p.parse_args()
 
@@ -340,6 +368,9 @@ def main() -> int:
             BUDGET_OVERRIDE[_key] = int(_v)
     if BUDGET_OVERRIDE:
         print(f"[orçamento] override ativo: {BUDGET_OVERRIDE}", flush=True)
+    if getattr(args, "grid_lr", None):
+        LR_GRID.extend(float(x) for x in args.grid_lr)
+        print(f"[grade] lr promovida a eixo da grade: {LR_GRID}", flush=True)
 
     logging.basicConfig(
         level=logging.WARNING,
@@ -374,7 +405,7 @@ def main() -> int:
             logger.debug("[%d/%d] SKIP %s", i, len(plan), key)
             continue
 
-        logger.info("[%d/%d] %s  grid=%d", i, len(plan), key, grid_size(variant))
+        logger.info("[%d/%d] %s  grid=%d", i, len(plan), key, _grid_size(variant))
 
         t0  = time.perf_counter()
         rec = run_one(variant, dataset, seed, args.n_train)
