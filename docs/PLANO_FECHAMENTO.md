@@ -32,9 +32,31 @@ sessão até a defesa. Um passo de cada vez; marcar `[x]` ao concluir e anotar a
 4. **Orçamento de treino dos Transformers (achado central):** com lote ≥ N, 1 época = 1 passo de gradiente. Protocolo (40 épocas, paciência 6 sobre val_loss em 21–43 pontos de validação) → 7–30 passos no Tier 1; no Tier 2, 160 (FT), 80 (SAINT), 40 (FT-CUR lote completo). Com 400 épocas, espiral: FT-Softmax 0,62→0,79, SAINT 0,48→0,83. É o MESMO mecanismo do artefato de orçamento do ADMM (Ablação D). Artigos: FT-Transformer = AdamW lr 1e-4, lote 256, paciência 16 épocas, sem teto; SAINT = AdamW lr 1e-4, lote 256, 100 épocas, melhor ponto de validação.
 5. **FT-CUR:** rota de predição dos Tiers (contexto treino+teste) ≠ rota da Tabela 19 (streaming, só treino). Verificado pareado em N=2000: mesmos rótulos em 5/6 execuções, Δ máx. 0,008 → números publicados válidos. Modo mini-lote histórico (landmarks sorteados por lote) nunca teve F1 avaliado em dado real. Novos modos no wrapper, padrão inalterado: `minibatch_landmarks="global"`, `predict_mode="streaming"`, `min_epochs`.
 6. **Tira-teima BANK N=5000 (CPU, protocolo publicado; CONCLUÍDO 19:50):** FT-CUR fixo 0,636 ± 0,093 (2/10 colapsos) vs re-tunado 0,659 ± 0,046 (0/3 colapsos; sementes 0,595/0,685/0,697) → a queda da Ablação D é colapso sob transferência, revertida por re-tuning. SAINT fiel fixo 0,699 ± 0,027 (0/10) e re-tunado 0,694 ± 0,030 (0,736/0,680/0,667) — re-tuning não muda o SAINT. Diferença re-tunada SAINT − FT-CUR = +0,035 com faixas sobrepostas (3 sementes): SAINT à frente, mas não decisivo. Parada por val_f1_macro piora (5/10 colapsos). Publicado em N=2000: FT-CUR 0,644 vs SAINT antigo 0,592. JSONs: `results/tiebreak_bank_n5000_{fixed,armE,gridcv}.json`.
-7. **Piloto do protocolo dos artigos lançado** (19:53, CPU, 3 sementes, TWS/HAB/AI4I/BANK/TELCO): saída incremental em `results/pilot_transformer_budget.json`, log em scratchpad da sessão. Ver §3.
+7. **SAINT — 2ª revisão (a queda brutal era o estilo de normalização).** As Eqs. 1–2 do artigo descrevem
+   **pós**-norma (`LN(f(x)) + x`); o código que gerou os resultados do artigo (`somepago/saint`,
+   `RowColTransformer`, estilo `colrow`) usa **pré**-norma (`x + f(LN(x))`), FFN **GEGLU** (mult 4),
+   `dim_head=64` na atenção de linha e **FF2 sobre a linha achatada** $(n\,d)$, não por token.
+   Sob o protocolo publicado (lr 1e-3, sem aquecimento) a pós-norma colapsa
+   (`results/saint_style_ablation.json`, 10 sementes, configuração fixa):
+
+   | dataset | pós-norma (Eqs. 1–2) | pré-norma (código) | publicado (só-CLS) |
+   |---|---|---|---|
+   | TWS | 0,480 (5/10 colapsos) | **0,624 (0/10)** | 0,641 |
+   | TWC | 0,335 (10/10) | **0,438 (6/10)** | 0,460 |
+   | AI4I | 0,819 (0/10) | **0,858 (0/10)** | 0,808 |
+   | VCP | 0,703 (2/10) | **0,771 (1/10)** | 0,815 |
+   | HAB | 0,540 (3/10) | 0,504 (5/10) | 0,534 |
+
+   Com `style="reference"` (agora o padrão) o SAINT fiel volta ao patamar dos números publicados, em vez
+   de cair 0,067 no Tier 1. A pré-norma é também o que os FT do estudo usam, então a comparação passa a
+   ser entre iguais nesse aspecto. **Consequência: a fase do SAINT no rerun do Kaggle (feita com
+   `paper_eq`) precisa ser refeita; as fases do FT-Entmax permanecem válidas** (modelo independente).
+8. **Piloto do protocolo dos artigos lançado** (19:53, CPU, 3 sementes, TWS/HAB/AI4I/BANK/TELCO): saída incremental em `results/pilot_transformer_budget.json`, log em scratchpad da sessão. Ver §3.
 
 ## 2. VERSÃO 1 — fechar com implementações fiéis, protocolo publicado, limitação declarada
+- [ ] **1.0** **Refazer a fase do SAINT no Kaggle com `style="reference"`** (commit `d6667a6` ou posterior).
+  O FT-Entmax já rodado é aproveitável: fazer o merge dele com `--variants FTTransformer_entmax` e refazer
+  só `SAINTColnorm`. Conferir na célula 2 que o clone tem `SAINTStage` com `style` (o padrão já é `reference`).
 - [ ] **1.1** Kaggle: concluir as 6 fases do notebook; baixar os JSONs para `results/`.
 - [ ] **1.2** `bash scripts/post_rerun_saint_entmax.sh` (faz merge, regenera, copia, normaliza, Nemenyi, reaplica edições manuais, compila). Conferir o resumo de diffs que ele imprime.
 - [ ] **1.3** Texto — números de SAINT e FT-Entmax: Cap. Resultados (Tier 1 bullets e Friedman; §esparsidade Transformers; Tier 2 bullets, esparsidade e métricas; Ablação D §SAINT; benchmark inter-instâncias), Conclusão (itens 1, 2, 5, 6), Apêndice (Nemenyi, métricas complementares), Resumo/Abstract só se alguma conclusão mudar.
