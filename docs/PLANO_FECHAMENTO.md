@@ -686,3 +686,31 @@ Zhang; com esta medição passa a afirmá-lo com dado próprio.
 Conclusão: o `midband` **não** entra como seletor em lugar nenhum. O que entra é o mecanismo — vale um
 parágrafo no Apêndice C, porque explica de uma só vez por que o `colnorm` falha na geometria, por que o
 k-means ganha, e por que nada disso aparece em tabular real.
+
+##### Balanceamento de classes dos landmarks (2026-09-19)
+
+Pergunta do orientando: os landmarks são proporcionais em termos de classe? **Não** — e nenhum seletor
+informado garante isso, porque todos são **não supervisionados** (recebem só `X`); a exceção é o
+`opposite`, que é por classe. Fração da classe minoritária entre os landmarks, m/n = 10%, 10 sementes:
+
+| dataset | minoritária nos dados | random | colnorm | colnorm_inv | kmeans |
+|---|---|---|---|---|---|
+| BCW | 0,373 | 0,375 | **0,550** (+0,177) | 0,263 (−0,110) | 0,520 (+0,147) |
+| AI4I | 0,250 | 0,251 | **0,370** (+0,120) | 0,164 (−0,086) | 0,262 |
+| PID | 0,349 | 0,358 | 0,428 (+0,079) | 0,287 (−0,062) | 0,450 (+0,101) |
+| VCP | 0,323 | 0,319 | **0,216 (−0,106)** | 0,348 | 0,265 (−0,058) |
+
+O `random` fica entre −0,017 e +0,032 nos dez datasets do Tier 1 (uniforme é proporcional em esperança).
+O `colnorm` oscila de +0,18 a −0,11, e a **direção muda por dataset**, pois depende de qual classe é a
+periférica. O `colnorm_inv` distorce no sentido espelhado; o `kmeans` também distorce.
+
+**MAS a distorção NÃO explica a perda de desempenho** — hipótese testada e rejeitada. Spearman entre
+|desvio de balanceamento| e o déficit de F1 do `colnorm` frente ao `random` (m/n = 10%, 10 datasets):
+**−0,115, p = 0,75**. Os maiores déficits estão nos sintéticos (TWS 0,0998, TWC 0,0285), que têm os
+MENORES desvios (0,025 e 0,028) por serem 50/50; e o BCW, com a maior distorção (+0,177), não perde nada
+(0,0001). Os dois fenômenos são ortogonais. Quem custa desempenho é a cobertura — o mecanismo da casca.
+
+Fica como observação descritiva de uma página do apêndice, não como explicação. E **não** reforça a
+decisão de trocar para `random`: como propriedade a priori preservar a proporção é desejável (a métrica é
+F1-macro e há datasets desbalanceados por construção, AI4I a 25%), mas medimos que na faixa deste estudo
+não custa F1. A decisão da troca se sustenta pelos outros motivos.
