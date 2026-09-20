@@ -614,3 +614,29 @@ se sustenta e NÃO deve virar seletor.
    justamente os pontos menos informativos sobre a fronteira. Os dois modelos respondem em sentidos
    opostos ao mesmo seletor, o que é uma distinção genuína entre aproximar kernel fixo e aproximar
    atenção aprendida, e merece um parágrafo no apêndice.
+
+##### A FAZER: testar o `midband` no Nyström-LSSVM
+
+Pedido do orientando (2026-09-19). O `midband` é o **segundo melhor** braço em toda parte no FT-CUR —
+0,7893 no tabuleiro (atrás só do sorteio, 0,8246) e 0,7266 nos tabulares reais — e nunca foi testado no
+Nyström-LSSVM. Lá o argumento a favor dele é bem mais forte que no FT-CUR, por três razões:
+
+1. A matriz-alvo é **fixa**: o kernel RBF existe antes do treino, então um critério de entrada pode ter
+   relação estável com ela — ao contrário da atenção aprendida, onde o canal se rompe.
+2. É o regime em que a teoria de quantização de \citeonline{zhang2008improved} de fato se aplica, e em
+   que o k-means **ganha** (+0,035 nos sintéticos a m/n = 10%) em vez de perder como no FT-CUR
+   (−0,0919, p = 0,0067, no tabuleiro).
+3. Custo idêntico ao `colnorm` e menor na prática: O(nd) nos dois, medido 2,94 ms contra 3,60 ms em
+   N = 20.000 (e 7,06 contra 8,27 ms em N = 50.000). Contra o k-means, que custa 85 s em N = 16.000.
+
+Desenho sugerido: acrescentar `NystromLSSVMMidband` ao roster e rodar nos três regimes da ablação já
+existente (Tier 1 m/n = 30%, escassez m = 5% e 10%), 30 sementes, comparando contra `random` como linha
+de base. É CPU, então é barato. A pergunta específica: em estrutura de variedade 2D, a faixa central da
+distribuição de norma supera o sorteio uniforme — isto é, existe posição privilegiada quando a
+matriz-alvo é fixa? O `midband` já está implementado (`landmark_selection.MidBandSelector`, chave
+`'midband'`), então falta só o wrapper e o runner.
+
+Nota de método: se der positivo, é achado de trabalho futuro, **não** motivo para trocar o seletor do
+corpo principal — a troca já decidida é para `random`, que é a opção simples justificada pela
+imaterialidade, e trocar depois pelo vencedor de uma comparação posterior seria seleção sobre o próprio
+resultado.
