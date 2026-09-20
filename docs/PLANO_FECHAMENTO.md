@@ -578,3 +578,39 @@ Portanto a conclusão "nenhuma região da distribuição de norma é privilegiad
 para tabular real, e não generaliza sem teste nos sintéticos. Reexecução dos sete braços em TWS_2k,
 TWM_2k e TWC_2k (mesmo N=2000, mesmo B=512, mesmo m_ratio, só o tipo de dado muda) em
 `results/ftcur_minibatch_geo.json` — ver resultado no item seguinte.
+
+##### Resultado nos sintéticos: o midband NÃO se confirma; e o k-means inverte de sinal
+
+Sete braços em TWS_2k/TWM_2k/TWC_2k (5 sementes) e depois TWC_2k com **30 sementes**
+(`results/ftcur_minibatch_geo.json`, `results/ftcur_minibatch_twc30.json`).
+
+Nos três sintéticos com 5 sementes a amplitude foi 0,0864 contra 0,0140 dos tabulares reais, e o
+`midband` aparecia em primeiro com 0,9652. Mas TWM e TWS estão **saturados** (0,98 a 1,00), então todo o
+sinal vinha do tabuleiro. Com 30 sementes em TWC_2k:
+
+| braço | F1 | dp | Δ vs random | p |
+|---|---|---|---|---|
+| global + random | **0,8246** | 0,168 | — | — |
+| global + midband | 0,7893 | 0,197 | −0,0353 | 0,94 |
+| global + complement | 0,7570 | 0,199 | −0,0675 | 0,60 |
+| per_batch | 0,7544 | 0,192 | −0,0702 | 0,27 |
+| global + colnorm | 0,7475 | 0,199 | −0,0771 | 0,28 |
+| global + colnorm_inv | 0,7329 | 0,210 | −0,0916 | 0,094 |
+| global + kmeans | 0,7326 | 0,196 | −0,0919 | **0,0067** |
+
+Friedman: p = 0,158. **O `midband` caiu de 0,9159 para 0,7893** ao ir de 5 para 30 sementes — o desvio
+padrão nesse dataset é 0,20, e a estimativa de cinco sementes errou por 0,13. Era variância; a ideia não
+se sustenta e NÃO deve virar seletor.
+
+**Dois resultados que ficam:**
+
+1. **O sorteio uniforme é o melhor braço** (0,8246, acima dos seis outros), o que reforça a decisão de
+   adotá-lo como seletor principal em lugar do `colnorm`.
+2. **O k-means é significativamente PIOR que o sorteio** no tabuleiro (−0,0919, p = 0,0067, 9/30, único
+   a sobreviver a Holm sobre as seis comparações). Isso **inverte** o que `Apendice1.tex:319` reporta para
+   o Nyström-SVM, onde o k-means ganhava +0,035 significativos nos sintéticos a m/n = 10%. Mecanismo: no
+   LSSVM o alvo é o kernel RBF fixo, e minimizar erro de quantização de fato ajuda; no FT-CUR o alvo é a
+   atenção APRENDIDA, e agrupar o espaço de entrada concentra landmarks nos centros dos quadrantes —
+   justamente os pontos menos informativos sobre a fronteira. Os dois modelos respondem em sentidos
+   opostos ao mesmo seletor, o que é uma distinção genuína entre aproximar kernel fixo e aproximar
+   atenção aprendida, e merece um parágrafo no apêndice.
