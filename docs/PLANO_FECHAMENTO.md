@@ -640,3 +640,49 @@ Nota de método: se der positivo, é achado de trabalho futuro, **não** motivo 
 corpo principal — a troca já decidida é para `random`, que é a opção simples justificada pela
 imaterialidade, e trocar depois pelo vencedor de uma comparação posterior seria seleção sobre o próprio
 resultado.
+
+##### RESULTADO do midband no Nyström-LSSVM: falha, e a falha unifica as explicações
+
+Executado em 2026-09-19 (`NystromLSSVMMidband` em `nystrom_lssvm_wrapper.py`, registrado em
+`grids.py` e `experiments/runner.py`; 30 sementes nos três sintéticos, três regimes de m/n;
+`results/tier1_m{05,10,30}_midband.json`).
+
+| seletor | m/n = 10% | vs random | m/n = 5% |
+|---|---|---|---|
+| kmeans | **0,9467** | +0,0347, p<0,0001 (60/90) | 0,7299 |
+| opposite | 0,9255 | +0,0135, p=0,047 | **0,7627** |
+| random | 0,9120 | — | 0,7549 |
+| **midband** | 0,8826 | **−0,0293, p<0,0001** (18/90) | 0,7401 |
+| colnorm | 0,8671 | −0,0449, p<0,0001 (16/90) | 0,7509 |
+
+O `midband` é **significativamente pior** que o sorteio a m/n = 10% e fica do lado do `colnorm`, não do
+k-means. A previsão de que capturaria parte do ganho do k-means pagando milissegundos está **refutada**:
+captura zero.
+
+**Mecanismo (provado, `scripts/study_norm_band_coverage.py`, `results/norm_band_coverage.json`).**
+Nos sintéticos 2D centrados, ‖x‖ é o raio, logo uma faixa de norma é um **anel** — e anel não cobre
+espiral nem tabuleiro. Extensão radial coberta pelos landmarks em TWS (dados de 0,13 a 2,50): kmeans
+0,32–2,30; colnorm 0,70–2,50 (perde o núcleo); **midband 0,74–1,73** (perde núcleo E borda). Em TWC o
+`midband` cobre 28% da extensão radial. O `midband` é o anel mais estreito, portanto a pior cobertura.
+
+Isso unifica duas falhas que pareciam distintas: **`colnorm` e `midband` são o mesmo erro** — seleção por
+faixa de norma produz casca, e casca não cobre variedade. E o erro de quantização de
+\citeonline{zhang2008improved} ordena igual ao F1, medido nos nossos dados:
+
+| dataset | kmeans | random | colnorm | midband |
+|---|---|---|---|---|
+| TWS | 0,1702 | 0,2811 | 0,3469 | 0,3583 |
+| TWM | 0,1224 | 0,1773 | 0,2178 | 0,2945 |
+| TWC | 0,1749 | 0,2522 | 0,3006 | 0,3280 |
+| BCW | 2,4873 | 2,8319 | 2,8423 | 2,9594 |
+| PID | 1,2150 | 1,3926 | 1,4107 | 1,4986 |
+
+**E fecha o argumento central do apêndice**: nos sintéticos a amplitude do erro de quantização é de 0,17
+a 0,36 (mais que o dobro); nos tabulares reais, de 2,49 a 2,96 (uns 18%). Em alta dimensão não há
+variedade de baixa dimensão para cobrir mal, logo nenhum seletor consegue se diferenciar — que é
+exatamente por que a seleção é imaterial no domínio da tese. Hoje o apêndice afirma isso por citação de
+Zhang; com esta medição passa a afirmá-lo com dado próprio.
+
+Conclusão: o `midband` **não** entra como seletor em lugar nenhum. O que entra é o mecanismo — vale um
+parágrafo no Apêndice C, porque explica de uma só vez por que o `colnorm` falha na geometria, por que o
+k-means ganha, e por que nada disso aparece em tabular real.

@@ -156,6 +156,44 @@ class NystromLSSVMRandom(NystromLSSVMColnorm):
         return self
 
 
+class NystromLSSVMMidband(NystromLSSVMColnorm):
+    """
+    LSSVM + Nyström com landmarks na FAIXA CENTRAL da distribuição de ‖x_i‖².
+
+    Descarta os quartis extremos da norma de entrada e sorteia uniformemente no
+    miolo (`landmark_selection.MidBandSelector`). Idêntico ao
+    :class:`NystromLSSVMColnorm` em kernel, regularização e orçamento de landmarks;
+    muda só o seletor.
+
+    Motivação (2026-09-19): o `colnorm` amostra ∝ ‖x_i‖², favorecendo a periferia, e
+    é o pior seletor no regime de escassez geométrica; o `kmeans`, que vai para
+    regiões densas, é o melhor ali (+0,035 nos sintéticos a m/n=10%), mas custa
+    O(N²) — 85 s em N=16.000 contra 3,6 ms do colnorm. A faixa central fica entre os
+    dois em posição e tem o custo do colnorm (O(nd); medido 2,94 ms em N=20.000).
+    A pergunta é quanto do ganho do k-means ela captura pagando milissegundos.
+
+    No FT-CUR essa mesma seleção NÃO ajuda (a matriz-alvo é a atenção aprendida,
+    sem relação fixa com a geometria da entrada); aqui o alvo é o kernel RBF FIXO,
+    logo o canal erro-de-quantização → decisão existe.
+    """
+
+    def fit(self, X: np.ndarray, y: np.ndarray) -> "NystromLSSVMMidband":
+        n = X.shape[0]
+        m = max(2, round(self.m_ratio * n))
+        kernel = RBFKernel(sigma=self.sigma)
+
+        self._model = NystromLSSVM(
+            n_landmarks=m,
+            gamma=self.gamma,
+            kernel=kernel,
+            selection_method="midband",
+            random_state=self.random_state,
+        )
+        self._model.fit(X, y.astype(float))
+        self.is_fitted_ = True
+        return self
+
+
 class NystromLSSVMKmeans(NystromLSSVMColnorm):
     """
     LSSVM + Nyström com seleção de landmarks por K-means (protótipos = pontos

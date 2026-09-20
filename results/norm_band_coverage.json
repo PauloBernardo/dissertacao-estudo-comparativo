@@ -1,0 +1,632 @@
+[
+ {
+  "dataset": "TWS",
+  "tipo": "geometrico",
+  "metodo": "kmeans",
+  "n": 400,
+  "m": 40,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 0.1702,
+  "raio_landmarks": [
+   0.322,
+   2.301
+  ],
+  "raio_dados": [
+   0.127,
+   2.495
+  ],
+  "cobertura_radial": 0.836
+ },
+ {
+  "dataset": "TWS",
+  "tipo": "geometrico",
+  "metodo": "random",
+  "n": 400,
+  "m": 40,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 0.2811,
+  "raio_landmarks": [
+   0.199,
+   2.361
+  ],
+  "raio_dados": [
+   0.127,
+   2.495
+  ],
+  "cobertura_radial": 0.913
+ },
+ {
+  "dataset": "TWS",
+  "tipo": "geometrico",
+  "metodo": "colnorm",
+  "n": 400,
+  "m": 40,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 0.3469,
+  "raio_landmarks": [
+   0.606,
+   2.445
+  ],
+  "raio_dados": [
+   0.127,
+   2.495
+  ],
+  "cobertura_radial": 0.777
+ },
+ {
+  "dataset": "TWS",
+  "tipo": "geometrico",
+  "metodo": "midband",
+  "n": 400,
+  "m": 40,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 0.3583,
+  "raio_landmarks": [
+   0.754,
+   1.767
+  ],
+  "raio_dados": [
+   0.127,
+   2.495
+  ],
+  "cobertura_radial": 0.428
+ },
+ {
+  "dataset": "TWS",
+  "tipo": "geometrico",
+  "metodo": "colnorm_inv",
+  "n": 400,
+  "m": 40,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 0.5345,
+  "raio_landmarks": [
+   0.127,
+   1.92
+  ],
+  "raio_dados": [
+   0.127,
+   2.495
+  ],
+  "cobertura_radial": 0.757
+ },
+ {
+  "dataset": "TWM",
+  "tipo": "geometrico",
+  "metodo": "kmeans",
+  "n": 400,
+  "m": 40,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 0.1224,
+  "raio_landmarks": [
+   0.517,
+   2.156
+  ],
+  "raio_dados": [
+   0.343,
+   2.156
+  ],
+  "cobertura_radial": 0.904
+ },
+ {
+  "dataset": "TWM",
+  "tipo": "geometrico",
+  "metodo": "random",
+  "n": 400,
+  "m": 40,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 0.1773,
+  "raio_landmarks": [
+   0.459,
+   2.065
+  ],
+  "raio_dados": [
+   0.343,
+   2.156
+  ],
+  "cobertura_radial": 0.886
+ },
+ {
+  "dataset": "TWM",
+  "tipo": "geometrico",
+  "metodo": "colnorm",
+  "n": 400,
+  "m": 40,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 0.2178,
+  "raio_landmarks": [
+   0.53,
+   2.05
+  ],
+  "raio_dados": [
+   0.343,
+   2.156
+  ],
+  "cobertura_radial": 0.838
+ },
+ {
+  "dataset": "TWM",
+  "tipo": "geometrico",
+  "metodo": "midband",
+  "n": 400,
+  "m": 40,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 0.2945,
+  "raio_landmarks": [
+   0.946,
+   1.692
+  ],
+  "raio_dados": [
+   0.343,
+   2.156
+  ],
+  "cobertura_radial": 0.411
+ },
+ {
+  "dataset": "TWM",
+  "tipo": "geometrico",
+  "metodo": "colnorm_inv",
+  "n": 400,
+  "m": 40,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 0.3067,
+  "raio_landmarks": [
+   0.353,
+   1.859
+  ],
+  "raio_dados": [
+   0.343,
+   2.156
+  ],
+  "cobertura_radial": 0.831
+ },
+ {
+  "dataset": "TWC",
+  "tipo": "geometrico",
+  "metodo": "kmeans",
+  "n": 400,
+  "m": 40,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 0.1749,
+  "raio_landmarks": [
+   0.127,
+   2.134
+  ],
+  "raio_dados": [
+   0.051,
+   2.352
+  ],
+  "cobertura_radial": 0.872
+ },
+ {
+  "dataset": "TWC",
+  "tipo": "geometrico",
+  "metodo": "random",
+  "n": 400,
+  "m": 40,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 0.2522,
+  "raio_landmarks": [
+   0.103,
+   2.25
+  ],
+  "raio_dados": [
+   0.051,
+   2.352
+  ],
+  "cobertura_radial": 0.933
+ },
+ {
+  "dataset": "TWC",
+  "tipo": "geometrico",
+  "metodo": "colnorm",
+  "n": 400,
+  "m": 40,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 0.3006,
+  "raio_landmarks": [
+   0.71,
+   2.268
+  ],
+  "raio_dados": [
+   0.051,
+   2.352
+  ],
+  "cobertura_radial": 0.677
+ },
+ {
+  "dataset": "TWC",
+  "tipo": "geometrico",
+  "metodo": "midband",
+  "n": 400,
+  "m": 40,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 0.328,
+  "raio_landmarks": [
+   1.02,
+   1.679
+  ],
+  "raio_dados": [
+   0.051,
+   2.352
+  ],
+  "cobertura_radial": 0.286
+ },
+ {
+  "dataset": "TWC",
+  "tipo": "geometrico",
+  "metodo": "colnorm_inv",
+  "n": 400,
+  "m": 40,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 0.3572,
+  "raio_landmarks": [
+   0.051,
+   1.953
+  ],
+  "raio_dados": [
+   0.051,
+   2.352
+  ],
+  "cobertura_radial": 0.827
+ },
+ {
+  "dataset": "BCW",
+  "tipo": "tabular",
+  "metodo": "kmeans",
+  "n": 569,
+  "m": 56,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 2.4873,
+  "raio_landmarks": [
+   1.845,
+   20.417
+  ],
+  "raio_dados": [
+   1.48,
+   20.546
+  ],
+  "cobertura_radial": 0.974
+ },
+ {
+  "dataset": "BCW",
+  "tipo": "tabular",
+  "metodo": "random",
+  "n": 569,
+  "m": 56,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 2.8319,
+  "raio_landmarks": [
+   2.25,
+   13.003
+  ],
+  "raio_dados": [
+   1.48,
+   20.546
+  ],
+  "cobertura_radial": 0.564
+ },
+ {
+  "dataset": "BCW",
+  "tipo": "tabular",
+  "metodo": "colnorm",
+  "n": 569,
+  "m": 56,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 2.8423,
+  "raio_landmarks": [
+   2.755,
+   20.482
+  ],
+  "raio_dados": [
+   1.48,
+   20.546
+  ],
+  "cobertura_radial": 0.93
+ },
+ {
+  "dataset": "BCW",
+  "tipo": "tabular",
+  "metodo": "midband",
+  "n": 569,
+  "m": 56,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 2.9594,
+  "raio_landmarks": [
+   3.415,
+   5.584
+  ],
+  "raio_dados": [
+   1.48,
+   20.546
+  ],
+  "cobertura_radial": 0.114
+ },
+ {
+  "dataset": "BCW",
+  "tipo": "tabular",
+  "metodo": "colnorm_inv",
+  "n": 569,
+  "m": 56,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 2.9221,
+  "raio_landmarks": [
+   1.741,
+   10.075
+  ],
+  "raio_dados": [
+   1.48,
+   20.546
+  ],
+  "cobertura_radial": 0.437
+ },
+ {
+  "dataset": "PID",
+  "tipo": "tabular",
+  "metodo": "kmeans",
+  "n": 768,
+  "m": 76,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 1.215,
+  "raio_landmarks": [
+   1.121,
+   8.493
+  ],
+  "raio_dados": [
+   0.891,
+   8.493
+  ],
+  "cobertura_radial": 0.97
+ },
+ {
+  "dataset": "PID",
+  "tipo": "tabular",
+  "metodo": "random",
+  "n": 768,
+  "m": 76,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 1.3926,
+  "raio_landmarks": [
+   1.106,
+   6.413
+  ],
+  "raio_dados": [
+   0.891,
+   8.493
+  ],
+  "cobertura_radial": 0.698
+ },
+ {
+  "dataset": "PID",
+  "tipo": "tabular",
+  "metodo": "colnorm",
+  "n": 768,
+  "m": 76,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 1.4107,
+  "raio_landmarks": [
+   1.515,
+   7.684
+  ],
+  "raio_dados": [
+   0.891,
+   8.493
+  ],
+  "cobertura_radial": 0.811
+ },
+ {
+  "dataset": "PID",
+  "tipo": "tabular",
+  "metodo": "midband",
+  "n": 768,
+  "m": 76,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 1.4986,
+  "raio_landmarks": [
+   1.945,
+   3.074
+  ],
+  "raio_dados": [
+   0.891,
+   8.493
+  ],
+  "cobertura_radial": 0.149
+ },
+ {
+  "dataset": "PID",
+  "tipo": "tabular",
+  "metodo": "colnorm_inv",
+  "n": 768,
+  "m": 76,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 1.4888,
+  "raio_landmarks": [
+   0.94,
+   4.509
+  ],
+  "raio_dados": [
+   0.891,
+   8.493
+  ],
+  "cobertura_radial": 0.469
+ },
+ {
+  "dataset": "HAB",
+  "tipo": "tabular",
+  "metodo": "kmeans",
+  "n": 306,
+  "m": 30,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 0.4313,
+  "raio_landmarks": [
+   0.586,
+   6.905
+  ],
+  "raio_dados": [
+   0.062,
+   6.905
+  ],
+  "cobertura_radial": 0.923
+ },
+ {
+  "dataset": "HAB",
+  "tipo": "tabular",
+  "metodo": "random",
+  "n": 306,
+  "m": 30,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 0.5834,
+  "raio_landmarks": [
+   0.511,
+   2.853
+  ],
+  "raio_dados": [
+   0.062,
+   6.905
+  ],
+  "cobertura_radial": 0.342
+ },
+ {
+  "dataset": "HAB",
+  "tipo": "tabular",
+  "metodo": "colnorm",
+  "n": 306,
+  "m": 30,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 0.586,
+  "raio_landmarks": [
+   0.815,
+   6.538
+  ],
+  "raio_dados": [
+   0.062,
+   6.905
+  ],
+  "cobertura_radial": 0.836
+ },
+ {
+  "dataset": "HAB",
+  "tipo": "tabular",
+  "metodo": "midband",
+  "n": 306,
+  "m": 30,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 0.6177,
+  "raio_landmarks": [
+   1.07,
+   1.923
+  ],
+  "raio_dados": [
+   0.062,
+   6.905
+  ],
+  "cobertura_radial": 0.125
+ },
+ {
+  "dataset": "HAB",
+  "tipo": "tabular",
+  "metodo": "colnorm_inv",
+  "n": 306,
+  "m": 30,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 0.696,
+  "raio_landmarks": [
+   0.062,
+   3.031
+  ],
+  "raio_dados": [
+   0.062,
+   6.905
+  ],
+  "cobertura_radial": 0.434
+ },
+ {
+  "dataset": "AUS",
+  "tipo": "tabular",
+  "metodo": "kmeans",
+  "n": 690,
+  "m": 69,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 1.8412,
+  "raio_landmarks": [
+   2.174,
+   20.172
+  ],
+  "raio_dados": [
+   2.109,
+   20.172
+  ],
+  "cobertura_radial": 0.996
+ },
+ {
+  "dataset": "AUS",
+  "tipo": "tabular",
+  "metodo": "random",
+  "n": 690,
+  "m": 69,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 2.1834,
+  "raio_landmarks": [
+   2.191,
+   9.131
+  ],
+  "raio_dados": [
+   2.109,
+   20.172
+  ],
+  "cobertura_radial": 0.384
+ },
+ {
+  "dataset": "AUS",
+  "tipo": "tabular",
+  "metodo": "colnorm",
+  "n": 690,
+  "m": 69,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 2.2197,
+  "raio_landmarks": [
+   2.208,
+   17.563
+  ],
+  "raio_dados": [
+   2.109,
+   20.172
+  ],
+  "cobertura_radial": 0.85
+ },
+ {
+  "dataset": "AUS",
+  "tipo": "tabular",
+  "metodo": "midband",
+  "n": 690,
+  "m": 69,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 2.3823,
+  "raio_landmarks": [
+   2.854,
+   3.855
+  ],
+  "raio_dados": [
+   2.109,
+   20.172
+  ],
+  "cobertura_radial": 0.055
+ },
+ {
+  "dataset": "AUS",
+  "tipo": "tabular",
+  "metodo": "colnorm_inv",
+  "n": 690,
+  "m": 69,
+  "m_ratio": 0.1,
+  "erro_quantizacao": 2.1871,
+  "raio_landmarks": [
+   2.168,
+   6.01
+  ],
+  "raio_dados": [
+   2.109,
+   20.172
+  ],
+  "cobertura_radial": 0.213
+ }
+]

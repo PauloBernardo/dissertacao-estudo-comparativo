@@ -314,6 +314,19 @@ GRIDS: dict[str, dict] = {
         "fixed": {"m_ratio": 0.30},
         "needs_gpu": False,
     },
+    # Faixa central da distribuicao de ||x_i||^2 (MidBandSelector): descarta os
+    # quartis extremos e sorteia no miolo. Custo O(nd), como o colnorm. Testa se,
+    # com matriz-alvo FIXA (kernel RBF), existe posicao privilegiada -- no FT-CUR
+    # essa selecao nao ajuda, porque lá o alvo e a atencao aprendida.
+    "NystromLSSVMMidband": {
+        "model_name": "NystromLSSVMMidband",
+        "grid": {
+            "sigma": [0.5, 1.5, 5.0],
+            "gamma": [0.1, 1.0, 10.0, 30.0, 50.0, 100.0],
+        },
+        "fixed": {"m_ratio": 0.30},
+        "needs_gpu": False,
+    },
     "NystromLSSVMOpposite": {
         "model_name": "NystromLSSVMOpposite",
         "grid": {

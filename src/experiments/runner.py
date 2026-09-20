@@ -97,6 +97,9 @@ def _build_model(model_name: str, model_params: dict[str, Any], label_format: st
     elif model_name == "NystromLSSVMRandom":
         from src.models.nystrom_lssvm_wrapper import NystromLSSVMRandom
         return NystromLSSVMRandom(**model_params), "signed"
+    elif model_name == "NystromLSSVMMidband":
+        from src.models.nystrom_lssvm_wrapper import NystromLSSVMMidband
+        return NystromLSSVMMidband(**model_params), "signed"
     elif model_name == "NystromLSSVMKmeans":
         from src.models.nystrom_lssvm_wrapper import NystromLSSVMKmeans
         return NystromLSSVMKmeans(**model_params), "signed"
