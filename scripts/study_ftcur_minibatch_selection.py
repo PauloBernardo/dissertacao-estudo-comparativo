@@ -41,6 +41,12 @@ ARMS = {
     "global+random":      dict(minibatch_landmarks="global",    selection_method="random"),
     "global+colnorm":     dict(minibatch_landmarks="global",    selection_method="colnorm"),
     "global+colnorm_inv": dict(minibatch_landmarks="global",    selection_method="colnorm_inv"),
+    # kmeans GLOBAL: o criterio de quantizacao de Zhang 2008, pago uma unica vez no
+    # fit (O(N*m*d*iters), e como m = m_ratio*N isso e O(N^2)) e depois anexado a cada
+    # lote. Selecionar por lote seria linear em N, mas o custo se ACUMULA por epoca: o
+    # total por lote e o global vezes B*E/N, logo so compensa quando N > B*E (~20k com
+    # B=512, E=40). Medido: 30x mais caro em N=2000, 34x em N=5000.
+    "global+kmeans":      dict(minibatch_landmarks="global",    selection_method="kmeans"),
 }
 
 
@@ -54,6 +60,8 @@ def main() -> int:
     ap.add_argument("--seeds", nargs="+", type=int, default=[0, 1, 2, 3, 4])
     ap.add_argument("--epochs", type=int, default=200)
     ap.add_argument("--patience", type=int, default=16)
+    ap.add_argument("--arms", nargs="+", default=None,
+                    help="Subconjunto de bracos a rodar (default: todos).")
     ap.add_argument("--output", type=Path, default=Path("results/ftcur_minibatch_selection.json"))
     args = ap.parse_args()
 
@@ -67,7 +75,8 @@ def main() -> int:
             sc = StandardScaler().fit(X_tr)
             X_tr, X_te = sc.transform(X_tr), sc.transform(X_te)
             n_fit = round(0.8 * len(X_tr))
-            for arm, kw in ARMS.items():
+            arms = ARMS if not args.arms else {k: v for k, v in ARMS.items() if k in args.arms}
+            for arm, kw in arms.items():
                 t0 = time.time()
                 try:
                     m = FTTransformerCURColnorm(

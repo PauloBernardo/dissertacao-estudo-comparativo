@@ -502,3 +502,35 @@ Três leituras:
 **Correção pendente no código (não aplicada):** a Ablação D passa por 96 amostras de folga
 (n_fit = 4.000 contra batch 4.096). Se `val_fraction` ou N mudarem, ela cruza para o caminho de
 mini-lote sem aviso. Vale uma asserção ou um log quando o caminho de mini-lote for acionado.
+
+#### k-means no mini-lote: nenhum ganho de F1 (2026-09-19)
+
+Acrescentado o braço `global+kmeans` (critério de quantização de Zhang 2008, `n_init=10,
+max_iter=300`, os defaults que o estudo usa) aos mesmos 20 pares. Resultado:
+
+| braço | F1 | vs per_batch | vs global+random |
+|---|---|---|---|
+| per_batch | 0,7309 | — | |
+| global + random | 0,7309 | +0,0000 (p=0,96) | — |
+| global + kmeans | **0,7308** | **−0,0001** (p=0,65) | **−0,0001** (p=0,33) |
+| global + colnorm_inv | 0,7248 | −0,0061 (p=0,25) | −0,0061 (p=0,20) |
+| global + colnorm | 0,7170 | −0,0139 (p=0,044) | −0,0140 (p=0,071) |
+
+Friedman entre os cinco: p = 0,156.
+
+**Não há ganho a comprar, logo a discussão de custo é vazia.** Fica registrado o que se apurou dela, caso
+volte à pauta: (a) seleção POR LOTE é O(N·B·d·iters) por época, linear em N, mas o custo se acumula por
+época, e o total é a seleção global vezes B·E/N — só compensa para N > B·E (~20.480 com B=512, E=40);
+medido, é 30× mais caro em N=2000 e 34× em N=5000; (b) os 85 s do k-means em N=16.000 no
+`app_selection_cost.tex` vêm dos defaults do `KMeansSelector` (`n_init=10, max_iter=300`); com
+`n_init=1, max_iter=25` cai para ~3,3 s em N=20.000. O número da tese está correto para a implementação
+que ela usa, mas o custo é escolha de parâmetro, não propriedade do método.
+
+**Quarta confirmação independente** de que a identidade dos landmarks não limita o FT-CUR: (i) empate dos
+quatro seletores em lote completo (colnorm −0,0012, p=0,83); (ii) em reconstrução de Nyström o k-means é
+o único que melhora, e essa vantagem não se transfere para classificação; (iii) no mini-lote o
+`colnorm_inv` apenas recupera o empate com o sorteio; (iv) o k-means aplicado de verdade no mini-lote
+rende −0,0001. O gargalo é o próprio m ≪ N.
+
+Escopo do estudo: 4 datasets do Tier 2 × 5 sementes, N=2000, B=512, m_ratio=10%. Direção consistente com
+tudo o mais, mas é estudo pequeno.
