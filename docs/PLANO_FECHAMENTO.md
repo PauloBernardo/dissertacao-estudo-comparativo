@@ -565,3 +565,16 @@ logo nenhum critério de entrada pode ajudar por construção.
 
 Escopo: 4 datasets do Tier 2 × 5 sementes, N=2000, B=512, m_ratio=10%, mini-lote forçado. Nada aqui
 contradiz o corpo da tese, que roda em lote completo; o que muda é o alcance do que se pode afirmar.
+
+##### RESSALVA a corrigir no item acima
+
+Os quatro datasets do estudo de mini-lote (BANK, TELCO, ADULT, SHOPPERS) são todos **tabulares reais** —
+exatamente o regime em que `Apendice1.tex:319` já estabelecia que a seleção é irrelevante ("nos seis
+datasets tabulares reais, a seleção continua irrelevante mesmo a m/n=5%"). Onde a seleção PASSA a
+importar é nos três sintéticos de estrutura geométrica 2D, e é lá que o k-means ganhou +0,035
+significativos no Nyström-LSSVM a m/n=10%.
+
+Portanto a conclusão "nenhuma região da distribuição de norma é privilegiada" está estabelecida apenas
+para tabular real, e não generaliza sem teste nos sintéticos. Reexecução dos sete braços em TWS_2k,
+TWM_2k e TWC_2k (mesmo N=2000, mesmo B=512, mesmo m_ratio, só o tipo de dado muda) em
+`results/ftcur_minibatch_geo.json` — ver resultado no item seguinte.
