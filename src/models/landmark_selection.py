@@ -598,6 +598,80 @@ class InverseNormSelector(LandmarkSelector):
         return self
 
 
+class ComplementSelector(LandmarkSelector):
+    """
+    Sorteio uniforme no COMPLEMENTO do que `colnorm` e `colnorm_inv` escolheriam.
+
+    Ideia (proposta pelo orientando, 2026-09-19): o `ColumnNormSelector` amostra
+    ∝ ‖x_i‖², favorecendo a cauda periférica, e o `InverseNormSelector` amostra
+    ∝ 1/‖x_i‖², favorecendo o miolo denso. Removendo a união dos dois e sorteando no
+    que resta, obtém-se uma terceira região — nem periferia, nem centro. Se ela também
+    empatar com o sorteio uniforme, não sobra região da distribuição de norma em que a
+    escolha de landmark importe.
+
+    Usa o mesmo m e a mesma semente dos dois seletores excluídos, de modo que a
+    exclusão é exatamente aquela que eles produziriam.
+    """
+
+    def __init__(self, n_landmarks: int, random_state: Optional[int] = None):
+        super().__init__(n_landmarks, random_state)
+        self.excluded_ = None
+
+    def fit(self, X: np.ndarray) -> 'ComplementSelector':
+        n = X.shape[0]
+        if self.n_landmarks > n:
+            raise ValueError(f"n_landmarks ({self.n_landmarks}) > n_samples ({n})")
+
+        a = ColumnNormSelector(self.n_landmarks, self.random_state).fit(X)
+        b = InverseNormSelector(self.n_landmarks, self.random_state).fit(X)
+        excl = np.union1d(a.indices_, b.indices_)
+        self.excluded_ = excl
+        pool = np.setdiff1d(np.arange(n), excl)
+        if len(pool) < self.n_landmarks:
+            # Sem miolo suficiente: completa com o que foi excluído, escolhendo os de
+            # norma mais central primeiro, para não virar silenciosamente um sorteio geral.
+            nrm = (X ** 2).sum(1)
+            resto = excl[np.argsort(np.abs(nrm[excl] - np.median(nrm)))]
+            pool = np.concatenate([pool, resto[: self.n_landmarks - len(pool)]])
+
+        rng = np.random.RandomState(self.random_state)
+        self.indices_ = np.sort(rng.choice(pool, size=self.n_landmarks, replace=False))
+        return self
+
+
+class MidBandSelector(LandmarkSelector):
+    """
+    Sorteio uniforme na FAIXA CENTRAL da distribuição de ‖x_i‖².
+
+    Versão determinística da ideia do `ComplementSelector`: descarta as caudas
+    (por padrão os 25% de menor e os 25% de maior norma) e sorteia uniformemente no
+    miolo. Diferente do complemento, não depende de quais pontos os dois seletores
+    probabilísticos sortearam, então isola a região com nitidez.
+    """
+
+    def __init__(self, n_landmarks: int, random_state: Optional[int] = None,
+                 lower_q: float = 0.25, upper_q: float = 0.75):
+        super().__init__(n_landmarks, random_state)
+        self.lower_q = lower_q
+        self.upper_q = upper_q
+
+    def fit(self, X: np.ndarray) -> 'MidBandSelector':
+        n = X.shape[0]
+        if self.n_landmarks > n:
+            raise ValueError(f"n_landmarks ({self.n_landmarks}) > n_samples ({n})")
+
+        nrm = (X ** 2).sum(1)
+        lo, hi = np.quantile(nrm, [self.lower_q, self.upper_q])
+        pool = np.where((nrm >= lo) & (nrm <= hi))[0]
+        if len(pool) < self.n_landmarks:
+            # Faixa estreita demais (normas muito concentradas): alarga pelos mais centrais.
+            pool = np.argsort(np.abs(nrm - np.median(nrm)))[: max(self.n_landmarks, len(pool))]
+
+        rng = np.random.RandomState(self.random_state)
+        self.indices_ = np.sort(rng.choice(pool, size=self.n_landmarks, replace=False))
+        return self
+
+
 def get_selector(method: str, n_landmarks: int, random_state: Optional[int] = None,
                  **kwargs) -> LandmarkSelector:
     """
@@ -607,7 +681,7 @@ def get_selector(method: str, n_landmarks: int, random_state: Optional[int] = No
     ----------
     method : str
         Método de seleção: 'random', 'kmeans', 'obl_reflection', 'quasi_opposite',
-        'leverage', 'colnorm', 'colnorm_inv', 'fps'
+        'leverage', 'colnorm', 'colnorm_inv', 'complement', 'midband', 'fps'
     n_landmarks : int
         Número de landmarks
     random_state : int, opcional
@@ -636,6 +710,8 @@ def get_selector(method: str, n_landmarks: int, random_state: Optional[int] = No
         'leverage': LeverageScoreSelector,
         'colnorm': ColumnNormSelector,
         'colnorm_inv': InverseNormSelector,
+        'complement': ComplementSelector,
+        'midband': MidBandSelector,
         'fps': FarthestPointSelector,
     }
 
@@ -663,7 +739,7 @@ if __name__ == "__main__":
     print()
 
     for method in ['random', 'kmeans', 'obl_reflection', 'quasi_opposite',
-                    'leverage', 'colnorm', 'colnorm_inv', 'fps']:
+                    'leverage', 'colnorm', 'colnorm_inv', 'complement', 'midband', 'fps']:
         selector = get_selector(method, n_landmarks, random_state=42)
         selector.fit(X)
 

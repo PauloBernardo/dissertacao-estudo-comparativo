@@ -47,6 +47,13 @@ ARMS = {
     # total por lote e o global vezes B*E/N, logo so compensa quando N > B*E (~20k com
     # B=512, E=40). Medido: 30x mais caro em N=2000, 34x em N=5000.
     "global+kmeans":      dict(minibatch_landmarks="global",    selection_method="kmeans"),
+    # Ideia do orientando: se as duas CAUDAS da distribuicao de ||x_i||^2 dao o mesmo,
+    # o miolo tambem da? "complement" sorteia no que colnorm e colnorm_inv NAO pegaram
+    # (sobreposicao zero com ambos); "midband" descarta os quartis extremos e sorteia
+    # nos 50% centrais -- o teste mais nitido, porque nao depende do que os dois
+    # seletores probabilisticos sortearam.
+    "global+complement":  dict(minibatch_landmarks="global",    selection_method="complement"),
+    "global+midband":     dict(minibatch_landmarks="global",    selection_method="midband"),
 }
 
 

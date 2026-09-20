@@ -534,3 +534,34 @@ rende −0,0001. O gargalo é o próprio m ≪ N.
 
 Escopo do estudo: 4 datasets do Tier 2 × 5 sementes, N=2000, B=512, m_ratio=10%. Direção consistente com
 tudo o mais, mas é estudo pequeno.
+
+#### Nenhuma região da distribuição de norma é privilegiada (2026-09-19)
+
+Ideia do orientando: se as duas caudas de ‖x_i‖² dão o mesmo, o miolo também dá? Dois seletores novos —
+`complement` (sorteio no que `colnorm` e `colnorm_inv` NÃO pegaram, sobreposição zero com ambos) e
+`midband` (descarta os quartis extremos, sorteia nos 50% centrais). Mesmos 20 pares:
+
+| braço | F1 | Δ vs random | p |
+|---|---|---|---|
+| per_batch (resorteio por lote) | 0,7309 | −0,0000 | 0,96 |
+| global + random | 0,7309 | — | — |
+| global + kmeans (quantização) | 0,7308 | −0,0001 | 0,33 |
+| global + complement | 0,7266 | −0,0044 | 0,31 |
+| global + midband | 0,7266 | −0,0044 | 0,84 |
+| global + colnorm_inv (miolo denso) | 0,7248 | −0,0061 | 0,20 |
+| global + colnorm (periferia) | 0,7170 | −0,0140 | 0,071 |
+
+Friedman entre os sete: p = 0,210. **Amplitude entre melhor e pior: 0,0140.** Norma média dos landmarks
+escolhidos, para dimensionar o quanto os braços diferem de fato: colnorm 28,9 | random 14,8 |
+complement 14,5 | midband 11,9 | colnorm_inv 11,1 (média geral 16,0).
+
+**Consequência para o texto.** A afirmação hoje é que *o seletor escolhido* é imaterial, o que se pode
+ler como "testaram quatro e empataram por sorte". Com isso ela pode passar a ser mais forte e mais
+defensável: **a posição do landmark no espaço de entrada é imaterial** — varreu-se a distribuição inteira
+de ‖x_i‖² (periferia, miolo, faixa central, complemento das caudas), mais o critério de quantização, mais
+o sorteio uniforme, mais o resorteio por lote, e nada se distingue. O mecanismo é o já descrito em
+`Apendice1.tex:331`: a matriz-alvo é a atenção APRENDIDA, sem relação fixa com a geometria de entrada,
+logo nenhum critério de entrada pode ajudar por construção.
+
+Escopo: 4 datasets do Tier 2 × 5 sementes, N=2000, B=512, m_ratio=10%, mini-lote forçado. Nada aqui
+contradiz o corpo da tese, que roda em lote completo; o que muda é o alcance do que se pode afirmar.
