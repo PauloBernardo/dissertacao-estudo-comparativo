@@ -714,3 +714,56 @@ Fica como observação descritiva de uma página do apêndice, não como explica
 decisão de trocar para `random`: como propriedade a priori preservar a proporção é desejável (a métrica é
 F1-macro e há datasets desbalanceados por construção, AI4I a 25%), mas medimos que na faixa deste estudo
 não custa F1. A decisão da troca se sustenta pelos outros motivos.
+
+---
+
+## Braço de orçamento, Tier 1 COMPLETO (30 sementes) — 2026-09-20
+
+`results/budget_full_t1_200.json`: 1800/1800 registros, zero erro, `budget_override` gravado em todos.
+Protocolo: GridSearchCV completo com teto 200 e paciência 16, grade de arquitetura **re-selecionada dentro
+do braço**; pareado com `results/tier1_gridcv.json` nas 30 sementes.
+
+**Confirma a calibração.** Δ global = **+0,0221** (p = 1,4 × 10⁻²⁶); 818 sobem, 515 caem, 467 empatam
+exato. Todos os seis modelos ganham com significância:
+
+| modelo | publicado | 200/16 | Δ | p | best_epoch mediano |
+|---|---|---|---|---|---|
+| SAINT | 0,7169 | 0,7757 | **+0,0588** | 1,3e−12 | 30 |
+| FT-CUR | 0,7435 | 0,7672 | +0,0237 | 4,3e−08 | 33 |
+| FT-top-k | 0,7179 | 0,7327 | +0,0148 | 1,3e−03 | 17 |
+| FT-softmax | 0,7420 | 0,7542 | +0,0123 | 1,1e−05 | 14 |
+| FT-entmax | 0,7424 | 0,7539 | +0,0115 | 1,2e−03 | 15 |
+| FT-sparsemax | 0,7413 | 0,7527 | +0,0114 | 9,4e−03 | 11 |
+
+**A dicotomia se sustenta:** 24% das corridas (434/1800) têm o melhor checkpoint além da época 40 e
+ganham **+0,0671** (mediana +0,0169); as 76% que cabiam no teto ganham +0,0078 com mediana **zero**. A
+calibração previa 26% e +0,0859.
+
+Por dataset: TWC +0,0797, TWM +0,0379, AI4I +0,0259, TWS +0,0205, GCR +0,0187, VCP +0,0143, PID +0,0083,
+BCW +0,0067, HAB +0,0046, AUS +0,0042.
+
+### A conclusão sobrevive, mas precisa de redação mais precisa
+
+**Por média de F1**, os 14 modelos não-Transformer continuam **todos** acima do melhor braço novo (SAINT
+0,7757); o SAINT sobe da 26ª para a 15ª posição entre 26.
+
+**Por rank médio** (que é o que o Friedman e o Nemenyi usam; CD = 1,713 com k = 20 e N = 300), o quadro é
+mais fino. SAINT (200/16), rank 10,70:
+
+- **significativamente ABAIXO** dos seis melhores LSSVMs: FSA 7,05, PCP 7,07, IP 7,07, Standard 7,19,
+  Nyström 7,23, DualFISTA 8,31;
+- **indistinguível** de XGBoost 9,28, Pruning 9,32, FISTA-Nyström 9,72, ADMM-Nyström 9,93 e
+  OppositeMaps 11,39;
+- **significativamente ACIMA** de ADMM-Nesterov 13,94, ADMM-ElasticNet 13,97 e FISTA-Nesterov 15,25.
+
+O terceiro item toca a base da dissertação (ADMM-Nesterov é o método do artigo do autor). Duas coisas
+atenuam, ambas já na tese: (a) a fraqueza é o **colapso da minoria pelo soft-threshold ℓ1** já documentado
+(dose-resposta ρ = −0,64, limiar em ~5,5:1), não uma fraqueza nova — o que mudou é que ficou visível na
+comparação, porque antes o Transformer não chegava lá; (b) por **média** o ADMM-Nesterov ainda está à
+frente (0,8062 contra 0,7757), e a divergência média-vs-rank é a assinatura de colapsar em poucos
+datasets e ir bem no resto.
+
+**Redação sugerida**, em lugar de "os LSSVMs superam os Transformers tabulares": *sob o orçamento dos
+artigos, os LSSVMs de kernel (denso, Nyström, PCP, IP, FSA e o dual FISTA) permanecem significativamente
+superiores; os Transformers tornam-se indistinguíveis do XGBoost e das variantes esparsas intermediárias;
+e superam os primais ℓ1, cuja fragilidade em classes desbalanceadas já estava documentada.*
