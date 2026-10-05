@@ -767,3 +767,68 @@ datasets e ir bem no resto.
 artigos, os LSSVMs de kernel (denso, Nyström, PCP, IP, FSA e o dual FISTA) permanecem significativamente
 superiores; os Transformers tornam-se indistinguíveis do XGBoost e das variantes esparsas intermediárias;
 e superam os primais ℓ1, cuja fragilidade em classes desbalanceadas já estava documentada.*
+
+---
+
+## Reenquadramento da Seção `sec:estabilidade` (2026-10-05)
+
+O braço `random` do ADMM-Nyström faz a queda de −0,0647 da Ablação D **desaparecer** (passa a +0,0123),
+porque a moda do Tier 2 daquele braço sorteou outro ponto da curva λτ. Isso tirou o gancho da seção e
+exigiu verificar se os achados dela, todos obtidos com `colnorm`, sobreviviam. Sobrevivem, e a seção fica
+mais forte. Evidência nova, ~810 execuções:
+
+### Fatorial seletor × configuração (720 execuções)
+
+| | config lenta (λ/τ do colnorm) | config rápida (λ/τ do random) | efeito da config |
+|---|---|---|---|
+| colnorm | −0,0647 | **+0,0132** | +0,0780 |
+| random | −0,0846 | +0,0123 | +0,0969 |
+| **efeito do seletor** | −0,0199 | **−0,0010** | |
+
+A queda é inteiramente da razão λ/τ: o `colnorm` com configuração rápida SOBE. O seletor vale −0,001 sob
+configuração saudável. Há interação interpretável — o seletor só importa quando o laço é truncado antes de
+convergir, pois aí o ponto de interrupção depende do condicionamento de **C**; se converge, o minimizador
+é o mesmo. Prova adicional de que a causa é truncamento, não aproximação.
+
+Corolário em 12 pontos (2 braços × 6 datasets): Spearman entre λ/τ e F1 em N=5000 = **−0,869**
+(p = 0,0002), cobrindo quatro ordens de grandeza de λ/τ, sem intervenção alguma.
+
+### As duas saídas coincidem, e a cara custa 11× (90 execuções)
+
+Landmarks aleatórios, configuração lenta, nos três datasets em que há queda:
+
+| braço | F1 | tempo de ajuste | esparsidade |
+|---|---|---|---|
+| lenta / teto 500 | 0,4642 | 4,6 s | 0,927 |
+| lenta / teto 5000 | 0,6422 | 44,4 s (**9,7×**) | 0,783 |
+| rápida / teto 500 | **0,6552** | **3,9 s** | 0,768 |
+
+`lenta/5000` e `rápida/500` concordam **em F1 e em esparsidade** — convergem ao mesmo ponto, confirmando
+empiricamente a invariância por λτ. A truncada (esparsidade 0,927) é um iterado distinto, não convergido:
+o caminho do ADMM passa por pontos excessivamente podados antes de convergir.
+
+### A alegação da seção sobe de nível
+
+O teto de 500 **não** é limitação arbitrária que gerou artefato; é o instrumento que tornou visível um grau
+de liberdade escondido na formulação. O minimizador depende só do produto λτ (Seção `sec:extensoes_admm`),
+mas a razão **λ/τ, ausente do objetivo, fixa a taxa de convergência** — duas configurações que definem o
+*mesmo* problema custam **11×** diferente para resolvê-lo. Sob qualquer orçamento finito a busca em grade
+seleciona por custo sem declarar. E responde a objeção óbvia: 5000 iterações custam ~10× e **ainda perdem**
+para re-tunar, logo adotar 5000 no corpo não seria melhoria.
+
+Isso dá justificativa quantitativa à reparametrização adimensional (normalizar λ₁ por λ_max) que a seção já
+propõe como trabalho futuro.
+
+### O que reescrever
+
+1. Item da queda na Ablação D (`Capitulo4.tex:251`): a frase "sofre a maior queda do estudo" é específica do
+   sorteio modal do `colnorm`; com `random` não há queda. Substituir pelo fatorial.
+2. Síntese da ablação (`Capitulo4.tex:272`): o ADMM-Nyström deixa de ser exceção penalizada.
+3. Abertura da `sec:estabilidade` (`Capitulo4.tex:355`): o gancho passa de "houve uma queda feia" para "o
+   mesmo modelo cai 0,065 ou sobe 0,013 conforme o ponto da curva λτ, e o fator é custo de convergência".
+4. Tabelas `tier2_n5000_comparison` e `tier2_n5000_admm_collapse` mudam de números com o `random`.
+
+Artefatos: `results/{tier1,tier2}_nystrom_lssvm_random.json`,
+`results/tier2_fixedparams_n5000_nystrom_lssvm_random.json`, `results/ablD_seletor_isolado.json`,
+`results/ablD_colnorm_config_rapida.json`, `results/ablD_random_lento_5000iter.json`, e os quatro
+`config/tier2_fixed_params_*.json` correspondentes.
