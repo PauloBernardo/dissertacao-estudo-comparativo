@@ -459,6 +459,13 @@ GRIDS: dict[str, dict] = {
             "patience":           6,
             "early_stop_metric":  "val_loss",
             "batch_size":         4096,  # O(B×m) — 10x menos memória que SAINT, cabe batch 4x maior
+            # EXPLÍCITO de propósito (2026-10-04): este é o seletor do protocolo
+            # PUBLICADO, e o braço de orçamento (seção 5.7) tem de usá-lo para que o
+            # Δ isole épocas/paciência em vez de misturar seletor. Antes vinha do
+            # padrão do wrapper; quando o padrão mudar para "random" (decisão de
+            # 2026-09-19 sobre o corpo principal), esta linha impede que o
+            # experimento de orçamento mude de comportamento sem aviso.
+            "selection_method":   "colnorm",
         },
         "needs_gpu": True,
     },
