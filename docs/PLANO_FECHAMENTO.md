@@ -832,3 +832,55 @@ Artefatos: `results/{tier1,tier2}_nystrom_lssvm_random.json`,
 `results/tier2_fixedparams_n5000_nystrom_lssvm_random.json`, `results/ablD_seletor_isolado.json`,
 `results/ablD_colnorm_config_rapida.json`, `results/ablD_random_lento_5000iter.json`, e os quatro
 `config/tier2_fixed_params_*.json` correspondentes.
+
+---
+
+## Braço de orçamento, Tier 2 COMPLETO (30 sementes) — 2026-10-05
+
+`results/budget_full_t2_200.json`: 1080/1080, zero erro. A sessão do Kaggle estourou o tempo com 1047
+feitos; os 33 restantes (FT-CUR em SHOPPERS e TELCO) saíram numa sessão curta
+(`results/budget_t2_ftcur_resto.json`, 60 execuções, 27 descartadas por repetição).
+
+Δ global = **+0,0156** (p = 7,1 × 10⁻¹³); 554 sobem, 406 caem, 120 empatam.
+
+| modelo | publicado | 200/16 | Δ | p | best_epoch |
+|---|---|---|---|---|---|
+| SAINT | 0,6610 | 0,7059 | **+0,0448** | 1,7e−03 | 35 |
+| FT-CUR | 0,6979 | **0,7143** | +0,0164 | 5,2e−03 | 46 |
+| FT-softmax | 0,7008 | 0,7124 | +0,0116 | 2,6e−04 | 17 |
+| FT-top-k | 0,6909 | 0,7024 | +0,0116 | 2,5e−04 | 13 |
+| FT-sparsemax | 0,6940 | 0,7034 | +0,0094 | 6,7e−04 | 9 |
+| FT-entmax | 0,7090 | 0,7086 | −0,0004 | 0,68 | 12 |
+
+**A dicotomia encolhe monotonicamente com N**, o que delimita o achado: 24% das corridas além da época 40
+no Tier 1 com Δ = +0,067; **16% no Tier 2 com Δ = +0,043**. Nas demais, mediana exatamente zero nos dois
+tiers. E o `best_epoch` prediz quem ganha: o entmax, único que não ganha, converge na época 12; o SAINT e o
+FT-CUR, que mais ganham, são os mais lentos (35 e 46).
+
+### O achado que exige reescrever a conclusão do Tier 2
+
+Ranking com o braço novo (22 modelos, 180 blocos, CD = 2,428):
+
+| pos | modelo | rank | F1 |
+|---|---|---|---|
+| 1 | XGBoost | 5,72 | 0,7233 |
+| 2 | FT-CUR (200/16) | 7,65 | 0,7143 |
+| 3 | SAINT (200/16) | 7,87 | 0,7059 |
+| 4 | FT-softmax (200/16) | 8,26 | 0,7124 |
+| 12 | LSSVM-Std | 11,36 | 0,6993 |
+| 13 | Nyström-SVM | 11,41 | 0,6989 |
+
+**Nenhum dos dez modelos não-Transformer fica significativamente acima do melhor braço de orçamento.** No
+publicado o XGBoost **estava** significativamente à frente do melhor Transformer (5,72 contra 8,34 do
+entmax, Δ = 2,62 > CD); com o orçamento corrigido, Δ = 1,93 e a vantagem **deixa de ser significativa**.
+
+Não é novidade que os Transformers superem os LSSVMs no Tier 2 — isso já estava nos números publicados
+(entmax 8,34 contra LSSVM-Std 11,36). A novidade é a perda da vantagem do XGBoost.
+
+**O estudo passa a ter um cruzamento caracterizado, função de N:** em N≈400 os seis melhores LSSVMs de
+kernel permanecem significativamente superiores mesmo com orçamento (CD = 1,713); em N=2000, com orçamento
+justo, nenhum modelo supera os Transformers com significância.
+
+Ressalva de leitura: o Tier 2 tem 180 blocos contra 300 do Tier 1, logo CD maior (2,43 contra 1,71) e
+teste menos sensível. Parte da perda de significância é poder. Mas a distância de rank do XGBoost ao
+melhor Transformer também caiu em termos absolutos (2,62 → 1,93), então não é só isso.
