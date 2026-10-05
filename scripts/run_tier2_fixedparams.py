@@ -144,8 +144,20 @@ def main() -> int:
     p.add_argument("--seeds",    nargs="+", type=int, default=DEFAULT_SEEDS)
     p.add_argument("--config",   type=Path, default=DEFAULT_CONFIG)
     p.add_argument("--output",   type=Path, default=OUTPUT_FILE)
+    p.add_argument("--budget-epochs", type=int, default=None,
+                   help="Sobrescreve o teto de epocas dos Transformers (secao 5.7).")
+    p.add_argument("--budget-patience", type=int, default=None,
+                   help="Sobrescreve a paciencia dos Transformers (secao 5.7).")
     p.add_argument("--log-level", default="INFO")
     args = p.parse_args()
+
+    # O estimador e construido por g._build_pipeline, que aplica g.BUDGET_OVERRIDE.
+    for _cli, _key in (("budget_epochs", "epochs"), ("budget_patience", "patience")):
+        _v = getattr(args, _cli, None)
+        if _v is not None:
+            g.BUDGET_OVERRIDE[_key] = int(_v)
+    if g.BUDGET_OVERRIDE:
+        print(f"[orcamento] override ativo: {g.BUDGET_OVERRIDE}", flush=True)
 
     logging.basicConfig(
         level=logging.WARNING,

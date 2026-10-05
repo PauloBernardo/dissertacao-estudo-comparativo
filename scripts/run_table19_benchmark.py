@@ -316,6 +316,10 @@ def _measure(variant: str, X_tr, y_tr, X_te) -> dict:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--budget-epochs", type=int, default=None,
+                        help="Sobrescreve EPOCHS (secao 5.7).")
+    parser.add_argument("--budget-patience", type=int, default=None,
+                        help="Sobrescreve PATIENCE (secao 5.7).")
     parser.add_argument("--output", default="table19_results.json")
     parser.add_argument("--repeats", type=int, default=REPEATS)
     parser.add_argument("--repo-root", default=None,
@@ -323,6 +327,14 @@ def main() -> None:
     parser.add_argument("--variants", default=None,
                         help="Lista separada por vírgula p/ rodar só um subconjunto. Default: todas.")
     args = parser.parse_args()
+
+    global EPOCHS, PATIENCE
+    if args.budget_epochs is not None:
+        EPOCHS = args.budget_epochs
+    if args.budget_patience is not None:
+        PATIENCE = args.budget_patience
+    if args.budget_epochs or args.budget_patience:
+        print(f"[orcamento] EPOCHS={EPOCHS} PATIENCE={PATIENCE}", flush=True)
 
     _setup_paths(args.repo_root)
 

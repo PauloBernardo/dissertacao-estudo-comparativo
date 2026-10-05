@@ -39,6 +39,28 @@ from src.data.loaders import DatasetLoader
 from src.data.preprocessing import _convert_labels
 from src.experiments.reproducibility import set_global_seed
 from src.experiments.runner import _build_model
+
+
+# ── Override de orcamento (secao 5.7) ────────────────────────────────────────
+# A Ablacao A transfere best_params do Tier 1 e monta o estimador direto, sem
+# GridSearchCV, logo nao passa pelos runners que ja tinham o override.
+BUDGET_OVERRIDE: dict[str, int] = {}
+_EPOCH_KEYS = ("max_epochs", "epochs")
+
+
+def _apply_budget(params: dict) -> dict:
+    """Aplica BUDGET_OVERRIDE, respeitando o nome de chave de cada wrapper."""
+    if not BUDGET_OVERRIDE:
+        return params
+    out = dict(params)
+    if "epochs" in BUDGET_OVERRIDE:
+        for k in _EPOCH_KEYS:
+            if k in out:
+                out[k] = BUDGET_OVERRIDE["epochs"]
+    if "patience" in BUDGET_OVERRIDE and "patience" in out:
+        out["patience"] = BUDGET_OVERRIDE["patience"]
+    return out
+
 from src.metrics.sparsity import transformer_sparsity
 from src.tuning.grids import GRIDS
 
@@ -125,7 +147,7 @@ def run_one(
         )
 
         # Build model with fixed best_params (no CV)
-        all_params = {**cfg["fixed"], **best_params}
+        all_params = _apply_budget({**cfg["fixed"], **best_params})
         estimator, _ = _build_model(cfg["model_name"], all_params, label_format=label_format)
         if hasattr(estimator, "set_params") and "random_state" in estimator.get_params():
             estimator.set_params(random_state=seed)
@@ -177,6 +199,10 @@ def run_one(
 
 def main() -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--budget-epochs", type=int, default=None,
+                        help="Sobrescreve o teto de epocas dos Transformers (secao 5.7).")
+    parser.add_argument("--budget-patience", type=int, default=None,
+                        help="Sobrescreve a paciencia dos Transformers (secao 5.7).")
     parser.add_argument("--output",             default="results/ablation_a_scaling.json")
     parser.add_argument("--tier1",              default="results/tier1_gridcv.json")
     parser.add_argument("--models",             nargs="*", default=sorted(NON_TRANSFORMER_VARIANTS))
@@ -184,6 +210,13 @@ def main() -> None:
     parser.add_argument("--transformers-only",  action="store_true",
                         help="Override --models to run only transformer variants")
     args = parser.parse_args()
+
+    for _cli, _key in (("budget_epochs", "epochs"), ("budget_patience", "patience")):
+        _v = getattr(args, _cli, None)
+        if _v is not None:
+            BUDGET_OVERRIDE[_key] = int(_v)
+    if BUDGET_OVERRIDE:
+        print(f"[orcamento] override ativo: {BUDGET_OVERRIDE}", flush=True)
 
     out_path   = Path(args.output)
     tier1_path = Path(args.tier1)
