@@ -48,6 +48,25 @@ GRIDS: dict[str, dict] = {
         "needs_gpu": False,
     },
 
+    # Braco de ablacao do seletor: identico ao ADMMNystromLSSVM, mas com selecao
+    # aleatoria. Necessario para a troca colnorm->random decidida em
+    # 2026-09-19, que atinge os QUATRO modelos que usam landmarks.
+    "ADMMNystromRandom": {
+        # Modo A — single-machine.  Grade: sigma/tau/lambda_ livres, m_ratio fixo.
+        # λ=0.001 acrescentado ao harmonizar o soft-threshold para λ/ρ (convenção
+        # do paper-fonte). Como o ℓ1 efetivo dobrou, o antigo piso (λ=0.01, escolhido
+        # em 68% dos runs sob a convenção λ/2ρ) deixaria o modelo preso na fronteira.
+        "model_name": "ADMMNystromLSSVM",
+        "grid": {
+            "sigma":   [0.1, 0.5, 2.0],
+            "tau":     [0.005, 0.05, 0.5, 5.0, 50.0],
+            "lambda_": [1.0, 0.5, 0.1, 0.01, 0.001],
+        },
+        "fixed": {"m_ratio": 0.30, "rho": None, "max_iter": 500,
+                  "landmark_method": "random", "n_blocks": 1, "n_jobs": 1},
+        "needs_gpu": False,
+    },
+
     "ADMMNystromDistributed": {
         # Modo B — block-parallel (4 blocos, todos os cores disponíveis).
         # Mesma grade que A; n_blocks/n_jobs ativam o modo paralelo.
@@ -72,6 +91,22 @@ GRIDS: dict[str, dict] = {
             "lambda_": [1.0, 0.1, 0.01],
         },
         "fixed": {"m_ratio": 0.30, "landmark_method": "colnorm", "max_iter": 5000},
+        "needs_gpu": False,
+    },
+
+    # Braco de ablacao do seletor: identico ao FISTANystrom, mas com selecao
+    # aleatoria. Necessario para a troca colnorm->random decidida em
+    # 2026-09-19, que atinge os QUATRO modelos que usam landmarks.
+    "FISTANystromRandom": {
+        # FISTA primal no espaço Nyström — mesmo espaço que ADMMNystromLSSVM
+        # mas sem parâmetro ρ. Mesma grade de sigma/tau/lambda_.
+        "model_name": "FISTANystromLSSVM",
+        "grid": {
+            "sigma":   [0.1, 0.5, 2.0],
+            "tau":     [0.005, 0.05, 0.5, 5.0, 50.0],
+            "lambda_": [1.0, 0.1, 0.01],
+        },
+        "fixed": {"m_ratio": 0.30, "landmark_method": "random", "max_iter": 5000},
         "needs_gpu": False,
     },
 
