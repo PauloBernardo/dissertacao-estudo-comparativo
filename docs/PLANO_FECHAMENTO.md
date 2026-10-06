@@ -932,3 +932,121 @@ mecanismo — sob orçamento truncado o modelo não chega a usar os dados que re
 
 Por modelo, o ganho com N sob 200/16: sparsemax +0,1899, top-k +0,1730, entmax +0,1651,
 FT-CUR +0,1413, SAINT +0,1331, softmax +0,1293.
+
+---
+
+# PLANO DE MIGRAÇÃO E ESCRITA — handoff para a próxima sessão (2026-10-06)
+
+A fase de dados está **fechada**. O protocolo principal passa a ser **200/16** (teto 200, paciência 16,
+o dos artigos-fonte) e o seletor de *landmarks* passa a **`random`** nos quatro modelos que o usam. Todos
+os arquivos existem, validados, sem erro, com a semeadura do torch corrigida.
+
+## 1. Inventário do dado novo
+
+| fase | arquivo novo | conteúdo | registros |
+|---|---|---|---|
+| Tier 1 | `results/tier1_principal_200.json` | 6 Transformers em 200/16, FT-CUR com random | 1800 |
+| Tier 2 | `results/tier2_principal_200.json` | idem | 1080 |
+| Ablação A | `results/ablation_a_200.json` | 6 Transformers, 3 sintéticos, 20 sementes | 360 |
+| Ablações B+C | `results/ablation_bc_200.json` | 6 Transformers, 6 datasets, 30 sementes | 1080 |
+| Ablação D | `results/ablD_200.json` | 6 Transformers, N=5000 | 1080 |
+| Tabela 19 | `results/table19_200.json` | 4 variantes × 7 valores de N | 28 |
+| Nyström-SVM random | `results/tier1_nystrom_random.json`, `tier2_nystrom_random.json`, `tier2_fixedparams_n5000_nystrom_random.json` | 3 regimes, 30 sementes | 300/180/180 |
+| ADMM e FISTA-Nyström random | `results/tier1_nystrom_lssvm_random.json`, `tier2_nystrom_lssvm_random.json`, `tier2_fixedparams_n5000_nystrom_lssvm_random.json` | 2 modelos × 3 regimes | 600/360/360 |
+
+Prévias já montadas para conferência: `results/PREVIA_tier1_principal_200.json` e
+`PREVIA_tier2_principal_200.json` (tabelas completas com todas as trocas, 20 e 16 modelos).
+
+## 2. Migração: os geradores leem nomes canônicos fixos
+
+`results/tier1_gridcv.json` aparece em 8 geradores, `tier2_gridcv.json` em 3, e assim por diante. A
+migração tem **duas metades**, e a segunda é fácil de esquecer.
+
+### 2a. Dados — substituir registros nos arquivos canônicos
+
+Usar `scripts/merge_rerun_results.py --target <canônico> --source <novo> --variants ... --tag 200`
+(gera `*_pre_200_backup.json` automático). **Atenção:** o merge substitui *por nome de variante*, e
+quatro nomes MUDAM. Então para esses é preciso **remover o antigo e inserir o novo**, não substituir:
+
+| canônico | remover | inserir (de) |
+|---|---|---|
+| `tier1_gridcv.json` | 5 Transformers, `FTTransformerCURColnorm` | 6 de `tier1_principal_200.json` |
+| | `NystromLSSVMColnorm` | `NystromLSSVMRandom` de `tier1_nystrom_random.json` |
+| | `ADMMNystromLSSVM`, `FISTANystrom` | `*Random` de `tier1_nystrom_lssvm_random.json` |
+| `tier2_gridcv.json` + `tier2_transformers.json` | idem | de `tier2_principal_200.json` e dos `tier2_*_random.json` |
+| `tier2_fixedparams_n5000_transformers.json` | 6 Transformers | de `ablD_200.json` |
+| `tier2_fixedparams_n5000_lssvm.json` | `NystromLSSVMColnorm`, `ADMMNystromLSSVM`, `FISTANystrom` | dos `tier2_fixedparams_n5000_*_random.json` |
+| `ablation_a_transformers.json` | tudo | `ablation_a_200.json` (substituição inteira, como em setembro) |
+| `ablation_b_noise.json` / `ablation_c_mk5.json` | 6 Transformers | `ablation_bc_200.json`, separado por dataset (TWS_5f/TWM_5f/TWC_5f → B; resto → C), como o passo 1 do `post_rerun_saint_entmax.sh` faz |
+| `table19_results.json` | 4 variantes | `table19_200.json` |
+
+### 2b. Código — os mapas de variante → rótulo
+
+Os nomes de **exibição** na tese não mudam (o modelo é o mesmo; só o seletor mudou, e o seletor não faz
+parte do nome no texto). Então basta **acrescentar** as chaves novas aos mapas, apontando para o mesmo
+rótulo. Pontos de toque levantados:
+
+- `scripts/generate_analysis.py` (mapa na linha ~69)
+- `scripts/generate_ablation_tables.py` (mapa na ~84, mais listas de roster)
+- `scripts/generate_ablation_figs.py` (mapa de rótulo + mapa de cor)
+- `scripts/generate_report_figs.py` (lista de variantes + mapa de cor)
+- `scripts/generate_metrics_tables.py` (mapa na ~30)
+- `scripts/generate_tier2_n5000_tables.py`
+- `scripts/generate_nystrom_selection_table.py` (este é do Apêndice C e deve continuar com `colnorm`,
+  porque ali o seletor É a variável de interesse — **não** mexer)
+
+Pares a acrescentar: `NystromLSSVMRandom` → `LSSVM-Nyström`; `ADMMNystromRandom` → `ADMM-Nyström`;
+`FISTANystromRandom` → `FISTA-Nyström`; `FTTransformerCURRandom` → `FT-CUR`.
+
+## 3. Regeneração — ordem que funciona
+
+Seguir o `scripts/post_rerun_saint_entmax.sh`, que já tem a sequência correta. Duas pegadinhas dele:
+
+1. `generate_nemenyi_analysis.py` roda **antes** do `normalize_decimals.py`, porque lê os *ranks* com
+   ponto decimal (quebrou em julho por causa disso).
+2. O passo 5 **reaplica edições manuais** que os geradores apagam: as linhas dos Transformers em
+   `tier2_sparsity.tex`, o `resizebox` em `ablation_a/b` e as legendas `Tier~N`.
+
+## 4. Escrita — o que mudou e onde
+
+Em ordem de dependência (o primeiro item não depende de nada e tem todo o dado medido):
+
+1. **`sec:estabilidade` (`Capitulo4.tex:352`)** — reenquadrar. Ver a seção deste plano sobre o fatorial
+   2×2: a queda de −0,0647 não é propriedade do modelo nem do seletor, é da razão λ/τ (efeito +0,078 a
+   +0,097; seletor −0,001). As duas saídas coincidem (lenta/5000 ≈ rápida/500, Δ = −0,013) e a cara custa
+   **11×** em tempo. A alegação sobe de "fragilidade do nosso protocolo" para um achado sobre a
+   formulação: λ/τ, ausente do objetivo, é parâmetro de custo oculto a λτ constante.
+2. **Ablação A (`Capitulo4.tex:126`)** — o ganho com N passa de +0,0532 para **+0,1553**. O orçamento
+   truncado mascarava dois terços do efeito *data-hungry*; 76% das corridas eram cortadas antes da época
+   40. Corrige a leitura de 19/09 de que orçamento e dados seriam cofatores concorrentes.
+3. **Conclusão do Tier 2 (`Capitulo4.tex:198` e síntese)** — o XGBoost **perde** a vantagem
+   significativa: de Δ = 2,62 (> CD) para 1,93 (< CD = 1,72). Os seis Transformers passam todos os
+   LSSVMs. O estudo ganha um cruzamento em função de N: em N≈400 os LSSVMs seguem significativamente
+   superiores; em N=2000, não.
+4. **Seção 5.7 / orçamento** — passa de limitação declarada a **justificativa do protocolo adotado**. A
+   dicotomia é o resultado: 24% das corridas no Tier 1 e 16% no Tier 2 têm o ótimo além da época 40, com
+   ganho de +0,067 e +0,043; nas demais, mediana exatamente zero. Na Ablação A são 76%.
+5. **Troca para `random` (`Capitulo3.tex:82` e `:91`)** — a nota de rodapé deve virar fato medido
+   (ρ = −1,00 com a norma de coluna verdadeira, +0,82 com leverage) e a "contribuição do critério de
+   custo mínimo" sai junto com o `colnorm`. Justificativa nova: amostragem aleatória uniforme é o
+   baseline canônico e não exige defesa.
+6. **Apêndice C** — acrescentar o ADMM-Nyström e o FISTA-Nyström (|Δ| ≤ 0,004 nos Tiers; o ADMM é o único
+   seletor-sensível, e só no regime truncado); o mecanismo da **casca** (seleção por faixa de norma é um
+   anel, e anel não cobre variedade: `midband` cobre 28% da extensão radial no tabuleiro); e a inversão
+   do k-means entre LSSVM (+0,035) e FT-CUR (−0,0919, p = 0,0067).
+7. **Ressalva do custo (`Capitulo4.tex:310`)** — a nota de que os tempos do ADMM medem orçamento
+   concedido passa a valer para os Transformers: o `FTCUR_mfixed_full` custando 5× mais em N=50.000 não
+   ficou mais caro, estava sendo interrompido antes.
+8. **`Apendice1.tex:319`** — a frase "o `colnorm` é o pior seletor em ambos os regimes de escassez" é
+   contradita pela própria tabela (ele é 2º ou 3º em 3 das 4 células; o pior é o k-means).
+9. **Nota de reprodutibilidade** — o FT-CUR e o SAINT publicados (anteriores a 19/09) não são
+   reprodutíveis por semente; o dado novo é. A nota de rodapé do Apêndice C que atribui a
+   irreprodutibilidade só a hardware distinto está incompleta.
+
+## 5. Opcional, fora do caminho crítico
+
+- Reexecução por semeadura dos arquivos **antigos** (10,7 h em 2 T4): só compra poder afirmar
+  reprodutibilidade; as médias não se movem (IC do Δ global em [+0,0182, +0,0260]).
+- Gravar `budget_override`/`best_epoch` em `run_ablation_a_scaling.py` e `run_tier2_fixedparams.py` —
+  eles aplicam mas não anotam; a prova ficou nos logs (`results/logs_proveniencia/`).
+- Testar o `midband` no Nyström-LSSVM: **já feito e refutado** (−0,0293, p < 0,0001 a m/n=10%).
