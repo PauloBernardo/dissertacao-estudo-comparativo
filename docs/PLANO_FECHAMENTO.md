@@ -884,3 +884,51 @@ justo, nenhum modelo supera os Transformers com significância.
 Ressalva de leitura: o Tier 2 tem 180 blocos contra 300 do Tier 1, logo CD maior (2,43 contra 1,71) e
 teste menos sensível. Parte da perda de significância é poder. Mas a distância de rank do XGBoost ao
 melhor Transformer também caiu em termos absolutos (2,62 → 1,93), então não é só isso.
+
+---
+
+## Protocolo 200/16 como principal — sessão 2 e o achado da Ablação A (2026-10-06)
+
+Ablações completas, zero erro: Tier 1 principal 1800, Tier 2 principal 1080, Ablação A 360/360,
+Ablações B e C 1080/1080, Ablação D 1080/1080. A Tabela 19 falhou por `NameError` (a célula 4 deste
+notebook não definia `run_phase`, só `run_phase_2gpu`); corrigido, nada se perdeu, pendente de rodar.
+
+### Proveniência do override em Ablação A e D
+
+As duas fases **aplicam** o override mas **não gravam** os campos `budget_override`/`best_epoch`, porque
+usam código de montagem de registro próprio, sem o `_budget_attrs`. Lacuna fechada pelos logs
+(`results/logs_proveniencia/`):
+
+- `ablD_200_g{0,1}.log` contêm a linha `[orcamento] override ativo: {'epochs': 200, 'patience': 16}` —
+  prova documental. O resto está vazio porque `--log-level WARNING` suprime as mensagens de nível info.
+- `ablA_200_g{0,1}.log` trazem 237 paradas antecipadas das quatro variantes FT (só o `FTTransformer`
+  registra parada no log; SAINT e FT-CUR passam pelo `fit_model`, que não loga).
+
+### A Ablação A era a fase mais estrangulada do estudo
+
+Épocas de parada na Ablação A, das quatro variantes FT:
+
+| protocolo | mediana | máximo | acima da época 40 |
+|---|---|---|---|
+| 40/6 (log de 19/09) | 13 | 39 | 0% (teto) |
+| **200/16** | **85** | **194** | **76%** |
+
+76% contra 24% no Tier 1 e 16% no Tier 2. E o efeito no F1 é proporcional: Δ global de **+0,1498**
+(p = 7,7 × 10⁻³⁹, 249/360), com TWC_2k em +0,2494, TWS_2k em +0,1973 e TWM_2k em +0,0025 (saturado).
+
+### Consequência: o efeito data-hungry é TRÊS VEZES maior
+
+O que a Ablação A reporta é o ganho com N (400 → 2000) nos três sintéticos:
+
+| protocolo | N=400 | N=2000 | ganho |
+|---|---|---|---|
+| 40/6 (publicado) | 0,6798 | 0,7330 | **+0,0532** |
+| 200/16 (novo) | 0,7275 | 0,8827 | **+0,1553** |
+
+**O orçamento truncado mascarava dois terços do efeito de dados.** Isso corrige a leitura que eu havia
+proposto em 19/09, de que orçamento e dados seriam cofatores competindo no regime pequeno: não
+competiam, um escondia o outro. A afirmação de *data-hungry* da tese fica mais forte, e agora com
+mecanismo — sob orçamento truncado o modelo não chega a usar os dados que recebe.
+
+Por modelo, o ganho com N sob 200/16: sparsemax +0,1899, top-k +0,1730, entmax +0,1651,
+FT-CUR +0,1413, SAINT +0,1331, softmax +0,1293.
