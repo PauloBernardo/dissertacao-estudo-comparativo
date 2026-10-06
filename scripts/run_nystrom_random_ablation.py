@@ -85,7 +85,11 @@ GRID_18 = {  # AI4I
     },
     "fixed": {"m_ratio": 0.30},
 }
-DATASET_GRID = {ds: (GRID_18 if ds == "AI4I" else GRID_96) for ds in TIER1_DATASETS}
+# Ablações B e C: o colnorm publicado (ablation_b_noise / ablation_c_mk5) usou a grade de 96.
+ABLATION_BC_DATASETS = ["TWS_5f", "TWM_5f", "TWC_5f", "MKE", "MKM", "MKH",
+                        "TWS_2k", "TWM_2k", "TWC_2k"]  # + Ablação A (re-tuning)
+DATASET_GRID = {ds: (GRID_18 if ds == "AI4I" else GRID_96)
+                for ds in TIER1_DATASETS + ABLATION_BC_DATASETS}
 
 logger = logging.getLogger("nystrom_random")
 

@@ -1050,3 +1050,66 @@ Em ordem de dependência (o primeiro item não depende de nada e tem todo o dado
 - Gravar `budget_override`/`best_epoch` em `run_ablation_a_scaling.py` e `run_tier2_fixedparams.py` —
   eles aplicam mas não anotam; a prova ficou nos logs (`results/logs_proveniencia/`).
 - Testar o `midband` no Nyström-LSSVM: **já feito e refutado** (−0,0293, p < 0,0001 a m/n=10%).
+
+## Andamento da migração (2026-10-06, sessão seguinte ao handoff)
+
+- [x] **2a Dados** — `scripts/migrate_200_random.sh` (reprodutível; `merge_rerun_results.py` ganhou
+  `--remove` para as trocas de nome). Backups `*_pre_200_backup.json` = originais. Canônicos do Tier 1 e
+  Tier 2 conferidos registro a registro (variante, dataset, semente, F1) contra as `PREVIA_*`: idênticos.
+- [x] **2b Código** — em vez de duplicar chaves em ~30 mapas/listas/filtros, `scripts/variant_aliases.py`
+  traduz na LEITURA os quatro nomes novos para as chaves legadas (rótulo de exibição inalterado). Aplicado
+  em generate_analysis, generate_ablation_tables, generate_ablation_figs, generate_report_figs,
+  generate_metrics_tables, generate_tier2_n5000_tables, compare_tabzilla. NÃO aplicado em
+  combine_tier2_results (escreve JSON; preserva o seletor verdadeiro) nem em plot_decision_surfaces.
+- [x] **Apêndice C protegido** — os geradores do Apêndice C liam o braço `colnorm` de dentro dos
+  canônicos (que não o têm mais). Extraído para `results/{tier1,tier2,tier2_fixedparams_n5000}_nystrom_colnorm.json`
+  (Nyström-LSSVM, ADMM- e FISTA-Nyström com colnorm) e os dois scripts reapontados.
+- [x] **3 Regeneração** — `post_rerun_saint_entmax.sh --no-merge --skip-surfaces`: 0 erro, PDF 133 p.,
+  log limpo. Instantâneo de `tables/`+`Figuras/` anterior guardado fora do repositório.
+
+### Lacunas encontradas (não previstas no handoff)
+1. **Ablações A (LSSVMs, `ablation_a_scaling.json`), B e C ainda têm Nyström-LSSVM, ADMM-Nyström e
+   FISTA-Nyström com `colnorm`** — não houve reexecução `random` para elas. As tabelas das ablações
+   misturam seletores. Opções: reexecutar os 3 modelos em random (CPU) ou declarar.
+2. **Superfícies de decisão** (`plot_decision_surfaces.py`) retreinam por nome de variante e ainda usam
+   colnorm (e FT-CUR colnorm); precisam trocar para as variantes `*Random` antes de regenerar — e o
+   N=2000 depende da lacuna 1.
+3. **Afirmações do handoff que a tabela regenerada contradiz** (corrigir antes de escrever o ponto 3 da §4):
+   - "os seis Transformers passam todos os LSSVMs" no Tier 2 — falso: FT-TopK 8,33 e FT-Sparsemax 6,67
+     ficam atrás do LSSVM Standard 6,50.
+   - "XGBoost de Δ = 2,62 para 1,93 (< CD = 1,72)" — autocontraditório; o CD do Nemenyi é 9,417 e o
+     XGBoost segue 1º (1,500), significativamente melhor que 6 modelos. Refazer a conta antes de redigir.
+
+### Ablações A/B/C: reexecução (2026-10-06, tarde)
+
+**B e C — Nyström com `random`: PRONTO, falta o merge** (`migrate_200_random.sh`, trecho final).
+ADMM- e FISTA-Nyström via `run_tier1_gridcv.py` (`ablation_bc_nystrom_random.json`, mesmas grades
+75/45 e mesmo formato de rótulo do publicado; |Δ| ≤ 0,02, sem padrão). Nyström-SVM via
+`run_nystrom_random_ablation.py` (`ablation_bc_nystromsvm_random.json`, grade 96, ±1; F1 igual ou
+ligeiramente acima do colnorm). **Bug evitado:** a 1ª tentativa do Nyström-SVM pelo `run_tier1_gridcv.py`
+deu F1 = 0,333 em tudo (rótulos 0/1 num LSSVM, porque `NystromLSSVMRandom` não estava em
+`LSSVM_VARIANTS`; e grade de 18 em vez de 96). Corrigido no runner; registros descartados.
+
+**A — o protocolo publicado era MISTO**, e o texto (`Capitulo4.tex:128`, "em todos os casos [...]
+transferidos") não corresponde aos dados: Standard, PCP, Nyström-SVM, ADMM-Nesterov, ADMM-ElasticNet,
+DualFISTA, FISTA-Nesterov e XGBoost foram **re-tunados** em N=2000 com grades antigas e menores (4 a 25
+combinações, sem `protocol`); os 6 Transformers, ADMM-/FISTA-Nyström, FSA, IP, OppMaps e Pruning foram
+**transferidos**. **Decisão do autor: re-tuning simétrico** — GridSearchCV por semente em N=2000 para
+TODOS, com as grades que o Tier 1 publicado de fato usou (difere do `grids.py` em dois casos:
+ADMM-Nesterov/ElasticNet com λ ∈ {1; 0,1; 0,01} = 45, e Nyström-SVM com 96).
+
+- Driver: `scripts/run_ablation_a_retune.py` (fixa λ do Tier 1 e reaproveita `run_tier1_gridcv.main`).
+- CPU (local, em curso desde 06/10 ~13h): `scripts/queue_ablation_a_retune_cpu.sh` → 
+  `results/ablation_a_retune_nystromsvm.json` + `results/ablation_a_retune_cpu.json`; log
+  `results/logs_proveniencia/ablA_retune_cpu.log`. Retomável. Custo medido: ADMM-Nesterov 265 s/corrida;
+  total estimado 25–30 h.
+- GPU (Kaggle, 2 T4): `notebooks/ablation_a_retune_2gpu_kaggle.ipynb` → `results/ablation_a_retune_tf.json`
+  (6 Transformers, 200/16, 360 execuções). Exige commit+push do driver para o Kaggle clonar.
+- Descartados: a reexecução por transferência dos Nyström (`ablation_a_nystrom_random.json`) e a parcial
+  dos 8 (`ablation_a_transfer_rerun.json`) — ficam como registro, NÃO entram no merge. **Remover do
+  `migrate_200_random.sh` os dois merges de Ablação A por transferência** e trocar por substituição
+  inteira de `ablation_a_scaling.json` + `ablation_a_transformers.json` pelos arquivos de re-tuning.
+- Texto: a Ablação A deixa de medir transferência e passa a medir ganho com N sob re-tuning — a leitura
+  "data-hungry" fica legítima; a Ablação D continua sendo a de transferência. Tabela
+  `ablation_a_admm_budget` e o parágrafo do ADMM-Nyström (queda −0,254 por transferência) precisam ser
+  revistos: sob re-tuning, a queda deve sumir (como no Tier 2).

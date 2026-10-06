@@ -21,17 +21,17 @@ TEX_OUT = ROOT.parent / "dissertacao-latex" / "tables" / "nystrom_selection.tex"
 REGIMES = [
     {
         "label": r"Tier~1 ($N{\approx}400$, 10 \emph{datasets})",
-        "col": (ROOT / "results/tier1_gridcv.json", "NystromLSSVMColnorm", None),
+        "col": (ROOT / "results/tier1_nystrom_colnorm.json", "NystromLSSVMColnorm", None),
         "rnd": (ROOT / "results/tier1_nystrom_random.json", "NystromLSSVMRandom", None),
     },
     {
         "label": r"Tier~2 ($N{=}2000$, 6 \emph{datasets})",
-        "col": (ROOT / "results/tier2_gridcv.json", "NystromLSSVMColnorm", None),
+        "col": (ROOT / "results/tier2_nystrom_colnorm.json", "NystromLSSVMColnorm", None),
         "rnd": (ROOT / "results/tier2_nystrom_random.json", "NystromLSSVMRandom", None),
     },
     {
         "label": r"Ablação~D ($N{=}5000$, 6 \emph{datasets})",
-        "col": (ROOT / "results/tier2_fixedparams_n5000_lssvm.json", "NystromLSSVMColnorm", 5000),
+        "col": (ROOT / "results/tier2_fixedparams_n5000_nystrom_colnorm.json", "NystromLSSVMColnorm", 5000),
         "rnd": (ROOT / "results/tier2_fixedparams_n5000_nystrom_random.json", "NystromLSSVMRandom", 5000),
     },
 ]

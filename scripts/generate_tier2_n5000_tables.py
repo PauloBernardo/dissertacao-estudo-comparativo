@@ -14,6 +14,10 @@ from __future__ import annotations
 
 import collections
 import json
+import sys as _sys
+from pathlib import Path as _P
+_sys.path.insert(0, str(_P(__file__).resolve().parent))
+from variant_aliases import canon  # noqa: E402
 import statistics
 from pathlib import Path
 
@@ -41,7 +45,7 @@ def _load_ok(*paths, n_train_filter=None):
         p = RESULTS / p
         if not p.exists():
             continue
-        for r in json.loads(p.read_text()):
+        for r in canon(json.loads(p.read_text())):
             if r.get("status") != "ok":
                 continue
             if n_train_filter is not None and r.get("n_train_target", r.get("n_train")) != n_train_filter:
@@ -178,7 +182,7 @@ def main() -> None:
     # ── Tabela 4: validação por re-tuning (GridSearchCV real em N=5000) ─────────
     retune_path = RESULTS / "tier2_admm_regridcv_n5000.json"
     if retune_path.exists():
-        recs_rt = [r for r in json.loads(retune_path.read_text()) if r.get("status") == "ok"]
+        recs_rt = [r for r in canon(json.loads(retune_path.read_text())) if r.get("status") == "ok"]
         fixed_cfg = json.loads((ROOT / "config" / "tier2_fixed_params.json").read_text())
 
         by_rt = collections.defaultdict(list)

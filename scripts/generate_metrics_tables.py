@@ -12,6 +12,10 @@ Saídas:
 from __future__ import annotations
 
 import json
+import sys as _sys
+from pathlib import Path as _P
+_sys.path.insert(0, str(_P(__file__).resolve().parent))
+from variant_aliases import canon  # noqa: E402
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -52,7 +56,7 @@ TIERS = {
 def collect(files: list[str]) -> dict:
     d: dict = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
     for f in files:
-        for r in json.load(open(ROOT / f)):
+        for r in canon(json.load(open(ROOT / f))):
             k = KEY.get(r.get('variant')) or KEY.get(r.get('model'))
             if not k or r.get('status') != 'ok':
                 continue

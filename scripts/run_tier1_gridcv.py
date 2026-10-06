@@ -76,6 +76,8 @@ LSSVM_VARIANTS = {
     "PruningLSSVM", "OppositeMapsLSSVM", "OppositeMapsOriginalLSSVM",
     "ADMMNesterovLSSVM", "ADMMElasticNet",
     "FISTANesterov", "DualFISTA", "NystromLSSVMColnorm",
+    # Demais seletores do Nyström-LSSVM: mesmo modelo, rótulos ±1.
+    "NystromLSSVMRandom", "NystromLSSVMKmeans", "NystromLSSVMOpposite",
 }
 
 logger = logging.getLogger("tier1")

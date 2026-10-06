@@ -30,6 +30,8 @@ def main() -> None:
     ap.add_argument("--target", required=True, type=Path)
     ap.add_argument("--source", required=True, type=Path)
     ap.add_argument("--variants", nargs="+", required=True)
+    ap.add_argument("--remove", nargs="*", default=[],
+                    help="variantes do alvo a remover além de --variants (troca de nome)")
     ap.add_argument("--tag", default="rerun", help="sufixo do backup")
     ap.add_argument("--check", action="store_true", help="não escreve nada")
     args = ap.parse_args()
@@ -45,7 +47,11 @@ def main() -> None:
     if missing:
         raise SystemExit(f"source não contém registros ok para: {sorted(missing)}")
 
-    kept = [r for r in target if r.get("variant") not in variants]
+    drop = variants | set(args.remove)
+    absent = set(args.remove) - {r.get("variant") for r in target}
+    if absent:
+        raise SystemExit(f"alvo não contém as variantes a remover: {sorted(absent)}")
+    kept = [r for r in target if r.get("variant") not in drop]
     removed = len(target) - len(kept)
 
     print(f"alvo: {args.target}  ({len(target)} registros)")
@@ -53,7 +59,7 @@ def main() -> None:
     print(f"  adicionados (re-execução):     {len(new)}")
     for v, c in sorted(Counter(r["variant"] for r in new).items()):
         old = sum(1 for r in target if r.get("variant") == v)
-        flag = "" if old == c else f"   <<< ATENÇÃO: alvo tinha {old}"
+        flag = "" if old == c or args.remove else f"   <<< ATENÇÃO: alvo tinha {old}"
         print(f"    {v:<28} {c:>5}{flag}")
 
     if args.check:

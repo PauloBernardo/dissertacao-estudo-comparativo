@@ -27,6 +27,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys as _sys
+from pathlib import Path as _P
+_sys.path.insert(0, str(_P(__file__).resolve().parent))
+from variant_aliases import canon  # noqa: E402
 import sys
 from pathlib import Path
 
@@ -93,7 +97,7 @@ def load_json(*paths: Path) -> pd.DataFrame:
     """
     frames = []
     for path in paths:
-        df = pd.DataFrame(json.loads(path.read_text()))
+        df = pd.DataFrame(canon(json.loads(path.read_text())))
         df = df[df["status"] == "ok"].copy()
         df["model"] = df["variant"].fillna(df.get("model", pd.Series(dtype=str)))
         frames.append(df)

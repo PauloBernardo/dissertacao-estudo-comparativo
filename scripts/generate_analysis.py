@@ -15,6 +15,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys as _sys
+from pathlib import Path as _P
+_sys.path.insert(0, str(_P(__file__).resolve().parent))
+from variant_aliases import canon  # noqa: E402
 import sys
 from pathlib import Path
 
@@ -71,7 +75,7 @@ MODEL_LABELS: dict[str, str] = {
 
 
 def load_results(path: Path) -> pd.DataFrame:
-    raw = json.loads(path.read_text())
+    raw = canon(json.loads(path.read_text()))
     df = pd.DataFrame(raw)
     df = df[df["status"] == "ok"].copy()
     # Use variant to distinguish specific LSSVM models/configurations

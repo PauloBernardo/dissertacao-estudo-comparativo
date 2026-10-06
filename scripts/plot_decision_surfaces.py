@@ -65,20 +65,20 @@ GRAY = "#f0efec"
 INK = "#0b0b0b"
 CMAP = LinearSegmentedColormap.from_list("blue_gray_red", [BLUE, GRAY, RED], N=256)
 
-LSSVM_MODELS = ["StandardLSSVM", "NystromLSSVMColnorm", "ADMMNystromLSSVM", "DualFISTA"]
+LSSVM_MODELS = ["StandardLSSVM", "NystromLSSVMRandom", "ADMMNystromRandom", "DualFISTA"]
 LSSVM_LABEL = {
     "StandardLSSVM": "LSSVM-Std (denso)",
-    "NystromLSSVMColnorm": "Nyström-SVM",
-    "ADMMNystromLSSVM": "ADMM-Nyström",
+    "NystromLSSVMRandom": "Nyström-SVM",
+    "ADMMNystromRandom": "ADMM-Nyström",
     "DualFISTA": "DualFISTA",
 }
-LSSVM_SIGNED = {"StandardLSSVM", "NystromLSSVMColnorm", "ADMMNystromLSSVM", "DualFISTA"}
+LSSVM_SIGNED = {"StandardLSSVM", "NystromLSSVMRandom", "ADMMNystromRandom", "DualFISTA"}
 
-TRANSFORMER_MODELS = ["FTTransformer_softmax", "SAINTColnorm", "FTTransformerCURColnorm"]
+TRANSFORMER_MODELS = ["FTTransformer_softmax", "SAINTColnorm", "FTTransformerCURRandom"]
 TRANSFORMER_LABEL = {
     "FTTransformer_softmax": "FT-Softmax (inter-atributos)",
     "SAINTColnorm": "SAINT (inter-instâncias)",
-    "FTTransformerCURColnorm": "FT-CUR (Nyströmformer)",
+    "FTTransformerCURRandom": "FT-CUR (Nyströmformer)",
 }
 
 DATASET_SETS = {
@@ -138,7 +138,7 @@ def _quick_tune_admm_nystrom(dataset: str) -> dict:
     X_tr, _, y_tr_raw, _ = make_splits(X, y_raw, test_size=0.30, seed=SEED)
     y_tr = _convert_labels(y_tr_raw, "signed")
 
-    cfg = GRIDS["ADMMNystromLSSVM"]
+    cfg = GRIDS["ADMMNystromRandom"]
     estimator, _ = _build_model(cfg["model_name"], dict(cfg["fixed"]), "signed")
     estimator.set_params(random_state=SEED)
     pipeline = Pipeline([("scaler", StandardScaler()), ("clf", estimator)])
@@ -158,11 +158,15 @@ def _get_params(dataset: str, variant: str, set_key: str, records: list[dict]) -
     cfg = GRIDS[variant]
     modal = _modal_params(records, dataset, variant)
     if modal is None:
-        if variant == "ADMMNystromLSSVM":
+        if variant == "ADMMNystromRandom":
             modal = _quick_tune_admm_nystrom(dataset)
         else:
             raise RuntimeError(f"Sem hiperparâmetros para {variant} em {dataset} ({set_key})")
-    return {**cfg["fixed"], **modal}
+    params = {**cfg["fixed"], **modal}
+    # Protocolo principal dos Transformers desde 2026-10-06: teto 200, paciência 16.
+    if "epochs" in params:
+        params.update(epochs=200, patience=16)
+    return params
 
 
 def _fit_model(variant: str, dataset: str, set_key: str, records: list[dict],
@@ -194,9 +198,9 @@ def _support_points(model, variant: str, X_tr_scaled: np.ndarray) -> np.ndarray:
     """Retorna as COORDENADAS (espaço escalado) dos pontos com influência
     não-nula na predição --- vetor-suporte (primal/dual) ou landmark (Nyström).
     """
-    if variant == "NystromLSSVMColnorm":
+    if variant == "NystromLSSVMRandom":
         return X_tr_scaled[model.support_vectors_]  # índices dos landmarks
-    if variant == "ADMMNystromLSSVM":
+    if variant == "ADMMNystromRandom":
         nz = np.abs(model.theta_) > 1e-6
         return model.landmarks_[nz]  # já são coordenadas (cópia de X no fit)
     # BaseLSSVM subclasses (StandardLSSVM, DualFISTA): alpha_ não-nulo

@@ -78,7 +78,7 @@ LSSVM_VARIANTS = {
     "StandardLSSVM", "PCPLSSVm", "FSALSSVm", "IPLSSVm",
     "PruningLSSVM", "OppositeMapsLSSVM",
     "ADMMNesterovLSSVM", "ADMMElasticNet",
-    "FISTANesterov", "DualFISTA", "NystromLSSVMColnorm",
+    "FISTANesterov", "DualFISTA", "NystromLSSVMColnorm", "NystromLSSVMRandom",
 }
 
 TRANSFORMER_VARIANTS = {

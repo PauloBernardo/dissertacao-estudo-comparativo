@@ -50,19 +50,19 @@ def regimes_table():
     R = {
         "Tier~1 ($N{\\approx}400$)": {
             "random":  load("results/tier1_nystrom_random.json"),
-            "colnorm": load("results/tier1_gridcv.json", "NystromLSSVMColnorm"),
+            "colnorm": load("results/tier1_nystrom_colnorm.json", "NystromLSSVMColnorm"),
             "kmeans":  load("results/tier1_nystrom_kmeans.json"),
             "opposite": load("results/tier1_nystrom_opposite.json"),
         },
         "Tier~2 ($N{=}2000$)": {
             "random":  load("results/tier2_nystrom_random.json"),
-            "colnorm": load("results/tier2_gridcv.json", "NystromLSSVMColnorm"),
+            "colnorm": load("results/tier2_nystrom_colnorm.json", "NystromLSSVMColnorm"),
             "kmeans":  load("results/tier2_nystrom_kmeans.json"),
             "opposite": load("results/tier2_nystrom_opposite.json"),
         },
         "Ablação~D ($N{=}5000$)": {
             "random":  load("results/tier2_fixedparams_n5000_nystrom_random.json", n5000=True),
-            "colnorm": load("results/tier2_fixedparams_n5000_lssvm.json", "NystromLSSVMColnorm", n5000=True),
+            "colnorm": load("results/tier2_fixedparams_n5000_nystrom_colnorm.json", "NystromLSSVMColnorm", n5000=True),
             "kmeans":  load("results/tier2_fixedparams_n5000_nystrom_kmeans.json", n5000=True),
             "opposite": load("results/tier2_fixedparams_n5000_nystrom_opposite.json", n5000=True),
         },

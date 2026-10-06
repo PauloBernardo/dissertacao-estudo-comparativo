@@ -8,6 +8,10 @@ Substitui a geração antiga (OLD/scripts/generate_report_figs.py, que lia
 results antigos com os IP/FSA/OppMaps adaptados). Usa os nomes fiéis.
 """
 import json
+import sys as _sys
+from pathlib import Path as _P
+_sys.path.insert(0, str(_P(__file__).resolve().parent))
+from variant_aliases import canon  # noqa: E402
 from collections import defaultdict
 from pathlib import Path
 
@@ -51,7 +55,7 @@ def model_color(m):
 
 def collect(path, datasets):
     out = defaultdict(lambda: defaultdict(list))
-    for r in json.loads(Path(path).read_text()):
+    for r in canon(json.loads(Path(path).read_text())):
         if r.get("status") != "ok":
             continue
         m = r.get("variant") or r.get("model")

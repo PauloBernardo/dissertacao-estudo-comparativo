@@ -11,6 +11,10 @@ Outputs (results/report_figs/):
   fig3_scaling.pdf/png
 """
 import json
+import sys as _sys
+from pathlib import Path as _P
+_sys.path.insert(0, str(_P(__file__).resolve().parent))
+from variant_aliases import canon  # noqa: E402
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
@@ -92,7 +96,7 @@ def collect(records: list, datasets: list[str]) -> dict:
 
 
 def load(path: Path) -> list:
-    return json.loads(path.read_text())
+    return canon(json.loads(path.read_text()))
 
 
 def main() -> None:

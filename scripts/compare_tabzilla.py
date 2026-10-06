@@ -30,6 +30,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys as _sys
+from pathlib import Path as _P
+_sys.path.insert(0, str(_P(__file__).resolve().parent))
+from variant_aliases import canon  # noqa: E402
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -61,7 +65,7 @@ KEY = {"StandardLSSVM": "LSSVM-Std", "NystromLSSVMColnorm": "Nystrom-SVM",
 
 def carrega_nosso() -> dict:
     d: dict = defaultdict(lambda: defaultdict(list))
-    for r in json.loads((ROOT / "results" / "tier1_gridcv.json").read_text()):
+    for r in canon(json.loads((ROOT / "results" / "tier1_gridcv.json").read_text())):
         k = KEY.get(r.get("variant")) or KEY.get(r.get("model"))
         if k and r.get("status") == "ok" and r["dataset"] in DS \
                 and r.get("test_auc_roc") is not None:
