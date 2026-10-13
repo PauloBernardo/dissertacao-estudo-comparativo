@@ -155,9 +155,10 @@ class FISTANesterovLSSVM(BaseLSSVM):
             momentum = (t - 1.0) / t_new
 
             if self.adaptive_restart:
-                # O'Donoghue restart: restart when step opposes gradient direction
-                # condition: (x_new - x_prev)ᵀ (x_new - v) > 0
-                if float(np.dot(x_new - x_prev, x_new - v)) > 0:
+                # O'Donoghue & Candès (2015), eq. (12): (y_ext - x_new)ᵀ(x_new - x) > 0.
+                # Até 2026-10-06 usava (x_new - x_prev)ᵀ(x_new - v), que dispara em quase
+                # toda iteração e reduz o FISTA a um ISTA sem momento.
+                if float(np.dot(y_ext - x_new, x_new - x)) > 0:
                     t_new = 1.0
                     momentum = 0.0
 

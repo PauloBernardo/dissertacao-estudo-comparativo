@@ -133,8 +133,9 @@ class DualFISTALSSVM(BaseLSSVM):
             momentum = (t - 1.0) / t_new
 
             if self.adaptive_restart:
-                # restart when step opposes gradient: (α_new - α_prev)ᵀ(α_new - v) > 0
-                if float(np.dot(alpha_new - alpha_prev, alpha_new - v)) > 0:
+                # O'Donoghue & Candès (2015), eq. (12): (y_ext - α_new)ᵀ(α_new - α) > 0;
+                # ver fista_lssvm.py (corrigido em 2026-10-06).
+                if float(np.dot(y_ext - alpha_new, alpha_new - alpha)) > 0:
                     t_new    = 1.0
                     momentum = 0.0
 

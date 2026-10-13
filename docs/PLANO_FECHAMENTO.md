@@ -1113,3 +1113,28 @@ ADMM-Nesterov/ElasticNet com λ ∈ {1; 0,1; 0,01} = 45, e Nyström-SVM com 96).
   "data-hungry" fica legítima; a Ablação D continua sendo a de transferência. Tabela
   `ablation_a_admm_budget` e o parágrafo do ADMM-Nyström (queda −0,254 por transferência) precisam ser
   revistos: sob re-tuning, a queda deve sumir (como no Tier 2).
+
+## Bug do restart adaptativo nos quatro FISTA (2026-10-06)
+
+`fista_lssvm.py` (FISTA-Nesterov), `fista_nystrom.py` (FISTA-Nyström), `dual/fista_dual_lssvm.py`
+(DualFISTA) e `dual/fista_dual_nystrom.py` usavam como restart `(x_new − x_prev)ᵀ(x_new − v) > 0`, que
+NÃO é o de O'Donoghue & Candès (2015, eq. 12): `(y_ext − x_new)ᵀ(x_new − x) > 0`. O critério errado
+dispara em ~95% das iterações (4741/5000 num ajuste do TWS_2k) e reduz o FISTA a um ISTA sem momento —
+pior que não ter restart. Corrigido nos quatro. Diagnóstico em TWS_2k: gap ao ótimo em k=1000 passa de
+4,7e-2 para 1,9e-11. Os ADMM usam outro critério (resíduo combinado) e não são afetados.
+
+**Impacto medido (Tier 1, 10 datasets × 5 sementes, mesmos best_params/splits):**
+- F1: inalterado (ΔF1 médio ±0,0001; |Δ| ≤ 0,004, um caso de 0,013 no FISTA-Nyström/VCP).
+- Esparsidade: soluções truncadas eram MENOS esparsas — FISTA-Nyström 0,70→0,76 nos TW; FISTA-Nesterov
+  0,73→0,80 no AI4I; resto desprezível.
+- Custo: iterações caem 5–10× (FISTA-Nesterov mediana 547, DualFISTA 274); as afirmações de custo dos
+  FISTA na tese estão superestimadas.
+- FISTA-Nyström ainda não converge em 30/50 mesmo corrigido — segunda causa a investigar
+  (provável: tolerância absoluta ‖Δθ‖ < 1e-6 vs escala de θ).
+
+**Consequências pendentes:**
+- Todos os resultados publicados de FISTA-Nesterov, FISTA-Nyström e DualFISTA (Tier 1, Tier 2, Ablações
+  A–D, Tabela 18/custo) vieram do código antigo. F1 se sustenta; esparsidade e tempo não. Decidir se
+  reexecuta (agora barato) para consistência.
+- B/C recém-mescladas (FISTA-Nyström random) usaram o código antigo.
+- Ablação A (re-tuning): fila relançada com o código corrigido; 55 registros antigos descartados.

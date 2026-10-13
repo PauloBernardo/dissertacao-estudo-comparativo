@@ -78,6 +78,7 @@ LSSVM_VARIANTS = {
     "FISTANesterov", "DualFISTA", "NystromLSSVMColnorm",
     # Demais seletores do Nyström-LSSVM: mesmo modelo, rótulos ±1.
     "NystromLSSVMRandom", "NystromLSSVMKmeans", "NystromLSSVMOpposite",
+    "NystromLSSVMMidband",
 }
 
 logger = logging.getLogger("tier1")

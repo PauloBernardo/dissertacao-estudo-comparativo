@@ -193,7 +193,8 @@ class FISTANystromLSSVM(BaseEstimator, ClassifierMixin):
             momentum = (t - 1.0) / t_new
 
             if self.adaptive_restart:
-                if float(np.dot(theta_new - theta_prev, theta_new - v)) > 0:
+                # O'Donoghue & Candès (2015), eq. (12); ver fista_lssvm.py (corrigido em 2026-10-06).
+                if float(np.dot(y_ext - theta_new, theta_new - theta)) > 0:
                     t_new    = 1.0
                     momentum = 0.0
 

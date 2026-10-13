@@ -52,7 +52,7 @@ $M --target results/ablation_c_mk5.json --source results/ablation_c_nystrom_rand
 $PY - <<'PYX'
 import json, shutil
 for alvo, fontes in (('results/ablation_a_scaling.json', ['results/ablation_a_retune_cpu.json', 'results/ablation_a_retune_nystromsvm.json']),
-                     ('results/ablation_a_transformers.json', ['results/ablation_a_retune_tf.json'])):
+                     ('results/ablation_a_transformers.json', ['results/ablation_a_retune_tf_s0-9.json', 'results/ablation_a_retune_tf_s10-19.json'])):
     recs = [r for f in fontes for r in json.load(open(f)) if r.get('status') == 'ok']
     shutil.copy(alvo, alvo.replace('.json', '_pre_retune_backup.json'))
     json.dump(recs, open(alvo, 'w'), indent=2); print(alvo, len(recs))
