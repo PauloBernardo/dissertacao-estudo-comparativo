@@ -224,6 +224,7 @@ def _make_model(variant: str):
         return cls(
             n_heads=4, n_layers=2, m_landmarks=M_MINIBATCH, batch_size=BATCH,
             epochs=EPOCHS, patience=PATIENCE, early_stop_metric="val_loss",
+            selection_method="random",  # 2026-10-14: seletor do protocolo principal
         )
     elif variant == "FTCUR_minibatch_bug_reference":
         # O _logits ANTIGO (com o bug), mesma config de FTCUR_minibatch --
@@ -245,6 +246,7 @@ def _make_model(variant: str):
         return cls(
             n_heads=4, n_layers=2, m_landmarks=M_FIXED, batch_size=None,
             epochs=EPOCHS, patience=PATIENCE, early_stop_metric="val_loss",
+            selection_method="random",  # 2026-10-14: seletor do protocolo principal
         )
     elif variant == "FTCUR_mfixed_full_bug_reference":
         # O _logits ANTIGO, mesma config de FTCUR_mfixed_full -- só
