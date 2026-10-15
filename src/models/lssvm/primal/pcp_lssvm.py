@@ -110,7 +110,7 @@ class PCPLSSVm(BaseLSSVM):
         """
         n_test, r = K_cross.shape[0], self.L_.shape[1]
         phi = np.zeros((n_test, r))
-        L = self.L_          # (n_train, r) — rows reordered by pivot during fit
+        L = self.L_          # (r, r) — bloco dos pivôs, triangular inferior
         for j in range(r):
             phi[:, j] = (K_cross[:, j] - phi[:, :j] @ L[j, :j]) / L[j, j]
         return phi
@@ -132,14 +132,17 @@ class PCPLSSVm(BaseLSSVM):
 
         # Store pivot indices (analogous to Nyström landmark indices)
         self.pivot_indices_: NDArray = piv[:r]       # r training-set indices
-        self.piv_: NDArray = piv                     # full permutation (kept for reference)
         self.w_: NDArray = w                          # primal weights in ℝʳ
-        self.L_: NDArray = L                          # Cholesky factor (n×r, pivoted order)
+        # 2026-10-15: a predição só usa os r pivôs e o bloco r×r de L (substituição direta);
+        # X_train_, y_train_, a permutação completa e as N−r linhas restantes de L saem do modelo.
+        self.X_pivots_: NDArray = X[piv[:r]].copy()
+        self.L_: NDArray = np.ascontiguousarray(L[:r, :r])   # triangular inferior
         self.rank_: int = r
         self.n_samples_fit_ = n
 
         # alpha_ in pivot space for BaseLSSVM compatibility (not used in predict)
         self.alpha_: NDArray = (y_piv - L @ w) / self.tau
+        del self.X_train_, self.y_train_
 
         logger.info(
             "PCPLSSVm solved — rank=%d/%d  compression=%.1f%%  bias=%.4f",
@@ -148,10 +151,10 @@ class PCPLSSVm(BaseLSSVM):
 
     def decision_function(self, X: NDArray) -> NDArray:
         """f(x) = φ(x)·w + b  using only the r pivot points — O(n_test × r)."""
-        check_is_fitted(self, ["w_", "pivot_indices_", "L_", "bias_", "X_train_"])
+        check_is_fitted(self, ["w_", "X_pivots_", "L_", "bias_"])
         X = check_array(X)
         # K(X_test, X_pivots): r kernel evaluations per test point
-        K_cross = self.kernel_matrix(X, self.X_train_[self.pivot_indices_])
+        K_cross = self.kernel_matrix(X, self.X_pivots_)
         phi = self._cholesky_features(K_cross)
         return phi @ self.w_ + self.bias_
 

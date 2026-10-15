@@ -57,12 +57,15 @@ GRIDS: dict[str, dict] = {
         # do paper-fonte). Como o ℓ1 efetivo dobrou, o antigo piso (λ=0.01, escolhido
         # em 68% dos runs sob a convenção λ/2ρ) deixaria o modelo preso na fronteira.
         "model_name": "ADMMNystromLSSVM",
+        # 2026-10-14: formulação com o regularizador do LSSVM (½θᵀWθ, kernel_reg=True).
+        # σ e τ = 1/γ seguem a grade do Nyström-SVM (os três Nyström diferem só pelo ℓ1);
+        # o ℓ1 entra como fração do λ_max (lambda_rel), invariante à escala de σ, τ e N.
         "grid": {
-            "sigma":   [0.1, 0.5, 2.0],
-            "tau":     [0.005, 0.05, 0.5, 5.0, 50.0],
-            "lambda_": [1.0, 0.5, 0.1, 0.01, 0.001],
+            "sigma":      [0.5, 1.5, 5.0],
+            "tau":        [10.0, 1.0, 0.1, 1/30, 0.02, 0.01],
+            "lambda_rel": [0.4, 0.2, 0.1, 0.03, 0.01, 0.003, 0.001],
         },
-        "fixed": {"m_ratio": 0.30, "rho": None, "max_iter": 500,
+        "fixed": {"m_ratio": 0.30, "rho": "adaptive", "max_iter": 500, "kernel_reg": True,
                   "landmark_method": "random", "n_blocks": 1, "n_jobs": 1},
         "needs_gpu": False,
     },
@@ -101,12 +104,14 @@ GRIDS: dict[str, dict] = {
         # FISTA primal no espaço Nyström — mesmo espaço que ADMMNystromLSSVM
         # mas sem parâmetro ρ. Mesma grade de sigma/tau/lambda_.
         "model_name": "FISTANystromLSSVM",
+        # 2026-10-14: mesma reformulação e grade do ADMMNystromRandom.
         "grid": {
-            "sigma":   [0.1, 0.5, 2.0],
-            "tau":     [0.005, 0.05, 0.5, 5.0, 50.0],
-            "lambda_": [1.0, 0.1, 0.01],
+            "sigma":      [0.5, 1.5, 5.0],
+            "tau":        [10.0, 1.0, 0.1, 1/30, 0.02, 0.01],
+            "lambda_rel": [0.4, 0.2, 0.1, 0.03, 0.01, 0.003, 0.001],
         },
-        "fixed": {"m_ratio": 0.30, "landmark_method": "random", "max_iter": 5000},
+        "fixed": {"m_ratio": 0.30, "landmark_method": "random", "max_iter": 5000,
+                  "kernel_reg": True},
         "needs_gpu": False,
     },
 

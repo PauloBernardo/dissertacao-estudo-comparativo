@@ -1,0 +1,9 @@
+{"file": "adult_xgb.ubj", "file_kb": 111.6, "load_ms": 10.76, "runtime_mb": 16.8, "model_rss_kb": 12504.0, "lat_us_median": 103.4, "lat_us_p99": 227.7, "f1_short_train": 0.8102}
+{"file": "bank_xgb.ubj", "file_kb": 342.1, "load_ms": 7.74, "runtime_mb": 17.8, "model_rss_kb": 11708.0, "lat_us_median": 113.9, "lat_us_p99": 224.9, "f1_short_train": 0.7146}
+{"file": "credit_xgb.ubj", "file_kb": 113.0, "load_ms": 7.21, "runtime_mb": 17.7, "model_rss_kb": 9612.0, "lat_us_median": 101.1, "lat_us_p99": 205.8, "f1_short_train": 0.699}
+{"file": "adult_ftsoftmax.pt", "file_kb": 455.0, "load_ms": 18.84, "runtime_mb": 301.8, "model_rss_kb": 6892.0, "lat_us_median": 309.8, "lat_us_p99": 582.6, "f1_short_train": 0.7792}
+{"file": "bank_ftsoftmax.pt", "file_kb": 461.7, "load_ms": 18.81, "runtime_mb": 302.4, "model_rss_kb": 6912.0, "lat_us_median": 310.6, "lat_us_p99": 616.3, "f1_short_train": 0.6603}
+{"file": "credit_ftsoftmax.pt", "file_kb": 905.7, "load_ms": 32.59, "runtime_mb": 276.6, "model_rss_kb": 8092.0, "lat_us_median": 590.7, "lat_us_p99": 1125.5, "f1_short_train": 0.6945}
+{"file": "adult_ftcur.pt", "file_kb": 1118.9, "load_ms": 18.94, "runtime_mb": 303.0, "model_rss_kb": 7524.0, "lat_us_median": 221.9, "lat_us_p99": 514.3, "f1_short_train": 0.7363}
+{"file": "bank_ftcur.pt", "file_kb": 688.6, "load_ms": 20.7, "runtime_mb": 303.4, "model_rss_kb": 7256.0, "lat_us_median": 264.9, "lat_us_p99": 484.1, "f1_short_train": 0.5789}
+{"file": "credit_ftcur.pt", "file_kb": 1190.7, "load_ms": 19.15, "runtime_mb": 274.8, "model_rss_kb": 7752.0, "lat_us_median": 347.1, "lat_us_p99": 719.5, "f1_short_train": 0.6765}

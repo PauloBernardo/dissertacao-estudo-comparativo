@@ -1,0 +1,13 @@
+[
+  {
+    "variant": "IPLSSVmOriginal",
+    "n": 10000,
+    "skipped": false,
+    "fit_s_median": 259.803,
+    "fit_ram_mb_median": 3051.8,
+    "pred_s_median": 0.0896,
+    "pred_ram_mb_median": 60.9,
+    "sparsity_ratio_median": 0.3,
+    "n_support_median": 7000.0
+  }
+]

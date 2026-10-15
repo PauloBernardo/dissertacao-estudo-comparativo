@@ -110,7 +110,7 @@ class NystromLSSVMColnorm(BaseEstimator, ClassifierMixin):
 
     @property
     def n_samples_fit_(self) -> int:
-        return int(self._model.X_train_.shape[0])
+        return int(self._model.n_samples_fit_)
 
     @property
     def sparsity_ratio_(self) -> float:

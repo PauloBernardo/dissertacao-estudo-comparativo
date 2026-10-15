@@ -1,0 +1,83 @@
+[
+  {
+    "base": "adult",
+    "model": "xgb",
+    "fit_s": 0.1,
+    "file_kb": 111.6,
+    "export_pred_equal": true,
+    "n_trees": 100,
+    "max_depth": 3
+  },
+  {
+    "base": "adult",
+    "model": "ftsoftmax",
+    "fit_s": 25.5,
+    "file_kb": 455.0,
+    "export_pred_equal": true,
+    "n_params": 101633,
+    "n_buffers": 28
+  },
+  {
+    "base": "adult",
+    "model": "ftcur",
+    "fit_s": 17.6,
+    "file_kb": 1118.9,
+    "export_pred_equal": true,
+    "n_params": 18497,
+    "n_buffers": 256028
+  },
+  {
+    "base": "credit",
+    "model": "xgb",
+    "fit_s": 0.2,
+    "file_kb": 113.0,
+    "export_pred_equal": true,
+    "n_trees": 100,
+    "max_depth": 3
+  },
+  {
+    "base": "credit",
+    "model": "ftsoftmax",
+    "fit_s": 77.1,
+    "file_kb": 905.7,
+    "export_pred_equal": true,
+    "n_params": 202369,
+    "n_buffers": 46
+  },
+  {
+    "base": "credit",
+    "model": "ftcur",
+    "fit_s": 49.4,
+    "file_kb": 1190.7,
+    "export_pred_equal": true,
+    "n_params": 31777,
+    "n_buffers": 256046
+  },
+  {
+    "base": "bank",
+    "model": "xgb",
+    "fit_s": 0.2,
+    "file_kb": 342.1,
+    "export_pred_equal": true,
+    "n_trees": 100,
+    "max_depth": 6
+  },
+  {
+    "base": "bank",
+    "model": "ftsoftmax",
+    "fit_s": 28.0,
+    "file_kb": 461.7,
+    "export_pred_equal": true,
+    "n_params": 101889,
+    "n_buffers": 32
+  },
+  {
+    "base": "bank",
+    "model": "ftcur",
+    "fit_s": 20.7,
+    "file_kb": 688.6,
+    "export_pred_equal": true,
+    "n_params": 31329,
+    "n_buffers": 128032
+  }
+]

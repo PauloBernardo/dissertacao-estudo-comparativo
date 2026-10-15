@@ -9,7 +9,12 @@ Primal Nyström LSSVM (bias profiled out via centering):
     Ĉ = C - 1·mean(C)ᵀ,   ŷ = y - mean(y)
 
     min_{θ ∈ ℝᵐ}  f(θ) + λ‖θ‖₁
-    f(θ) = ½‖Ĉθ - ŷ‖² / τ
+    f(θ) = ½‖Ĉθ - ŷ‖² / τ  +  ½ θᵀWθ,     W = K(Z, Z)   (kernel_reg=True, the default)
+
+The ½θᵀWθ term is the LSSVM regulariser, the one the Nyström-SVM keeps: with λ = 0 this is
+the reduced LSSVM, and the L1 is added on top of it.  Until 2026-10-14 it was absent
+(kernel_reg=False reproduces that version: a LASSO on the kernel features, where only λτ
+mattered).  With it, M = ĈᵀĈ/τ + W below.
 
 Gradient and Lipschitz (all m×m — no N×N matrix):
     ∇f(θ) = M·θ − r      M = ĈᵀĈ/τ ∈ ℝ^{m×m},  r = Ĉᵀŷ/τ ∈ ℝᵐ
@@ -85,6 +90,8 @@ class FISTANystromLSSVM(BaseEstimator, ClassifierMixin):
         lambda_: float = 0.01,
         m_ratio: float = 0.30,
         landmark_method: str = "colnorm",
+        kernel_reg: bool = True,
+        lambda_rel: float | None = None,
         tol: float = 1e-6,
         max_iter: int = 5000,
         adaptive_restart: bool = True,
@@ -97,6 +104,9 @@ class FISTANystromLSSVM(BaseEstimator, ClassifierMixin):
         self.lambda_ = lambda_
         self.m_ratio = m_ratio
         self.landmark_method = landmark_method
+        self.kernel_reg = kernel_reg
+        # Se dado, λ = lambda_rel · λ_max, com λ_max = ‖Ĉᵀŷ/τ‖∞ o menor λ que zera θ.
+        self.lambda_rel = lambda_rel
         self.tol = tol
         self.max_iter = max_iter
         self.adaptive_restart = adaptive_restart
@@ -150,6 +160,9 @@ class FISTANystromLSSVM(BaseEstimator, ClassifierMixin):
 
         # ── Step 3: precompute M = ĈᵀĈ/τ and r = Ĉᵀŷ/τ ─────────────────────
         M = (C_hat.T @ C_hat) / self.tau    # m×m — one-time O(N·m²)
+        if self.kernel_reg:
+            W = self._rbf(self.landmarks_, self.landmarks_)
+            M = M + W                       # regularizador do LSSVM (norma no RKHS)
         r = (C_hat.T @ y_hat) / self.tau    # m
 
         # ── Step 4: Lipschitz constant L = max_eig(M) ────────────────────────
@@ -157,7 +170,11 @@ class FISTANystromLSSVM(BaseEstimator, ClassifierMixin):
         if L <= 0:
             L = 1.0
         step     = 1.0 / L
-        threshold = self.lambda_ * step     # λ/L for soft-threshold
+        lam = self.lambda_
+        if self.lambda_rel is not None:
+            lam = self.lambda_rel * float(np.abs(r).max())
+        self.lambda_used_ = lam
+        threshold = lam * step              # λ/L for soft-threshold
 
         # ── Step 5: FISTA loop ────────────────────────────────────────────────
         theta      = np.zeros(m)
@@ -180,7 +197,8 @@ class FISTANystromLSSVM(BaseEstimator, ClassifierMixin):
                 # Objetivo CENTRADO (o que o FISTA de fato minimiza):
                 #   f(θ) = 1/(2τ)·‖Ĉθ − ŷ‖² + λ‖θ‖₁
                 obj = (0.5 / self.tau * float(np.sum((C_hat @ theta_new - y_hat) ** 2))
-                       + self.lambda_ * float(np.abs(theta_new).sum()))
+                       + (0.5 * float(theta_new @ W @ theta_new) if self.kernel_reg else 0.0)
+                       + lam * float(np.abs(theta_new).sum()))
                 self.history_.append({"iter": k + 1, "objective": obj,
                                       "step_norm": step_norm})
 
@@ -218,7 +236,7 @@ class FISTANystromLSSVM(BaseEstimator, ClassifierMixin):
             "FISTANystromLSSVM — N=%d  m=%d  n_nz=%d (sparsity %.1f%%)  "
             "%d iters  λ=%.4f  L=%.4f  bias=%.4f  converged=%s",
             n, m, int(nz.sum()), 100.0 * (1.0 - nz.sum() / m),
-            self.n_iter_, self.lambda_, L, self.bias_, converged,
+            self.n_iter_, lam, L, self.bias_, converged,
         )
         return self
 

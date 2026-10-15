@@ -61,3 +61,9 @@ Thumbs.db
 .pytest_cache/
 .coverage
 htmlcov/
+
+# 2026-10-15: modelos exportados do estudo de embarque (1,7 GB); os resumos .json/.jsonl vão para o git
+scratch/lssvm_table18_package/saved_models/*.pkl
+scratch/lssvm_table18_package/saved_models/*.npz
+scratch/lssvm_table18_package/saved_models/*.pt
+scratch/lssvm_table18_package/saved_models/*.ubj

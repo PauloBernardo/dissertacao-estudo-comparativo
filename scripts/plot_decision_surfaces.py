@@ -163,9 +163,12 @@ def _get_params(dataset: str, variant: str, set_key: str, records: list[dict]) -
         else:
             raise RuntimeError(f"Sem hiperparâmetros para {variant} em {dataset} ({set_key})")
     params = {**cfg["fixed"], **modal}
-    # Protocolo principal dos Transformers desde 2026-10-06: teto 200, paciência 16.
-    if "epochs" in params:
-        params.update(epochs=200, patience=16)
+    # Protocolo dos Transformers desde 2026-10-14 (refit_tf_nopatience.py): ajuste final com 200
+    # épocas e paciência desligada (= teto). As variantes FT usam a chave max_epochs; SAINT/FT-CUR,
+    # epochs -- antes daquela data só a segunda era sobrescrita e o FT ficava em 40/6.
+    for k in ("epochs", "max_epochs"):
+        if k in params:
+            params.update({k: 200, "patience": 200})
     return params
 
 

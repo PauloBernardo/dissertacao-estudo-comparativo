@@ -283,7 +283,7 @@ class NystromLSSVM:
         self.nystrom_ = None
         self.alpha_ = None
         self.b_ = None
-        self.X_train_ = None
+        self.n_samples_fit_ = None
 
     def fit(self, X: np.ndarray, y: np.ndarray) -> 'NystromLSSVM':
         """
@@ -301,7 +301,7 @@ class NystromLSSVM:
         Alpha:    α = Ω⁻¹ y − b · Ω⁻¹ 1
         """
         n_samples = X.shape[0]
-        self.X_train_ = X
+        self.n_samples_fit_ = n_samples
 
         # Ajustar aproximação de Nyström — produz C (n×m) e W_inv (m×m)
         self.nystrom_ = NystromApproximation(
@@ -335,6 +335,8 @@ class NystromLSSVM:
 
         # Cache m-vetor para predição O(n_test × m): W⁻¹ Cᵀ α
         self._w_alpha_ = W_inv @ (C.T @ self.alpha_)
+        # 2026-10-15: C (N×m), W e W⁻¹ (m×m) só servem ao treino; a predição usa landmarks_, W⁻¹Cᵀα e b.
+        self.nystrom_.C_ = self.nystrom_.W_ = self.nystrom_.W_inv_ = None
 
         return self
 

@@ -1,0 +1,308 @@
+[
+ {
+  "dataset": "ADULT",
+  "seed": 0,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 2,
+   "n_layers": 1
+  },
+  "m": 1000,
+  "f1_published": 0.7609252233325177,
+  "f1_full": 0.7574404496954128,
+  "f1_stream": 0.7579365496034947,
+  "agree": 0.9995333644423705,
+  "stream_1by1_eq": true,
+  "full_1by1_agree": 1.0,
+  "summary_kb": 250.0
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 1,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 2,
+   "n_layers": 1
+  },
+  "m": 1000,
+  "f1_published": 0.7593663431427653,
+  "f1_full": 0.7596358879484607,
+  "f1_stream": 0.7596358879484607,
+  "agree": 1.0,
+  "stream_1by1_eq": true,
+  "full_1by1_agree": 1.0,
+  "summary_kb": 250.0
+ },
+ {
+  "dataset": "ADULT",
+  "seed": 2,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 2,
+   "n_layers": 1
+  },
+  "m": 1000,
+  "f1_published": 0.7449664228174832,
+  "f1_full": 0.7462444189931849,
+  "f1_stream": 0.7462444189931849,
+  "agree": 1.0,
+  "stream_1by1_eq": true,
+  "full_1by1_agree": 1.0,
+  "summary_kb": 250.0
+ },
+ {
+  "dataset": "BANK",
+  "seed": 0,
+  "params": {
+   "m_ratio": 0.1,
+   "n_heads": 2,
+   "n_layers": 2
+  },
+  "m": 500,
+  "f1_published": 0.7042496718307192,
+  "f1_full": 0.7144212776586691,
+  "f1_stream": 0.7144212776586691,
+  "agree": 1.0,
+  "stream_1by1_eq": true,
+  "full_1by1_agree": 1.0,
+  "summary_kb": 125.0
+ },
+ {
+  "dataset": "BANK",
+  "seed": 1,
+  "params": {
+   "m_ratio": 0.1,
+   "n_heads": 2,
+   "n_layers": 2
+  },
+  "m": 500,
+  "f1_published": 0.7262038608871864,
+  "f1_full": 0.7245018407058961,
+  "f1_stream": 0.7245018407058961,
+  "agree": 1.0,
+  "stream_1by1_eq": true,
+  "full_1by1_agree": 1.0,
+  "summary_kb": 125.0
+ },
+ {
+  "dataset": "BANK",
+  "seed": 2,
+  "params": {
+   "m_ratio": 0.1,
+   "n_heads": 2,
+   "n_layers": 2
+  },
+  "m": 500,
+  "f1_published": 0.699318174923399,
+  "f1_full": 0.699318174923399,
+  "f1_stream": 0.699318174923399,
+  "agree": 1.0,
+  "stream_1by1_eq": true,
+  "full_1by1_agree": 1.0,
+  "summary_kb": 125.0
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 0,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 2
+  },
+  "m": 1000,
+  "f1_published": 0.694438591167827,
+  "f1_full": 0.694438591167827,
+  "f1_stream": 0.694438591167827,
+  "agree": 1.0,
+  "stream_1by1_eq": true,
+  "full_1by1_agree": 1.0,
+  "summary_kb": 250.0
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 1,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 2
+  },
+  "m": 1000,
+  "f1_published": 0.6648311940459497,
+  "f1_full": 0.6636393471325114,
+  "f1_stream": 0.6636393471325114,
+  "agree": 1.0,
+  "stream_1by1_eq": true,
+  "full_1by1_agree": 1.0,
+  "summary_kb": 250.0
+ },
+ {
+  "dataset": "CREDIT",
+  "seed": 2,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 2
+  },
+  "m": 1000,
+  "f1_published": 0.6627983423692902,
+  "f1_full": 0.6627983423692902,
+  "f1_stream": 0.6627983423692902,
+  "agree": 1.0,
+  "stream_1by1_eq": true,
+  "full_1by1_agree": 1.0,
+  "summary_kb": 250.0
+ },
+ {
+  "dataset": "HIGGS50K",
+  "seed": 0,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 2,
+   "n_layers": 1
+  },
+  "m": 1000,
+  "f1_published": 0.6549448621816354,
+  "f1_full": 0.6497206046446753,
+  "f1_stream": 0.6497206046446753,
+  "agree": 1.0,
+  "stream_1by1_eq": true,
+  "full_1by1_agree": 1.0,
+  "summary_kb": 250.0
+ },
+ {
+  "dataset": "HIGGS50K",
+  "seed": 1,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 2,
+   "n_layers": 1
+  },
+  "m": 1000,
+  "f1_published": 0.6559895286665103,
+  "f1_full": 0.654657135391976,
+  "f1_stream": 0.6551890587288818,
+  "agree": 0.9995333644423705,
+  "stream_1by1_eq": true,
+  "full_1by1_agree": 1.0,
+  "summary_kb": 250.0
+ },
+ {
+  "dataset": "HIGGS50K",
+  "seed": 2,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 2,
+   "n_layers": 1
+  },
+  "m": 1000,
+  "f1_published": 0.654537358640509,
+  "f1_full": 0.6560848012525082,
+  "f1_stream": 0.6560821052581152,
+  "agree": 0.999066728884741,
+  "stream_1by1_eq": true,
+  "full_1by1_agree": 1.0,
+  "summary_kb": 250.0
+ },
+ {
+  "dataset": "SHOPPERS",
+  "seed": 0,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 1
+  },
+  "m": 1000,
+  "f1_published": 0.767965359368654,
+  "f1_full": 0.7738888828768383,
+  "f1_stream": 0.7738888828768383,
+  "agree": 1.0,
+  "stream_1by1_eq": true,
+  "full_1by1_agree": 1.0,
+  "summary_kb": 250.0
+ },
+ {
+  "dataset": "SHOPPERS",
+  "seed": 1,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 1
+  },
+  "m": 1000,
+  "f1_published": 0.7991404171041783,
+  "f1_full": 0.7952590725071575,
+  "f1_stream": 0.7965138361367337,
+  "agree": 0.9995333644423705,
+  "stream_1by1_eq": true,
+  "full_1by1_agree": 1.0,
+  "summary_kb": 250.0
+ },
+ {
+  "dataset": "SHOPPERS",
+  "seed": 2,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 1
+  },
+  "m": 1000,
+  "f1_published": 0.7782010072959715,
+  "f1_full": 0.7802612588559865,
+  "f1_stream": 0.7802612588559865,
+  "agree": 1.0,
+  "stream_1by1_eq": true,
+  "full_1by1_agree": 1.0,
+  "summary_kb": 250.0
+ },
+ {
+  "dataset": "TELCO",
+  "seed": 0,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 2
+  },
+  "m": 984,
+  "f1_published": 0.7262721686376882,
+  "f1_full": 0.7291086178961952,
+  "f1_stream": 0.7291086178961952,
+  "agree": 1.0,
+  "stream_1by1_eq": true,
+  "full_1by1_agree": 1.0,
+  "summary_kb": 246.0
+ },
+ {
+  "dataset": "TELCO",
+  "seed": 1,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 2
+  },
+  "m": 984,
+  "f1_published": 0.7354310962502986,
+  "f1_full": 0.7354310962502986,
+  "f1_stream": 0.7354310962502986,
+  "agree": 1.0,
+  "stream_1by1_eq": true,
+  "full_1by1_agree": 1.0,
+  "summary_kb": 246.0
+ },
+ {
+  "dataset": "TELCO",
+  "seed": 2,
+  "params": {
+   "m_ratio": 0.2,
+   "n_heads": 4,
+   "n_layers": 2
+  },
+  "m": 984,
+  "f1_published": 0.7263704699739624,
+  "f1_full": 0.7263704699739624,
+  "f1_stream": 0.7263704699739624,
+  "agree": 1.0,
+  "stream_1by1_eq": true,
+  "full_1by1_agree": 1.0,
+  "summary_kb": 246.0
+ }
+]

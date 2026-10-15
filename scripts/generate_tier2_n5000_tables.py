@@ -217,7 +217,7 @@ def main() -> None:
             cnt = collections.Counter(
                 tuple(sorted(p.items())) for p in params_rt[ds] if p)
             mode, n_mode = cnt.most_common(1)[0]
-            print(f"  {ds}: fixo={fixed_cfg['ADMMNystromLSSVM'][ds]}  "
+            print(f"  {ds}: fixo={fixed_cfg.get('ADMMNystromLSSVM', {}).get(ds)}  "
                   f"retunado(moda)={dict(mode)} ({n_mode}/{len(params_rt[ds])})")
     else:
         print("AVISO: tier2_admm_regridcv_n5000.json não encontrado — pulei a Tabela 4.")

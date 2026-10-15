@@ -1,0 +1,3 @@
+{"base": "adult", "n_ctx_saved": 1023, "context_kb": 55.9, "weights_kb": 24041.6, "lat_ms_median": 205.3, "agree_with_published_path": 0.995}
+{"base": "credit", "n_ctx_saved": 1023, "context_kb": 91.9, "weights_kb": 59041.7, "lat_ms_median": 407.8, "agree_with_published_path": 1.0}
+{"base": "bank", "n_ctx_saved": 1023, "context_kb": 63.9, "weights_kb": 30475.5, "lat_ms_median": 227.3, "agree_with_published_path": 1.0}

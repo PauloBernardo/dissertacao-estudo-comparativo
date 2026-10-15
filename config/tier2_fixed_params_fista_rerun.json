@@ -1,0 +1,66 @@
+{
+  "DualFISTA": {
+    "ADULT": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 1.0
+    },
+    "BANK": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 10.0
+    },
+    "CREDIT": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 1.0
+    },
+    "HIGGS50K": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 1.0
+    },
+    "SHOPPERS": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 10.0
+    },
+    "TELCO": {
+      "lambda_": 0.01,
+      "sigma": 2.0,
+      "tau": 1.0
+    }
+  },
+  "FISTANystromRandom": {
+    "ADULT": {
+      "lambda_": 1.0,
+      "sigma": 2.0,
+      "tau": 0.05
+    },
+    "BANK": {
+      "lambda_": 1.0,
+      "sigma": 2.0,
+      "tau": 0.005
+    },
+    "CREDIT": {
+      "lambda_": 1.0,
+      "sigma": 2.0,
+      "tau": 0.5
+    },
+    "HIGGS50K": {
+      "lambda_": 1.0,
+      "sigma": 2.0,
+      "tau": 0.5
+    },
+    "SHOPPERS": {
+      "lambda_": 0.1,
+      "sigma": 2.0,
+      "tau": 0.005
+    },
+    "TELCO": {
+      "lambda_": 1.0,
+      "sigma": 2.0,
+      "tau": 0.5
+    }
+  }
+}

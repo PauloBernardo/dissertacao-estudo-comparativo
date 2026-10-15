@@ -10,8 +10,16 @@ Mathematical formulation
 Landmark model:
     f(x) = K(x, Z)ᵀ θ + b,   Z ∈ ℝ^{m×d} landmarks,  θ ∈ ℝ^m
 
-Sparse objective (primal LSSVM with L1 on landmark weights):
-    min_{θ,b}  (1/2τ) ‖Cθ + b·1 - y‖₂²  +  (λ/2)‖θ‖₁
+Sparse objective (reduced LSSVM + L1 on landmark weights; kernel_reg=True, the default):
+    min_{θ,b}  (1/2τ) ‖Cθ + b·1 - y‖₂²  +  ½ θᵀWθ  +  (λ/2)‖θ‖₁,   W = K(Z, Z)
+
+The ½θᵀWθ term is the LSSVM regulariser (RKHS norm of f restricted to the landmarks), the
+same one the Nyström-SVM keeps; with λ = 0 the problem IS the reduced LSSVM, and the L1 term
+is added on top of it -- as in Marinho's ADMM-Nesterov, where the LSSVM regularisation stays
+inside b = (τI + K̃)⁻¹Lᵀy.  The bias is profiled out exactly by centering C and y
+(b = ȳ − c̄ᵀθ).  Until 2026-10-14 the W term was absent (kernel_reg=False reproduces that
+version): the L1 REPLACED the LSSVM regulariser, the model reduced to a LASSO on the kernel
+features, only the product λτ mattered, and the intercept was estimated post-hoc.
 
 where C = K(X_train, Z) ∈ ℝ^{N×m}.  As in the base ADMMNesterovLSSVM, the
 pure primal L1 objective carries NO bias; an intercept is estimated post-hoc
@@ -129,6 +137,8 @@ class ADMMNystromLSSVM(BaseEstimator, ClassifierMixin):
         restart_eta: float = 0.999,
         estimate_bias: bool = True,
         landmark_method: str = "colnorm",
+        kernel_reg: bool = True,
+        lambda_rel: float | None = None,
         n_blocks: int = 1,
         n_jobs: int = 1,
         random_state: int | None = None,
@@ -150,6 +160,10 @@ class ADMMNystromLSSVM(BaseEstimator, ClassifierMixin):
         # a cada iteração (para curvas de convergência). Desligado por padrão.
         self.track_history = track_history
         self.landmark_method = landmark_method
+        self.kernel_reg = kernel_reg
+        # Se dado, λ = lambda_rel · λ_max, com λ_max = 2‖Ĉᵀŷ/τ‖∞ o menor λ que zera θ
+        # (convenção λ/2 do limiar). Torna a grade invariante à escala de σ, τ e N.
+        self.lambda_rel = lambda_rel
         self.n_blocks = n_blocks
         self.n_jobs = n_jobs
         self.random_state = random_state
@@ -205,9 +219,7 @@ class ADMMNystromLSSVM(BaseEstimator, ClassifierMixin):
             raise ValueError("Labels must be in {-1,+1} or {0,1}.")
 
         n = len(y)
-        self.X_train_ = X
-        self.y_train_ = y
-        self.n_samples_fit_ = n
+        self.n_samples_fit_ = n   # 2026-10-15: sem X_train_/y_train_; a predição usa só _landmarks_nz_
         self.n_features_in_ = X.shape[1]
 
         # ── Step 1: select m landmarks ────────────────────────────────────────
@@ -232,14 +244,31 @@ class ADMMNystromLSSVM(BaseEstimator, ClassifierMixin):
         CtC, Cty = self._build_CtC_Cty(C, y)
         self.ctc_wall_time_ = time.perf_counter() - t0  # for speedup benchmarks
 
-        CtC_tau = CtC / self.tau
+        if self.kernel_reg:
+            # Centragem a partir das somas (vale também no modo em blocos):
+            #   ĈᵀĈ = CᵀC − N c̄c̄ᵀ,   Ĉᵀŷ = Cᵀy − N c̄ ȳ
+            c_mean = C.mean(axis=0)
+            y_mean = float(y.mean())
+            CtC = CtC - n * np.outer(c_mean, c_mean)
+            Cty = Cty - n * c_mean * y_mean
+            W = self._rbf(self.landmarks_, self.landmarks_)
+            CtC_tau = CtC / self.tau + W          # H = ĈᵀĈ/τ + W
+        else:
+            CtC_tau = CtC / self.tau
         Cty_tau = Cty / self.tau
 
-        # ── Step 3: auto ρ from max eigenvalue of CᵀC/τ ──────────────────────
-        eig_max = float(np.linalg.eigvalsh(CtC_tau).max())
-        rho = self.rho if self.rho is not None else (
-            1.0 / eig_max if eig_max > 0 else 1.0
-        )
+        # ── Step 3: auto ρ from max eigenvalue of H (= CᵀC/τ [+ W]) ──────────
+        eigs = np.linalg.eigvalsh(CtC_tau)
+        eig_max = float(eigs.max())
+        adaptive = self.rho == "adaptive"
+        if self.rho in ("geom", "adaptive"):
+            # ρ = √(λ_min·λ_max) de H: escolha clássica para ADMM em problemas
+            # quadráticos (Ghadimi et al., 2015). Não altera o ótimo, só a velocidade.
+            rho = float(np.sqrt(max(float(eigs.min()), 1e-12 * eig_max) * eig_max))
+        else:
+            rho = self.rho if self.rho is not None else (
+                1.0 / eig_max if eig_max > 0 else 1.0
+            )
 
         # ── Step 4: prefactor (CᵀC/τ + ρI)  [m×m Cholesky] ──────────────────
         M = CtC_tau + rho * np.eye(m)
@@ -252,7 +281,11 @@ class ADMMNystromLSSVM(BaseEstimator, ClassifierMixin):
         # É também a convenção sob a qual toda a grade de hiperparâmetros deste
         # trabalho foi selecionada; trocá-la dobraria o encolhimento efetivo de
         # cada λ já escolhido. Ver admm_nesterov.py para a mesma nota.
-        threshold = self.lambda_ / (2.0 * rho)
+        lam = self.lambda_
+        if self.lambda_rel is not None:
+            lam = self.lambda_rel * 2.0 * float(np.abs(Cty_tau).max())
+        self.lambda_used_ = lam
+        threshold = lam / (2.0 * rho)
 
         # Elastic Net: prox de λ₁‖z‖₁ + (λ₂/2)‖z‖² é S_{λ₁/ρ}(v)/(1 + λ₂/ρ).
         # O encolhimento não altera o suporte (zero dividido segue zero); o termo
@@ -294,8 +327,13 @@ class ADMMNystromLSSVM(BaseEstimator, ClassifierMixin):
             # Histórico opcional (curvas de convergência) — custo zero se desligado.
             # Objetivo avaliado em z, a variável esparsa (a que vira theta_).
             if getattr(self, "track_history", False):
-                obj = (0.5 / self.tau * float(np.sum((C @ z_new - y) ** 2))
-                       + self.lambda_ * float(np.abs(z_new).sum()))
+                if self.kernel_reg:
+                    obj = (0.5 / self.tau * float(np.sum(((C - c_mean) @ z_new - (y - y_mean)) ** 2))
+                           + 0.5 * float(z_new @ W @ z_new)
+                           + 0.5 * lam * float(np.abs(z_new).sum()))
+                else:
+                    obj = (0.5 / self.tau * float(np.sum((C @ z_new - y) ** 2))
+                           + self.lambda_ * float(np.abs(z_new).sum()))
                 self.history_.append({"iter": k + 1, "objective": obj,
                                       "primal_res": primal_res, "dual_res": dual_res})
 
@@ -335,6 +373,26 @@ class ADMMNystromLSSVM(BaseEstimator, ClassifierMixin):
             u = u_new
             theta = theta_new
 
+            # ρ adaptativo por balanceamento de resíduos (Boyd et al., 2011, §3.4.1).
+            # u é o dual escalado (y/ρ): ao trocar ρ, reescala-se u; refatora-se M
+            # e reinicia-se o momento. O ótimo não depende de ρ, só a velocidade.
+            if adaptive and (k + 1) % 10 == 0 and k + 1 < self.max_iter * 0.8:
+                f = 0.0
+                if primal_res > 10.0 * dual_res:
+                    f = 2.0
+                elif dual_res > 10.0 * primal_res:
+                    f = 0.5
+                if f:
+                    rho *= f
+                    u = u / f
+                    M = CtC_tau + rho * np.eye(m)
+                    L_M = np.linalg.cholesky(M + 1e-10 * np.eye(m))
+                    threshold = lam / (2.0 * rho)
+                    elastic_scale = (1.0 / (1.0 + self.lambda2_ / rho)
+                                     if self.lambda2_ > 0.0 else 1.0)
+                    z_hat, u_hat = z.copy(), u.copy()
+                    t_mom, c_prev = 1.0, np.inf
+
         self.theta_     = z          # sparse landmark weight vector
         self.n_iter_    = k + 1
         self.converged_ = converged
@@ -347,7 +405,10 @@ class ADMMNystromLSSVM(BaseEstimator, ClassifierMixin):
             )
 
         # ── Step 6: bias and sparse cache ─────────────────────────────────────
-        self.bias_ = float(np.mean(y - C @ self.theta_)) if self.estimate_bias else 0.0
+        if self.kernel_reg:
+            self.bias_ = float(y_mean - c_mean @ self.theta_)   # bias perfilado (exato)
+        else:
+            self.bias_ = float(np.mean(y - C @ self.theta_)) if self.estimate_bias else 0.0
 
         nz = np.abs(self.theta_) > 1e-8
         self._theta_nz_     = self.theta_[nz]
@@ -357,7 +418,7 @@ class ADMMNystromLSSVM(BaseEstimator, ClassifierMixin):
             "ADMMNystromLSSVM — N=%d  m=%d  n_nz=%d (landmark sparsity %.1f%%)  "
             "%d iters  λ=%.4f  ρ=%.4f  ctc_time=%.2fs  blocks=%d  converged=%s",
             n, m, int(nz.sum()), 100.0 * (1.0 - nz.sum() / m),
-            self.n_iter_, self.lambda_, rho,
+            self.n_iter_, lam, rho,
             self.ctc_wall_time_, self.n_blocks, converged,
         )
         return self
