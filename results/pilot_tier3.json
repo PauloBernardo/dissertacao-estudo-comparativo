@@ -1,0 +1,122 @@
+[
+ {
+  "variant": "XGBoost",
+  "dataset": "HIGGS500K",
+  "seed": 0,
+  "m": 0,
+  "n_train": 160000,
+  "n_test": 40000,
+  "params": {
+   "n_estimators": 300,
+   "max_depth": 6,
+   "learning_rate": 0.1
+  },
+  "fit_s": 5.81,
+  "pred_s": 0.294,
+  "peak_rss_mb": 943,
+  "rss_before_fit_mb": 939,
+  "test_f1_macro": 0.7338184908854408,
+  "test_f1_binary": 0.7517391609865786,
+  "test_accuracy": 0.735025,
+  "test_mcc": 0.4677444477106629,
+  "test_auc_roc": 0.8164602711498845
+ },
+ {
+  "variant": "NystromLSSVMRandom",
+  "dataset": "HIGGS500K",
+  "seed": 0,
+  "m": 2000,
+  "n_train": 160000,
+  "n_test": 40000,
+  "params": {
+   "sigma": 5.0,
+   "gamma": 10.0,
+   "m_ratio": 0.0125
+  },
+  "fit_s": 14.74,
+  "pred_s": 2.436,
+  "peak_rss_mb": 8329,
+  "rss_before_fit_mb": 937,
+  "test_f1_macro": 0.6932437535992056,
+  "test_f1_binary": 0.7273013658558538,
+  "test_accuracy": 0.697025,
+  "test_mcc": 0.3903539382098345,
+  "test_auc_roc": 0.7612028005105973,
+  "n_support_vectors": 2000,
+  "sparsity_ratio": 0.9875
+ },
+ {
+  "variant": "PCPLSSVm",
+  "dataset": "HIGGS500K",
+  "seed": 0,
+  "m": 2000,
+  "n_train": 160000,
+  "n_test": 40000,
+  "params": {
+   "sigma": 5.0,
+   "tau": 0.001,
+   "rank": 2000
+  },
+  "fit_s": 253.46,
+  "pred_s": 2.428,
+  "peak_rss_mb": 5855,
+  "rss_before_fit_mb": 938,
+  "test_f1_macro": 0.6790629112244448,
+  "test_f1_binary": 0.7186665479793484,
+  "test_accuracy": 0.68395,
+  "test_mcc": 0.36395373923610935,
+  "test_auc_roc": 0.7445120206406438,
+  "n_support_vectors": 2000,
+  "sparsity_ratio": 0.9875
+ },
+ {
+  "variant": "ADMMNystromRandom",
+  "dataset": "HIGGS500K",
+  "seed": 0,
+  "m": 2000,
+  "n_train": 160000,
+  "n_test": 40000,
+  "params": {
+   "sigma": 5.0,
+   "tau": 0.1,
+   "lambda_rel": 0.01,
+   "m_ratio": 0.0125
+  },
+  "fit_s": 21.77,
+  "pred_s": 0.334,
+  "peak_rss_mb": 8254,
+  "rss_before_fit_mb": 936,
+  "test_f1_macro": 0.6493939436106219,
+  "test_f1_binary": 0.6976110415155711,
+  "test_accuracy": 0.656025,
+  "test_mcc": 0.30712038639454525,
+  "test_auc_roc": 0.7148539446222949,
+  "n_support_vectors": 149,
+  "sparsity_ratio": 0.99906875
+ },
+ {
+  "variant": "FISTANystromRandom",
+  "dataset": "HIGGS500K",
+  "seed": 0,
+  "m": 2000,
+  "n_train": 160000,
+  "n_test": 40000,
+  "params": {
+   "sigma": 5.0,
+   "tau": 0.1,
+   "lambda_rel": 0.01,
+   "m_ratio": 0.0125
+  },
+  "fit_s": 28.28,
+  "pred_s": 0.415,
+  "peak_rss_mb": 8252,
+  "rss_before_fit_mb": 934,
+  "test_f1_macro": 0.6494350757541285,
+  "test_f1_binary": 0.6976815734534666,
+  "test_accuracy": 0.656075,
+  "test_mcc": 0.30722486767268925,
+  "test_auc_roc": 0.7148365469709593,
+  "n_support_vectors": 173,
+  "sparsity_ratio": 0.99891875
+ }
+]

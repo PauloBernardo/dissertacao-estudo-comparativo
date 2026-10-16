@@ -1,0 +1,26 @@
+[
+ {
+  "variant": "XGBoost",
+  "dataset": "HIGGS500K",
+  "seed": 0,
+  "tuning": "optuna_single_selection",
+  "m_fixed": 2000,
+  "status": "ok",
+  "params": {
+   "n_estimators": 353,
+   "max_depth": 8,
+   "learning_rate": 0.07768811685516967
+  },
+  "n_train": 160000,
+  "n_test": 40000,
+  "dataset_tier": 3,
+  "fit_time_s": 11.311507651000284,
+  "predict_time_s": 0.4201125070103444,
+  "peak_rss_mb": 944,
+  "test_f1_macro": 0.7365853759767227,
+  "test_f1_binary": 0.7539114728718538,
+  "test_accuracy": 0.737725,
+  "test_mcc": 0.47324293853913246,
+  "test_auc_roc": 0.8188111153024915
+ }
+]

@@ -1,0 +1,17 @@
+{
+ "XGBoost": {
+  "HIGGS500K": {
+   "params": {
+    "n_estimators": 353,
+    "max_depth": 8,
+    "learning_rate": 0.07768811685516967
+   },
+   "best_val_f1": 0.7298653795083871,
+   "n_trials": 2,
+   "total_fit_s": 15.5,
+   "n_fit": 128000,
+   "n_val": 32000,
+   "m_fixed": 2000
+  }
+ }
+}
