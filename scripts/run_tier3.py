@@ -67,7 +67,9 @@ STORAGE        = f"sqlite:///{ROOT / 'results' / 'tier3_optuna.db'}"
 # amostras); a v1 guardava até 80. Três entradas cabem nos 19 GB da máquina.
 PCPLSSVm._CHOL_CACHE_MAX = 3
 
-SIGMA_NYS = [0.5, 1.5, 5.0]
+# Grade da v1 {0,5; 1,5; 5} estendida para cima (2026-10-16): com N = 160 mil, o
+# Nyström-SVM escolheu σ = 5 (a borda) no HIGGS500K.
+SIGMA_NYS = [0.5, 1.5, 5.0, 15.0, 50.0]
 SIGMA_PCP = [float((2.0 * 2.0 ** k) ** -0.5) for k in range(-9, 4)]  # Zhou (2016)
 
 
@@ -92,9 +94,10 @@ def suggest(variant: str, trial: optuna.Trial) -> dict:
                 "n_heads": trial.suggest_categorical("n_heads", [2, 4]),
                 "lr": trial.suggest_float("lr", 1e-4, 3e-3, log=True)}
     if variant == "XGBoost":
+        # Limites alargados (2026-10-16): COVER e KDD99 escolheram profundidade 9–10 e lr ≈ 0,3.
         return {"n_estimators": trial.suggest_int("n_estimators", 100, 1000, log=True),
-                "max_depth": trial.suggest_int("max_depth", 3, 10),
-                "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.3, log=True)}
+                "max_depth": trial.suggest_int("max_depth", 3, 14),
+                "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.5, log=True)}
     raise KeyError(variant)
 
 
@@ -102,6 +105,8 @@ def fixed_budget(variant: str, n_train: int) -> dict:
     """m = r = M_FIXED; os Nyström recebem m como fração do treino."""
     if variant == "PCPLSSVm":
         return {"rank": M_FIXED}
+    if variant == "XGBoost":
+        return {"n_jobs": -1}   # trials sequenciais: usa os 8 núcleos (hist é determinístico)
     if "Nystrom" in variant or variant == "FTTransformerCURRandom":
         return {"m_ratio": M_FIXED / n_train}
     return {}
@@ -168,7 +173,9 @@ def select(variant: str, dataset: str, n_trials: int) -> dict:
 
     fits = [t.user_attrs.get("fit_s", 0.0) for t in study.trials]
     return {"params": study.best_params, "best_val_f1": study.best_value,
-            "n_trials": len(study.trials), "complete": len(study.trials) >= n_trials, "total_fit_s": round(sum(fits), 1),
+            "n_trials": len(study.trials),
+            # Só trials COMPLETE contam: um trial interrompido (RUNNING/FAIL) não fecha a seleção.
+            "complete": sum(t.state == optuna.trial.TrialState.COMPLETE for t in study.trials) >= n_trials, "total_fit_s": round(sum(fits), 1),
             "n_fit": len(X_fit), "n_val": len(X_val), "m_fixed": M_FIXED,
             "tf_budget": TF_BUDGET if g.GRIDS[variant].get("needs_gpu") else None}
 

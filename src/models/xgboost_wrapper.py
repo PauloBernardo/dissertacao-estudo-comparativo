@@ -31,6 +31,10 @@ class XGBoostBaseline(BaseEstimator, ClassifierMixin):
     reg_lambda : float
     reg_alpha : float
     random_state : int | None
+    n_jobs : int
+        Threads do XGBoost. 1 na v1 (o GridSearchCV já paraleliza os folds);
+        -1 no Tier 3, cujos trials são sequenciais. ``hist`` é determinístico
+        com várias threads: muda o tempo, não o modelo.
     """
 
     def __init__(
@@ -43,6 +47,7 @@ class XGBoostBaseline(BaseEstimator, ClassifierMixin):
         reg_lambda: float = 1.0,
         reg_alpha: float = 0.0,
         random_state: int | None = None,
+        n_jobs: int = 1,
     ):
         self.n_estimators     = n_estimators
         self.max_depth        = max_depth
@@ -52,6 +57,7 @@ class XGBoostBaseline(BaseEstimator, ClassifierMixin):
         self.reg_lambda       = reg_lambda
         self.reg_alpha        = reg_alpha
         self.random_state     = random_state
+        self.n_jobs           = n_jobs
 
     def fit(self, X: np.ndarray, y: np.ndarray) -> "XGBoostBaseline":
         self._model = xgb.XGBClassifier(
@@ -65,7 +71,7 @@ class XGBoostBaseline(BaseEstimator, ClassifierMixin):
             random_state=self.random_state,
             eval_metric="logloss",
             tree_method="hist",
-            n_jobs=1,
+            n_jobs=self.n_jobs,
             verbosity=0,
         )
         self._model.fit(X, y.astype(int))
