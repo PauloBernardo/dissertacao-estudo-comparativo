@@ -42,8 +42,8 @@ from sklearn.model_selection import train_test_split  # noqa: E402
 import run_tier2_gridcv as g  # noqa: E402
 from src.models.lssvm.primal.pcp_lssvm import PCPLSSVm  # noqa: E402
 
-N_TOTAL   = int(os.environ.get("TIER3_N_TOTAL", 200_000))  # menor só p/ teste de fumaça
-TEST_SIZE = 0.20           # 160 mil de treino
+N_TOTAL   = int(os.environ.get("TIER3_N_TOTAL", 250_000))  # 200 mil de treino; menor só p/ teste de fumaça
+TEST_SIZE = 0.20           # 200 mil de treino + 50 mil de teste (2026-10-16)
 VAL_SIZE  = 0.20           # hold-out de seleção dentro do treino da semente 0
 M_FIXED   = 2000
 N_TRIALS  = 20
@@ -63,11 +63,11 @@ SELECTION_FILE = ROOT / "results" / "tier3_selection.json"
 FINAL_FILE     = ROOT / "results" / "tier3_final.json"
 STORAGE        = f"sqlite:///{ROOT / 'results' / 'tier3_optuna.db'}"
 
-# Com r = 2000, cada fatoração do PCP ocupa N·r·8 bytes (≈2 GB em 128 mil
-# amostras); a v1 guardava até 80. Três entradas cabem nos 19 GB da máquina.
-PCPLSSVm._CHOL_CACHE_MAX = 3
+# Com r = 2000, cada fatoração do PCP ocupa N·r·8 bytes (≈3,2 GB em 160 mil de ajuste
+# amostras); a v1 guardava até 80. Duas entradas cabem com folga nos 19 GB.
+PCPLSSVm._CHOL_CACHE_MAX = 2
 
-# Grade da v1 {0,5; 1,5; 5} estendida para cima (2026-10-16): com N = 160 mil, o
+# Grade da v1 {0,5; 1,5; 5} estendida para cima (2026-10-16): com 160 mil de treino, o
 # Nyström-SVM escolheu σ = 5 (a borda) no HIGGS500K.
 SIGMA_NYS = [0.5, 1.5, 5.0, 15.0, 50.0]
 SIGMA_PCP = [float((2.0 * 2.0 ** k) ** -0.5) for k in range(-9, 4)]  # Zhou (2016)
@@ -80,7 +80,8 @@ def suggest(variant: str, trial: optuna.Trial) -> dict:
                 "gamma": trial.suggest_float("gamma", 0.1, 100.0, log=True)}
     if variant in ("ADMMNystromRandom", "FISTANystromRandom"):
         return {"sigma": trial.suggest_categorical("sigma", SIGMA_NYS),
-                "tau": trial.suggest_float("tau", 0.01, 10.0, log=True),
+                # piso 0,01 → 0,001 (2026-10-16): o FISTA escolheu τ ≈ 0,0104 em COVER e SUSY.
+                "tau": trial.suggest_float("tau", 1e-3, 10.0, log=True),
                 "lambda_rel": trial.suggest_float("lambda_rel", 1e-3, 0.4, log=True)}
     if variant == "PCPLSSVm":
         return {"sigma": trial.suggest_categorical("sigma", SIGMA_PCP),

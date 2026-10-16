@@ -1146,12 +1146,13 @@ volta a usar **paciência**.
 
 ### Quem entra
 - Bases: HIGGS500K, COVER e KDD99 (loaders de Tier 3 já existem em `src/data/loaders.py`), subamostradas
-  a 200 mil (160 mil de treino).
+  a 250 mil: **200 mil de treino** e 50 mil de teste (corrigido em 2026-10-16; antes eram 200 mil no total).
+  **KDD99 trocado pelo SUSY** em 2026-10-16: o KDD99 satura (F1 ≈ 1) por registros duplicados.
 - **Família Nyström** (Nyström-SVM, ADMM-Nyström, FISTA-Nyström), **XGBoost** e **Transformers**
   (FT-Softmax/Top-k/Entmax/Sparsemax, SAINT em mini-lote, FT-CUR).
 - **LSSVM-PCP também entra**: desde 2026-10-15 ele segue o Alg. 1 de Zhou (2016), com memória O(N·r)
   (1,1 s e 49 MB em N = 20 mil). É o baseline de seleção determinística de landmarks da família Nyström.
-- Fora: tudo que monta a matriz N×N (≈205 GB em float64 com N = 160 mil) — LSSVM-Std, IP, Pruning,
+- Fora: tudo que monta a matriz N×N (≈320 GB em float64 com N = 200 mil) — LSSVM-Std, IP, Pruning,
   OppMaps, FSA e DualFISTA.
 
 ### Mudanças de protocolo (todas declaradas no texto)
@@ -1165,7 +1166,7 @@ volta a usar **paciência**.
    Cuidado: pruning é parada antecipada — usar `n_warmup_steps` generoso (o problema do platô).
 4. **Paciência no ajuste final**, restaurando o melhor checkpoint. Justificativa: o refit sem paciência
    só importou no Tier 1 (1 passo/época); no Tier 2 mudou o F1 em +0,001 e na Abl. D em −0,0001. Com
-   160 mil pontos e lote 512 há ≈300 passos/época.
+   200 mil pontos e lote 512 há ≈390 passos/época.
 5. **Cache de C por σ** nos Nyström: só σ altera C = K(X, Z); τ e λ não. Hoje o GridSearchCV recalcula C
    em cada fit (126 configs do ADMM-Nyström → 3 montagens de C + 126 resoluções).
 
