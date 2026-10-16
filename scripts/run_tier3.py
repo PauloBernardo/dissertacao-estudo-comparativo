@@ -140,6 +140,13 @@ def _f1(y_true, y_pred, fmt: str) -> float:
     return float(f1_score(y_true, y_pred, average="macro", zero_division=0))
 
 
+def _n_distinct(study) -> int:
+    # Configurações distintas COMPLETE: um trial interrompido (RUNNING/FAIL) ou
+    # repetido por uma retomada antiga não conta para os 20.
+    return len({tuple(sorted(t.params.items())) for t in study.trials
+                if t.state == optuna.trial.TrialState.COMPLETE})
+
+
 def _load(path: Path, default):
     return json.loads(path.read_text()) if path.exists() else default
 
@@ -164,19 +171,23 @@ def select(variant: str, dataset: str, n_trials: int) -> dict:
     study = optuna.create_study(
         study_name=f"{variant}__{dataset}", storage=STORAGE, load_if_exists=True,
         direction="maximize", sampler=optuna.samplers.TPESampler(seed=SELECT_SEED))
-    done = len([t for t in study.trials if t.state == optuna.trial.TrialState.COMPLETE])
+    # Retomada: o TPE semeado reiniciaria a sequência de sorteios e repetiria as
+    # configurações já avaliadas; semear com o nº de trials existentes evita isso
+    # (estudo novo: semente = SELECT_SEED, como antes).
+    study.sampler = optuna.samplers.TPESampler(seed=SELECT_SEED + len(study.trials))
     def stop_at_deadline(study, _trial):
         if _past_deadline():
             study.stop()
 
-    if done < n_trials and not _past_deadline():
-        study.optimize(objective, n_trials=n_trials - done, callbacks=[stop_at_deadline])
+    while _n_distinct(study) < n_trials and not _past_deadline():
+        study.optimize(objective, n_trials=n_trials - _n_distinct(study),
+                       callbacks=[stop_at_deadline])
 
     fits = [t.user_attrs.get("fit_s", 0.0) for t in study.trials]
     return {"params": study.best_params, "best_val_f1": study.best_value,
             "n_trials": len(study.trials),
             # Só trials COMPLETE contam: um trial interrompido (RUNNING/FAIL) não fecha a seleção.
-            "complete": sum(t.state == optuna.trial.TrialState.COMPLETE for t in study.trials) >= n_trials, "total_fit_s": round(sum(fits), 1),
+            "complete": _n_distinct(study) >= n_trials, "n_distinct": _n_distinct(study), "total_fit_s": round(sum(fits), 1),
             "n_fit": len(X_fit), "n_val": len(X_val), "m_fixed": M_FIXED,
             "tf_budget": TF_BUDGET if g.GRIDS[variant].get("needs_gpu") else None}
 
