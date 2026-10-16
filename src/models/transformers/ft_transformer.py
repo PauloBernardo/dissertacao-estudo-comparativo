@@ -343,7 +343,7 @@ class FTTransformer(BaseEstimator, ClassifierMixin):
             if val_n > 0:
                 self.model_.eval()
                 with torch.no_grad():
-                    val_logits = self.model_(X_v)
+                    val_logits = self._forward_chunked(X_v)
                     val_loss = loss_fn(val_logits, y_v_mapped).item()
 
                 if val_loss < best_val_loss - 1e-6:
@@ -369,13 +369,19 @@ class FTTransformer(BaseEstimator, ClassifierMixin):
         return self
 
     @torch.no_grad()
+    def _forward_chunked(self, X_t: torch.Tensor, chunk: int = 4096) -> torch.Tensor:
+        # Sem atenção entre instâncias: avaliar em lotes é exato e evita OOM
+        # (Tier 3: 16-40 mil linhas × 55 tokens no COVER estouravam a T4).
+        return torch.cat([self.model_(X_t[i:i + chunk]) for i in range(0, len(X_t), chunk)])
+
+    @torch.no_grad()
     def predict_proba(self, X: NDArray) -> NDArray:
         check_is_fitted(self, ["model_"])
         X = check_array(X)
         dev = self._get_device()
         self.model_.eval()
         X_t = torch.tensor(X, dtype=torch.float32, device=dev)
-        logits = self.model_(X_t).cpu().numpy()
+        logits = self._forward_chunked(X_t).cpu().numpy()
         p1 = 1.0 / (1.0 + np.exp(-logits))    # sigmoid
         return np.column_stack([1 - p1, p1])
 
