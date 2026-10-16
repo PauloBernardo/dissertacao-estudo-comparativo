@@ -1,0 +1,22 @@
+{
+ "SAINTColnorm": {
+  "HIGGS500K": {
+   "params": {
+    "n_layers": 2,
+    "n_heads": 2,
+    "lr": 0.0006380556092044456
+   },
+   "best_val_f1": 0.7273207172771724,
+   "n_trials": 1,
+   "complete": true,
+   "total_fit_s": 285.9,
+   "n_fit": 128000,
+   "n_val": 32000,
+   "m_fixed": 2000,
+   "tf_budget": {
+    "epochs": 200,
+    "patience": 16
+   }
+  }
+ }
+}

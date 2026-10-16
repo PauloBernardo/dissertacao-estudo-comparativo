@@ -1,0 +1,62 @@
+{
+ "FTTransformer_softmax": {
+  "HIGGS500K": {
+   "params": {
+    "num_blocks": 3,
+    "num_heads": 2,
+    "lr": 0.0006380556092044456
+   },
+   "best_val_f1": 0.7268196718284718,
+   "n_trials": 1,
+   "complete": true,
+   "total_fit_s": 116.9,
+   "n_fit": 128000,
+   "n_val": 32000,
+   "m_fixed": 2000,
+   "tf_budget": {
+    "epochs": 200,
+    "patience": 16
+   }
+  }
+ },
+ "FTTransformer_topk": {
+  "HIGGS500K": {
+   "params": {
+    "num_blocks": 3,
+    "num_heads": 2,
+    "lr": 0.0006380556092044456
+   },
+   "best_val_f1": 0.7248087997751022,
+   "n_trials": 1,
+   "complete": true,
+   "total_fit_s": 180.5,
+   "n_fit": 128000,
+   "n_val": 32000,
+   "m_fixed": 2000,
+   "tf_budget": {
+    "epochs": 200,
+    "patience": 16
+   }
+  }
+ },
+ "FTTransformerCURRandom": {
+  "HIGGS500K": {
+   "params": {
+    "n_layers": 2,
+    "n_heads": 2,
+    "lr": 0.0006380556092044456
+   },
+   "best_val_f1": 0.723410291877837,
+   "n_trials": 1,
+   "complete": true,
+   "total_fit_s": 86.2,
+   "n_fit": 128000,
+   "n_val": 32000,
+   "m_fixed": 2000,
+   "tf_budget": {
+    "epochs": 200,
+    "patience": 16
+   }
+  }
+ }
+}
