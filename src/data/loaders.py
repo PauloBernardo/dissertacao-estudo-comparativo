@@ -534,6 +534,24 @@ def _load_kdd99() -> tuple[NDArray, NDArray, dict]:
     return X, y, {"tier": 3}
 
 
+@_register("SUSY")
+def _load_susy() -> tuple[NDArray, NDArray, dict]:
+    """SUSY (Baldi et al., 2014) — primeiras 500 mil linhas do UCI.
+
+    Entrou no Tier 3 em 2026-10-16 no lugar do KDD99, que satura (F1 ≈ 1) por
+    causa dos registros duplicados (Tavallaee et al., 2009).
+    """
+    dest = _DATA_DIR / "susy_500000.parquet"
+    if not dest.exists():
+        df = pd.read_csv(
+            "https://archive.ics.uci.edu/ml/machine-learning-databases/00279/SUSY.csv.gz",
+            header=None, nrows=500_000, compression="gzip")
+        df.columns = ["label"] + [f"f{i}" for i in range(1, 19)]
+        df.to_parquet(dest, index=False)
+    df = pd.read_parquet(dest)
+    return df.iloc[:, 1:].values.astype(float), df.iloc[:, 0].astype(int).values, {"tier": 3}
+
+
 # ── Synthetic ─────────────────────────────────────────────────────────────────
 
 @_register("TWS")

@@ -48,7 +48,7 @@ VAL_SIZE  = 0.20           # hold-out de seleção dentro do treino da semente 0
 M_FIXED   = 2000
 N_TRIALS  = 20
 SELECT_SEED = 0
-DATASETS  = ["HIGGS500K", "COVER", "KDD99"]
+DATASETS  = ["HIGGS500K", "COVER", "SUSY"]  # KDD99 saiu em 2026-10-16: satura (duplicatas)
 
 # Prazo absoluto (unix ts) para o "Save & Run All" do Kaggle: depois dele não se
 # inicia trial nem semente nova; o que já terminou fica salvo e a próxima sessão retoma.
