@@ -50,6 +50,15 @@ N_TRIALS  = 20
 SELECT_SEED = 0
 DATASETS  = ["HIGGS500K", "COVER", "KDD99"]
 
+# Prazo absoluto (unix ts) para o "Save & Run All" do Kaggle: depois dele não se
+# inicia trial nem semente nova; o que já terminou fica salvo e a próxima sessão retoma.
+DEADLINE = float(os.environ.get("TIER3_DEADLINE", "inf"))
+
+
+def _past_deadline() -> bool:
+    return time.time() >= DEADLINE
+
+
 SELECTION_FILE = ROOT / "results" / "tier3_selection.json"
 FINAL_FILE     = ROOT / "results" / "tier3_final.json"
 STORAGE        = f"sqlite:///{ROOT / 'results' / 'tier3_optuna.db'}"
@@ -150,12 +159,16 @@ def select(variant: str, dataset: str, n_trials: int) -> dict:
         study_name=f"{variant}__{dataset}", storage=STORAGE, load_if_exists=True,
         direction="maximize", sampler=optuna.samplers.TPESampler(seed=SELECT_SEED))
     done = len([t for t in study.trials if t.state == optuna.trial.TrialState.COMPLETE])
-    if done < n_trials:
-        study.optimize(objective, n_trials=n_trials - done)
+    def stop_at_deadline(study, _trial):
+        if _past_deadline():
+            study.stop()
+
+    if done < n_trials and not _past_deadline():
+        study.optimize(objective, n_trials=n_trials - done, callbacks=[stop_at_deadline])
 
     fits = [t.user_attrs.get("fit_s", 0.0) for t in study.trials]
     return {"params": study.best_params, "best_val_f1": study.best_value,
-            "n_trials": len(study.trials), "total_fit_s": round(sum(fits), 1),
+            "n_trials": len(study.trials), "complete": len(study.trials) >= n_trials, "total_fit_s": round(sum(fits), 1),
             "n_fit": len(X_fit), "n_val": len(X_val), "m_fixed": M_FIXED,
             "tf_budget": TF_BUDGET if g.GRIDS[variant].get("needs_gpu") else None}
 
@@ -208,6 +221,9 @@ def main() -> int:
     if a.phase == "select":
         for v in a.variants:
             for d in a.datasets:
+                if _past_deadline():
+                    logging.warning("prazo atingido — parando; a próxima sessão retoma")
+                    return 0
                 res = select(v, d, a.n_trials)
                 sel = _load(SELECTION_FILE, {})
                 sel.setdefault(v, {})[d] = res
@@ -220,10 +236,13 @@ def main() -> int:
     sel = _load(SELECTION_FILE, {})
     for v in a.variants:
         for d in a.datasets:
-            if d not in sel.get(v, {}):
-                logging.error("sem seleção para %s %s — rode a fase select", v, d)
+            if d not in sel.get(v, {}) or not sel[v][d].get("complete", True):
+                logging.error("seleção ausente ou incompleta para %s %s — rode a fase select", v, d)
                 continue
             for s in a.seeds:
+                if _past_deadline():
+                    logging.warning("prazo atingido — parando; a próxima sessão retoma")
+                    return 0
                 recs = _load(FINAL_FILE, [])
                 if any(r["variant"] == v and r["dataset"] == d and r["seed"] == s
                        and r.get("status") == "ok" for r in recs):
