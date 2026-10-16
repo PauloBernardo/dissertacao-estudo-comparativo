@@ -1,3 +1,3 @@
 Friedman test (Tier 1)
-Statistic: 103.5423
+Statistic: 102.7612
 p-value:   0.000000

@@ -1,6 +1,6 @@
 """Tamanho do modelo para predição (float64), a partir dos pontos guardados (2026-10-15).
 
-Nyström/ADMM/FISTA: pts·d (landmarks) + pts (pesos); PCP: r·d + r + r(r+1)/2 (bloco triangular de L).
+Nyström/ADMM/FISTA/PCP: pts·d (landmarks ou pivôs) + pts (pesos); o PCP fiel (Zhou 2016) não guarda L.
 Todos: +1 (bias) + 2d (StandardScaler).
 """
 import json, sys
@@ -8,9 +8,7 @@ D = {"synthetic": 20, "adult": 14, "credit": 23, "bank": 16}
 
 
 def kb(variant: str, pts: float, d: int) -> float:
-    n = pts * d + pts + 1 + 2 * d
-    if variant == "PCPLSSVm":
-        n += pts * (pts + 1) / 2
+    n = pts * d + pts + 1 + 2 * d     # 2026-10-15: PCP fiel prediz com α_B (sem o triângulo de L)
     return n * 8 / 1024
 
 

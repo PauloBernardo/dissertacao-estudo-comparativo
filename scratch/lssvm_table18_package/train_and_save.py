@@ -36,8 +36,8 @@ def export(pipe) -> dict:
     d = dict(mu=sc.mean_, s=sc.scale_, sigma=np.float64(m.sigma if hasattr(m, "sigma") else m._model.kernel.sigma))
     if isinstance(m, NystromLSSVMRandom):
         d.update(Z=m._model.nystrom_.landmarks_, w=m._model._w_alpha_, b=np.float64(m._model.b_))
-    elif isinstance(m, PCPLSSVm):
-        d.update(Z=m.X_pivots_, w=m.w_, L=m.L_, b=np.float64(m.bias_))
+    elif isinstance(m, PCPLSSVm):   # 2026-10-15: PCP fiel (Zhou 2016) prediz com α_B, sem L
+        d.update(Z=m.X_pivots_, w=m.coef_, b=np.float64(m.bias_))
     else:
         d.update(Z=m._landmarks_nz_, w=m._theta_nz_, b=np.float64(m.bias_))
     return d

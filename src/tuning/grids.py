@@ -131,9 +131,12 @@ GRIDS: dict[str, dict] = {
         # sigma precisa ser buscado: kernel RBF exato colapsa para zero em dados UCI
         # com muitas features (||x-y||²>>σ²). FSALSSVm/IPLSSVm usam RFF (não afetados).
         "model_name": "PCPLSSVm",
+        # 2026-10-15: grade de γ e λ de Zhou (2016), Seção IV: K = exp(−γ‖x−z‖²) com
+        # γ ∈ {2⁻⁹,…,2³} → σ = 1/√(2γ), e λ ∈ {10⁻⁶,…,10⁰} (λ do artigo = τ deste código).
+        # O posto fica na grade como orçamento de compressão (o artigo o fixa em <1% de m).
         "grid": {
-            "sigma": [0.5, 1.5, 5.0],
-            "tau":   [0.1, 0.5, 2.5, 12.5, 50.0],
+            "sigma": [float((2.0 * 2.0 ** k) ** -0.5) for k in range(-9, 4)],
+            "tau":   [10.0 ** k for k in range(-6, 1)],
             "rank":  [20, 50, 100, 200],
         },
         "fixed": {},

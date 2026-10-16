@@ -356,33 +356,33 @@
   "PCPLSSVm": {
     "ADULT": {
       "rank": 200,
-      "sigma": 5.0,
-      "tau": 0.1
+      "sigma": 16.0,
+      "tau": 0.001
     },
     "BANK": {
       "rank": 200,
-      "sigma": 5.0,
-      "tau": 0.1
+      "sigma": 4.0,
+      "tau": 1e-06
     },
     "CREDIT": {
       "rank": 200,
-      "sigma": 5.0,
+      "sigma": 4.0,
       "tau": 0.1
     },
     "HIGGS50K": {
       "rank": 200,
-      "sigma": 5.0,
-      "tau": 0.5
+      "sigma": 11.313708498984761,
+      "tau": 0.1
     },
     "SHOPPERS": {
       "rank": 200,
-      "sigma": 5.0,
-      "tau": 0.1
+      "sigma": 16.0,
+      "tau": 0.0001
     },
     "TELCO": {
-      "rank": 200,
-      "sigma": 5.0,
-      "tau": 0.5
+      "rank": 100,
+      "sigma": 11.313708498984761,
+      "tau": 0.1
     }
   },
   "PruningLSSVM": {

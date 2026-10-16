@@ -60,16 +60,6 @@
     "npz_pred_equal": true
   },
   {
-    "base": "adult",
-    "model": "pcp",
-    "fit_s": 6.86,
-    "f1": 0.752,
-    "pts": 200,
-    "pkl_kb": 495.1,
-    "npz_kb": 337.8,
-    "npz_pred_equal": true
-  },
-  {
     "base": "credit",
     "model": "nys_m1",
     "fit_s": 0.14,
@@ -127,16 +117,6 @@
     "pts": 1920,
     "pkl_kb": 1486.8,
     "npz_kb": 361.8,
-    "npz_pred_equal": true
-  },
-  {
-    "base": "credit",
-    "model": "pcp",
-    "fit_s": 7.06,
-    "f1": 0.6552,
-    "pts": 200,
-    "pkl_kb": 509.4,
-    "npz_kb": 352.0,
     "npz_pred_equal": true
   },
   {
@@ -200,13 +180,33 @@
     "npz_pred_equal": true
   },
   {
+    "base": "adult",
+    "model": "pcp",
+    "fit_s": 0.87,
+    "f1": 0.7506,
+    "pts": 200,
+    "pkl_kb": 182.6,
+    "npz_kb": 25.1,
+    "npz_pred_equal": true
+  },
+  {
+    "base": "credit",
+    "model": "pcp",
+    "fit_s": 1.04,
+    "f1": 0.6556,
+    "pts": 200,
+    "pkl_kb": 196.8,
+    "npz_kb": 39.3,
+    "npz_pred_equal": true
+  },
+  {
     "base": "bank",
     "model": "pcp",
-    "fit_s": 7.48,
-    "f1": 0.6232,
+    "fit_s": 0.9,
+    "f1": 0.626,
     "pts": 200,
-    "pkl_kb": 498.3,
-    "npz_kb": 341.0,
+    "pkl_kb": 185.7,
+    "npz_kb": 28.2,
     "npz_pred_equal": true
   }
 ]

@@ -1138,3 +1138,50 @@ pior que não ter restart. Corrigido nos quatro. Diagnóstico em TWS_2k: gap ao 
   reexecuta (agora barato) para consistência.
 - B/C recém-mescladas (FISTA-Nyström random) usaram o código antigo.
 - Ablação A (re-tuning): fila relançada com o código corrigido; 55 registros antigos descartados.
+
+## VERSÃO 2 — Tier 3 com N = 200 mil (plano de 2026-10-15)
+
+Decisões do usuário em 2026-10-15: **10 sementes**; **no Kaggle rodam só os Transformers**; o ajuste final
+volta a usar **paciência**.
+
+### Quem entra
+- Bases: HIGGS500K, COVER e KDD99 (loaders de Tier 3 já existem em `src/data/loaders.py`), subamostradas
+  a 200 mil (160 mil de treino).
+- **Família Nyström** (Nyström-SVM, ADMM-Nyström, FISTA-Nyström), **XGBoost** e **Transformers**
+  (FT-Softmax/Top-k/Entmax/Sparsemax, SAINT em mini-lote, FT-CUR).
+- **LSSVM-PCP também entra**: desde 2026-10-15 ele segue o Alg. 1 de Zhou (2016), com memória O(N·r)
+  (1,1 s e 49 MB em N = 20 mil). É o baseline de seleção determinística de landmarks da família Nyström.
+- Fora: tudo que monta a matriz N×N (≈205 GB em float64 com N = 160 mil) — LSSVM-Std, IP, Pruning,
+  OppMaps, FSA e DualFISTA.
+
+### Mudanças de protocolo (todas declaradas no texto)
+1. **m fixo** (2000–5000) no Nyström e no FT-CUR. m/N = 0,3 daria m = 48 mil e C com ≈61 GB; m fixo também
+   é o que torna o FT-CUR genuinamente sub-quadrático.
+2. **Seleção única por base**, num split de ajuste hold-out (não CV de 5 folds), e **ajuste final por
+   semente** com os hiperparâmetros congelados (esquema da Ablação D). A variância entre sementes passa a
+   medir amostragem e inicialização, não a instabilidade da seleção.
+3. **Optuna**: TPE + pruner Hyperband, **mesmo orçamento de trials para todos os modelos** (≈20), espaços
+   contínuos para λ, σ e a *lr* dos Transformers (corrige a assimetria de *lr* registrada em §3.3).
+   Cuidado: pruning é parada antecipada — usar `n_warmup_steps` generoso (o problema do platô).
+4. **Paciência no ajuste final**, restaurando o melhor checkpoint. Justificativa: o refit sem paciência
+   só importou no Tier 1 (1 passo/época); no Tier 2 mudou o F1 em +0,001 e na Abl. D em −0,0001. Com
+   160 mil pontos e lote 512 há ≈300 passos/época.
+5. **Cache de C por σ** nos Nyström: só σ altera C = K(X, Z); τ e λ não. Hoje o GridSearchCV recalcula C
+   em cada fit (126 configs do ADMM-Nyström → 3 montagens de C + 126 resoluções).
+
+### Custo estimado (extrapolado da tabela 19 em N = 50 mil e do benchmark LSSVM)
+| Onde | Etapa | Custo |
+|---|---|---|
+| Kaggle (GPU) | seleção dos Transformers, 1×/base | ≈7 h |
+| Kaggle (GPU) | ajuste final com paciência, 3 bases × 10 sementes | ≈9–10 h |
+| Kaggle (GPU) | **total** | **≈16–17 h** (≈2 semanas de cota) |
+| Local (CPU) | seleção Nyström + XGBoost (com cache de C) | ≈45 min |
+| Local (CPU) | ajuste final, 30 por modelo | ≈1–2 h |
+
+Referência: com o protocolo atual (grade × CV 5 folds × semente, 200 épocas) seriam ≈180 h de GPU.
+
+### Primeiro passo: piloto (1 base, 1 semente)
+- Medir os tempos reais por fit e recalibrar a tabela acima.
+- Rodar o ajuste final **com e sem paciência** uma vez: se a diferença ficar na casa de 0,001 (como no
+  Tier 2), a paciência fica justificada com dado do próprio Tier 3.
+- Escolher m (2000 vs 5000) pelo custo × F1 do Nyström-SVM.
