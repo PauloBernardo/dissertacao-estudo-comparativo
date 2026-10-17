@@ -1191,3 +1191,12 @@ Referência: com o protocolo atual (grade × CV 5 folds × semente, 200 épocas)
 LSSVM denso treinado em 2.000 amostras sorteadas do treino (mesmo orçamento de pontos que m = 2000),
 avaliado no mesmo teste de 50 mil, nas 3 bases. Pergunta: o Nyström ganha F1 por enxergar os 200 mil,
 ou daria no mesmo descartar os dados e usar o denso? Rodar depois da seleção local (CPU livre).
+
+### Resultados locais do Tier 3 (2026-10-17) — para o texto
+- Final (10 sementes, teste 50 mil) em `results/tier3_final.json`; seleção em `results/tier3_selection.json`.
+- ℓ1: λ_rel pela regra do platô (maior λ com F1 ≥ melhor − 0,005; `results/tier3_l1_plateau.json`).
+  ADMM-N usa 1013 / 1698 / 157–176 de 2000 pontos (HIGGS / COVER / SUSY) com F1 0,686 / 0,835 / 0,793;
+  FISTA-N fica esparso só no SUSY (~444). Sem a regra (Optuna puro) o λ_rel ia a ~1e-5 e o ℓ1 desligava.
+- ADMM no SUSY bate 500 iterações (resíduo ~1e-2); com 5000 (resíduo ~1e-5) F1 varia ≤ 0,003, VS +≤5.
+- Controle denso 2k (protocolo Tier 3, `results/tier3_dense_2k.json`): 0,629 / 0,783 / 0,780 — perde de todos.
+- Limites alargados: Nyström γ ≤ 1e4; ℓ1 τ, λ_rel ≥ 1e-5 (seleção antiga arquivada em logs_proveniencia/).
