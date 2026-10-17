@@ -1,0 +1,130 @@
+[I 2026-10-17 16:05:39,864] A new study created in memory with name: no-name-b34eda7d-bfaf-427a-b528-23964b9d3d84
+[I 2026-10-17 16:06:24,915] Trial 0 finished with value: 0.6492898118690348 and parameters: {'n_layers': 2, 'n_heads': 2, 'lr': 0.0006380556092044456}. Best is trial 0 with value: 0.6492898118690348.
+[I 2026-10-17 16:06:53,447] Trial 1 finished with value: 0.3464052287581699 and parameters: {'n_layers': 2, 'n_heads': 2, 'lr': 0.00207614104200153}. Best is trial 0 with value: 0.6492898118690348.
+[I 2026-10-17 16:07:41,714] Trial 2 finished with value: 0.6437173825772782 and parameters: {'n_layers': 3, 'n_heads': 4, 'lr': 0.0006042851578845063}. Best is trial 0 with value: 0.6492898118690348.
+[I 2026-10-17 16:08:06,900] Trial 3 finished with value: 0.6453700035840266 and parameters: {'n_layers': 2, 'n_heads': 2, 'lr': 0.00013449326615130812}. Best is trial 0 with value: 0.6492898118690348.
+[I 2026-10-17 16:08:31,217] Trial 4 finished with value: 0.664463141025641 and parameters: {'n_layers': 1, 'n_heads': 2, 'lr': 0.0019280284410033446}. Best is trial 4 with value: 0.664463141025641.
+[I 2026-10-17 16:08:58,533] Trial 5 finished with value: 0.3197278911564626 and parameters: {'n_layers': 3, 'n_heads': 2, 'lr': 0.0014221199739697214}. Best is trial 4 with value: 0.664463141025641.
+[I 2026-10-17 16:09:32,095] Trial 6 finished with value: 0.6704767789105138 and parameters: {'n_layers': 1, 'n_heads': 2, 'lr': 0.002485367048344989}. Best is trial 6 with value: 0.6704767789105138.
+[I 2026-10-17 16:10:15,001] Trial 7 finished with value: 0.6905438311688312 and parameters: {'n_layers': 2, 'n_heads': 2, 'lr': 0.0013919929598274882}. Best is trial 7 with value: 0.6905438311688312.
+[I 2026-10-17 16:10:59,616] Trial 8 finished with value: 0.6544471153846154 and parameters: {'n_layers': 2, 'n_heads': 2, 'lr': 0.0008171890156969397}. Best is trial 7 with value: 0.6905438311688312.
+[I 2026-10-17 16:12:03,889] Trial 9 finished with value: 0.6079695986746843 and parameters: {'n_layers': 2, 'n_heads': 4, 'lr': 0.0010165558775187275}. Best is trial 7 with value: 0.6905438311688312.
+[I 2026-10-17 16:12:19,664] Trial 10 finished with value: 0.672497953112207 and parameters: {'n_layers': 1, 'n_heads': 4, 'lr': 0.0002747174922945769}. Best is trial 7 with value: 0.6905438311688312.
+[I 2026-10-17 16:12:34,968] Trial 11 finished with value: 0.6808223223317563 and parameters: {'n_layers': 1, 'n_heads': 4, 'lr': 0.00020963001871018887}. Best is trial 7 with value: 0.6905438311688312.
+[I 2026-10-17 16:12:48,379] Trial 12 finished with value: 0.66996699669967 and parameters: {'n_layers': 1, 'n_heads': 4, 'lr': 0.00036338980344441835}. Best is trial 7 with value: 0.6905438311688312.
+[I 2026-10-17 16:13:31,183] Trial 13 finished with value: 0.6749268585431722 and parameters: {'n_layers': 3, 'n_heads': 4, 'lr': 0.00011411590378019843}. Best is trial 7 with value: 0.6905438311688312.
+[I 2026-10-17 16:13:50,224] Trial 14 finished with value: 0.6712156862745098 and parameters: {'n_layers': 1, 'n_heads': 4, 'lr': 0.00024044298270301697}. Best is trial 7 with value: 0.6905438311688312.
+[I 2026-10-17 16:14:34,470] Trial 15 finished with value: 0.6581737616711505 and parameters: {'n_layers': 2, 'n_heads': 4, 'lr': 0.00018750846782768473}. Best is trial 7 with value: 0.6905438311688312.
+[I 2026-10-17 16:14:49,678] Trial 16 finished with value: 0.6491228070175439 and parameters: {'n_layers': 1, 'n_heads': 2, 'lr': 0.0004275557491017012}. Best is trial 7 with value: 0.6905438311688312.
+[I 2026-10-17 16:15:32,484] Trial 17 finished with value: 0.3464052287581699 and parameters: {'n_layers': 3, 'n_heads': 4, 'lr': 0.001167589851065348}. Best is trial 7 with value: 0.6905438311688312.
+[I 2026-10-17 16:15:51,594] Trial 18 finished with value: 0.6774496015002345 and parameters: {'n_layers': 1, 'n_heads': 4, 'lr': 0.00019844772071556942}. Best is trial 7 with value: 0.6905438311688312.
+[I 2026-10-17 16:16:22,609] Trial 19 finished with value: 0.6535361904044588 and parameters: {'n_layers': 2, 'n_heads': 2, 'lr': 0.0004041953973069841}. Best is trial 7 with value: 0.6905438311688312.
+HIGGS500K seleção {'params': {'n_layers': 2, 'n_heads': 2, 'lr': 0.0013919929598274882}, 'best_val_f1': 0.6905438311688312, 'n_trials': 20, 'n_fit': 1600, 'n_val': 400}
+{"dataset": "HIGGS500K", "seed": 0, "n_train": 2000, "n_test": 50000, "params": {"n_layers": 2, "n_heads": 2, "lr": 0.0013919929598274882}, "fit_time_s": 20.01305535301799, "test_f1_macro": 0.3461488165293579}
+{"dataset": "HIGGS500K", "seed": 1, "n_train": 2000, "n_test": 50000, "params": {"n_layers": 2, "n_heads": 2, "lr": 0.0013919929598274882}, "fit_time_s": 77.90947069897084, "test_f1_macro": 0.6730198900038911}
+{"dataset": "HIGGS500K", "seed": 2, "n_train": 2000, "n_test": 50000, "params": {"n_layers": 2, "n_heads": 2, "lr": 0.0013919929598274882}, "fit_time_s": 76.46276671800297, "test_f1_macro": 0.6548272685916876}
+{"dataset": "HIGGS500K", "seed": 3, "n_train": 2000, "n_test": 50000, "params": {"n_layers": 2, "n_heads": 2, "lr": 0.0013919929598274882}, "fit_time_s": 68.42223179002758, "test_f1_macro": 0.640150050872565}
+{"dataset": "HIGGS500K", "seed": 4, "n_train": 2000, "n_test": 50000, "params": {"n_layers": 2, "n_heads": 2, "lr": 0.0013919929598274882}, "fit_time_s": 29.907001526968088, "test_f1_macro": 0.3461488165293579}
+{"dataset": "HIGGS500K", "seed": 5, "n_train": 2000, "n_test": 50000, "params": {"n_layers": 2, "n_heads": 2, "lr": 0.0013919929598274882}, "fit_time_s": 24.751899309980217, "test_f1_macro": 0.3461488165293579}
+{"dataset": "HIGGS500K", "seed": 6, "n_train": 2000, "n_test": 50000, "params": {"n_layers": 2, "n_heads": 2, "lr": 0.0013919929598274882}, "fit_time_s": 33.27016285300488, "test_f1_macro": 0.32000543995648034}
+{"dataset": "HIGGS500K", "seed": 7, "n_train": 2000, "n_test": 50000, "params": {"n_layers": 2, "n_heads": 2, "lr": 0.0013919929598274882}, "fit_time_s": 73.95401183201466, "test_f1_macro": 0.6412904301101283}
+{"dataset": "HIGGS500K", "seed": 8, "n_train": 2000, "n_test": 50000, "params": {"n_layers": 2, "n_heads": 2, "lr": 0.0013919929598274882}, "fit_time_s": 85.97388618497644, "test_f1_macro": 0.6539697412256011}
+{"dataset": "HIGGS500K", "seed": 9, "n_train": 2000, "n_test": 50000, "params": {"n_layers": 2, "n_heads": 2, "lr": 0.0013919929598274882}, "fit_time_s": 84.9384138599853, "test_f1_macro": 0.6730069414386252}
+[I 2026-10-17 16:27:29,887] A new study created in memory with name: no-name-3ca64777-3d99-4a22-84bc-9086ce87944f
+[W 2026-10-17 16:27:33,893] Trial 0 failed with parameters: {'n_layers': 2, 'n_heads': 2, 'lr': 0.0006380556092044456} because of the following error: OutOfMemoryError('CUDA out of memory. Tried to allocate 96.00 MiB. GPU 0 has a total capacity of 1.95 GiB of which 81.62 MiB is free. Including non-PyTorch memory, this process has 1.86 GiB memory in use. Of the allocated memory 1.62 GiB is allocated by PyTorch, and 181.81 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)').
+Traceback (most recent call last):
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/.venv/lib/python3.12/site-packages/optuna/study/_optimize.py", line 206, in _run_trial
+    value_or_values = func(trial)
+                      ^^^^^^^^^^^
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/scripts/tier3_dense_2k.py", line 70, in objective
+    return t3._f1(y_val, fit(variant, params, t3.SELECT_SEED, X_fit, y_fit).predict(X_val), fmt)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/scripts/tier3_dense_2k.py", line 55, in fit
+    return t3.build(variant, seed, {**params, **budget}).fit(X, y)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/.venv/lib/python3.12/site-packages/sklearn/base.py", line 1336, in wrapper
+    return fit_method(estimator, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/.venv/lib/python3.12/site-packages/sklearn/pipeline.py", line 621, in fit
+    self._final_estimator.fit(Xt, y, **last_step_params["fit"])
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/src/models/ft_transformer_saint_wrapper.py", line 136, in fit
+    info = fit_model(
+           ^^^^^^^^^^
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/src/models/ft_transformer_model.py", line 914, in fit_model
+    train_epoch(model, X_train_t, y_train_t, optimizer, criterion,
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/src/models/ft_transformer_model.py", line 824, in train_epoch
+    optimizer.step()
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/.venv/lib/python3.12/site-packages/torch/optim/optimizer.py", line 487, in wrapper
+    out = func(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/.venv/lib/python3.12/site-packages/torch/optim/optimizer.py", line 91, in _use_grad
+    ret = func(self, *args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/.venv/lib/python3.12/site-packages/torch/optim/adam.py", line 223, in step
+    adam(
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/.venv/lib/python3.12/site-packages/torch/optim/optimizer.py", line 154, in maybe_fallback
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/.venv/lib/python3.12/site-packages/torch/optim/adam.py", line 784, in adam
+    func(
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/.venv/lib/python3.12/site-packages/torch/optim/adam.py", line 535, in _multi_tensor_adam
+    device_grads = torch._foreach_add(  # type: ignore[assignment]
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 96.00 MiB. GPU 0 has a total capacity of 1.95 GiB of which 81.62 MiB is free. Including non-PyTorch memory, this process has 1.86 GiB memory in use. Of the allocated memory 1.62 GiB is allocated by PyTorch, and 181.81 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+[W 2026-10-17 16:27:33,906] Trial 0 failed with value None.
+Traceback (most recent call last):
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/scripts/tier3_dense_2k.py", line 116, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/scripts/tier3_dense_2k.py", line 94, in main
+    sel = select(a.variant, d, fmt, a.n_trials)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/scripts/tier3_dense_2k.py", line 74, in select
+    study.optimize(objective, n_trials=n_trials)
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/.venv/lib/python3.12/site-packages/optuna/study/study.py", line 490, in optimize
+    _optimize(
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/.venv/lib/python3.12/site-packages/optuna/study/_optimize.py", line 68, in _optimize
+    _optimize_sequential(
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/.venv/lib/python3.12/site-packages/optuna/study/_optimize.py", line 165, in _optimize_sequential
+    frozen_trial_id = _run_trial(study, func, catch)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/.venv/lib/python3.12/site-packages/optuna/study/_optimize.py", line 263, in _run_trial
+    raise func_err
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/.venv/lib/python3.12/site-packages/optuna/study/_optimize.py", line 206, in _run_trial
+    value_or_values = func(trial)
+                      ^^^^^^^^^^^
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/scripts/tier3_dense_2k.py", line 70, in objective
+    return t3._f1(y_val, fit(variant, params, t3.SELECT_SEED, X_fit, y_fit).predict(X_val), fmt)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/scripts/tier3_dense_2k.py", line 55, in fit
+    return t3.build(variant, seed, {**params, **budget}).fit(X, y)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/.venv/lib/python3.12/site-packages/sklearn/base.py", line 1336, in wrapper
+    return fit_method(estimator, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/.venv/lib/python3.12/site-packages/sklearn/pipeline.py", line 621, in fit
+    self._final_estimator.fit(Xt, y, **last_step_params["fit"])
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/src/models/ft_transformer_saint_wrapper.py", line 136, in fit
+    info = fit_model(
+           ^^^^^^^^^^
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/src/models/ft_transformer_model.py", line 914, in fit_model
+    train_epoch(model, X_train_t, y_train_t, optimizer, criterion,
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/src/models/ft_transformer_model.py", line 824, in train_epoch
+    optimizer.step()
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/.venv/lib/python3.12/site-packages/torch/optim/optimizer.py", line 487, in wrapper
+    out = func(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/.venv/lib/python3.12/site-packages/torch/optim/optimizer.py", line 91, in _use_grad
+    ret = func(self, *args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/.venv/lib/python3.12/site-packages/torch/optim/adam.py", line 223, in step
+    adam(
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/.venv/lib/python3.12/site-packages/torch/optim/optimizer.py", line 154, in maybe_fallback
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/.venv/lib/python3.12/site-packages/torch/optim/adam.py", line 784, in adam
+    func(
+  File "/home/paulo/Documentos/dissertacao-estudo-comparativo/sparse-lssvm-transformers-study/.venv/lib/python3.12/site-packages/torch/optim/adam.py", line 535, in _multi_tensor_adam
+    device_grads = torch._foreach_add(  # type: ignore[assignment]
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 96.00 MiB. GPU 0 has a total capacity of 1.95 GiB of which 81.62 MiB is free. Including non-PyTorch memory, this process has 1.86 GiB memory in use. Of the allocated memory 1.62 GiB is allocated by PyTorch, and 181.81 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)

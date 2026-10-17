@@ -1,0 +1,149 @@
+{
+ "protocol": "Tier 3: Optuna TPE 20 trials (semente 0, hold-out 80/20 nas 2 mil); final com 10 sementes; teste 50 mil",
+ "variant": "SAINTColnorm",
+ "selection": {
+  "HIGGS500K": {
+   "params": {
+    "n_layers": 2,
+    "n_heads": 2,
+    "lr": 0.00207614104200153
+   },
+   "best_val_f1": 0.6824027358378504,
+   "n_trials": 20,
+   "n_fit": 1600,
+   "n_val": 400
+  }
+ },
+ "final": [
+  {
+   "dataset": "HIGGS500K",
+   "seed": 0,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "n_layers": 2,
+    "n_heads": 2,
+    "lr": 0.00207614104200153
+   },
+   "fit_time_s": 200.92102141905343,
+   "test_f1_macro": 0.6638899308541569
+  },
+  {
+   "dataset": "HIGGS500K",
+   "seed": 1,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "n_layers": 2,
+    "n_heads": 2,
+    "lr": 0.00207614104200153
+   },
+   "fit_time_s": 167.25048260600306,
+   "test_f1_macro": 0.3461488165293579
+  },
+  {
+   "dataset": "HIGGS500K",
+   "seed": 2,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "n_layers": 2,
+    "n_heads": 2,
+    "lr": 0.00207614104200153
+   },
+   "fit_time_s": 250.4314622139791,
+   "test_f1_macro": 0.6436677278345064
+  },
+  {
+   "dataset": "HIGGS500K",
+   "seed": 3,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "n_layers": 2,
+    "n_heads": 2,
+    "lr": 0.00207614104200153
+   },
+   "fit_time_s": 105.38308364502154,
+   "test_f1_macro": 0.3461488165293579
+  },
+  {
+   "dataset": "HIGGS500K",
+   "seed": 4,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "n_layers": 2,
+    "n_heads": 2,
+    "lr": 0.00207614104200153
+   },
+   "fit_time_s": 197.24790697201388,
+   "test_f1_macro": 0.6643554256005615
+  },
+  {
+   "dataset": "HIGGS500K",
+   "seed": 5,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "n_layers": 2,
+    "n_heads": 2,
+    "lr": 0.00207614104200153
+   },
+   "fit_time_s": 353.8847382069798,
+   "test_f1_macro": 0.6702324513508928
+  },
+  {
+   "dataset": "HIGGS500K",
+   "seed": 6,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "n_layers": 2,
+    "n_heads": 2,
+    "lr": 0.00207614104200153
+   },
+   "fit_time_s": 245.2546551739797,
+   "test_f1_macro": 0.6546094313668465
+  },
+  {
+   "dataset": "HIGGS500K",
+   "seed": 7,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "n_layers": 2,
+    "n_heads": 2,
+    "lr": 0.00207614104200153
+   },
+   "fit_time_s": 118.31794671999523,
+   "test_f1_macro": 0.3461488165293579
+  },
+  {
+   "dataset": "HIGGS500K",
+   "seed": 8,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "n_layers": 2,
+    "n_heads": 2,
+    "lr": 0.00207614104200153
+   },
+   "fit_time_s": 177.34976019500755,
+   "test_f1_macro": 0.6195694389206298
+  },
+  {
+   "dataset": "HIGGS500K",
+   "seed": 9,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "n_layers": 2,
+    "n_heads": 2,
+    "lr": 0.00207614104200153
+   },
+   "fit_time_s": 229.9084166730172,
+   "test_f1_macro": 0.677676543247223
+  }
+ ]
+}

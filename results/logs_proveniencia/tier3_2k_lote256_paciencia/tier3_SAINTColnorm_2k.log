@@ -1,0 +1,33 @@
+[I 2026-10-17 16:28:08,061] A new study created in memory with name: no-name-4bff2af9-c296-4cc1-8611-f9c6cc7fa9e8
+[I 2026-10-17 16:30:09,136] Trial 0 finished with value: 0.6522820576272692 and parameters: {'n_layers': 2, 'n_heads': 2, 'lr': 0.0006380556092044456}. Best is trial 0 with value: 0.6522820576272692.
+[I 2026-10-17 16:32:51,324] Trial 1 finished with value: 0.6824027358378504 and parameters: {'n_layers': 2, 'n_heads': 2, 'lr': 0.00207614104200153}. Best is trial 1 with value: 0.6824027358378504.
+[I 2026-10-17 16:35:28,924] Trial 2 finished with value: 0.6613804390766973 and parameters: {'n_layers': 3, 'n_heads': 4, 'lr': 0.0006042851578845063}. Best is trial 1 with value: 0.6824027358378504.
+[I 2026-10-17 16:38:57,967] Trial 3 finished with value: 0.6568802399333797 and parameters: {'n_layers': 2, 'n_heads': 2, 'lr': 0.00013449326615130812}. Best is trial 1 with value: 0.6824027358378504.
+[I 2026-10-17 16:43:21,436] Trial 4 finished with value: 0.6798719487795117 and parameters: {'n_layers': 1, 'n_heads': 2, 'lr': 0.0019280284410033446}. Best is trial 1 with value: 0.6824027358378504.
+[I 2026-10-17 16:52:25,558] Trial 5 finished with value: 0.3464052287581699 and parameters: {'n_layers': 3, 'n_heads': 2, 'lr': 0.0014221199739697214}. Best is trial 1 with value: 0.6824027358378504.
+[I 2026-10-17 16:54:57,993] Trial 6 finished with value: 0.6498599439775911 and parameters: {'n_layers': 1, 'n_heads': 2, 'lr': 0.002485367048344989}. Best is trial 1 with value: 0.6824027358378504.
+[I 2026-10-17 16:58:10,994] Trial 7 finished with value: 0.6471272781875856 and parameters: {'n_layers': 2, 'n_heads': 2, 'lr': 0.0013919929598274882}. Best is trial 1 with value: 0.6824027358378504.
+[I 2026-10-17 17:00:14,397] Trial 8 finished with value: 0.6695952541863783 and parameters: {'n_layers': 2, 'n_heads': 2, 'lr': 0.0008171890156969397}. Best is trial 1 with value: 0.6824027358378504.
+[I 2026-10-17 17:01:04,991] Trial 9 finished with value: 0.3464052287581699 and parameters: {'n_layers': 2, 'n_heads': 4, 'lr': 0.0010165558775187275}. Best is trial 1 with value: 0.6824027358378504.
+[I 2026-10-17 17:01:49,562] Trial 10 finished with value: 0.6683750376846548 and parameters: {'n_layers': 1, 'n_heads': 4, 'lr': 0.0002747174922945769}. Best is trial 1 with value: 0.6824027358378504.
+[I 2026-10-17 17:03:09,635] Trial 11 finished with value: 0.5999599959995999 and parameters: {'n_layers': 1, 'n_heads': 2, 'lr': 0.00291662998043694}. Best is trial 1 with value: 0.6824027358378504.
+[I 2026-10-17 17:03:56,636] Trial 12 finished with value: 0.6180387563341907 and parameters: {'n_layers': 1, 'n_heads': 2, 'lr': 0.001834923200475337}. Best is trial 1 with value: 0.6824027358378504.
+[I 2026-10-17 17:05:48,408] Trial 13 finished with value: 0.6705210671596276 and parameters: {'n_layers': 3, 'n_heads': 2, 'lr': 0.0002908549676985235}. Best is trial 1 with value: 0.6824027358378504.
+[I 2026-10-17 17:06:45,490] Trial 14 finished with value: 0.6796075192110336 and parameters: {'n_layers': 1, 'n_heads': 4, 'lr': 0.0003617081149657802}. Best is trial 1 with value: 0.6824027358378504.
+[I 2026-10-17 17:08:01,642] Trial 15 finished with value: 0.3464052287581699 and parameters: {'n_layers': 2, 'n_heads': 2, 'lr': 0.0019200356718738329}. Best is trial 1 with value: 0.6824027358378504.
+[I 2026-10-17 17:08:43,923] Trial 16 finished with value: 0.6402045694019687 and parameters: {'n_layers': 1, 'n_heads': 2, 'lr': 0.001064777185799663}. Best is trial 1 with value: 0.6824027358378504.
+[I 2026-10-17 17:10:22,615] Trial 17 finished with value: 0.6444444444444444 and parameters: {'n_layers': 3, 'n_heads': 2, 'lr': 0.00010631975148874643}. Best is trial 1 with value: 0.6824027358378504.
+[I 2026-10-17 17:10:54,072] Trial 18 finished with value: 0.3464052287581699 and parameters: {'n_layers': 1, 'n_heads': 4, 'lr': 0.002003871601788344}. Best is trial 1 with value: 0.6824027358378504.
+[I 2026-10-17 17:12:26,086] Trial 19 finished with value: 0.3464052287581699 and parameters: {'n_layers': 2, 'n_heads': 2, 'lr': 0.0029875349684973075}. Best is trial 1 with value: 0.6824027358378504.
+HIGGS500K seleção {'params': {'n_layers': 2, 'n_heads': 2, 'lr': 0.00207614104200153}, 'best_val_f1': 0.6824027358378504, 'n_trials': 20, 'n_fit': 1600, 'n_val': 400}
+{"dataset": "HIGGS500K", "seed": 0, "n_train": 2000, "n_test": 50000, "params": {"n_layers": 2, "n_heads": 2, "lr": 0.00207614104200153}, "fit_time_s": 200.92102141905343, "test_f1_macro": 0.6638899308541569}
+{"dataset": "HIGGS500K", "seed": 1, "n_train": 2000, "n_test": 50000, "params": {"n_layers": 2, "n_heads": 2, "lr": 0.00207614104200153}, "fit_time_s": 167.25048260600306, "test_f1_macro": 0.3461488165293579}
+{"dataset": "HIGGS500K", "seed": 2, "n_train": 2000, "n_test": 50000, "params": {"n_layers": 2, "n_heads": 2, "lr": 0.00207614104200153}, "fit_time_s": 250.4314622139791, "test_f1_macro": 0.6436677278345064}
+{"dataset": "HIGGS500K", "seed": 3, "n_train": 2000, "n_test": 50000, "params": {"n_layers": 2, "n_heads": 2, "lr": 0.00207614104200153}, "fit_time_s": 105.38308364502154, "test_f1_macro": 0.3461488165293579}
+{"dataset": "HIGGS500K", "seed": 4, "n_train": 2000, "n_test": 50000, "params": {"n_layers": 2, "n_heads": 2, "lr": 0.00207614104200153}, "fit_time_s": 197.24790697201388, "test_f1_macro": 0.6643554256005615}
+{"dataset": "HIGGS500K", "seed": 5, "n_train": 2000, "n_test": 50000, "params": {"n_layers": 2, "n_heads": 2, "lr": 0.00207614104200153}, "fit_time_s": 353.8847382069798, "test_f1_macro": 0.6702324513508928}
+{"dataset": "HIGGS500K", "seed": 6, "n_train": 2000, "n_test": 50000, "params": {"n_layers": 2, "n_heads": 2, "lr": 0.00207614104200153}, "fit_time_s": 245.2546551739797, "test_f1_macro": 0.6546094313668465}
+{"dataset": "HIGGS500K", "seed": 7, "n_train": 2000, "n_test": 50000, "params": {"n_layers": 2, "n_heads": 2, "lr": 0.00207614104200153}, "fit_time_s": 118.31794671999523, "test_f1_macro": 0.3461488165293579}
+{"dataset": "HIGGS500K", "seed": 8, "n_train": 2000, "n_test": 50000, "params": {"n_layers": 2, "n_heads": 2, "lr": 0.00207614104200153}, "fit_time_s": 177.34976019500755, "test_f1_macro": 0.6195694389206298}
+{"dataset": "HIGGS500K", "seed": 9, "n_train": 2000, "n_test": 50000, "params": {"n_layers": 2, "n_heads": 2, "lr": 0.00207614104200153}, "fit_time_s": 229.9084166730172, "test_f1_macro": 0.677676543247223}
+[I 2026-10-17 17:49:22,231] A new study created in memory with name: no-name-e506db4d-731d-438a-9f39-96a9f0ba7aee

@@ -1,0 +1,99 @@
+[I 2026-10-17 12:11:44,107] A new study created in memory with name: no-name-7319b7a5-11ef-456f-abc2-6aae05e10b3b
+[I 2026-10-17 12:11:59,370] Trial 0 finished with value: 0.6518580186180276 and parameters: {'num_blocks': 3, 'num_heads': 2, 'lr': 0.0006380556092044456}. Best is trial 0 with value: 0.6518580186180276.
+[I 2026-10-17 12:12:08,211] Trial 1 finished with value: 0.6536884724096661 and parameters: {'num_blocks': 3, 'num_heads': 2, 'lr': 0.00207614104200153}. Best is trial 1 with value: 0.6536884724096661.
+[I 2026-10-17 12:12:18,386] Trial 2 finished with value: 0.6091558396530312 and parameters: {'num_blocks': 4, 'num_heads': 4, 'lr': 0.0006042851578845063}. Best is trial 1 with value: 0.6536884724096661.
+[I 2026-10-17 12:12:26,462] Trial 3 finished with value: 0.65996599659966 and parameters: {'num_blocks': 3, 'num_heads': 2, 'lr': 0.00013449326615130812}. Best is trial 3 with value: 0.65996599659966.
+[I 2026-10-17 12:12:30,461] Trial 4 finished with value: 0.6148459383753502 and parameters: {'num_blocks': 2, 'num_heads': 2, 'lr': 0.0019280284410033446}. Best is trial 3 with value: 0.65996599659966.
+[I 2026-10-17 12:12:39,906] Trial 5 finished with value: 0.6649346559596914 and parameters: {'num_blocks': 4, 'num_heads': 2, 'lr': 0.0014221199739697214}. Best is trial 5 with value: 0.6649346559596914.
+[I 2026-10-17 12:12:43,680] Trial 6 finished with value: 0.5989583333333334 and parameters: {'num_blocks': 2, 'num_heads': 2, 'lr': 0.002485367048344989}. Best is trial 5 with value: 0.6649346559596914.
+[I 2026-10-17 12:12:51,381] Trial 7 finished with value: 0.6401936829749093 and parameters: {'num_blocks': 3, 'num_heads': 2, 'lr': 0.0013919929598274882}. Best is trial 5 with value: 0.6649346559596914.
+[I 2026-10-17 12:12:57,957] Trial 8 finished with value: 0.6403397908689064 and parameters: {'num_blocks': 3, 'num_heads': 2, 'lr': 0.0008171890156969397}. Best is trial 5 with value: 0.6649346559596914.
+[I 2026-10-17 12:13:04,935] Trial 9 finished with value: 0.6565656565656566 and parameters: {'num_blocks': 3, 'num_heads': 4, 'lr': 0.0010165558775187275}. Best is trial 5 with value: 0.6649346559596914.
+[I 2026-10-17 12:13:14,528] Trial 10 finished with value: 0.643378796213745 and parameters: {'num_blocks': 4, 'num_heads': 4, 'lr': 0.0002747174922945769}. Best is trial 5 with value: 0.6649346559596914.
+[I 2026-10-17 12:13:25,651] Trial 11 finished with value: 0.6750118091639112 and parameters: {'num_blocks': 4, 'num_heads': 2, 'lr': 0.00010274756128136679}. Best is trial 11 with value: 0.6750118091639112.
+[I 2026-10-17 12:13:37,133] Trial 12 finished with value: 0.6450843553938997 and parameters: {'num_blocks': 4, 'num_heads': 2, 'lr': 0.0001045381653903193}. Best is trial 11 with value: 0.6750118091639112.
+[I 2026-10-17 12:13:45,612] Trial 13 finished with value: 0.6530483972344437 and parameters: {'num_blocks': 4, 'num_heads': 2, 'lr': 0.00031025851957256314}. Best is trial 11 with value: 0.6750118091639112.
+[I 2026-10-17 12:13:55,121] Trial 14 finished with value: 0.6236395076797885 and parameters: {'num_blocks': 4, 'num_heads': 4, 'lr': 0.00033672802942706376}. Best is trial 11 with value: 0.6750118091639112.
+[I 2026-10-17 12:14:04,604] Trial 15 finished with value: 0.654212861009976 and parameters: {'num_blocks': 4, 'num_heads': 2, 'lr': 0.00018750846782768473}. Best is trial 11 with value: 0.6750118091639112.
+[I 2026-10-17 12:14:13,801] Trial 16 finished with value: 0.6324793269621416 and parameters: {'num_blocks': 4, 'num_heads': 2, 'lr': 0.0011948709421970441}. Best is trial 11 with value: 0.6750118091639112.
+[I 2026-10-17 12:14:21,192] Trial 17 finished with value: 0.5987707562660124 and parameters: {'num_blocks': 4, 'num_heads': 2, 'lr': 0.0004220888743165246}. Best is trial 11 with value: 0.6750118091639112.
+[I 2026-10-17 12:14:27,155] Trial 18 finished with value: 0.6691729323308271 and parameters: {'num_blocks': 2, 'num_heads': 4, 'lr': 0.0001991425111855794}. Best is trial 11 with value: 0.6750118091639112.
+[I 2026-10-17 12:14:33,676] Trial 19 finished with value: 0.6437173825772782 and parameters: {'num_blocks': 2, 'num_heads': 4, 'lr': 0.0001843470509632474}. Best is trial 11 with value: 0.6750118091639112.
+HIGGS500K seleção {'params': {'num_blocks': 4, 'num_heads': 2, 'lr': 0.00010274756128136679}, 'best_val_f1': 0.6750118091639112, 'n_trials': 20, 'n_fit': 1600, 'n_val': 400}
+{"dataset": "HIGGS500K", "seed": 0, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 4, "num_heads": 2, "lr": 0.00010274756128136679}, "fit_time_s": 10.566914833965711, "test_f1_macro": 0.6239196145423456}
+{"dataset": "HIGGS500K", "seed": 1, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 4, "num_heads": 2, "lr": 0.00010274756128136679}, "fit_time_s": 16.265906547021586, "test_f1_macro": 0.6275460899778865}
+{"dataset": "HIGGS500K", "seed": 2, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 4, "num_heads": 2, "lr": 0.00010274756128136679}, "fit_time_s": 26.399819633050356, "test_f1_macro": 0.6404201773774183}
+{"dataset": "HIGGS500K", "seed": 3, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 4, "num_heads": 2, "lr": 0.00010274756128136679}, "fit_time_s": 15.50665294798091, "test_f1_macro": 0.6353263713369044}
+{"dataset": "HIGGS500K", "seed": 4, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 4, "num_heads": 2, "lr": 0.00010274756128136679}, "fit_time_s": 12.886113124026451, "test_f1_macro": 0.6230318130266059}
+{"dataset": "HIGGS500K", "seed": 5, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 4, "num_heads": 2, "lr": 0.00010274756128136679}, "fit_time_s": 12.219654352986254, "test_f1_macro": 0.622503422832434}
+{"dataset": "HIGGS500K", "seed": 6, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 4, "num_heads": 2, "lr": 0.00010274756128136679}, "fit_time_s": 18.379946016997565, "test_f1_macro": 0.6303715357632005}
+{"dataset": "HIGGS500K", "seed": 7, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 4, "num_heads": 2, "lr": 0.00010274756128136679}, "fit_time_s": 14.910006341990083, "test_f1_macro": 0.6268237022486403}
+{"dataset": "HIGGS500K", "seed": 8, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 4, "num_heads": 2, "lr": 0.00010274756128136679}, "fit_time_s": 12.19578295899555, "test_f1_macro": 0.6228416758181469}
+{"dataset": "HIGGS500K", "seed": 9, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 4, "num_heads": 2, "lr": 0.00010274756128136679}, "fit_time_s": 12.633529387996532, "test_f1_macro": 0.6345823972173612}
+[I 2026-10-17 12:18:15,557] A new study created in memory with name: no-name-47867bc8-a01a-45dd-a3b8-7c400cb80708
+[I 2026-10-17 12:18:33,685] Trial 0 finished with value: 0.7798222851301407 and parameters: {'num_blocks': 3, 'num_heads': 2, 'lr': 0.0006380556092044456}. Best is trial 0 with value: 0.7798222851301407.
+[I 2026-10-17 12:18:46,599] Trial 1 finished with value: 0.7797074720151643 and parameters: {'num_blocks': 3, 'num_heads': 2, 'lr': 0.00207614104200153}. Best is trial 0 with value: 0.7798222851301407.
+[I 2026-10-17 12:19:36,178] Trial 2 finished with value: 0.7755682559565751 and parameters: {'num_blocks': 4, 'num_heads': 4, 'lr': 0.0006042851578845063}. Best is trial 0 with value: 0.7798222851301407.
+[I 2026-10-17 12:20:01,004] Trial 3 finished with value: 0.7863899908452854 and parameters: {'num_blocks': 3, 'num_heads': 2, 'lr': 0.00013449326615130812}. Best is trial 3 with value: 0.7863899908452854.
+[I 2026-10-17 12:20:10,418] Trial 4 finished with value: 0.7799571295786938 and parameters: {'num_blocks': 2, 'num_heads': 2, 'lr': 0.0019280284410033446}. Best is trial 3 with value: 0.7863899908452854.
+[I 2026-10-17 12:20:41,586] Trial 5 finished with value: 0.7888411681515131 and parameters: {'num_blocks': 4, 'num_heads': 2, 'lr': 0.0014221199739697214}. Best is trial 5 with value: 0.7888411681515131.
+[I 2026-10-17 12:20:53,110] Trial 6 finished with value: 0.7738428721955231 and parameters: {'num_blocks': 2, 'num_heads': 2, 'lr': 0.002485367048344989}. Best is trial 5 with value: 0.7888411681515131.
+[I 2026-10-17 12:21:11,871] Trial 7 finished with value: 0.7632658901267568 and parameters: {'num_blocks': 3, 'num_heads': 2, 'lr': 0.0013919929598274882}. Best is trial 5 with value: 0.7888411681515131.
+[I 2026-10-17 12:21:29,307] Trial 8 finished with value: 0.7944026110868392 and parameters: {'num_blocks': 3, 'num_heads': 2, 'lr': 0.0008171890156969397}. Best is trial 8 with value: 0.7944026110868392.
+[I 2026-10-17 12:21:47,649] Trial 9 finished with value: 0.7793513957307061 and parameters: {'num_blocks': 3, 'num_heads': 4, 'lr': 0.0010165558775187275}. Best is trial 8 with value: 0.7944026110868392.
+[I 2026-10-17 12:22:03,461] Trial 10 finished with value: 0.7830954826444488 and parameters: {'num_blocks': 2, 'num_heads': 4, 'lr': 0.00024753350537082535}. Best is trial 8 with value: 0.7944026110868392.
+[I 2026-10-17 12:22:30,436] Trial 11 finished with value: 0.7885235332043843 and parameters: {'num_blocks': 4, 'num_heads': 2, 'lr': 0.0009562006287034645}. Best is trial 8 with value: 0.7944026110868392.
+[I 2026-10-17 12:22:58,119] Trial 12 finished with value: 0.7798222851301407 and parameters: {'num_blocks': 4, 'num_heads': 2, 'lr': 0.0004495715248162755}. Best is trial 8 with value: 0.7944026110868392.
+[I 2026-10-17 12:23:27,404] Trial 13 finished with value: 0.7888991864895479 and parameters: {'num_blocks': 4, 'num_heads': 2, 'lr': 0.0003622152330413014}. Best is trial 8 with value: 0.7944026110868392.
+[I 2026-10-17 12:23:55,154] Trial 14 finished with value: 0.7905973084093056 and parameters: {'num_blocks': 4, 'num_heads': 4, 'lr': 0.00033764268132105126}. Best is trial 8 with value: 0.7944026110868392.
+[I 2026-10-17 12:24:18,692] Trial 15 finished with value: 0.7762216177633736 and parameters: {'num_blocks': 3, 'num_heads': 4, 'lr': 0.00018750846782768473}. Best is trial 8 with value: 0.7944026110868392.
+[I 2026-10-17 12:24:50,850] Trial 16 finished with value: 0.7865102790156323 and parameters: {'num_blocks': 3, 'num_heads': 4, 'lr': 0.00030629679759561137}. Best is trial 8 with value: 0.7944026110868392.
+[I 2026-10-17 12:25:13,502] Trial 17 finished with value: 0.7808219178082192 and parameters: {'num_blocks': 4, 'num_heads': 4, 'lr': 0.00010112130567695377}. Best is trial 8 with value: 0.7944026110868392.
+[I 2026-10-17 12:25:36,722] Trial 18 finished with value: 0.7829681686647375 and parameters: {'num_blocks': 2, 'num_heads': 4, 'lr': 0.0008478406149088292}. Best is trial 8 with value: 0.7944026110868392.
+[I 2026-10-17 12:26:15,631] Trial 19 finished with value: 0.7811744079515419 and parameters: {'num_blocks': 3, 'num_heads': 4, 'lr': 0.0002217724435836492}. Best is trial 8 with value: 0.7944026110868392.
+COVER seleção {'params': {'num_blocks': 3, 'num_heads': 2, 'lr': 0.0008171890156969397}, 'best_val_f1': 0.7944026110868392, 'n_trials': 20, 'n_fit': 1600, 'n_val': 400}
+{"dataset": "COVER", "seed": 0, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 3, "num_heads": 2, "lr": 0.0008171890156969397}, "fit_time_s": 19.333431287959684, "test_f1_macro": 0.7595944741176134}
+{"dataset": "COVER", "seed": 1, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 3, "num_heads": 2, "lr": 0.0008171890156969397}, "fit_time_s": 27.241355353035033, "test_f1_macro": 0.7661898456123566}
+{"dataset": "COVER", "seed": 2, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 3, "num_heads": 2, "lr": 0.0008171890156969397}, "fit_time_s": 26.52146163699217, "test_f1_macro": 0.7496210493069627}
+{"dataset": "COVER", "seed": 3, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 3, "num_heads": 2, "lr": 0.0008171890156969397}, "fit_time_s": 14.92281905299751, "test_f1_macro": 0.76008607597565}
+{"dataset": "COVER", "seed": 4, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 3, "num_heads": 2, "lr": 0.0008171890156969397}, "fit_time_s": 23.72107056202367, "test_f1_macro": 0.7619586673017702}
+{"dataset": "COVER", "seed": 5, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 3, "num_heads": 2, "lr": 0.0008171890156969397}, "fit_time_s": 13.275440474972129, "test_f1_macro": 0.7498491011555087}
+{"dataset": "COVER", "seed": 6, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 3, "num_heads": 2, "lr": 0.0008171890156969397}, "fit_time_s": 34.19777480198536, "test_f1_macro": 0.7536825371601299}
+{"dataset": "COVER", "seed": 7, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 3, "num_heads": 2, "lr": 0.0008171890156969397}, "fit_time_s": 28.091284758993424, "test_f1_macro": 0.7509432200353037}
+{"dataset": "COVER", "seed": 8, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 3, "num_heads": 2, "lr": 0.0008171890156969397}, "fit_time_s": 24.27280500798952, "test_f1_macro": 0.7475417995383143}
+{"dataset": "COVER", "seed": 9, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 3, "num_heads": 2, "lr": 0.0008171890156969397}, "fit_time_s": 16.634698387002572, "test_f1_macro": 0.7553072958685101}
+[I 2026-10-17 12:31:38,824] A new study created in memory with name: no-name-5c7ec129-070b-4b2a-a54e-9a5923490a87
+[I 2026-10-17 12:31:45,345] Trial 0 finished with value: 0.7457871930669234 and parameters: {'num_blocks': 3, 'num_heads': 2, 'lr': 0.0006380556092044456}. Best is trial 0 with value: 0.7457871930669234.
+[I 2026-10-17 12:31:50,217] Trial 1 finished with value: 0.7500628063824168 and parameters: {'num_blocks': 3, 'num_heads': 2, 'lr': 0.00207614104200153}. Best is trial 1 with value: 0.7500628063824168.
+[I 2026-10-17 12:31:57,524] Trial 2 finished with value: 0.754391517645197 and parameters: {'num_blocks': 4, 'num_heads': 4, 'lr': 0.0006042851578845063}. Best is trial 2 with value: 0.754391517645197.
+[I 2026-10-17 12:32:04,800] Trial 3 finished with value: 0.7507883226528329 and parameters: {'num_blocks': 3, 'num_heads': 2, 'lr': 0.00013449326615130812}. Best is trial 2 with value: 0.754391517645197.
+[I 2026-10-17 12:32:07,292] Trial 4 finished with value: 0.7227543099102731 and parameters: {'num_blocks': 2, 'num_heads': 2, 'lr': 0.0019280284410033446}. Best is trial 2 with value: 0.754391517645197.
+[I 2026-10-17 12:32:13,433] Trial 5 finished with value: 0.7619641794482944 and parameters: {'num_blocks': 4, 'num_heads': 2, 'lr': 0.0014221199739697214}. Best is trial 5 with value: 0.7619641794482944.
+[I 2026-10-17 12:32:17,403] Trial 6 finished with value: 0.7358730158730158 and parameters: {'num_blocks': 2, 'num_heads': 2, 'lr': 0.002485367048344989}. Best is trial 5 with value: 0.7619641794482944.
+[I 2026-10-17 12:32:21,972] Trial 7 finished with value: 0.7803825429658571 and parameters: {'num_blocks': 3, 'num_heads': 2, 'lr': 0.0013919929598274882}. Best is trial 7 with value: 0.7803825429658571.
+[I 2026-10-17 12:32:27,336] Trial 8 finished with value: 0.7410770936544662 and parameters: {'num_blocks': 3, 'num_heads': 2, 'lr': 0.0008171890156969397}. Best is trial 7 with value: 0.7803825429658571.
+[I 2026-10-17 12:32:33,396] Trial 9 finished with value: 0.7694613079228464 and parameters: {'num_blocks': 3, 'num_heads': 4, 'lr': 0.0010165558775187275}. Best is trial 7 with value: 0.7803825429658571.
+[I 2026-10-17 12:32:38,046] Trial 10 finished with value: 0.7357011157188615 and parameters: {'num_blocks': 2, 'num_heads': 4, 'lr': 0.0002747174922945769}. Best is trial 7 with value: 0.7803825429658571.
+[I 2026-10-17 12:32:43,608] Trial 11 finished with value: 0.7722441542666262 and parameters: {'num_blocks': 3, 'num_heads': 4, 'lr': 0.0009562006287034645}. Best is trial 7 with value: 0.7803825429658571.
+[I 2026-10-17 12:32:51,770] Trial 12 finished with value: 0.7511111111111111 and parameters: {'num_blocks': 4, 'num_heads': 4, 'lr': 0.00026509564186145664}. Best is trial 7 with value: 0.7803825429658571.
+[I 2026-10-17 12:33:00,449] Trial 13 finished with value: 0.754317228181107 and parameters: {'num_blocks': 3, 'num_heads': 4, 'lr': 0.0011498469079899807}. Best is trial 7 with value: 0.7803825429658571.
+[I 2026-10-17 12:33:04,762] Trial 14 finished with value: 0.7402113033804683 and parameters: {'num_blocks': 2, 'num_heads': 4, 'lr': 0.0003617081149657802}. Best is trial 7 with value: 0.7803825429658571.
+[I 2026-10-17 12:33:10,381] Trial 15 finished with value: 0.7469955724225175 and parameters: {'num_blocks': 3, 'num_heads': 4, 'lr': 0.0013861062953775991}. Best is trial 7 with value: 0.7803825429658571.
+[I 2026-10-17 12:33:16,121] Trial 16 finished with value: 0.7599364993320814 and parameters: {'num_blocks': 4, 'num_heads': 2, 'lr': 0.00042306346960161166}. Best is trial 7 with value: 0.7803825429658571.
+[I 2026-10-17 12:33:26,716] Trial 17 finished with value: 0.7521067729796382 and parameters: {'num_blocks': 3, 'num_heads': 4, 'lr': 0.00010945318023000498}. Best is trial 7 with value: 0.7803825429658571.
+[I 2026-10-17 12:33:35,647] Trial 18 finished with value: 0.7652685844812246 and parameters: {'num_blocks': 4, 'num_heads': 4, 'lr': 0.002817846508197402}. Best is trial 7 with value: 0.7803825429658571.
+[I 2026-10-17 12:33:39,890] Trial 19 finished with value: 0.7434817813765182 and parameters: {'num_blocks': 2, 'num_heads': 2, 'lr': 0.0008088514068840938}. Best is trial 7 with value: 0.7803825429658571.
+SUSY seleção {'params': {'num_blocks': 3, 'num_heads': 2, 'lr': 0.0013919929598274882}, 'best_val_f1': 0.7803825429658571, 'n_trials': 20, 'n_fit': 1600, 'n_val': 400}
+{"dataset": "SUSY", "seed": 0, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 3, "num_heads": 2, "lr": 0.0013919929598274882}, "fit_time_s": 8.17095896898536, "test_f1_macro": 0.7577423613068166}
+{"dataset": "SUSY", "seed": 1, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 3, "num_heads": 2, "lr": 0.0013919929598274882}, "fit_time_s": 6.5963638499961235, "test_f1_macro": 0.7584931201604042}
+{"dataset": "SUSY", "seed": 2, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 3, "num_heads": 2, "lr": 0.0013919929598274882}, "fit_time_s": 5.801569178001955, "test_f1_macro": 0.7552432619089757}
+{"dataset": "SUSY", "seed": 3, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 3, "num_heads": 2, "lr": 0.0013919929598274882}, "fit_time_s": 7.664945166965481, "test_f1_macro": 0.7487673733972681}
+{"dataset": "SUSY", "seed": 4, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 3, "num_heads": 2, "lr": 0.0013919929598274882}, "fit_time_s": 4.743365623988211, "test_f1_macro": 0.7463955000503009}
+{"dataset": "SUSY", "seed": 5, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 3, "num_heads": 2, "lr": 0.0013919929598274882}, "fit_time_s": 9.674676574009936, "test_f1_macro": 0.7674185502333268}
+{"dataset": "SUSY", "seed": 6, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 3, "num_heads": 2, "lr": 0.0013919929598274882}, "fit_time_s": 5.60063431004528, "test_f1_macro": 0.7627906357984251}
+{"dataset": "SUSY", "seed": 7, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 3, "num_heads": 2, "lr": 0.0013919929598274882}, "fit_time_s": 6.851806052029133, "test_f1_macro": 0.7569071894603197}
+{"dataset": "SUSY", "seed": 8, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 3, "num_heads": 2, "lr": 0.0013919929598274882}, "fit_time_s": 6.829483426990919, "test_f1_macro": 0.7644965544377735}
+{"dataset": "SUSY", "seed": 9, "n_train": 2000, "n_test": 50000, "params": {"num_blocks": 3, "num_heads": 2, "lr": 0.0013919929598274882}, "fit_time_s": 5.893367644981481, "test_f1_macro": 0.7609999173888793}
+HIGGS500K: F1 = 0.6287 ± 0.0062 (n=10)
+COVER: F1 = 0.7555 ± 0.0062 (n=10)
+SUSY: F1 = 0.7579 ± 0.0066 (n=10)

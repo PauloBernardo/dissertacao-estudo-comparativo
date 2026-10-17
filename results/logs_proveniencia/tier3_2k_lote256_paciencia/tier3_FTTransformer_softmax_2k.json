@@ -1,0 +1,431 @@
+{
+ "protocol": "Tier 3: Optuna TPE 20 trials (semente 0, hold-out 80/20 nas 2 mil); final com 10 sementes; teste 50 mil",
+ "variant": "FTTransformer_softmax",
+ "selection": {
+  "HIGGS500K": {
+   "params": {
+    "num_blocks": 2,
+    "num_heads": 2,
+    "lr": 0.002485367048344989
+   },
+   "best_val_f1": 0.6772559247931249,
+   "n_trials": 20,
+   "n_fit": 1600,
+   "n_val": 400
+  },
+  "COVER": {
+   "params": {
+    "num_blocks": 2,
+    "num_heads": 2,
+    "lr": 0.002963118087006089
+   },
+   "best_val_f1": 0.8083299791079677,
+   "n_trials": 20,
+   "n_fit": 1600,
+   "n_val": 400
+  },
+  "SUSY": {
+   "params": {
+    "num_blocks": 3,
+    "num_heads": 2,
+    "lr": 0.0013919929598274882
+   },
+   "best_val_f1": 0.7871855286159459,
+   "n_trials": 20,
+   "n_fit": 1600,
+   "n_val": 400
+  }
+ },
+ "final": [
+  {
+   "dataset": "HIGGS500K",
+   "seed": 0,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 2,
+    "num_heads": 2,
+    "lr": 0.002485367048344989
+   },
+   "fit_time_s": 12.047300587990321,
+   "test_f1_macro": 0.6581556804918016
+  },
+  {
+   "dataset": "HIGGS500K",
+   "seed": 1,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 2,
+    "num_heads": 2,
+    "lr": 0.002485367048344989
+   },
+   "fit_time_s": 9.683796647004783,
+   "test_f1_macro": 0.6402690257886188
+  },
+  {
+   "dataset": "HIGGS500K",
+   "seed": 2,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 2,
+    "num_heads": 2,
+    "lr": 0.002485367048344989
+   },
+   "fit_time_s": 9.192257543036249,
+   "test_f1_macro": 0.6377642978543717
+  },
+  {
+   "dataset": "HIGGS500K",
+   "seed": 3,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 2,
+    "num_heads": 2,
+    "lr": 0.002485367048344989
+   },
+   "fit_time_s": 6.702026669983752,
+   "test_f1_macro": 0.6450726392176411
+  },
+  {
+   "dataset": "HIGGS500K",
+   "seed": 4,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 2,
+    "num_heads": 2,
+    "lr": 0.002485367048344989
+   },
+   "fit_time_s": 9.535228541994002,
+   "test_f1_macro": 0.6469267400336287
+  },
+  {
+   "dataset": "HIGGS500K",
+   "seed": 5,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 2,
+    "num_heads": 2,
+    "lr": 0.002485367048344989
+   },
+   "fit_time_s": 13.136173162027262,
+   "test_f1_macro": 0.6456415278598209
+  },
+  {
+   "dataset": "HIGGS500K",
+   "seed": 6,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 2,
+    "num_heads": 2,
+    "lr": 0.002485367048344989
+   },
+   "fit_time_s": 11.614955669967458,
+   "test_f1_macro": 0.646645538867272
+  },
+  {
+   "dataset": "HIGGS500K",
+   "seed": 7,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 2,
+    "num_heads": 2,
+    "lr": 0.002485367048344989
+   },
+   "fit_time_s": 15.4695367749664,
+   "test_f1_macro": 0.6117873106789428
+  },
+  {
+   "dataset": "HIGGS500K",
+   "seed": 8,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 2,
+    "num_heads": 2,
+    "lr": 0.002485367048344989
+   },
+   "fit_time_s": 12.85372459195787,
+   "test_f1_macro": 0.624252316470467
+  },
+  {
+   "dataset": "HIGGS500K",
+   "seed": 9,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 2,
+    "num_heads": 2,
+    "lr": 0.002485367048344989
+   },
+   "fit_time_s": 10.675389820011333,
+   "test_f1_macro": 0.6584424542480687
+  },
+  {
+   "dataset": "COVER",
+   "seed": 0,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 2,
+    "num_heads": 2,
+    "lr": 0.002963118087006089
+   },
+   "fit_time_s": 18.879377337987535,
+   "test_f1_macro": 0.7502570633369119
+  },
+  {
+   "dataset": "COVER",
+   "seed": 1,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 2,
+    "num_heads": 2,
+    "lr": 0.002963118087006089
+   },
+   "fit_time_s": 24.884048428968526,
+   "test_f1_macro": 0.7642318696457024
+  },
+  {
+   "dataset": "COVER",
+   "seed": 2,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 2,
+    "num_heads": 2,
+    "lr": 0.002963118087006089
+   },
+   "fit_time_s": 23.560644694021903,
+   "test_f1_macro": 0.7521681123088142
+  },
+  {
+   "dataset": "COVER",
+   "seed": 3,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 2,
+    "num_heads": 2,
+    "lr": 0.002963118087006089
+   },
+   "fit_time_s": 18.214245409995783,
+   "test_f1_macro": 0.7412344024066134
+  },
+  {
+   "dataset": "COVER",
+   "seed": 4,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 2,
+    "num_heads": 2,
+    "lr": 0.002963118087006089
+   },
+   "fit_time_s": 24.456290190981235,
+   "test_f1_macro": 0.7583921574600224
+  },
+  {
+   "dataset": "COVER",
+   "seed": 5,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 2,
+    "num_heads": 2,
+    "lr": 0.002963118087006089
+   },
+   "fit_time_s": 17.97805951704504,
+   "test_f1_macro": 0.7507102319188375
+  },
+  {
+   "dataset": "COVER",
+   "seed": 6,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 2,
+    "num_heads": 2,
+    "lr": 0.002963118087006089
+   },
+   "fit_time_s": 14.939088565006386,
+   "test_f1_macro": 0.7541106356192477
+  },
+  {
+   "dataset": "COVER",
+   "seed": 7,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 2,
+    "num_heads": 2,
+    "lr": 0.002963118087006089
+   },
+   "fit_time_s": 10.441107945982367,
+   "test_f1_macro": 0.748567764790425
+  },
+  {
+   "dataset": "COVER",
+   "seed": 8,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 2,
+    "num_heads": 2,
+    "lr": 0.002963118087006089
+   },
+   "fit_time_s": 10.431386707001366,
+   "test_f1_macro": 0.7462602063665639
+  },
+  {
+   "dataset": "COVER",
+   "seed": 9,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 2,
+    "num_heads": 2,
+    "lr": 0.002963118087006089
+   },
+   "fit_time_s": 17.750144845980685,
+   "test_f1_macro": 0.7531134176071461
+  },
+  {
+   "dataset": "SUSY",
+   "seed": 0,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 3,
+    "num_heads": 2,
+    "lr": 0.0013919929598274882
+   },
+   "fit_time_s": 12.834643464011606,
+   "test_f1_macro": 0.7722860907111841
+  },
+  {
+   "dataset": "SUSY",
+   "seed": 1,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 3,
+    "num_heads": 2,
+    "lr": 0.0013919929598274882
+   },
+   "fit_time_s": 9.092147600022145,
+   "test_f1_macro": 0.7567692994794244
+  },
+  {
+   "dataset": "SUSY",
+   "seed": 2,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 3,
+    "num_heads": 2,
+    "lr": 0.0013919929598274882
+   },
+   "fit_time_s": 15.621887600980699,
+   "test_f1_macro": 0.7738019792326818
+  },
+  {
+   "dataset": "SUSY",
+   "seed": 3,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 3,
+    "num_heads": 2,
+    "lr": 0.0013919929598274882
+   },
+   "fit_time_s": 10.196207165019587,
+   "test_f1_macro": 0.770486077173259
+  },
+  {
+   "dataset": "SUSY",
+   "seed": 4,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 3,
+    "num_heads": 2,
+    "lr": 0.0013919929598274882
+   },
+   "fit_time_s": 12.704118431021925,
+   "test_f1_macro": 0.7685490412441435
+  },
+  {
+   "dataset": "SUSY",
+   "seed": 5,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 3,
+    "num_heads": 2,
+    "lr": 0.0013919929598274882
+   },
+   "fit_time_s": 19.89013752801111,
+   "test_f1_macro": 0.7749206718190638
+  },
+  {
+   "dataset": "SUSY",
+   "seed": 6,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 3,
+    "num_heads": 2,
+    "lr": 0.0013919929598274882
+   },
+   "fit_time_s": 23.768692619982176,
+   "test_f1_macro": 0.7693425732371288
+  },
+  {
+   "dataset": "SUSY",
+   "seed": 7,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 3,
+    "num_heads": 2,
+    "lr": 0.0013919929598274882
+   },
+   "fit_time_s": 10.551946205960121,
+   "test_f1_macro": 0.7766630268583063
+  },
+  {
+   "dataset": "SUSY",
+   "seed": 8,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 3,
+    "num_heads": 2,
+    "lr": 0.0013919929598274882
+   },
+   "fit_time_s": 12.99864958197577,
+   "test_f1_macro": 0.7585798359182485
+  },
+  {
+   "dataset": "SUSY",
+   "seed": 9,
+   "n_train": 2000,
+   "n_test": 50000,
+   "params": {
+    "num_blocks": 3,
+    "num_heads": 2,
+    "lr": 0.0013919929598274882
+   },
+   "fit_time_s": 7.971672868996393,
+   "test_f1_macro": 0.765701215594562
+  }
+ ]
+}
