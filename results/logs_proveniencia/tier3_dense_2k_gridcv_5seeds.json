@@ -1,0 +1,197 @@
+[
+ {
+  "dataset": "HIGGS500K",
+  "seed": 0,
+  "n_train": 2000,
+  "n_test": 50000,
+  "params": {
+   "clf__sigma": 50.0,
+   "clf__tau": 1000.0
+  },
+  "cv_f1": 0.6486765160451892,
+  "test_f1_macro": 0.6270379290813566,
+  "fit_time_s": 0.9514648849726655
+ },
+ {
+  "dataset": "HIGGS500K",
+  "seed": 1,
+  "n_train": 2000,
+  "n_test": 50000,
+  "params": {
+   "clf__sigma": 15.0,
+   "clf__tau": 2.5
+  },
+  "cv_f1": 0.6419533098570535,
+  "test_f1_macro": 0.6195602987673402,
+  "fit_time_s": 0.6429647789918818
+ },
+ {
+  "dataset": "HIGGS500K",
+  "seed": 2,
+  "n_train": 2000,
+  "n_test": 50000,
+  "params": {
+   "clf__sigma": 15.0,
+   "clf__tau": 12.5
+  },
+  "cv_f1": 0.634976565334571,
+  "test_f1_macro": 0.6395657062911355,
+  "fit_time_s": 0.7493070180062205
+ },
+ {
+  "dataset": "HIGGS500K",
+  "seed": 3,
+  "n_train": 2000,
+  "n_test": 50000,
+  "params": {
+   "clf__sigma": 50.0,
+   "clf__tau": 250.0
+  },
+  "cv_f1": 0.6563169124685045,
+  "test_f1_macro": 0.6323723132865124,
+  "fit_time_s": 0.7415046049864031
+ },
+ {
+  "dataset": "HIGGS500K",
+  "seed": 4,
+  "n_train": 2000,
+  "n_test": 50000,
+  "params": {
+   "clf__sigma": 5.0,
+   "clf__tau": 2.5
+  },
+  "cv_f1": 0.632134062834223,
+  "test_f1_macro": 0.6390204505404187,
+  "fit_time_s": 0.6698350899969228
+ },
+ {
+  "dataset": "COVER",
+  "seed": 0,
+  "n_train": 2000,
+  "n_test": 50000,
+  "params": {
+   "clf__sigma": 5.0,
+   "clf__tau": 50.0
+  },
+  "cv_f1": 0.7922734456560679,
+  "test_f1_macro": 0.7819828806081977,
+  "fit_time_s": 2.9407339719473384
+ },
+ {
+  "dataset": "COVER",
+  "seed": 1,
+  "n_train": 2000,
+  "n_test": 50000,
+  "params": {
+   "clf__sigma": 15.0,
+   "clf__tau": 50.0
+  },
+  "cv_f1": 0.7910641862045443,
+  "test_f1_macro": 0.7787198422941399,
+  "fit_time_s": 1.2320682360441424
+ },
+ {
+  "dataset": "COVER",
+  "seed": 2,
+  "n_train": 2000,
+  "n_test": 50000,
+  "params": {
+   "clf__sigma": 5.0,
+   "clf__tau": 12.5
+  },
+  "cv_f1": 0.7777088655422149,
+  "test_f1_macro": 0.7823777232418672,
+  "fit_time_s": 1.5600678969640285
+ },
+ {
+  "dataset": "COVER",
+  "seed": 3,
+  "n_train": 2000,
+  "n_test": 50000,
+  "params": {
+   "clf__sigma": 15.0,
+   "clf__tau": 50.0
+  },
+  "cv_f1": 0.7847040398812117,
+  "test_f1_macro": 0.7734514632967752,
+  "fit_time_s": 1.2752642330015078
+ },
+ {
+  "dataset": "COVER",
+  "seed": 4,
+  "n_train": 2000,
+  "n_test": 50000,
+  "params": {
+   "clf__sigma": 5.0,
+   "clf__tau": 12.5
+  },
+  "cv_f1": 0.7750830951467003,
+  "test_f1_macro": 0.7872567471253146,
+  "fit_time_s": 1.4311541729839519
+ },
+ {
+  "dataset": "SUSY",
+  "seed": 0,
+  "n_train": 2000,
+  "n_test": 50000,
+  "params": {
+   "clf__sigma": 15.0,
+   "clf__tau": 250.0
+  },
+  "cv_f1": 0.7880623321249404,
+  "test_f1_macro": 0.7797873317863082,
+  "fit_time_s": 1.6271923989988863
+ },
+ {
+  "dataset": "SUSY",
+  "seed": 1,
+  "n_train": 2000,
+  "n_test": 50000,
+  "params": {
+   "clf__sigma": 15.0,
+   "clf__tau": 1000.0
+  },
+  "cv_f1": 0.7845209741203659,
+  "test_f1_macro": 0.7857519615172508,
+  "fit_time_s": 3.3301874669850804
+ },
+ {
+  "dataset": "SUSY",
+  "seed": 2,
+  "n_train": 2000,
+  "n_test": 50000,
+  "params": {
+   "clf__sigma": 5.0,
+   "clf__tau": 12.5
+  },
+  "cv_f1": 0.7910756958355237,
+  "test_f1_macro": 0.7769826905491326,
+  "fit_time_s": 1.2979606710141525
+ },
+ {
+  "dataset": "SUSY",
+  "seed": 3,
+  "n_train": 2000,
+  "n_test": 50000,
+  "params": {
+   "clf__sigma": 5.0,
+   "clf__tau": 12.5
+  },
+  "cv_f1": 0.7702999142413786,
+  "test_f1_macro": 0.7798884300704556,
+  "fit_time_s": 1.1107688159681857
+ },
+ {
+  "dataset": "SUSY",
+  "seed": 4,
+  "n_train": 2000,
+  "n_test": 50000,
+  "params": {
+   "clf__sigma": 15.0,
+   "clf__tau": 250.0
+  },
+  "cv_f1": 0.7778705071988851,
+  "test_f1_macro": 0.7797698217365545,
+  "fit_time_s": 1.5175136600155383
+ }
+]
