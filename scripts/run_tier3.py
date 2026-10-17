@@ -77,12 +77,14 @@ def suggest(variant: str, trial: optuna.Trial) -> dict:
     """Espaço de busca: mesmos limites da grade da v1, agora contínuos."""
     if variant == "NystromLSSVMRandom":
         return {"sigma": trial.suggest_categorical("sigma", SIGMA_NYS),
-                "gamma": trial.suggest_float("gamma", 0.1, 100.0, log=True)}
+                # teto 100 → 1e4 (2026-10-16): γ = 95,9 no COVER (borda).
+                "gamma": trial.suggest_float("gamma", 0.1, 1e4, log=True)}
     if variant in ("ADMMNystromRandom", "FISTANystromRandom"):
         return {"sigma": trial.suggest_categorical("sigma", SIGMA_NYS),
                 # piso 0,01 → 0,001 (2026-10-16): o FISTA escolheu τ ≈ 0,0104 em COVER e SUSY.
-                "tau": trial.suggest_float("tau", 1e-3, 10.0, log=True),
-                "lambda_rel": trial.suggest_float("lambda_rel", 1e-3, 0.4, log=True)}
+                # pisos → 1e-5 (2026-10-16): λ_rel = 1,03e-3 no HIGGS e τ = 1,06e-3 no COVER (bordas).
+                "tau": trial.suggest_float("tau", 1e-5, 10.0, log=True),
+                "lambda_rel": trial.suggest_float("lambda_rel", 1e-5, 0.4, log=True)}
     if variant == "PCPLSSVm":
         return {"sigma": trial.suggest_categorical("sigma", SIGMA_PCP),
                 "tau": trial.suggest_float("tau", 1e-6, 1.0, log=True)}

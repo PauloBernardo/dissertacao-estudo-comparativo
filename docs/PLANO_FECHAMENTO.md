@@ -1186,3 +1186,8 @@ Referência: com o protocolo atual (grade × CV 5 folds × semente, 200 épocas)
 - Rodar o ajuste final **com e sem paciência** uma vez: se a diferença ficar na casa de 0,001 (como no
   Tier 2), a paciência fica justificada com dado do próprio Tier 3.
 - Escolher m (2000 vs 5000) pelo custo × F1 do Nyström-SVM.
+
+### Pendente: controle "denso com 2 mil" (pedido de 2026-10-16)
+LSSVM denso treinado em 2.000 amostras sorteadas do treino (mesmo orçamento de pontos que m = 2000),
+avaliado no mesmo teste de 50 mil, nas 3 bases. Pergunta: o Nyström ganha F1 por enxergar os 200 mil,
+ou daria no mesmo descartar os dados e usar o denso? Rodar depois da seleção local (CPU livre).

@@ -1,0 +1,534 @@
+{
+ "ADMMNystromRandom": {
+  "HIGGS500K": {
+   "base_params": {
+    "sigma": 5.0,
+    "tau": 0.11750611679757207
+   },
+   "tol": 0.005,
+   "curve": [
+    {
+     "lambda_rel": 9.999999999999999e-06,
+     "val_f1": 0.6874559733045864,
+     "n_support_vectors": 1902,
+     "sparsity_ratio": 0.9881125
+    },
+    {
+     "lambda_rel": 2.6204090466999745e-05,
+     "val_f1": 0.6876820142751248,
+     "n_support_vectors": 1731,
+     "sparsity_ratio": 0.98918125
+    },
+    {
+     "lambda_rel": 6.866543572027084e-05,
+     "val_f1": 0.6864962758972073,
+     "n_support_vectors": 1442,
+     "sparsity_ratio": 0.9909875
+    },
+    {
+     "lambda_rel": 0.0001799315289569933,
+     "val_f1": 0.6866986761847802,
+     "n_support_vectors": 1043,
+     "sparsity_ratio": 0.99348125
+    },
+    {
+     "lambda_rel": 0.0004714942062654641,
+     "val_f1": 0.6814390872488775,
+     "n_support_vectors": 678,
+     "sparsity_ratio": 0.9957625
+    },
+    {
+     "lambda_rel": 0.0012355076835646472,
+     "val_f1": 0.6738477717150685,
+     "n_support_vectors": 440,
+     "sparsity_ratio": 0.99725
+    },
+    {
+     "lambda_rel": 0.0032375355112801312,
+     "val_f1": 0.6624104043728807,
+     "n_support_vectors": 269,
+     "sparsity_ratio": 0.99831875
+    },
+    {
+     "lambda_rel": 0.008483667342770892,
+     "val_f1": 0.6519300207423793,
+     "n_support_vectors": 157,
+     "sparsity_ratio": 0.99901875
+    },
+    {
+     "lambda_rel": 0.022230678654190004,
+     "val_f1": 0.6408735464736595,
+     "n_support_vectors": 76,
+     "sparsity_ratio": 0.999525
+    },
+    {
+     "lambda_rel": 0.05825347145971956,
+     "val_f1": 0.6100195047823469,
+     "n_support_vectors": 32,
+     "sparsity_ratio": 0.9998
+    },
+    {
+     "lambda_rel": 0.15264792361472806,
+     "val_f1": 0.5733102531587508,
+     "n_support_vectors": 11,
+     "sparsity_ratio": 0.99993125
+    },
+    {
+     "lambda_rel": 0.4,
+     "val_f1": 0.49776009150452427,
+     "n_support_vectors": 5,
+     "sparsity_ratio": 0.99996875
+    }
+   ],
+   "chosen": {
+    "sigma": 5.0,
+    "tau": 0.11750611679757207,
+    "lambda_rel": 0.0001799315289569933
+   },
+   "chosen_val_f1": 0.6866986761847802,
+   "best_val_f1": 0.6876820142751248
+  },
+  "COVER": {
+   "base_params": {
+    "sigma": 1.5,
+    "tau": 0.07505241622349541
+   },
+   "tol": 0.005,
+   "curve": [
+    {
+     "lambda_rel": 9.999999999999999e-06,
+     "val_f1": 0.8402459502234207,
+     "n_support_vectors": 1982,
+     "sparsity_ratio": 0.9876125
+    },
+    {
+     "lambda_rel": 2.6204090466999745e-05,
+     "val_f1": 0.8407824929720209,
+     "n_support_vectors": 1944,
+     "sparsity_ratio": 0.98785
+    },
+    {
+     "lambda_rel": 6.866543572027084e-05,
+     "val_f1": 0.838748282797486,
+     "n_support_vectors": 1860,
+     "sparsity_ratio": 0.988375
+    },
+    {
+     "lambda_rel": 0.0001799315289569933,
+     "val_f1": 0.8365293989482867,
+     "n_support_vectors": 1682,
+     "sparsity_ratio": 0.9894875
+    },
+    {
+     "lambda_rel": 0.0004714942062654641,
+     "val_f1": 0.8304625403034669,
+     "n_support_vectors": 1455,
+     "sparsity_ratio": 0.99090625
+    },
+    {
+     "lambda_rel": 0.0012355076835646472,
+     "val_f1": 0.8211163175781815,
+     "n_support_vectors": 1165,
+     "sparsity_ratio": 0.99271875
+    },
+    {
+     "lambda_rel": 0.0032375355112801312,
+     "val_f1": 0.8098073371873371,
+     "n_support_vectors": 903,
+     "sparsity_ratio": 0.99435625
+    },
+    {
+     "lambda_rel": 0.008483667342770892,
+     "val_f1": 0.7897989033553054,
+     "n_support_vectors": 631,
+     "sparsity_ratio": 0.99605625
+    },
+    {
+     "lambda_rel": 0.022230678654190004,
+     "val_f1": 0.7648504666445112,
+     "n_support_vectors": 385,
+     "sparsity_ratio": 0.99759375
+    },
+    {
+     "lambda_rel": 0.05825347145971956,
+     "val_f1": 0.6960991284123003,
+     "n_support_vectors": 158,
+     "sparsity_ratio": 0.9990125
+    },
+    {
+     "lambda_rel": 0.15264792361472806,
+     "val_f1": 0.5191340704033989,
+     "n_support_vectors": 31,
+     "sparsity_ratio": 0.99980625
+    },
+    {
+     "lambda_rel": 0.4,
+     "val_f1": 0.3907178961941058,
+     "n_support_vectors": 6,
+     "sparsity_ratio": 0.9999625
+    }
+   ],
+   "chosen": {
+    "sigma": 1.5,
+    "tau": 0.07505241622349541,
+    "lambda_rel": 0.0001799315289569933
+   },
+   "chosen_val_f1": 0.8365293989482867,
+   "best_val_f1": 0.8407824929720209
+  },
+  "SUSY": {
+   "base_params": {
+    "sigma": 5.0,
+    "tau": 0.005578243547578316
+   },
+   "tol": 0.005,
+   "curve": [
+    {
+     "lambda_rel": 9.999999999999999e-06,
+     "val_f1": 0.796272463469154,
+     "n_support_vectors": 446,
+     "sparsity_ratio": 0.9972125
+    },
+    {
+     "lambda_rel": 2.6204090466999745e-05,
+     "val_f1": 0.7953014665974196,
+     "n_support_vectors": 329,
+     "sparsity_ratio": 0.99794375
+    },
+    {
+     "lambda_rel": 6.866543572027084e-05,
+     "val_f1": 0.7945830692092937,
+     "n_support_vectors": 240,
+     "sparsity_ratio": 0.9985
+    },
+    {
+     "lambda_rel": 0.0001799315289569933,
+     "val_f1": 0.7924192953126419,
+     "n_support_vectors": 165,
+     "sparsity_ratio": 0.99896875
+    },
+    {
+     "lambda_rel": 0.0004714942062654641,
+     "val_f1": 0.7772700872435325,
+     "n_support_vectors": 115,
+     "sparsity_ratio": 0.99928125
+    },
+    {
+     "lambda_rel": 0.0012355076835646472,
+     "val_f1": 0.7683114654493614,
+     "n_support_vectors": 69,
+     "sparsity_ratio": 0.99956875
+    },
+    {
+     "lambda_rel": 0.0032375355112801312,
+     "val_f1": 0.5766559304804187,
+     "n_support_vectors": 30,
+     "sparsity_ratio": 0.9998125
+    },
+    {
+     "lambda_rel": 0.008483667342770892,
+     "val_f1": 0.4470996891115591,
+     "n_support_vectors": 13,
+     "sparsity_ratio": 0.99991875
+    },
+    {
+     "lambda_rel": 0.022230678654190004,
+     "val_f1": 0.4189156241130431,
+     "n_support_vectors": 4,
+     "sparsity_ratio": 0.999975
+    },
+    {
+     "lambda_rel": 0.05825347145971956,
+     "val_f1": 0.6278798973615978,
+     "n_support_vectors": 4,
+     "sparsity_ratio": 0.999975
+    },
+    {
+     "lambda_rel": 0.15264792361472806,
+     "val_f1": 0.6374256253719588,
+     "n_support_vectors": 2,
+     "sparsity_ratio": 0.9999875
+    },
+    {
+     "lambda_rel": 0.4,
+     "val_f1": 0.35128121959130715,
+     "n_support_vectors": 1,
+     "sparsity_ratio": 0.99999375
+    }
+   ],
+   "chosen": {
+    "sigma": 5.0,
+    "tau": 0.005578243547578316,
+    "lambda_rel": 0.0001799315289569933
+   },
+   "chosen_val_f1": 0.7924192953126419,
+   "best_val_f1": 0.796272463469154
+  }
+ },
+ "FISTANystromRandom": {
+  "HIGGS500K": {
+   "base_params": {
+    "sigma": 5.0,
+    "tau": 0.0031000142735014805
+   },
+   "tol": 0.005,
+   "curve": [
+    {
+     "lambda_rel": 9.999999999999999e-06,
+     "val_f1": 0.6826260051934125,
+     "n_support_vectors": 2000,
+     "sparsity_ratio": 0.9875
+    },
+    {
+     "lambda_rel": 2.6204090466999745e-05,
+     "val_f1": 0.682474003660954,
+     "n_support_vectors": 2000,
+     "sparsity_ratio": 0.9875
+    },
+    {
+     "lambda_rel": 6.866543572027084e-05,
+     "val_f1": 0.6820838435667027,
+     "n_support_vectors": 2000,
+     "sparsity_ratio": 0.9875
+    },
+    {
+     "lambda_rel": 0.0001799315289569933,
+     "val_f1": 0.6809165485513932,
+     "n_support_vectors": 1999,
+     "sparsity_ratio": 0.98750625
+    },
+    {
+     "lambda_rel": 0.0004714942062654641,
+     "val_f1": 0.679423019107281,
+     "n_support_vectors": 1955,
+     "sparsity_ratio": 0.98778125
+    },
+    {
+     "lambda_rel": 0.0012355076835646472,
+     "val_f1": 0.6730601657929027,
+     "n_support_vectors": 1383,
+     "sparsity_ratio": 0.99135625
+    },
+    {
+     "lambda_rel": 0.0032375355112801312,
+     "val_f1": 0.6620217541407054,
+     "n_support_vectors": 377,
+     "sparsity_ratio": 0.99764375
+    },
+    {
+     "lambda_rel": 0.008483667342770892,
+     "val_f1": 0.6518910087173101,
+     "n_support_vectors": 178,
+     "sparsity_ratio": 0.9988875
+    },
+    {
+     "lambda_rel": 0.022230678654190004,
+     "val_f1": 0.6386930970514002,
+     "n_support_vectors": 79,
+     "sparsity_ratio": 0.99950625
+    },
+    {
+     "lambda_rel": 0.05825347145971956,
+     "val_f1": 0.6220733929981929,
+     "n_support_vectors": 43,
+     "sparsity_ratio": 0.99973125
+    },
+    {
+     "lambda_rel": 0.15264792361472806,
+     "val_f1": 0.6005769334446641,
+     "n_support_vectors": 26,
+     "sparsity_ratio": 0.9998375
+    },
+    {
+     "lambda_rel": 0.4,
+     "val_f1": 0.516927113258473,
+     "n_support_vectors": 8,
+     "sparsity_ratio": 0.99995
+    }
+   ],
+   "chosen": {
+    "sigma": 5.0,
+    "tau": 0.0031000142735014805,
+    "lambda_rel": 0.0004714942062654641
+   },
+   "chosen_val_f1": 0.679423019107281,
+   "best_val_f1": 0.6826260051934125
+  },
+  "COVER": {
+   "base_params": {
+    "sigma": 1.5,
+    "tau": 0.008321022598127736
+   },
+   "tol": 0.005,
+   "curve": [
+    {
+     "lambda_rel": 9.999999999999999e-06,
+     "val_f1": 0.8385454558051486,
+     "n_support_vectors": 2000,
+     "sparsity_ratio": 0.9875
+    },
+    {
+     "lambda_rel": 2.6204090466999745e-05,
+     "val_f1": 0.838361867284544,
+     "n_support_vectors": 2000,
+     "sparsity_ratio": 0.9875
+    },
+    {
+     "lambda_rel": 6.866543572027084e-05,
+     "val_f1": 0.8380847461073697,
+     "n_support_vectors": 1999,
+     "sparsity_ratio": 0.98750625
+    },
+    {
+     "lambda_rel": 0.0001799315289569933,
+     "val_f1": 0.8364859651324784,
+     "n_support_vectors": 1955,
+     "sparsity_ratio": 0.98778125
+    },
+    {
+     "lambda_rel": 0.0004714942062654641,
+     "val_f1": 0.8307814476365383,
+     "n_support_vectors": 1523,
+     "sparsity_ratio": 0.99048125
+    },
+    {
+     "lambda_rel": 0.0012355076835646472,
+     "val_f1": 0.8208306438914099,
+     "n_support_vectors": 1179,
+     "sparsity_ratio": 0.99263125
+    },
+    {
+     "lambda_rel": 0.0032375355112801312,
+     "val_f1": 0.8100143496094461,
+     "n_support_vectors": 908,
+     "sparsity_ratio": 0.994325
+    },
+    {
+     "lambda_rel": 0.008483667342770892,
+     "val_f1": 0.7898355455932615,
+     "n_support_vectors": 638,
+     "sparsity_ratio": 0.9960125
+    },
+    {
+     "lambda_rel": 0.022230678654190004,
+     "val_f1": 0.7653804528463763,
+     "n_support_vectors": 385,
+     "sparsity_ratio": 0.99759375
+    },
+    {
+     "lambda_rel": 0.05825347145971956,
+     "val_f1": 0.7087221095334686,
+     "n_support_vectors": 175,
+     "sparsity_ratio": 0.99890625
+    },
+    {
+     "lambda_rel": 0.15264792361472806,
+     "val_f1": 0.5993063174728156,
+     "n_support_vectors": 61,
+     "sparsity_ratio": 0.99961875
+    },
+    {
+     "lambda_rel": 0.4,
+     "val_f1": 0.44972181237877834,
+     "n_support_vectors": 9,
+     "sparsity_ratio": 0.99994375
+    }
+   ],
+   "chosen": {
+    "sigma": 1.5,
+    "tau": 0.008321022598127736,
+    "lambda_rel": 0.0001799315289569933
+   },
+   "chosen_val_f1": 0.8364859651324784,
+   "best_val_f1": 0.8385454558051486
+  },
+  "SUSY": {
+   "base_params": {
+    "sigma": 5.0,
+    "tau": 1.0792524077763748e-05
+   },
+   "tol": 0.005,
+   "curve": [
+    {
+     "lambda_rel": 9.999999999999999e-06,
+     "val_f1": 0.7940968098860073,
+     "n_support_vectors": 2000,
+     "sparsity_ratio": 0.9875
+    },
+    {
+     "lambda_rel": 2.6204090466999745e-05,
+     "val_f1": 0.7936206227747593,
+     "n_support_vectors": 2000,
+     "sparsity_ratio": 0.9875
+    },
+    {
+     "lambda_rel": 6.866543572027084e-05,
+     "val_f1": 0.7928549958188709,
+     "n_support_vectors": 1984,
+     "sparsity_ratio": 0.9876
+    },
+    {
+     "lambda_rel": 0.0001799315289569933,
+     "val_f1": 0.7918010968746969,
+     "n_support_vectors": 1546,
+     "sparsity_ratio": 0.9903375
+    },
+    {
+     "lambda_rel": 0.0004714942062654641,
+     "val_f1": 0.7900035411293109,
+     "n_support_vectors": 737,
+     "sparsity_ratio": 0.99539375
+    },
+    {
+     "lambda_rel": 0.0012355076835646472,
+     "val_f1": 0.7876695766476847,
+     "n_support_vectors": 173,
+     "sparsity_ratio": 0.99891875
+    },
+    {
+     "lambda_rel": 0.0032375355112801312,
+     "val_f1": 0.7831700146663949,
+     "n_support_vectors": 93,
+     "sparsity_ratio": 0.99941875
+    },
+    {
+     "lambda_rel": 0.008483667342770892,
+     "val_f1": 0.773033487863829,
+     "n_support_vectors": 51,
+     "sparsity_ratio": 0.99968125
+    },
+    {
+     "lambda_rel": 0.022230678654190004,
+     "val_f1": 0.7619685812604391,
+     "n_support_vectors": 28,
+     "sparsity_ratio": 0.999825
+    },
+    {
+     "lambda_rel": 0.05825347145971956,
+     "val_f1": 0.7496735943453716,
+     "n_support_vectors": 15,
+     "sparsity_ratio": 0.99990625
+    },
+    {
+     "lambda_rel": 0.15264792361472806,
+     "val_f1": 0.7377192531490235,
+     "n_support_vectors": 8,
+     "sparsity_ratio": 0.99995
+    },
+    {
+     "lambda_rel": 0.4,
+     "val_f1": 0.670678223891163,
+     "n_support_vectors": 6,
+     "sparsity_ratio": 0.9999625
+    }
+   ],
+   "chosen": {
+    "sigma": 5.0,
+    "tau": 1.0792524077763748e-05,
+    "lambda_rel": 0.0004714942062654641
+   },
+   "chosen_val_f1": 0.7900035411293109,
+   "best_val_f1": 0.7940968098860073
+  }
+ }
+}
