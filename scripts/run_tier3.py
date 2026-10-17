@@ -114,10 +114,11 @@ def fixed_budget(variant: str, n_train: int) -> dict:
         # streaming: resumo do treino congelado, predição em lotes. O full_context
         # (forward único sobre [treino ‖ teste], 200 mil linhas × m = 2000) estoura a
         # T4 com 3 camadas / 4 cabeças; as predições concordam 100% (custo_embarque).
-        # global: os mesmos m = 2000 landmarks (sorteados no treino inteiro) entram em cada
-        # lote de 4096; o padrão per_batch daria ~51 por lote no treino e 2000 na predição.
-        return {"m_ratio": M_FIXED / n_train, "predict_mode": "streaming",
-                "minibatch_landmarks": "global"}
+        # per_batch (padrão): cada lote usa m/N = 1% de si como landmarks (~41 em 4096); a
+        # predição usa os m = 2000 (1% do treino). O global (2000 em cada lote) foi testado em
+        # 2026-10-17: ~10× mais caro por trial, mesmo F1 de validação no HIGGS; e o controle de
+        # 2 mil mostrou FT-CUR com m = 20 empatando com o FT-Softmax denso.
+        return {"m_ratio": M_FIXED / n_train, "predict_mode": "streaming"}
     if "Nystrom" in variant:
         return {"m_ratio": M_FIXED / n_train}
     return {}
