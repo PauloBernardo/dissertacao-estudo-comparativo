@@ -1,0 +1,23 @@
+{
+ "FTTransformerCURRandom": {
+  "COVER": {
+   "params": {
+    "n_layers": 3,
+    "n_heads": 4,
+    "lr": 0.0006557847832445657
+   },
+   "best_val_f1": 0.9473153955513591,
+   "n_trials": 20,
+   "complete": true,
+   "n_distinct": 20,
+   "total_fit_s": 16317.8,
+   "n_fit": 160000,
+   "n_val": 40000,
+   "m_fixed": 2000,
+   "tf_budget": {
+    "epochs": 200,
+    "patience": 16
+   }
+  }
+ }
+}

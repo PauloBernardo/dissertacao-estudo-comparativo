@@ -1,0 +1,42 @@
+{
+ "FTTransformerCURRandom": {
+  "HIGGS500K": {
+   "params": {
+    "n_layers": 1,
+    "n_heads": 2,
+    "lr": 0.0014691510255403506
+   },
+   "best_val_f1": 0.7369601599004683,
+   "n_trials": 20,
+   "complete": true,
+   "n_distinct": 20,
+   "total_fit_s": 3050.0,
+   "n_fit": 160000,
+   "n_val": 40000,
+   "m_fixed": 2000,
+   "tf_budget": {
+    "epochs": 200,
+    "patience": 16
+   }
+  },
+  "SUSY": {
+   "params": {
+    "n_layers": 1,
+    "n_heads": 2,
+    "lr": 0.00033873945602584123
+   },
+   "best_val_f1": 0.7990536200137437,
+   "n_trials": 20,
+   "complete": true,
+   "n_distinct": 20,
+   "total_fit_s": 2251.9,
+   "n_fit": 160000,
+   "n_val": 40000,
+   "m_fixed": 2000,
+   "tf_budget": {
+    "epochs": 200,
+    "patience": 16
+   }
+  }
+ }
+}
