@@ -21,6 +21,7 @@ FAMILY = {"XGBoost": 0, "SAINTColnorm": 1, "FTTransformer_softmax": 1, "FTTransf
           "FTTransformerCURRandom": 1}
 CONTROL = [("StandardLSSVM", "tier3_dense_2k.json", "NystromLSSVMRandom"),
            ("XGBoost", "tier3_xgb_2k.json", "XGBoost"),
+           ("SAINTColnorm", "tier3_SAINTColnorm_2k.json", "SAINTColnorm"),
            ("FTTransformer_softmax", "tier3_FTTransformer_softmax_2k.json", "FTTransformer_softmax"),
            ("FTTransformer_topk", "tier3_FTTransformer_topk_2k.json", "FTTransformer_topk"),
            ("FTTransformerCURRandom", "tier3_FTTransformerCURRandom_2k.json", "FTTransformerCURRandom")]
