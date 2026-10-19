@@ -65,8 +65,9 @@ def results_table(T) -> str:
     return "\n".join([
         r"\begin{table}[H]",
         r"  \centering",
-        rf"  \caption[F1-macro de teste do Tier~3]{{F1-macro de teste do Tier~3 ($N_{{\text{{treino}}}} = 200\,000$, "
-        rf"$N_{{\text{{teste}}}} = 50\,000$; média $\pm$ desvio-padrão em {n} sementes). Hiperparâmetros por Optuna "
+        rf"  \caption[F1-macro de teste do Cenário~3]{{F1-macro de teste do Cenário~3 ($N_{{\text{{treino}}}} = 200\,000$, "
+        rf"$N_{{\text{{teste}}}} = 50\,000$; média $\pm$ desvio-padrão em {n} subamostras, que compartilham os "
+        rf"hiperparâmetros e não são avaliações independentes, Seção~\ref{{sec:tier3_metodo}}). Hiperparâmetros por Optuna "
         r"(20 \textit{trials}, uma seleção por modelo e base); $m = r = 2000$ nos Nyström e no PCP. "
         r"Em negrito, o melhor de cada base. Esparsidade: amostral (LSSVMs, $1 - $ fração de coeficientes não nulos) ou "
         r"inter-instâncias (FT-CUR, $1 - m/N$).}",
@@ -100,9 +101,10 @@ def control_table(T) -> str:
     return "\n".join([
         r"\begin{table}[H]",
         r"  \centering",
-        r"  \caption[Controle do Tier~3 com $N_{\text{treino}} = 2000$]{Controle do Tier~3: o mesmo protocolo "
-        r"(Optuna, 20 \textit{trials}, 10 sementes, o mesmo teste de 50 mil) com apenas $2000$ amostras de treino, "
-        r"contra o Tier~3 com $200\,000$. Para os LSSVMs, o controle é o LSSVM denso em $2000$ pontos --- o mesmo "
+        r"  \caption[Controle do Cenário~3 com $N_{\text{treino}} = 2000$]{Controle do Cenário~3: o mesmo arcabouço de seleção "
+        r"e teste (Optuna, 20 \textit{trials}, 10 sementes, o mesmo teste de 50 mil) com apenas $2000$ amostras de treino "
+        r"e, nos Transformers, orçamento de treino adaptado (lote de $256$, sem paciência), "
+        r"contra o Cenário~3 com $200\,000$. Para os LSSVMs, o controle é o LSSVM denso em $2000$ pontos --- o mesmo "
         r"orçamento de pontos do Nyström-SVM com $m = 2000$. F1-macro de teste médio e ganho $\Delta$ de $2000$ para "
         r"$200\,000$. O FT-CUR usa $m = 20$ (a mesma razão $m/N = 1\%$).}",
         r"  \label{tab:tier3_2k_control}",

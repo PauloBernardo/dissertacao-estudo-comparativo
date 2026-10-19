@@ -50,9 +50,9 @@ def read_ranks(path: Path) -> list[tuple[str, float]]:
     """Lê a tabela de ranks médios de Friedman já publicada."""
     out: list[tuple[str, float]] = []
     for line in path.read_text(encoding="utf-8").splitlines():
-        m = re.match(r"\s*(\d+)\s*&\s*(.+?)\s*&\s*([\d.]+)\s*\\\\", line)
-        if m:
-            out.append((m.group(2).strip(), float(m.group(3))))
+        m = re.match(r"\s*(\d+)\s*&\s*(.+?)\s*&\s*([\d.]+(?:\{,\}\d+)?)\s*\\\\", line)
+        if m:   # aceita "4.600" e o decimal brasileiro "4{,}600" das tabelas publicadas
+            out.append((m.group(2).strip(), float(m.group(3).replace("{,}", "."))))
     if not out:
         raise ValueError(f"nenhum rank lido de {path}")
     return out
@@ -83,8 +83,8 @@ def nemenyi_table(tier: int, rows: list[tuple[str, float]], n_datasets: int,
     return "\n".join([
         r"\begin{table}[H]",
         r"  \centering",
-        rf"  \caption[Pós-teste de Nemenyi --- Tier {tier}]{{Pós-teste de Nemenyi --- Tier {tier} "
-        rf"($k={len(rows)}$ modelos, $n={n_datasets}$ \textit{{datasets}}, "
+        rf"  \caption[Pós-teste de Nemenyi --- Cenário~{tier}]{{Pós-teste de Nemenyi --- Cenário~{tier} "
+        rf"($n_{{\text{{mod}}}}={len(rows)}$ modelos, $n_{{\text{{ds}}}}={n_datasets}$ \textit{{datasets}}, "
         rf"$\mathrm{{CD}}={cd:.3f}$ a $\alpha=0{{,}}05$). "
         rf"``Difere do 1º'' indica diferença significativa em relação ao "
         rf"{best_name}; as duas últimas colunas contam de quantos modelos "
@@ -124,7 +124,7 @@ def process(tier: int, ranks_file: Path, n_datasets: int, dry: bool) -> None:
 
     tbl = nemenyi_table(tier, rows, n_datasets, cd)
     fig = cd_diagram(ranks, [r[0] for r in rows], cd,
-                     title=f"Diagrama de Diferença Crítica — F1-macro (Tier {tier})")
+                     title=f"Diagrama de Diferença Crítica — F1-macro (Cenário {tier})")
 
     if dry:
         print("  [dry-run] nada gravado")

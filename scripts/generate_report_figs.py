@@ -126,7 +126,7 @@ def main() -> None:
     ax.set_yticks(range(len(order)))
     ax.set_yticklabels(labels, fontsize=9)
     ax.set_xlabel("F1-macro médio (30 sementes × 10 datasets)", fontsize=10)
-    ax.set_title("Tier 1 — Desempenho Geral dos Modelos\n(★ = modelo proposto/investigado)", fontsize=11)
+    ax.set_title("Cenário 1 — Desempenho Geral dos Modelos\n(★ = modelo proposto/investigado)", fontsize=11)
     ax.axvline(means[0], color="gray", linestyle=":", linewidth=0.8)
     ax.set_xlim(0.55, 0.95)
 
@@ -247,7 +247,7 @@ def main() -> None:
         ax.set_ylabel("F1-macro" if col_idx == 0 else "")
         ax.grid(True, axis="y", alpha=0.3)
 
-    fig.suptitle("Ablação A — Escalabilidade Amostral: N=400 (translúcido) vs N=2000 (sólido)", fontsize=11)
+    fig.suptitle("Análise de Sensibilidade A — Escalabilidade Amostral: N=400 (translúcido) vs N=2000 (sólido)", fontsize=11)
     plt.tight_layout()
     fig.savefig(OUT / "fig3_scaling.pdf", dpi=150)
     fig.savefig(OUT / "fig3_scaling.png", dpi=150)

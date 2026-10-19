@@ -145,7 +145,7 @@ def gera_tabela(O, T, linhas, mae_g, r, p) -> None:
         r"  \caption[Validação externa: concordância em AUC-ROC com o TabZilla]{Validação externa: AUC-ROC de teste neste estudo e no TabZilla "
         r"\cite{mcelfresh2023when} sobre os cinco conjuntos do Tier~1 presentes nos dois "
         r"levantamentos. Nos modelos homólogos, as duas implementações concordam "
-        rf"(MAE global de ${n(mae_g)}$; $r$ de Pearson $= {n(r)}$, "
+        rf"(MAE global de ${n(mae_g)}$; correlação de Pearson de ${n(r)}$, "
         rf"$p = {p * 1e7:.0f} \times 10^{{-7}}$), o que corrobora o \textit{{pipeline}} "
         r"por via externa. Só figuram as células em que os dois estudos avaliaram o "
         r"mesmo par modelo--conjunto; o TabZilla não reporta SAINT no GCR.}",

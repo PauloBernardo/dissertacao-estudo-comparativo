@@ -95,7 +95,7 @@ NOISE_MODELS = ["StandardLSSVM", "ADMMNesterovLSSVM", "DualFISTA",
 sc_b = collect(ROOT / "results" / "ablation_b_noise.json", ["TWS_5f", "TWM_5f", "TWC_5f"])
 barpanels(sc_b, NOISE_MODELS, ["TWS_5f", "TWM_5f", "TWC_5f"],
           ["Espiral (5f)", "Luas (5f)", "Tabuleiro (5f)"],
-          "Ablação B — 5 features informativas + ruído", "fig4_5features")
+          "Análise de Sensibilidade B — 5 features informativas + ruído", "fig4_5features")
 
 # fig5 — Ablação C (MK5, complexidade)
 MK_MODELS = ["StandardLSSVM", "ADMMNesterovLSSVM", "DualFISTA",
@@ -104,6 +104,6 @@ MK_MODELS = ["StandardLSSVM", "ADMMNesterovLSSVM", "DualFISTA",
 sc_c = collect(ROOT / "results" / "ablation_c_mk5.json", ["MKE", "MKM", "MKH"])
 barpanels(sc_c, MK_MODELS, ["MKE", "MKM", "MKH"],
           ["MKE (fácil)", "MKM (médio)", "MKH (difícil)"],
-          "Ablação C — MK5: complexidade de atributos", "fig5_mk5")
+          "Análise de Sensibilidade C — MK5: complexidade de atributos", "fig5_mk5")
 
 print("figs salvas em", OUT)
