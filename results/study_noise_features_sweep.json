@@ -1,0 +1,1443 @@
+[
+ {
+  "variant": "XGBoost",
+  "n_noise": 200,
+  "n_features": 202,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.9786660598345909,
+  "fit_time_s": 75.48263540799962,
+  "params": {
+   "learning_rate": 0.1,
+   "max_depth": 9,
+   "n_estimators": 100
+  }
+ },
+ {
+  "variant": "NystromLSSVMRandom",
+  "n_noise": 200,
+  "n_features": 202,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.5256166982922201,
+  "fit_time_s": 2.7143400509958155,
+  "params": {
+   "gamma": 1.0,
+   "sigma": 5.0
+  }
+ },
+ {
+  "variant": "FTTransformer_softmax",
+  "n_noise": 200,
+  "n_features": 202,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.6633080606544294,
+  "fit_time_s": 61.22812470397912,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_topk",
+  "n_noise": 200,
+  "n_features": 202,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.674553266560437,
+  "fit_time_s": 100.38255863304948,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_entmax",
+  "n_noise": 200,
+  "n_features": 202,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.6386189601898706,
+  "fit_time_s": 592.995525271981,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "XGBoost",
+  "n_noise": 0,
+  "n_features": 2,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.9826663893288959,
+  "fit_time_s": 20.690056355961133,
+  "params": {
+   "learning_rate": 0.1,
+   "max_depth": 9,
+   "n_estimators": 100
+  }
+ },
+ {
+  "variant": "NystromLSSVMRandom",
+  "n_noise": 0,
+  "n_features": 2,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.9959999928888762,
+  "fit_time_s": 1.9185518539743498,
+  "params": {
+   "gamma": 30.0,
+   "sigma": 0.5
+  }
+ },
+ {
+  "variant": "FTTransformer_softmax",
+  "n_noise": 0,
+  "n_features": 2,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.9879998079969279,
+  "fit_time_s": 6.157803408044856,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_topk",
+  "n_noise": 0,
+  "n_features": 2,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.981332802355267,
+  "fit_time_s": 10.241786831000354,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_entmax",
+  "n_noise": 0,
+  "n_features": 2,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.9879989545755986,
+  "fit_time_s": 37.356392652960494,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_sparsemax",
+  "n_noise": 0,
+  "n_features": 2,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.9933332266649599,
+  "fit_time_s": 28.152118469995912,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "XGBoost",
+  "n_noise": 0,
+  "n_features": 2,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.9879999786666287,
+  "fit_time_s": 4.819773033959791,
+  "params": {
+   "learning_rate": 0.3,
+   "max_depth": 6,
+   "n_estimators": 100
+  }
+ },
+ {
+  "variant": "NystromLSSVMRandom",
+  "n_noise": 0,
+  "n_features": 2,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.9946666287404711,
+  "fit_time_s": 2.6535074269631878,
+  "params": {
+   "gamma": 100.0,
+   "sigma": 0.5
+  }
+ },
+ {
+  "variant": "FTTransformer_softmax",
+  "n_noise": 0,
+  "n_features": 2,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.9826663893288959,
+  "fit_time_s": 8.55695217999164,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_topk",
+  "n_noise": 0,
+  "n_features": 2,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.982666635851797,
+  "fit_time_s": 10.77302200999111,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_entmax",
+  "n_noise": 0,
+  "n_features": 2,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.9893330299172954,
+  "fit_time_s": 31.579375392990187,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_sparsemax",
+  "n_noise": 0,
+  "n_features": 2,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.9893330299172954,
+  "fit_time_s": 17.16192666697316,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "XGBoost",
+  "n_noise": 0,
+  "n_features": 2,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.9826663893288959,
+  "fit_time_s": 2.2170037500327453,
+  "params": {
+   "learning_rate": 0.1,
+   "max_depth": 6,
+   "n_estimators": 300
+  }
+ },
+ {
+  "variant": "NystromLSSVMRandom",
+  "n_noise": 0,
+  "n_features": 2,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.9933333214814604,
+  "fit_time_s": 1.7577219409868121,
+  "params": {
+   "gamma": 30.0,
+   "sigma": 0.5
+  }
+ },
+ {
+  "variant": "FTTransformer_softmax",
+  "n_noise": 0,
+  "n_features": 2,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.9839995448759431,
+  "fit_time_s": 5.889614931016695,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_topk",
+  "n_noise": 0,
+  "n_features": 2,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.9879999786666287,
+  "fit_time_s": 12.602626913052518,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_entmax",
+  "n_noise": 0,
+  "n_features": 2,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.9906666500740446,
+  "fit_time_s": 33.55984818201978,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_sparsemax",
+  "n_noise": 0,
+  "n_features": 2,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.9759972690226089,
+  "fit_time_s": 10.010428823996335,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "XGBoost",
+  "n_noise": 3,
+  "n_features": 5,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.9786666666666667,
+  "fit_time_s": 3.587864170956891,
+  "params": {
+   "learning_rate": 0.3,
+   "max_depth": 9,
+   "n_estimators": 300
+  }
+ },
+ {
+  "variant": "NystromLSSVMRandom",
+  "n_noise": 3,
+  "n_features": 5,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.8146663371845995,
+  "fit_time_s": 1.6944645330077037,
+  "params": {
+   "gamma": 100.0,
+   "sigma": 1.5
+  }
+ },
+ {
+  "variant": "FTTransformer_softmax",
+  "n_noise": 3,
+  "n_features": 5,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.9733302989140098,
+  "fit_time_s": 4.913150780950673,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_topk",
+  "n_noise": 3,
+  "n_features": 5,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.8665717843800036,
+  "fit_time_s": 13.567897351982538,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_entmax",
+  "n_noise": 3,
+  "n_features": 5,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.992,
+  "fit_time_s": 29.931647763994988,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_sparsemax",
+  "n_noise": 3,
+  "n_features": 5,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.982666635851797,
+  "fit_time_s": 30.53492865205044,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "XGBoost",
+  "n_noise": 3,
+  "n_features": 5,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.9839998862214132,
+  "fit_time_s": 5.583802451030351,
+  "params": {
+   "learning_rate": 0.3,
+   "max_depth": 6,
+   "n_estimators": 100
+  }
+ },
+ {
+  "variant": "NystromLSSVMRandom",
+  "n_noise": 3,
+  "n_features": 5,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.8053333333333333,
+  "fit_time_s": 2.7708867699839175,
+  "params": {
+   "gamma": 100.0,
+   "sigma": 1.5
+  }
+ },
+ {
+  "variant": "FTTransformer_softmax",
+  "n_noise": 3,
+  "n_features": 5,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.9879998079969279,
+  "fit_time_s": 8.402085719979368,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_topk",
+  "n_noise": 3,
+  "n_features": 5,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.8291583915262561,
+  "fit_time_s": 16.299414601002354,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_entmax",
+  "n_noise": 3,
+  "n_features": 5,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.9879999786666287,
+  "fit_time_s": 29.776114295993466,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_sparsemax",
+  "n_noise": 3,
+  "n_features": 5,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.982665896262056,
+  "fit_time_s": 21.071164798981044,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "XGBoost",
+  "n_noise": 3,
+  "n_features": 5,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.9759998293321197,
+  "fit_time_s": 5.856692105997354,
+  "params": {
+   "learning_rate": 0.3,
+   "max_depth": 6,
+   "n_estimators": 300
+  }
+ },
+ {
+  "variant": "NystromLSSVMRandom",
+  "n_noise": 3,
+  "n_features": 5,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.8079877112135176,
+  "fit_time_s": 3.17987146100495,
+  "params": {
+   "gamma": 100.0,
+   "sigma": 1.5
+  }
+ },
+ {
+  "variant": "FTTransformer_softmax",
+  "n_noise": 3,
+  "n_features": 5,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.9919999431107065,
+  "fit_time_s": 15.520765092980582,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_topk",
+  "n_noise": 3,
+  "n_features": 5,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.863921618852459,
+  "fit_time_s": 8.54052669898374,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_entmax",
+  "n_noise": 3,
+  "n_features": 5,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.9893332574809421,
+  "fit_time_s": 24.430816203996073,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_sparsemax",
+  "n_noise": 3,
+  "n_features": 5,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.9799991110716032,
+  "fit_time_s": 28.73123559099622,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "XGBoost",
+  "n_noise": 10,
+  "n_features": 12,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.9799999644443812,
+  "fit_time_s": 10.918910089007113,
+  "params": {
+   "learning_rate": 0.1,
+   "max_depth": 6,
+   "n_estimators": 100
+  }
+ },
+ {
+  "variant": "NystromLSSVMRandom",
+  "n_noise": 10,
+  "n_features": 12,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.6439841770745367,
+  "fit_time_s": 1.9926398469833657,
+  "params": {
+   "gamma": 0.1,
+   "sigma": 5.0
+  }
+ },
+ {
+  "variant": "FTTransformer_softmax",
+  "n_noise": 10,
+  "n_features": 12,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.9786653012459464,
+  "fit_time_s": 11.656777253025211,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_topk",
+  "n_noise": 10,
+  "n_features": 12,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.6692180742089688,
+  "fit_time_s": 3.156003497017082,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_entmax",
+  "n_noise": 10,
+  "n_features": 12,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.7972626906442066,
+  "fit_time_s": 22.760812690015882,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_sparsemax",
+  "n_noise": 10,
+  "n_features": 12,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.9653244563941703,
+  "fit_time_s": 29.230705645983107,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "XGBoost",
+  "n_noise": 10,
+  "n_features": 12,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.9866666666666667,
+  "fit_time_s": 11.457369748968631,
+  "params": {
+   "learning_rate": 0.3,
+   "max_depth": 6,
+   "n_estimators": 300
+  }
+ },
+ {
+  "variant": "NystromLSSVMRandom",
+  "n_noise": 10,
+  "n_features": 12,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.6264515027322404,
+  "fit_time_s": 2.8526009419583715,
+  "params": {
+   "gamma": 0.1,
+   "sigma": 5.0
+  }
+ },
+ {
+  "variant": "FTTransformer_softmax",
+  "n_noise": 10,
+  "n_features": 12,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.6413275945748464,
+  "fit_time_s": 3.708651152031962,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_topk",
+  "n_noise": 10,
+  "n_features": 12,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.6127136752136753,
+  "fit_time_s": 6.334155051037669,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_entmax",
+  "n_noise": 10,
+  "n_features": 12,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.7836985238091847,
+  "fit_time_s": 18.77567506500054,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_sparsemax",
+  "n_noise": 10,
+  "n_features": 12,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.9599974398361495,
+  "fit_time_s": 17.476337138970848,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "XGBoost",
+  "n_noise": 10,
+  "n_features": 12,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.9786660598345909,
+  "fit_time_s": 11.296856946020853,
+  "params": {
+   "learning_rate": 0.1,
+   "max_depth": 6,
+   "n_estimators": 100
+  }
+ },
+ {
+  "variant": "NystromLSSVMRandom",
+  "n_noise": 10,
+  "n_features": 12,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.6159890770226353,
+  "fit_time_s": 2.889213862014003,
+  "params": {
+   "gamma": 0.1,
+   "sigma": 5.0
+  }
+ },
+ {
+  "variant": "FTTransformer_softmax",
+  "n_noise": 10,
+  "n_features": 12,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.9773284564324058,
+  "fit_time_s": 11.340533968992531,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_topk",
+  "n_noise": 10,
+  "n_features": 12,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.6089655871922217,
+  "fit_time_s": 11.929405672010034,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_entmax",
+  "n_noise": 10,
+  "n_features": 12,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.9693328426588159,
+  "fit_time_s": 30.66463411296718,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_sparsemax",
+  "n_noise": 10,
+  "n_features": 12,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.9626642771804061,
+  "fit_time_s": 25.748316660989076,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "XGBoost",
+  "n_noise": 50,
+  "n_features": 52,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.9733325747932385,
+  "fit_time_s": 37.90955248102546,
+  "params": {
+   "learning_rate": 0.3,
+   "max_depth": 6,
+   "n_estimators": 300
+  }
+ },
+ {
+  "variant": "NystromLSSVMRandom",
+  "n_noise": 50,
+  "n_features": 52,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.5839970417567414,
+  "fit_time_s": 2.1320322650135495,
+  "params": {
+   "gamma": 1.0,
+   "sigma": 5.0
+  }
+ },
+ {
+  "variant": "FTTransformer_softmax",
+  "n_noise": 50,
+  "n_features": 52,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.6773126813449394,
+  "fit_time_s": 9.09691192500759,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_topk",
+  "n_noise": 50,
+  "n_features": 52,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.6746643531687336,
+  "fit_time_s": 13.830946281028446,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_entmax",
+  "n_noise": 50,
+  "n_features": 52,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.6650183016561353,
+  "fit_time_s": 50.87238849198911,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_sparsemax",
+  "n_noise": 50,
+  "n_features": 52,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.6653279785809907,
+  "fit_time_s": 16.266078982967883,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "XGBoost",
+  "n_noise": 50,
+  "n_features": 52,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.9799999644443812,
+  "fit_time_s": 41.41055678500561,
+  "params": {
+   "learning_rate": 0.3,
+   "max_depth": 6,
+   "n_estimators": 100
+  }
+ },
+ {
+  "variant": "NystromLSSVMRandom",
+  "n_noise": 50,
+  "n_features": 52,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.581142706725194,
+  "fit_time_s": 2.1112292579491623,
+  "params": {
+   "gamma": 0.1,
+   "sigma": 5.0
+  }
+ },
+ {
+  "variant": "FTTransformer_softmax",
+  "n_noise": 50,
+  "n_features": 52,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.6533234723121013,
+  "fit_time_s": 9.111089645011816,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_topk",
+  "n_noise": 50,
+  "n_features": 52,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.6546660527396493,
+  "fit_time_s": 11.92992394999601,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_entmax",
+  "n_noise": 50,
+  "n_features": 52,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.656,
+  "fit_time_s": 50.86511536798207,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_sparsemax",
+  "n_noise": 50,
+  "n_features": 52,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.6479774705581157,
+  "fit_time_s": 23.112841847992968,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "XGBoost",
+  "n_noise": 50,
+  "n_features": 52,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.9746666216295496,
+  "fit_time_s": 42.12270109297242,
+  "params": {
+   "learning_rate": 0.3,
+   "max_depth": 9,
+   "n_estimators": 300
+  }
+ },
+ {
+  "variant": "NystromLSSVMRandom",
+  "n_noise": 50,
+  "n_features": 52,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.5719992391097584,
+  "fit_time_s": 2.0988034610054456,
+  "params": {
+   "gamma": 10.0,
+   "sigma": 5.0
+  }
+ },
+ {
+  "variant": "FTTransformer_softmax",
+  "n_noise": 50,
+  "n_features": 52,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.657283982226774,
+  "fit_time_s": 9.591899597027805,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_topk",
+  "n_noise": 50,
+  "n_features": 52,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.6426666666666667,
+  "fit_time_s": 13.194923651986755,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_entmax",
+  "n_noise": 50,
+  "n_features": 52,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.6337264016426167,
+  "fit_time_s": 53.56431418098509,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformer_sparsemax",
+  "n_noise": 50,
+  "n_features": 52,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.5784825371336813,
+  "fit_time_s": 16.268779975012876,
+  "params": {
+   "num_blocks": 3,
+   "num_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformerCURRandom",
+  "n_noise": 0,
+  "n_features": 2,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.9813321385902032,
+  "fit_time_s": 12.85003101901384,
+  "params": {
+   "n_layers": 2,
+   "n_heads": 4,
+   "m_ratio": 0.1,
+   "batch_size": 128,
+   "predict_mode": "streaming"
+  }
+ },
+ {
+  "variant": "SAINTColnorm",
+  "n_noise": 0,
+  "n_features": 2,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.9826641703071909,
+  "fit_time_s": 13.75987458601594,
+  "params": {
+   "n_layers": 2,
+   "n_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformerCURRandom",
+  "n_noise": 0,
+  "n_features": 2,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.9879999786666287,
+  "fit_time_s": 19.294920501008164,
+  "params": {
+   "n_layers": 2,
+   "n_heads": 4,
+   "m_ratio": 0.1,
+   "batch_size": 128,
+   "predict_mode": "streaming"
+  }
+ },
+ {
+  "variant": "SAINTColnorm",
+  "n_noise": 0,
+  "n_features": 2,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.9853320555923983,
+  "fit_time_s": 6.4340125460294075,
+  "params": {
+   "n_layers": 2,
+   "n_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformerCURRandom",
+  "n_noise": 0,
+  "n_features": 2,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.9893330299172954,
+  "fit_time_s": 9.2617403420154,
+  "params": {
+   "n_layers": 2,
+   "n_heads": 4,
+   "m_ratio": 0.1,
+   "batch_size": 128,
+   "predict_mode": "streaming"
+  }
+ },
+ {
+  "variant": "SAINTColnorm",
+  "n_noise": 0,
+  "n_features": 2,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.9879994666429619,
+  "fit_time_s": 7.595083792984951,
+  "params": {
+   "n_layers": 2,
+   "n_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformerCURRandom",
+  "n_noise": 3,
+  "n_features": 5,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.9759984639016897,
+  "fit_time_s": 11.669134544034023,
+  "params": {
+   "n_layers": 2,
+   "n_heads": 4,
+   "m_ratio": 0.1,
+   "batch_size": 128,
+   "predict_mode": "streaming"
+  }
+ },
+ {
+  "variant": "SAINTColnorm",
+  "n_noise": 3,
+  "n_features": 5,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.9933333214814604,
+  "fit_time_s": 20.902159448014572,
+  "params": {
+   "n_layers": 2,
+   "n_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformerCURRandom",
+  "n_noise": 3,
+  "n_features": 5,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.9866665718511776,
+  "fit_time_s": 14.652904582035262,
+  "params": {
+   "n_layers": 2,
+   "n_heads": 4,
+   "m_ratio": 0.1,
+   "batch_size": 128,
+   "predict_mode": "streaming"
+  }
+ },
+ {
+  "variant": "SAINTColnorm",
+  "n_noise": 3,
+  "n_features": 5,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.9906662518334148,
+  "fit_time_s": 14.83287336799549,
+  "params": {
+   "n_layers": 2,
+   "n_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformerCURRandom",
+  "n_noise": 3,
+  "n_features": 5,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.985332681452509,
+  "fit_time_s": 14.534525290015154,
+  "params": {
+   "n_layers": 2,
+   "n_heads": 4,
+   "m_ratio": 0.1,
+   "batch_size": 128,
+   "predict_mode": "streaming"
+  }
+ },
+ {
+  "variant": "SAINTColnorm",
+  "n_noise": 3,
+  "n_features": 5,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.9893332574809421,
+  "fit_time_s": 13.54357684700517,
+  "params": {
+   "n_layers": 2,
+   "n_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformerCURRandom",
+  "n_noise": 10,
+  "n_features": 12,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.6543957129055846,
+  "fit_time_s": 4.551163527998142,
+  "params": {
+   "n_layers": 2,
+   "n_heads": 4,
+   "m_ratio": 0.1,
+   "batch_size": 128,
+   "predict_mode": "streaming"
+  }
+ },
+ {
+  "variant": "SAINTColnorm",
+  "n_noise": 10,
+  "n_features": 12,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.9813333333333333,
+  "fit_time_s": 27.56202840199694,
+  "params": {
+   "n_layers": 2,
+   "n_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformerCURRandom",
+  "n_noise": 10,
+  "n_features": 12,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.6377851161315272,
+  "fit_time_s": 5.31802870699903,
+  "params": {
+   "n_layers": 2,
+   "n_heads": 4,
+   "m_ratio": 0.1,
+   "batch_size": 128,
+   "predict_mode": "streaming"
+  }
+ },
+ {
+  "variant": "SAINTColnorm",
+  "n_noise": 10,
+  "n_features": 12,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.9759998293321197,
+  "fit_time_s": 25.21902808098821,
+  "params": {
+   "n_layers": 2,
+   "n_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformerCURRandom",
+  "n_noise": 10,
+  "n_features": 12,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.6652613273255225,
+  "fit_time_s": 4.683839013974648,
+  "params": {
+   "n_layers": 2,
+   "n_heads": 4,
+   "m_ratio": 0.1,
+   "batch_size": 128,
+   "predict_mode": "streaming"
+  }
+ },
+ {
+  "variant": "SAINTColnorm",
+  "n_noise": 10,
+  "n_features": 12,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.982665156609198,
+  "fit_time_s": 28.993622046953533,
+  "params": {
+   "n_layers": 2,
+   "n_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformerCURRandom",
+  "n_noise": 50,
+  "n_features": 52,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.5870638530631045,
+  "fit_time_s": 8.212825405993499,
+  "params": {
+   "n_layers": 2,
+   "n_heads": 4,
+   "m_ratio": 0.1,
+   "batch_size": 128,
+   "predict_mode": "streaming"
+  }
+ },
+ {
+  "variant": "SAINTColnorm",
+  "n_noise": 50,
+  "n_features": 52,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.653730353542646,
+  "fit_time_s": 323.1410949679557,
+  "params": {
+   "n_layers": 2,
+   "n_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformerCURRandom",
+  "n_noise": 50,
+  "n_features": 52,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.6395668394372616,
+  "fit_time_s": 11.192329632001929,
+  "params": {
+   "n_layers": 2,
+   "n_heads": 4,
+   "m_ratio": 0.1,
+   "batch_size": 128,
+   "predict_mode": "streaming"
+  }
+ },
+ {
+  "variant": "SAINTColnorm",
+  "n_noise": 50,
+  "n_features": 52,
+  "seed": 1,
+  "n_train": 1750,
+  "test_f1_macro": 0.3333333333333333,
+  "fit_time_s": 179.64962898998056,
+  "params": {
+   "n_layers": 2,
+   "n_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformerCURRandom",
+  "n_noise": 50,
+  "n_features": 52,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.6265365353972228,
+  "fit_time_s": 8.003795536002144,
+  "params": {
+   "n_layers": 2,
+   "n_heads": 4,
+   "m_ratio": 0.1,
+   "batch_size": 128,
+   "predict_mode": "streaming"
+  }
+ },
+ {
+  "variant": "SAINTColnorm",
+  "n_noise": 50,
+  "n_features": 52,
+  "seed": 2,
+  "n_train": 1750,
+  "test_f1_macro": 0.3333333333333333,
+  "fit_time_s": 89.99601481400896,
+  "params": {
+   "n_layers": 2,
+   "n_heads": 4,
+   "batch_size": 128
+  }
+ },
+ {
+  "variant": "FTTransformerCURRandom",
+  "n_noise": 200,
+  "n_features": 202,
+  "seed": 0,
+  "n_train": 1750,
+  "test_f1_macro": 0.5898726601366913,
+  "fit_time_s": 42.14962949499022,
+  "params": {
+   "n_layers": 2,
+   "n_heads": 4,
+   "m_ratio": 0.1,
+   "batch_size": 128,
+   "predict_mode": "streaming"
+  }
+ }
+]

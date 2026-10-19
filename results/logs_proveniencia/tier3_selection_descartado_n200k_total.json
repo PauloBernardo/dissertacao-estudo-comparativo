@@ -1,0 +1,187 @@
+{
+ "XGBoost": {
+  "HIGGS500K": {
+   "params": {
+    "n_estimators": 528,
+    "max_depth": 7,
+    "learning_rate": 0.043546690167752485
+   },
+   "best_val_f1": 0.7317250558141759,
+   "n_trials": 21,
+   "complete": true,
+   "total_fit_s": 460.7,
+   "n_fit": 128000,
+   "n_val": 32000,
+   "m_fixed": 2000,
+   "tf_budget": null
+  },
+  "COVER": {
+   "params": {
+    "n_estimators": 965,
+    "max_depth": 12,
+    "learning_rate": 0.1567334424890785
+   },
+   "best_val_f1": 0.960553487865943,
+   "n_trials": 20,
+   "complete": true,
+   "total_fit_s": 220.0,
+   "n_fit": 128000,
+   "n_val": 32000,
+   "m_fixed": 2000,
+   "tf_budget": null
+  },
+  "SUSY": {
+   "params": {
+    "n_estimators": 226,
+    "max_depth": 7,
+    "learning_rate": 0.030368208302272
+   },
+   "best_val_f1": 0.7969100456901612,
+   "n_trials": 20,
+   "complete": true,
+   "total_fit_s": 176.0,
+   "n_fit": 128000,
+   "n_val": 32000,
+   "m_fixed": 2000,
+   "tf_budget": null
+  }
+ },
+ "NystromLSSVMRandom": {
+  "HIGGS500K": {
+   "params": {
+    "sigma": 5.0,
+    "gamma": 3.860866271460544
+   },
+   "best_val_f1": 0.6902200657410511,
+   "n_trials": 20,
+   "complete": true,
+   "total_fit_s": 387.4,
+   "n_fit": 128000,
+   "n_val": 32000,
+   "m_fixed": 2000,
+   "tf_budget": null
+  },
+  "COVER": {
+   "params": {
+    "sigma": 5.0,
+    "gamma": 41.04907759308608
+   },
+   "best_val_f1": 0.8396159725918014,
+   "n_trials": 20,
+   "complete": true,
+   "total_fit_s": 442.2,
+   "n_fit": 128000,
+   "n_val": 32000,
+   "m_fixed": 2000,
+   "tf_budget": null
+  },
+  "SUSY": {
+   "params": {
+    "sigma": 5.0,
+    "gamma": 50.206138598063944
+   },
+   "best_val_f1": 0.7987802898415275,
+   "n_trials": 20,
+   "complete": true,
+   "total_fit_s": 379.4,
+   "n_fit": 128000,
+   "n_val": 32000,
+   "m_fixed": 2000,
+   "tf_budget": null
+  }
+ },
+ "ADMMNystromRandom": {
+  "HIGGS500K": {
+   "params": {
+    "sigma": 5.0,
+    "tau": 0.2361830550140785,
+    "lambda_rel": 0.0026779206139155433
+   },
+   "best_val_f1": 0.6630283162828807,
+   "n_trials": 20,
+   "complete": true,
+   "total_fit_s": 552.4,
+   "n_fit": 128000,
+   "n_val": 32000,
+   "m_fixed": 2000,
+   "tf_budget": null
+  },
+  "COVER": {
+   "params": {
+    "sigma": 5.0,
+    "tau": 0.10013084631020287,
+    "lambda_rel": 0.004125253059754741
+   },
+   "best_val_f1": 0.7851371750984835,
+   "n_trials": 20,
+   "complete": true,
+   "total_fit_s": 617.1,
+   "n_fit": 128000,
+   "n_val": 32000,
+   "m_fixed": 2000,
+   "tf_budget": null
+  },
+  "SUSY": {
+   "params": {
+    "sigma": 5.0,
+    "tau": 0.17415746207993815,
+    "lambda_rel": 0.004628967945631784
+   },
+   "best_val_f1": 0.7817719031173918,
+   "n_trials": 20,
+   "complete": true,
+   "total_fit_s": 356.1,
+   "n_fit": 128000,
+   "n_val": 32000,
+   "m_fixed": 2000,
+   "tf_budget": null
+  }
+ },
+ "FISTANystromRandom": {
+  "HIGGS500K": {
+   "params": {
+    "sigma": 5.0,
+    "tau": 0.2361830550140785,
+    "lambda_rel": 0.0026779206139155433
+   },
+   "best_val_f1": 0.6625057634340219,
+   "n_trials": 20,
+   "complete": true,
+   "total_fit_s": 372.2,
+   "n_fit": 128000,
+   "n_val": 32000,
+   "m_fixed": 2000,
+   "tf_budget": null
+  },
+  "COVER": {
+   "params": {
+    "sigma": 5.0,
+    "tau": 0.010446324790997342,
+    "lambda_rel": 0.003001166861050519
+   },
+   "best_val_f1": 0.7869281916300592,
+   "n_trials": 20,
+   "complete": true,
+   "total_fit_s": 384.4,
+   "n_fit": 128000,
+   "n_val": 32000,
+   "m_fixed": 2000,
+   "tf_budget": null
+  },
+  "SUSY": {
+   "params": {
+    "sigma": 5.0,
+    "tau": 0.010446324790997342,
+    "lambda_rel": 0.003001166861050519
+   },
+   "best_val_f1": 0.7856791810865054,
+   "n_trials": 20,
+   "complete": true,
+   "total_fit_s": 357.3,
+   "n_fit": 128000,
+   "n_val": 32000,
+   "m_fixed": 2000,
+   "tf_budget": null
+  }
+ }
+}

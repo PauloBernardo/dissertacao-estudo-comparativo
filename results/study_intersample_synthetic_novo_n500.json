@@ -1,0 +1,552 @@
+[
+ {
+  "task": "grupo_novo",
+  "seed": 0,
+  "model": "SAINT (com MISA)",
+  "f1": 0.5669542540987279,
+  "n_train": 500,
+  "time_s": 6.64271505898796
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 0,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.5731285150902573,
+  "n_train": 500,
+  "time_s": 4.266634267987683
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 0,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.5949854194751012,
+  "n_train": 500,
+  "time_s": 10.141524884966202
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 0,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.5911679261480137,
+  "n_train": 500,
+  "time_s": 3.7393946279771626
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 0,
+  "model": "FT-Softmax",
+  "f1": 0.5572342298464654,
+  "n_train": 500,
+  "time_s": 3.8725803479901515
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 0,
+  "model": "XGBoost",
+  "f1": 0.6144722124588562,
+  "n_train": 500,
+  "time_s": 0.05686553503619507
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 0,
+  "model": "or\u00e1culo (k-NN)",
+  "f1": 0.8494999623749906,
+  "n_train": 500
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 1,
+  "model": "SAINT (com MISA)",
+  "f1": 0.5354998838749709,
+  "n_train": 500,
+  "time_s": 6.345057047030423
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 1,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.5104724640761042,
+  "n_train": 500,
+  "time_s": 5.101570995990187
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 1,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.5293389162440845,
+  "n_train": 500,
+  "time_s": 10.311126073007472
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 1,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.5166376548348848,
+  "n_train": 500,
+  "time_s": 3.8831910389708355
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 1,
+  "model": "FT-Softmax",
+  "f1": 0.5495908531676257,
+  "n_train": 500,
+  "time_s": 4.20560447499156
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 1,
+  "model": "XGBoost",
+  "f1": 0.5474175168424446,
+  "n_train": 500,
+  "time_s": 0.07104445097502321
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 1,
+  "model": "or\u00e1culo (k-NN)",
+  "f1": 0.837992061611019,
+  "n_train": 500
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 2,
+  "model": "SAINT (com MISA)",
+  "f1": 0.5939335585735745,
+  "n_train": 500,
+  "time_s": 6.856463320029434
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 2,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.6538168691237665,
+  "n_train": 500,
+  "time_s": 5.288552067009732
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 2,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.6417388276053243,
+  "n_train": 500,
+  "time_s": 10.287936063017696
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 2,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.630946856347314,
+  "n_train": 500,
+  "time_s": 3.8603382380097173
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 2,
+  "model": "FT-Softmax",
+  "f1": 0.6278041828079186,
+  "n_train": 500,
+  "time_s": 4.254178002011031
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 2,
+  "model": "XGBoost",
+  "f1": 0.5963303578328794,
+  "n_train": 500,
+  "time_s": 0.0745355740073137
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 2,
+  "model": "or\u00e1culo (k-NN)",
+  "f1": 0.8799611073987972,
+  "n_train": 500
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 3,
+  "model": "SAINT (com MISA)",
+  "f1": 0.5413751393816966,
+  "n_train": 500,
+  "time_s": 6.843939128040802
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 3,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.5301056452135589,
+  "n_train": 500,
+  "time_s": 5.226571234001312
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 3,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.5102635496301979,
+  "n_train": 500,
+  "time_s": 10.329474369995296
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 3,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.528850803344805,
+  "n_train": 500,
+  "time_s": 3.896983104001265
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 3,
+  "model": "FT-Softmax",
+  "f1": 0.5405224707410194,
+  "n_train": 500,
+  "time_s": 4.274805024964735
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 3,
+  "model": "XGBoost",
+  "f1": 0.542992687883006,
+  "n_train": 500,
+  "time_s": 0.08682470803614706
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 3,
+  "model": "or\u00e1culo (k-NN)",
+  "f1": 0.875,
+  "n_train": 500
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 4,
+  "model": "SAINT (com MISA)",
+  "f1": 0.45713206060960876,
+  "n_train": 500,
+  "time_s": 6.864466105005704
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 4,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.46555452579548967,
+  "n_train": 500,
+  "time_s": 5.326808509998955
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 4,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.5004868672306739,
+  "n_train": 500,
+  "time_s": 10.38471907301573
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 4,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.48014682782115004,
+  "n_train": 500,
+  "time_s": 3.870604617986828
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 4,
+  "model": "FT-Softmax",
+  "f1": 0.49817161708026375,
+  "n_train": 500,
+  "time_s": 4.33681444398826
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 4,
+  "model": "XGBoost",
+  "f1": 0.5215238095238095,
+  "n_train": 500,
+  "time_s": 0.08247105201007798
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 4,
+  "model": "or\u00e1culo (k-NN)",
+  "f1": 0.8494096081172724,
+  "n_train": 500
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 5,
+  "model": "SAINT (com MISA)",
+  "f1": 0.5335342993832983,
+  "n_train": 500,
+  "time_s": 6.902587226009928
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 5,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.5213087698636831,
+  "n_train": 500,
+  "time_s": 5.296940638974775
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 5,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.5222361549165526,
+  "n_train": 500,
+  "time_s": 10.349752023990732
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 5,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.5311707646694892,
+  "n_train": 500,
+  "time_s": 3.9011509849806316
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 5,
+  "model": "FT-Softmax",
+  "f1": 0.5985547972701726,
+  "n_train": 500,
+  "time_s": 4.342525122978259
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 5,
+  "model": "XGBoost",
+  "f1": 0.515464992345697,
+  "n_train": 500,
+  "time_s": 0.07714027201291174
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 5,
+  "model": "or\u00e1culo (k-NN)",
+  "f1": 0.8429872819698395,
+  "n_train": 500
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 6,
+  "model": "SAINT (com MISA)",
+  "f1": 0.5841579197875699,
+  "n_train": 500,
+  "time_s": 6.961377700034063
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 6,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.6233710987585501,
+  "n_train": 500,
+  "time_s": 5.327208083006553
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 6,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.6018816856550049,
+  "n_train": 500,
+  "time_s": 10.378280161996372
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 6,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.6122831114731138,
+  "n_train": 500,
+  "time_s": 3.8833900439785793
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 6,
+  "model": "FT-Softmax",
+  "f1": 0.6131159236002054,
+  "n_train": 500,
+  "time_s": 4.329996438988019
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 6,
+  "model": "XGBoost",
+  "f1": 0.6159253520600045,
+  "n_train": 500,
+  "time_s": 0.08386930503183976
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 6,
+  "model": "or\u00e1culo (k-NN)",
+  "f1": 0.8364378054755321,
+  "n_train": 500
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 7,
+  "model": "SAINT (com MISA)",
+  "f1": 0.5223836543007836,
+  "n_train": 500,
+  "time_s": 6.8156532899593
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 7,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.523318667504714,
+  "n_train": 500,
+  "time_s": 5.255678498011548
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 7,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.5425107939642493,
+  "n_train": 500,
+  "time_s": 10.352092379995156
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 7,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.5555799393694797,
+  "n_train": 500,
+  "time_s": 3.851227082021069
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 7,
+  "model": "FT-Softmax",
+  "f1": 0.5522473277579611,
+  "n_train": 500,
+  "time_s": 4.320469809987117
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 7,
+  "model": "XGBoost",
+  "f1": 0.5366231752032784,
+  "n_train": 500,
+  "time_s": 0.08619293401716277
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 7,
+  "model": "or\u00e1culo (k-NN)",
+  "f1": 0.8239549324627105,
+  "n_train": 500
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 8,
+  "model": "SAINT (com MISA)",
+  "f1": 0.532821565199767,
+  "n_train": 500,
+  "time_s": 6.906491885019932
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 8,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.5476544523294284,
+  "n_train": 500,
+  "time_s": 5.184368667018134
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 8,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.5174998793749699,
+  "n_train": 500,
+  "time_s": 10.33290705300169
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 8,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.5296312308850138,
+  "n_train": 500,
+  "time_s": 3.877489288977813
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 8,
+  "model": "FT-Softmax",
+  "f1": 0.5204125951954743,
+  "n_train": 500,
+  "time_s": 4.354857758036815
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 8,
+  "model": "XGBoost",
+  "f1": 0.5136214787960753,
+  "n_train": 500,
+  "time_s": 0.07030442997347564
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 8,
+  "model": "or\u00e1culo (k-NN)",
+  "f1": 0.8394989968687304,
+  "n_train": 500
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 9,
+  "model": "SAINT (com MISA)",
+  "f1": 0.5872315973461744,
+  "n_train": 500,
+  "time_s": 6.890043279970996
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 9,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.5664885573142454,
+  "n_train": 500,
+  "time_s": 5.295367081009317
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 9,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.563953051276114,
+  "n_train": 500,
+  "time_s": 10.349348976975307
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 9,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.6000419099661094,
+  "n_train": 500,
+  "time_s": 3.9027653130469844
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 9,
+  "model": "FT-Softmax",
+  "f1": 0.6018253218831939,
+  "n_train": 500,
+  "time_s": 4.3799947700463235
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 9,
+  "model": "XGBoost",
+  "f1": 0.5830320577267838,
+  "n_train": 500,
+  "time_s": 0.07584111602045596
+ },
+ {
+  "task": "grupo_novo",
+  "seed": 9,
+  "model": "or\u00e1culo (k-NN)",
+  "f1": 0.830983098309831,
+  "n_train": 500
+ }
+]
