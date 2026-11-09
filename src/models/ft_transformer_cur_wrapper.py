@@ -84,7 +84,15 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
         minibatch_landmarks: str = "per_batch",
         predict_mode: str = "full_context",
         min_epochs: int = 0,
+        inter_mode: str = "cur",
     ):
+        # inter_mode (ablação de 2026-11-09): "cur" = publicado (Nyström/CUR);
+        #   "none"  = sem atenção entre instâncias (só o backbone FT + cabeça);
+        #   "dense" = atenção entre instâncias completa n×n (softmax(QKᵀ)V), sem CUR,
+        #             treino em lote único e predição transdutiva sobre [X_train ‖ X_test].
+        if inter_mode not in ("cur", "none", "dense"):
+            raise ValueError(f"inter_mode inválido: {inter_mode!r}")
+        self.inter_mode = inter_mode
         # minibatch_landmarks: só importa quando batch_size < n_treino.
         #   "per_batch" (histórico): landmarks sorteados dentro de cada lote.
         #   "global": os m landmarks (colnorm sobre o treino inteiro) são anexados
@@ -205,7 +213,7 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
             d_model=self.d_model,
             n_heads=self.n_heads,
             n_layers=self.n_layers,
-            use_inter_instance=True,
+            use_inter_instance=(self.inter_mode != "none"),
             tau_ratio=self.tau_ratio,
             attn_mode="nystrom",          # Nyströmformer: O(nmd), nunca n×n
             pinv_grad=self.pinv_grad,
@@ -216,13 +224,15 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
 
         use_global = (self.minibatch_landmarks == "global" and self.batch_size is not None
                       and self.batch_size < len(idx_tr))
+        if self.inter_mode != "cur":          # sem CUR: nada de landmarks
+            use_global = False
         info = fit_model(
             self._model, X_tr_t, y_tr_t, X_val_t, y_val_t,
-            landmark_idx=self._landmark_idx_,
+            landmark_idx=self._landmark_idx_ if self.inter_mode == "cur" else None,
             lr=self.lr, epochs=self.epochs, patience=self.patience,
             weight_decay=self.weight_decay,
             early_stop_metric=self.early_stop_metric,
-            batch_size=self.batch_size,
+            batch_size=None if self.inter_mode == "dense" else self.batch_size,
             global_landmark_rows=X_tr_t[self._landmark_idx_] if use_global else None,
             min_epochs=self.min_epochs,
         )
@@ -251,7 +261,7 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
         self.sparsity_ratio_ = 1.0 - m_eff / n
         self.n_support_ = m_eff   # landmarks usados como keys
 
-        if self.predict_mode == "streaming":
+        if self.inter_mode == "cur" and self.predict_mode == "streaming":
             self._precompute_train_summary()
         return self
 
@@ -318,6 +328,14 @@ class FTTransformerCURColnorm(BaseEstimator, ClassifierMixin):
         (``m_landmarks``), mantendo a inferência sub-quadrática mesmo carregando
         todo o contexto de treino — o custo que no SAINT é O(N²).
         """
+        if self.inter_mode == "none":
+            self._model.eval()
+            return self._model(self._to_tensor(X), landmark_idx=None).cpu().numpy()
+        if self.inter_mode == "dense":
+            self._model.eval()
+            ctx = np.concatenate([self.X_train_, X], axis=0)
+            out = self._model(self._to_tensor(ctx), landmark_idx=None)
+            return out[len(self.X_train_):].cpu().numpy()
         if self.predict_mode == "streaming":
             return self._logits_streaming(X)
         self._model.eval()

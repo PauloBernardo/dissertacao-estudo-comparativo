@@ -610,8 +610,11 @@ class SAINTStage(nn.Module):
     def __init__(self, n_tokens: int, d_model: int, n_heads: int,
                  dim_head: int = 16, attn_dropout: float = 0.1,
                  ff_dropout: float = 0.1, style: str = "reference",
-                 row_dim_head: int = 64):
+                 row_dim_head: int = 64, use_misa: bool = True):
         super().__init__()
+        # use_misa=False: ablação da atenção entre amostras (2026-11-09). Remove só o
+        # termo r = r + MISA(LN(r)); o resto do estágio (incl. FF2 na linha) fica igual.
+        self.use_misa = use_misa
         if style not in ("reference", "paper_eq"):
             raise ValueError(f"style inválido: {style!r}")
         self.style = style
@@ -638,14 +641,15 @@ class SAINTStage(nn.Module):
             x = x + self.msa(self.ln1(x))
             x = x + self.ff1(self.ln2(x))
             r = x.reshape(1, b, n * d)
-            r = r + self.misa(self.ln3(r))
+            if self.use_misa:
+                r = r + self.misa(self.ln3(r))
             r = r + self.ff2(self.ln4(r))
             return r.reshape(b, n, d)
         # paper_eq: Equações 1–2 (pós-normalização)
         z1 = self.ln1(self.msa(x)) + x
         z2 = self.ln2(self.ff1(z1)) + z1
         row = z2.reshape(1, b, n * d)
-        z3 = self.ln3(self.misa(row).reshape(b, n, d)) + z2
+        z3 = (self.ln3(self.misa(row).reshape(b, n, d)) + z2) if self.use_misa else z2
         return self.ln4(self.ff2(z3)) + z3
 
 
@@ -672,7 +676,8 @@ class SAINTClassifier(nn.Module):
                  attn_dropout: float = 0.1, ff_dropout: float = 0.1,
                  head_hidden: int = 1000, embed_hidden: int = 100,
                  tau_ratio: float = 0.1, dropout: float | None = None,
-                 style: str = "reference", row_dim_head: int = 64):
+                 style: str = "reference", row_dim_head: int = 64,
+                 use_misa: bool = True):
         super().__init__()
         if dropout is not None:            # compatibilidade com assinatura antiga
             attn_dropout = ff_dropout = dropout
@@ -683,7 +688,8 @@ class SAINTClassifier(nn.Module):
         n_tokens = n_features + 1
         self.stages = nn.ModuleList([
             SAINTStage(n_tokens, d_model, n_heads, dim_head, attn_dropout,
-                       ff_dropout, style=style, row_dim_head=row_dim_head)
+                       ff_dropout, style=style, row_dim_head=row_dim_head,
+                       use_misa=use_misa)
             for _ in range(n_layers)
         ])
         self.head = nn.Sequential(

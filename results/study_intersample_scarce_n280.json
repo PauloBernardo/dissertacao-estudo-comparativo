@@ -1,0 +1,1442 @@
+[
+ {
+  "ds": "TWS",
+  "seed": 0,
+  "model": "SAINT (com MISA)",
+  "f1": 1.0,
+  "n_train": 280,
+  "time_s": 3.719929069997306
+ },
+ {
+  "ds": "TWS",
+  "seed": 0,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.9833287024173382,
+  "n_train": 280,
+  "time_s": 1.967418958000053
+ },
+ {
+  "ds": "TWS",
+  "seed": 0,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.823517053014917,
+  "n_train": 280,
+  "time_s": 4.241836728000635
+ },
+ {
+  "ds": "TWS",
+  "seed": 0,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.765034965034965,
+  "n_train": 280,
+  "time_s": 2.213315771001362
+ },
+ {
+  "ds": "TWS",
+  "seed": 0,
+  "model": "FT-Softmax",
+  "f1": 0.696969696969697,
+  "n_train": 280,
+  "time_s": 1.7905740919995878
+ },
+ {
+  "ds": "TWS",
+  "seed": 0,
+  "model": "XGBoost",
+  "f1": 0.9166666666666666,
+  "n_train": 280,
+  "time_s": 0.032550419000472175
+ },
+ {
+  "ds": "TWS",
+  "seed": 1,
+  "model": "SAINT (com MISA)",
+  "f1": 0.9582608695652174,
+  "n_train": 280,
+  "time_s": 2.4856001370026206
+ },
+ {
+  "ds": "TWS",
+  "seed": 1,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.9332591768631813,
+  "n_train": 280,
+  "time_s": 1.8640900589998637
+ },
+ {
+  "ds": "TWS",
+  "seed": 1,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.7994987468671679,
+  "n_train": 280,
+  "time_s": 4.037739337996754
+ },
+ {
+  "ds": "TWS",
+  "seed": 1,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.8566509732274612,
+  "n_train": 280,
+  "time_s": 2.622605234999355
+ },
+ {
+  "ds": "TWS",
+  "seed": 1,
+  "model": "FT-Softmax",
+  "f1": 0.6386301561734016,
+  "n_train": 280,
+  "time_s": 2.49176788800105
+ },
+ {
+  "ds": "TWS",
+  "seed": 1,
+  "model": "XGBoost",
+  "f1": 0.9166666666666666,
+  "n_train": 280,
+  "time_s": 0.03137812799832318
+ },
+ {
+  "ds": "TWS",
+  "seed": 2,
+  "model": "SAINT (com MISA)",
+  "f1": 0.9749982637683172,
+  "n_train": 280,
+  "time_s": 2.4758175239985576
+ },
+ {
+  "ds": "TWS",
+  "seed": 2,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.9749982637683172,
+  "n_train": 280,
+  "time_s": 2.0510648590025085
+ },
+ {
+  "ds": "TWS",
+  "seed": 2,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.8415676464456953,
+  "n_train": 280,
+  "time_s": 3.8774295930015796
+ },
+ {
+  "ds": "TWS",
+  "seed": 2,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.7811447811447811,
+  "n_train": 280,
+  "time_s": 2.1732742259991937
+ },
+ {
+  "ds": "TWS",
+  "seed": 2,
+  "model": "FT-Softmax",
+  "f1": 0.6282737257110673,
+  "n_train": 280,
+  "time_s": 1.9328105690001394
+ },
+ {
+  "ds": "TWS",
+  "seed": 2,
+  "model": "XGBoost",
+  "f1": 0.9416301855326246,
+  "n_train": 280,
+  "time_s": 0.029424607997498242
+ },
+ {
+  "ds": "TWS",
+  "seed": 3,
+  "model": "SAINT (com MISA)",
+  "f1": 0.9666574048346763,
+  "n_train": 280,
+  "time_s": 2.674329752000631
+ },
+ {
+  "ds": "TWS",
+  "seed": 3,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.9749843652282677,
+  "n_train": 280,
+  "time_s": 1.9182230650003476
+ },
+ {
+  "ds": "TWS",
+  "seed": 3,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.8331479421579533,
+  "n_train": 280,
+  "time_s": 3.984657884000626
+ },
+ {
+  "ds": "TWS",
+  "seed": 3,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.9333148096693527,
+  "n_train": 280,
+  "time_s": 2.337368014999811
+ },
+ {
+  "ds": "TWS",
+  "seed": 3,
+  "model": "FT-Softmax",
+  "f1": 0.6958603210363278,
+  "n_train": 280,
+  "time_s": 1.8298171700007515
+ },
+ {
+  "ds": "TWS",
+  "seed": 3,
+  "model": "XGBoost",
+  "f1": 0.9416626154594069,
+  "n_train": 280,
+  "time_s": 0.02978756900120061
+ },
+ {
+  "ds": "TWS",
+  "seed": 4,
+  "model": "SAINT (com MISA)",
+  "f1": 0.85,
+  "n_train": 280,
+  "time_s": 2.57150387600268
+ },
+ {
+  "ds": "TWS",
+  "seed": 4,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.9249530956848031,
+  "n_train": 280,
+  "time_s": 1.9105965890012158
+ },
+ {
+  "ds": "TWS",
+  "seed": 4,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.7666666666666667,
+  "n_train": 280,
+  "time_s": 5.141005399000278
+ },
+ {
+  "ds": "TWS",
+  "seed": 4,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.7664071190211346,
+  "n_train": 280,
+  "time_s": 3.169476262999524
+ },
+ {
+  "ds": "TWS",
+  "seed": 4,
+  "model": "FT-Softmax",
+  "f1": 0.7375661375661375,
+  "n_train": 280,
+  "time_s": 2.299114533998363
+ },
+ {
+  "ds": "TWS",
+  "seed": 4,
+  "model": "XGBoost",
+  "f1": 0.9249530956848031,
+  "n_train": 280,
+  "time_s": 0.04146871999910218
+ },
+ {
+  "ds": "TWS",
+  "seed": 5,
+  "model": "SAINT (com MISA)",
+  "f1": 0.9916660879227724,
+  "n_train": 280,
+  "time_s": 3.5331936389993643
+ },
+ {
+  "ds": "TWS",
+  "seed": 5,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.9249530956848031,
+  "n_train": 280,
+  "time_s": 2.907364005001
+ },
+ {
+  "ds": "TWS",
+  "seed": 5,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.8403249527277821,
+  "n_train": 280,
+  "time_s": 4.801212898000813
+ },
+ {
+  "ds": "TWS",
+  "seed": 5,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.8830409356725146,
+  "n_train": 280,
+  "time_s": 3.04856193699743
+ },
+ {
+  "ds": "TWS",
+  "seed": 5,
+  "model": "FT-Softmax",
+  "f1": 0.7499305362600722,
+  "n_train": 280,
+  "time_s": 2.959153834999597
+ },
+ {
+  "ds": "TWS",
+  "seed": 5,
+  "model": "XGBoost",
+  "f1": 0.8832035595105673,
+  "n_train": 280,
+  "time_s": 0.03391585100325756
+ },
+ {
+  "ds": "TWS",
+  "seed": 6,
+  "model": "SAINT (com MISA)",
+  "f1": 0.9833287024173382,
+  "n_train": 280,
+  "time_s": 2.753758155002288
+ },
+ {
+  "ds": "TWS",
+  "seed": 6,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.9833333333333333,
+  "n_train": 280,
+  "time_s": 1.907343179002055
+ },
+ {
+  "ds": "TWS",
+  "seed": 6,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.7579130434782608,
+  "n_train": 280,
+  "time_s": 3.872172028000932
+ },
+ {
+  "ds": "TWS",
+  "seed": 6,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.807249109574691,
+  "n_train": 280,
+  "time_s": 2.114642532000289
+ },
+ {
+  "ds": "TWS",
+  "seed": 6,
+  "model": "FT-Softmax",
+  "f1": 0.6296296296296295,
+  "n_train": 280,
+  "time_s": 1.7782568740003626
+ },
+ {
+  "ds": "TWS",
+  "seed": 6,
+  "model": "XGBoost",
+  "f1": 0.9,
+  "n_train": 280,
+  "time_s": 0.028592188999027712
+ },
+ {
+  "ds": "TWS",
+  "seed": 7,
+  "model": "SAINT (com MISA)",
+  "f1": 0.9916660879227724,
+  "n_train": 280,
+  "time_s": 2.5193611120012065
+ },
+ {
+  "ds": "TWS",
+  "seed": 7,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.9833333333333333,
+  "n_train": 280,
+  "time_s": 1.9052851570013445
+ },
+ {
+  "ds": "TWS",
+  "seed": 7,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.8407710035617012,
+  "n_train": 280,
+  "time_s": 3.9217560699980822
+ },
+ {
+  "ds": "TWS",
+  "seed": 7,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.8914782608695653,
+  "n_train": 280,
+  "time_s": 2.129243351002515
+ },
+ {
+  "ds": "TWS",
+  "seed": 7,
+  "model": "FT-Softmax",
+  "f1": 0.5916383082158483,
+  "n_train": 280,
+  "time_s": 1.8055837440006144
+ },
+ {
+  "ds": "TWS",
+  "seed": 7,
+  "model": "XGBoost",
+  "f1": 0.9666295884315907,
+  "n_train": 280,
+  "time_s": 0.03197240900044562
+ },
+ {
+  "ds": "TWS",
+  "seed": 8,
+  "model": "SAINT (com MISA)",
+  "f1": 0.9916660879227724,
+  "n_train": 280,
+  "time_s": 2.5850311529975443
+ },
+ {
+  "ds": "TWS",
+  "seed": 8,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.9583304396138621,
+  "n_train": 280,
+  "time_s": 1.8655630120010755
+ },
+ {
+  "ds": "TWS",
+  "seed": 8,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.858323494687131,
+  "n_train": 280,
+  "time_s": 3.961253449000651
+ },
+ {
+  "ds": "TWS",
+  "seed": 8,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.823517053014917,
+  "n_train": 280,
+  "time_s": 2.10040397800185
+ },
+ {
+  "ds": "TWS",
+  "seed": 8,
+  "model": "FT-Softmax",
+  "f1": 0.7465502675302731,
+  "n_train": 280,
+  "time_s": 1.815668158000335
+ },
+ {
+  "ds": "TWS",
+  "seed": 8,
+  "model": "XGBoost",
+  "f1": 0.9666574048346763,
+  "n_train": 280,
+  "time_s": 0.02909835500031477
+ },
+ {
+  "ds": "TWS",
+  "seed": 9,
+  "model": "SAINT (com MISA)",
+  "f1": 0.9666666666666667,
+  "n_train": 280,
+  "time_s": 2.5384947059974365
+ },
+ {
+  "ds": "TWS",
+  "seed": 9,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.9749982637683172,
+  "n_train": 280,
+  "time_s": 1.898481582000386
+ },
+ {
+  "ds": "TWS",
+  "seed": 9,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.9080203470141454,
+  "n_train": 280,
+  "time_s": 3.8776759100001073
+ },
+ {
+  "ds": "TWS",
+  "seed": 9,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.8248905565978737,
+  "n_train": 280,
+  "time_s": 2.1227478699984204
+ },
+ {
+  "ds": "TWS",
+  "seed": 9,
+  "model": "FT-Softmax",
+  "f1": 0.7664071190211346,
+  "n_train": 280,
+  "time_s": 1.8606031439994695
+ },
+ {
+  "ds": "TWS",
+  "seed": 9,
+  "model": "XGBoost",
+  "f1": 0.9166435120866907,
+  "n_train": 280,
+  "time_s": 0.037734626999736065
+ },
+ {
+  "ds": "TWM",
+  "seed": 0,
+  "model": "SAINT (com MISA)",
+  "f1": 0.9916660879227724,
+  "n_train": 280,
+  "time_s": 2.552805552000791
+ },
+ {
+  "ds": "TWM",
+  "seed": 0,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.9916660879227724,
+  "n_train": 280,
+  "time_s": 1.8929696800005331
+ },
+ {
+  "ds": "TWM",
+  "seed": 0,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.9916660879227724,
+  "n_train": 280,
+  "time_s": 3.93636461099959
+ },
+ {
+  "ds": "TWM",
+  "seed": 0,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.9916660879227724,
+  "n_train": 280,
+  "time_s": 2.100563105999754
+ },
+ {
+  "ds": "TWM",
+  "seed": 0,
+  "model": "FT-Softmax",
+  "f1": 1.0,
+  "n_train": 280,
+  "time_s": 1.8472896109997237
+ },
+ {
+  "ds": "TWM",
+  "seed": 0,
+  "model": "XGBoost",
+  "f1": 0.9916660879227724,
+  "n_train": 280,
+  "time_s": 0.027228668001043843
+ },
+ {
+  "ds": "TWM",
+  "seed": 1,
+  "model": "SAINT (com MISA)",
+  "f1": 0.9833287024173382,
+  "n_train": 280,
+  "time_s": 2.505427965999843
+ },
+ {
+  "ds": "TWM",
+  "seed": 1,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.9749843652282677,
+  "n_train": 280,
+  "time_s": 1.8812425340001937
+ },
+ {
+  "ds": "TWM",
+  "seed": 1,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.9916660879227724,
+  "n_train": 280,
+  "time_s": 3.909469172998797
+ },
+ {
+  "ds": "TWM",
+  "seed": 1,
+  "model": "FT-CUR (sem inter)",
+  "f1": 1.0,
+  "n_train": 280,
+  "time_s": 2.136040592999052
+ },
+ {
+  "ds": "TWM",
+  "seed": 1,
+  "model": "FT-Softmax",
+  "f1": 1.0,
+  "n_train": 280,
+  "time_s": 1.8801877539990528
+ },
+ {
+  "ds": "TWM",
+  "seed": 1,
+  "model": "XGBoost",
+  "f1": 0.9916660879227724,
+  "n_train": 280,
+  "time_s": 0.026497395996557316
+ },
+ {
+  "ds": "TWM",
+  "seed": 2,
+  "model": "SAINT (com MISA)",
+  "f1": 0.9749982637683172,
+  "n_train": 280,
+  "time_s": 2.534739737999189
+ },
+ {
+  "ds": "TWM",
+  "seed": 2,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.9666574048346763,
+  "n_train": 280,
+  "time_s": 1.8911351509996166
+ },
+ {
+  "ds": "TWM",
+  "seed": 2,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.9916660879227724,
+  "n_train": 280,
+  "time_s": 3.919267901001149
+ },
+ {
+  "ds": "TWM",
+  "seed": 2,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.9833287024173382,
+  "n_train": 280,
+  "time_s": 2.1407155609995243
+ },
+ {
+  "ds": "TWM",
+  "seed": 2,
+  "model": "FT-Softmax",
+  "f1": 1.0,
+  "n_train": 280,
+  "time_s": 1.8875283939996734
+ },
+ {
+  "ds": "TWM",
+  "seed": 2,
+  "model": "XGBoost",
+  "f1": 0.9916660879227724,
+  "n_train": 280,
+  "time_s": 0.02419994400042924
+ },
+ {
+  "ds": "TWM",
+  "seed": 3,
+  "model": "SAINT (com MISA)",
+  "f1": 0.9833333333333333,
+  "n_train": 280,
+  "time_s": 2.5501433509998606
+ },
+ {
+  "ds": "TWM",
+  "seed": 3,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.9833287024173382,
+  "n_train": 280,
+  "time_s": 1.848663081000268
+ },
+ {
+  "ds": "TWM",
+  "seed": 3,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.9833287024173382,
+  "n_train": 280,
+  "time_s": 3.9010170840010687
+ },
+ {
+  "ds": "TWM",
+  "seed": 3,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.9749982637683172,
+  "n_train": 280,
+  "time_s": 2.137832183001592
+ },
+ {
+  "ds": "TWM",
+  "seed": 3,
+  "model": "FT-Softmax",
+  "f1": 1.0,
+  "n_train": 280,
+  "time_s": 1.84772638999857
+ },
+ {
+  "ds": "TWM",
+  "seed": 3,
+  "model": "XGBoost",
+  "f1": 0.9749843652282677,
+  "n_train": 280,
+  "time_s": 0.03424080900003901
+ },
+ {
+  "ds": "TWM",
+  "seed": 4,
+  "model": "SAINT (com MISA)",
+  "f1": 0.9833287024173382,
+  "n_train": 280,
+  "time_s": 2.530393768000067
+ },
+ {
+  "ds": "TWM",
+  "seed": 4,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.9833333333333333,
+  "n_train": 280,
+  "time_s": 1.8391522079982678
+ },
+ {
+  "ds": "TWM",
+  "seed": 4,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 1.0,
+  "n_train": 280,
+  "time_s": 3.9201979610006674
+ },
+ {
+  "ds": "TWM",
+  "seed": 4,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.9833333333333333,
+  "n_train": 280,
+  "time_s": 2.140281847998267
+ },
+ {
+  "ds": "TWM",
+  "seed": 4,
+  "model": "FT-Softmax",
+  "f1": 1.0,
+  "n_train": 280,
+  "time_s": 1.8513191880010709
+ },
+ {
+  "ds": "TWM",
+  "seed": 4,
+  "model": "XGBoost",
+  "f1": 1.0,
+  "n_train": 280,
+  "time_s": 0.027708921999874292
+ },
+ {
+  "ds": "TWM",
+  "seed": 5,
+  "model": "SAINT (com MISA)",
+  "f1": 0.9833287024173382,
+  "n_train": 280,
+  "time_s": 2.544827775000158
+ },
+ {
+  "ds": "TWM",
+  "seed": 5,
+  "model": "SAINT (sem MISA)",
+  "f1": 1.0,
+  "n_train": 280,
+  "time_s": 1.9601928960000805
+ },
+ {
+  "ds": "TWM",
+  "seed": 5,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.9916660879227724,
+  "n_train": 280,
+  "time_s": 3.941088565999962
+ },
+ {
+  "ds": "TWM",
+  "seed": 5,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.9833287024173382,
+  "n_train": 280,
+  "time_s": 2.152108906000649
+ },
+ {
+  "ds": "TWM",
+  "seed": 5,
+  "model": "FT-Softmax",
+  "f1": 1.0,
+  "n_train": 280,
+  "time_s": 1.896050927000033
+ },
+ {
+  "ds": "TWM",
+  "seed": 5,
+  "model": "XGBoost",
+  "f1": 1.0,
+  "n_train": 280,
+  "time_s": 0.02392073300143238
+ },
+ {
+  "ds": "TWM",
+  "seed": 6,
+  "model": "SAINT (com MISA)",
+  "f1": 0.9749982637683172,
+  "n_train": 280,
+  "time_s": 2.520627264002542
+ },
+ {
+  "ds": "TWM",
+  "seed": 6,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.9916660879227724,
+  "n_train": 280,
+  "time_s": 1.880466955000884
+ },
+ {
+  "ds": "TWM",
+  "seed": 6,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.9916660879227724,
+  "n_train": 280,
+  "time_s": 3.8948568339983467
+ },
+ {
+  "ds": "TWM",
+  "seed": 6,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.9916660879227724,
+  "n_train": 280,
+  "time_s": 2.1158876449990203
+ },
+ {
+  "ds": "TWM",
+  "seed": 6,
+  "model": "FT-Softmax",
+  "f1": 1.0,
+  "n_train": 280,
+  "time_s": 1.8821237910015043
+ },
+ {
+  "ds": "TWM",
+  "seed": 6,
+  "model": "XGBoost",
+  "f1": 0.9666666666666667,
+  "n_train": 280,
+  "time_s": 0.027402051997341914
+ },
+ {
+  "ds": "TWM",
+  "seed": 7,
+  "model": "SAINT (com MISA)",
+  "f1": 0.9833333333333333,
+  "n_train": 280,
+  "time_s": 2.5255866469997272
+ },
+ {
+  "ds": "TWM",
+  "seed": 7,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.9916660879227724,
+  "n_train": 280,
+  "time_s": 1.8995124559987744
+ },
+ {
+  "ds": "TWM",
+  "seed": 7,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.9833333333333333,
+  "n_train": 280,
+  "time_s": 3.9224471150009776
+ },
+ {
+  "ds": "TWM",
+  "seed": 7,
+  "model": "FT-CUR (sem inter)",
+  "f1": 1.0,
+  "n_train": 280,
+  "time_s": 2.1337076109994086
+ },
+ {
+  "ds": "TWM",
+  "seed": 7,
+  "model": "FT-Softmax",
+  "f1": 1.0,
+  "n_train": 280,
+  "time_s": 1.8920970799990755
+ },
+ {
+  "ds": "TWM",
+  "seed": 7,
+  "model": "XGBoost",
+  "f1": 1.0,
+  "n_train": 280,
+  "time_s": 0.027185208000446437
+ },
+ {
+  "ds": "TWM",
+  "seed": 8,
+  "model": "SAINT (com MISA)",
+  "f1": 1.0,
+  "n_train": 280,
+  "time_s": 2.5561465070022678
+ },
+ {
+  "ds": "TWM",
+  "seed": 8,
+  "model": "SAINT (sem MISA)",
+  "f1": 1.0,
+  "n_train": 280,
+  "time_s": 1.9289630370003579
+ },
+ {
+  "ds": "TWM",
+  "seed": 8,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.9833287024173382,
+  "n_train": 280,
+  "time_s": 3.9253727340001205
+ },
+ {
+  "ds": "TWM",
+  "seed": 8,
+  "model": "FT-CUR (sem inter)",
+  "f1": 1.0,
+  "n_train": 280,
+  "time_s": 2.1577622599979804
+ },
+ {
+  "ds": "TWM",
+  "seed": 8,
+  "model": "FT-Softmax",
+  "f1": 1.0,
+  "n_train": 280,
+  "time_s": 1.8728227499996137
+ },
+ {
+  "ds": "TWM",
+  "seed": 8,
+  "model": "XGBoost",
+  "f1": 1.0,
+  "n_train": 280,
+  "time_s": 0.02309696800148231
+ },
+ {
+  "ds": "TWM",
+  "seed": 9,
+  "model": "SAINT (com MISA)",
+  "f1": 0.9749843652282677,
+  "n_train": 280,
+  "time_s": 2.517531601002702
+ },
+ {
+  "ds": "TWM",
+  "seed": 9,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.9916660879227724,
+  "n_train": 280,
+  "time_s": 1.929368468998291
+ },
+ {
+  "ds": "TWM",
+  "seed": 9,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 1.0,
+  "n_train": 280,
+  "time_s": 3.9384397869980603
+ },
+ {
+  "ds": "TWM",
+  "seed": 9,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.9916660879227724,
+  "n_train": 280,
+  "time_s": 2.1465229549976357
+ },
+ {
+  "ds": "TWM",
+  "seed": 9,
+  "model": "FT-Softmax",
+  "f1": 1.0,
+  "n_train": 280,
+  "time_s": 1.9004474060020584
+ },
+ {
+  "ds": "TWM",
+  "seed": 9,
+  "model": "XGBoost",
+  "f1": 0.9916660879227724,
+  "n_train": 280,
+  "time_s": 0.03261693700187607
+ },
+ {
+  "ds": "TWC",
+  "seed": 0,
+  "model": "SAINT (com MISA)",
+  "f1": 0.899972214504029,
+  "n_train": 280,
+  "time_s": 2.569587636000506
+ },
+ {
+  "ds": "TWC",
+  "seed": 0,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.89129677374399,
+  "n_train": 280,
+  "time_s": 1.911594569002773
+ },
+ {
+  "ds": "TWC",
+  "seed": 0,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.9333148096693527,
+  "n_train": 280,
+  "time_s": 3.9427890490005666
+ },
+ {
+  "ds": "TWC",
+  "seed": 0,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.9164578111946533,
+  "n_train": 280,
+  "time_s": 2.140797226002178
+ },
+ {
+  "ds": "TWC",
+  "seed": 0,
+  "model": "FT-Softmax",
+  "f1": 0.6819256393724479,
+  "n_train": 280,
+  "time_s": 1.8407908039989707
+ },
+ {
+  "ds": "TWC",
+  "seed": 0,
+  "model": "XGBoost",
+  "f1": 0.899749373433584,
+  "n_train": 280,
+  "time_s": 0.035872141997970175
+ },
+ {
+  "ds": "TWC",
+  "seed": 1,
+  "model": "SAINT (com MISA)",
+  "f1": 0.9333333333333333,
+  "n_train": 280,
+  "time_s": 2.522786448997067
+ },
+ {
+  "ds": "TWC",
+  "seed": 1,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.8665183537263625,
+  "n_train": 280,
+  "time_s": 1.8875383759987017
+ },
+ {
+  "ds": "TWC",
+  "seed": 1,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.8397863818424566,
+  "n_train": 280,
+  "time_s": 3.9385398710001027
+ },
+ {
+  "ds": "TWC",
+  "seed": 1,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.8830409356725146,
+  "n_train": 280,
+  "time_s": 2.1598398739988625
+ },
+ {
+  "ds": "TWC",
+  "seed": 1,
+  "model": "FT-Softmax",
+  "f1": 0.7497219132369299,
+  "n_train": 280,
+  "time_s": 1.8010294229970896
+ },
+ {
+  "ds": "TWC",
+  "seed": 1,
+  "model": "XGBoost",
+  "f1": 0.849624060150376,
+  "n_train": 280,
+  "time_s": 0.030560688999685226
+ },
+ {
+  "ds": "TWC",
+  "seed": 2,
+  "model": "SAINT (com MISA)",
+  "f1": 0.9164578111946533,
+  "n_train": 280,
+  "time_s": 2.5204374929999176
+ },
+ {
+  "ds": "TWC",
+  "seed": 2,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.8666666666666667,
+  "n_train": 280,
+  "time_s": 1.890095732996997
+ },
+ {
+  "ds": "TWC",
+  "seed": 2,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.8153846153846154,
+  "n_train": 280,
+  "time_s": 3.910563061002904
+ },
+ {
+  "ds": "TWC",
+  "seed": 2,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.7972402140242185,
+  "n_train": 280,
+  "time_s": 2.133044004000112
+ },
+ {
+  "ds": "TWC",
+  "seed": 2,
+  "model": "FT-Softmax",
+  "f1": 0.6069960281513483,
+  "n_train": 280,
+  "time_s": 1.7969708619966696
+ },
+ {
+  "ds": "TWC",
+  "seed": 2,
+  "model": "XGBoost",
+  "f1": 0.8331479421579533,
+  "n_train": 280,
+  "time_s": 0.028793067001970485
+ },
+ {
+  "ds": "TWC",
+  "seed": 3,
+  "model": "SAINT (com MISA)",
+  "f1": 0.949874686716792,
+  "n_train": 280,
+  "time_s": 2.5554350439997506
+ },
+ {
+  "ds": "TWC",
+  "seed": 3,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.9416301855326246,
+  "n_train": 280,
+  "time_s": 1.8616994350013556
+ },
+ {
+  "ds": "TWC",
+  "seed": 3,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.9166666666666666,
+  "n_train": 280,
+  "time_s": 3.8824171279993607
+ },
+ {
+  "ds": "TWC",
+  "seed": 3,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.9332591768631813,
+  "n_train": 280,
+  "time_s": 2.1211196090007434
+ },
+ {
+  "ds": "TWC",
+  "seed": 3,
+  "model": "FT-Softmax",
+  "f1": 0.7533838849124797,
+  "n_train": 280,
+  "time_s": 1.8100959729999886
+ },
+ {
+  "ds": "TWC",
+  "seed": 3,
+  "model": "XGBoost",
+  "f1": 0.8910538445422167,
+  "n_train": 280,
+  "time_s": 0.03890345399850048
+ },
+ {
+  "ds": "TWC",
+  "seed": 4,
+  "model": "SAINT (com MISA)",
+  "f1": 0.9083269671504965,
+  "n_train": 280,
+  "time_s": 2.5705348679985036
+ },
+ {
+  "ds": "TWC",
+  "seed": 4,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.8499583217560434,
+  "n_train": 280,
+  "time_s": 1.9028501460015832
+ },
+ {
+  "ds": "TWC",
+  "seed": 4,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.7916521980693103,
+  "n_train": 280,
+  "time_s": 3.922747855001944
+ },
+ {
+  "ds": "TWC",
+  "seed": 4,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.841391304347826,
+  "n_train": 280,
+  "time_s": 2.1397677790009766
+ },
+ {
+  "ds": "TWC",
+  "seed": 4,
+  "model": "FT-Softmax",
+  "f1": 0.8415676464456953,
+  "n_train": 280,
+  "time_s": 1.7619656009992468
+ },
+ {
+  "ds": "TWC",
+  "seed": 4,
+  "model": "XGBoost",
+  "f1": 0.8332870241733815,
+  "n_train": 280,
+  "time_s": 0.028204750997247174
+ },
+ {
+  "ds": "TWC",
+  "seed": 5,
+  "model": "SAINT (com MISA)",
+  "f1": 0.9249530956848031,
+  "n_train": 280,
+  "time_s": 2.526543624000624
+ },
+ {
+  "ds": "TWC",
+  "seed": 5,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.9249530956848031,
+  "n_train": 280,
+  "time_s": 1.9229084119979234
+ },
+ {
+  "ds": "TWC",
+  "seed": 5,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.8663324979114453,
+  "n_train": 280,
+  "time_s": 3.9347902610024903
+ },
+ {
+  "ds": "TWC",
+  "seed": 5,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.8575319505552064,
+  "n_train": 280,
+  "time_s": 2.16723340200042
+ },
+ {
+  "ds": "TWC",
+  "seed": 5,
+  "model": "FT-Softmax",
+  "f1": 0.8082134667500521,
+  "n_train": 280,
+  "time_s": 1.7965098739987297
+ },
+ {
+  "ds": "TWC",
+  "seed": 5,
+  "model": "XGBoost",
+  "f1": 0.9080203470141454,
+  "n_train": 280,
+  "time_s": 0.030196053001418477
+ },
+ {
+  "ds": "TWC",
+  "seed": 6,
+  "model": "SAINT (com MISA)",
+  "f1": 0.8665183537263625,
+  "n_train": 280,
+  "time_s": 2.6226035179970495
+ },
+ {
+  "ds": "TWC",
+  "seed": 6,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.8916591429960414,
+  "n_train": 280,
+  "time_s": 1.9221953359992767
+ },
+ {
+  "ds": "TWC",
+  "seed": 6,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.8166157265907197,
+  "n_train": 280,
+  "time_s": 3.9090932859980967
+ },
+ {
+  "ds": "TWC",
+  "seed": 6,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.849624060150376,
+  "n_train": 280,
+  "time_s": 2.1292335520010965
+ },
+ {
+  "ds": "TWC",
+  "seed": 6,
+  "model": "FT-Softmax",
+  "f1": 0.858086956521739,
+  "n_train": 280,
+  "time_s": 1.815681070998835
+ },
+ {
+  "ds": "TWC",
+  "seed": 6,
+  "model": "XGBoost",
+  "f1": 0.8749913188415862,
+  "n_train": 280,
+  "time_s": 0.03762378199826344
+ },
+ {
+  "ds": "TWC",
+  "seed": 7,
+  "model": "SAINT (com MISA)",
+  "f1": 0.9166435120866907,
+  "n_train": 280,
+  "time_s": 2.5413066479995905
+ },
+ {
+  "ds": "TWC",
+  "seed": 7,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.8915989159891599,
+  "n_train": 280,
+  "time_s": 1.8741293349994521
+ },
+ {
+  "ds": "TWC",
+  "seed": 7,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.8749913188415862,
+  "n_train": 280,
+  "time_s": 3.892465313001594
+ },
+ {
+  "ds": "TWC",
+  "seed": 7,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.8828125,
+  "n_train": 280,
+  "time_s": 2.150068154998735
+ },
+ {
+  "ds": "TWC",
+  "seed": 7,
+  "model": "FT-Softmax",
+  "f1": 0.8415676464456953,
+  "n_train": 280,
+  "time_s": 1.8423482180005522
+ },
+ {
+  "ds": "TWC",
+  "seed": 7,
+  "model": "XGBoost",
+  "f1": 0.8578496272036792,
+  "n_train": 280,
+  "time_s": 0.030111479998595314
+ },
+ {
+  "ds": "TWC",
+  "seed": 8,
+  "model": "SAINT (com MISA)",
+  "f1": 0.9332591768631813,
+  "n_train": 280,
+  "time_s": 2.5396010000004026
+ },
+ {
+  "ds": "TWC",
+  "seed": 8,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.9165739710789766,
+  "n_train": 280,
+  "time_s": 1.8941187509990414
+ },
+ {
+  "ds": "TWC",
+  "seed": 8,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.8321678321678322,
+  "n_train": 280,
+  "time_s": 3.9276571969967335
+ },
+ {
+  "ds": "TWC",
+  "seed": 8,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.9080203470141454,
+  "n_train": 280,
+  "time_s": 2.1477741380003863
+ },
+ {
+  "ds": "TWC",
+  "seed": 8,
+  "model": "FT-Softmax",
+  "f1": 0.4687653713723561,
+  "n_train": 280,
+  "time_s": 1.8129904169982183
+ },
+ {
+  "ds": "TWC",
+  "seed": 8,
+  "model": "XGBoost",
+  "f1": 0.899972214504029,
+  "n_train": 280,
+  "time_s": 0.0302509809989715
+ },
+ {
+  "ds": "TWC",
+  "seed": 9,
+  "model": "SAINT (com MISA)",
+  "f1": 0.9083269671504965,
+  "n_train": 280,
+  "time_s": 2.5396287529983965
+ },
+ {
+  "ds": "TWC",
+  "seed": 9,
+  "model": "SAINT (sem MISA)",
+  "f1": 0.8666296193387052,
+  "n_train": 280,
+  "time_s": 1.9092745420020947
+ },
+ {
+  "ds": "TWC",
+  "seed": 9,
+  "model": "FT-CUR (com inter, m=N)",
+  "f1": 0.9162946428571428,
+  "n_train": 280,
+  "time_s": 3.9243148349996773
+ },
+ {
+  "ds": "TWC",
+  "seed": 9,
+  "model": "FT-CUR (sem inter)",
+  "f1": 0.7915363769022306,
+  "n_train": 280,
+  "time_s": 2.1549680209973303
+ },
+ {
+  "ds": "TWC",
+  "seed": 9,
+  "model": "FT-Softmax",
+  "f1": 0.8830409356725146,
+  "n_train": 280,
+  "time_s": 1.8128191380019416
+ },
+ {
+  "ds": "TWC",
+  "seed": 9,
+  "model": "XGBoost",
+  "f1": 0.8162071846282373,
+  "n_train": 280,
+  "time_s": 0.03053757900124765
+ }
+]

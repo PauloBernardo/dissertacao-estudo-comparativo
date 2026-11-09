@@ -1,0 +1,82 @@
+[
+ {
+  "ds": "TWC",
+  "seed": 0,
+  "model": "FT-CUR (inter densa)",
+  "f1": 0.9333148096693527,
+  "n_train": 280,
+  "time_s": 3.8230630660000315
+ },
+ {
+  "ds": "TWC",
+  "seed": 1,
+  "model": "FT-CUR (inter densa)",
+  "f1": 0.8571328524406472,
+  "n_train": 280,
+  "time_s": 2.7795117210007447
+ },
+ {
+  "ds": "TWC",
+  "seed": 2,
+  "model": "FT-CUR (inter densa)",
+  "f1": 0.8666296193387052,
+  "n_train": 280,
+  "time_s": 2.795065242000419
+ },
+ {
+  "ds": "TWC",
+  "seed": 3,
+  "model": "FT-CUR (inter densa)",
+  "f1": 0.899749373433584,
+  "n_train": 280,
+  "time_s": 2.784779804998834
+ },
+ {
+  "ds": "TWC",
+  "seed": 4,
+  "model": "FT-CUR (inter densa)",
+  "f1": 0.858086956521739,
+  "n_train": 280,
+  "time_s": 2.790384650001215
+ },
+ {
+  "ds": "TWC",
+  "seed": 5,
+  "model": "FT-CUR (inter densa)",
+  "f1": 0.8665183537263625,
+  "n_train": 280,
+  "time_s": 2.799276825000561
+ },
+ {
+  "ds": "TWC",
+  "seed": 6,
+  "model": "FT-CUR (inter densa)",
+  "f1": 0.8331479421579533,
+  "n_train": 280,
+  "time_s": 2.7770708210009616
+ },
+ {
+  "ds": "TWC",
+  "seed": 7,
+  "model": "FT-CUR (inter densa)",
+  "f1": 0.8666666666666667,
+  "n_train": 280,
+  "time_s": 2.815303095998388
+ },
+ {
+  "ds": "TWC",
+  "seed": 8,
+  "model": "FT-CUR (inter densa)",
+  "f1": 0.8742928975487115,
+  "n_train": 280,
+  "time_s": 2.822198550002213
+ },
+ {
+  "ds": "TWC",
+  "seed": 9,
+  "model": "FT-CUR (inter densa)",
+  "f1": 0.9333148096693527,
+  "n_train": 280,
+  "time_s": 2.8060105219992693
+ }
+]

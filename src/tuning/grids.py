@@ -530,6 +530,30 @@ GRIDS: dict[str, dict] = {
         for name, method in (("Random", "random"), ("Kmeans", "kmeans"),
                              ("Opposite", "opposite"))
     },
+
+    # ── Ablação da atenção entre amostras (2026-11-09, pós-qualificação) ──────
+    # Mesma grade e mesmos fixos dos modelos publicados (SAINTColnorm e
+    # FTTransformerCURRandom); só a atenção entre amostras muda. Sem CUR, m_ratio
+    # não tem efeito e sai da grade (6 configurações em vez de 12).
+    "SAINTNoMISA": {
+        "model_name": "SAINTColnorm",
+        "grid": {"n_layers": [1, 2, 3], "n_heads": [2, 4]},
+        "fixed": {"d_model": 32, "lr": 1e-3, "epochs": 40, "patience": 6,
+                  "early_stop_metric": "val_loss", "batch_size": 1024,
+                  "use_misa": False},
+        "needs_gpu": True,
+    },
+    **{
+        f"FTTransformerCURRandom{name}": {
+            "model_name": "FTTransformerCURColnorm",
+            "grid": {"n_layers": [1, 2, 3], "n_heads": [2, 4]},
+            "fixed": {"d_model": 32, "lr": 1e-3, "epochs": 40, "patience": 6,
+                      "early_stop_metric": "val_loss", "batch_size": 4096,
+                      "selection_method": "random", "inter_mode": mode},
+            "needs_gpu": True,
+        }
+        for name, mode in (("NoInter", "none"), ("Dense", "dense"))
+    },
 }
 
 

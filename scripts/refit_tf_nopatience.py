@@ -38,7 +38,9 @@ import run_tier2_gridcv as R2  # noqa: E402
 from src.experiments.reproducibility import set_global_seed  # noqa: E402
 
 TF = ["FTTransformer_softmax", "FTTransformer_topk", "FTTransformer_entmax", "FTTransformer_sparsemax",
-      "SAINTColnorm", "FTTransformerCURRandom"]
+      "SAINTColnorm", "FTTransformerCURRandom",
+      # ablação da atenção entre amostras (2026-11-09)
+      "SAINTNoMISA", "FTTransformerCURRandomNoInter", "FTTransformerCURRandomDense"]
 EPOCHS = 200
 for _R in (R1, R2):                       # paciência = teto: nunca dispara
     _R.BUDGET_OVERRIDE.update(epochs=EPOCHS, patience=EPOCHS)

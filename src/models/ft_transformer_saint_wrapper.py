@@ -72,7 +72,10 @@ class SAINTColnorm(BaseEstimator, ClassifierMixin):
         ff_dropout: float = 0.1,
         min_epochs: int = 0,
         style: str = "reference",
+        use_misa: bool = True,
     ):
+        # use_misa=False: ablação da atenção entre amostras (MISA desligada).
+        self.use_misa = use_misa
         self.min_epochs = min_epochs
         # "reference" = RowColTransformer do código oficial (pré-norma, GEGLU,
         # dim_head 64 na atenção de linha, FF2 na linha achatada);
@@ -128,6 +131,7 @@ class SAINTColnorm(BaseEstimator, ClassifierMixin):
             attn_dropout=self.attn_dropout,
             ff_dropout=self.ff_dropout,
             style=self.style,
+            use_misa=self.use_misa,
         ).to(DEVICE)
 
         X_tr_t, y_tr_t = self._to_tensor(X_tr, y_tr)
