@@ -99,7 +99,7 @@ def _truncated_pinv(W: torch.Tensor, tau_ratio: float = 0.1,
 
     Z_{k+1} = 2*Z_k - Z_k @ W @ Z_k,  Z_0 = W^T / ||W||_F^2
 
-    O(m²) por iteração vs O(m³) do SVD — apenas matmuls, cuBLAS-friendly.
+    O(m³) por iteração (dois produtos m×m), como a SVD, mas só com matmuls: diferenciável e cuBLAS-friendly. Init: Wᵀ/‖W‖_F² (≤ 1/σ_max², converge).
     Convergência validada em datasets Tier 1 (BCW, HAB): sem degradação de F1.
     """
     if not torch.isfinite(W).all():

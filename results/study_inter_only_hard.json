@@ -1,0 +1,812 @@
+[
+ {
+  "ds": "GCR",
+  "seed": 0,
+  "model": "knn",
+  "f1": 0.5725277856939299
+ },
+ {
+  "ds": "GCR",
+  "seed": 0,
+  "model": "xgboost",
+  "f1": 0.7418244406196213
+ },
+ {
+  "ds": "GCR",
+  "seed": 0,
+  "model": "inter_cur",
+  "f1": 0.5575828246107415,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.0033333333333333335,
+   "df1": 0.002450992397833529
+  },
+  "ruido": {
+   "flip": 0.0,
+   "df1": 0.0
+  }
+ },
+ {
+  "ds": "GCR",
+  "seed": 0,
+  "model": "inter_densa",
+  "f1": 0.5628896719978314,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "ruido": {
+   "flip": 0.0,
+   "df1": 0.0
+  }
+ },
+ {
+  "ds": "GCR",
+  "seed": 0,
+  "model": "sem_inter",
+  "f1": 0.5279710337244792
+ },
+ {
+  "ds": "GCR",
+  "seed": 1,
+  "model": "knn",
+  "f1": 0.5404673696209746
+ },
+ {
+  "ds": "GCR",
+  "seed": 1,
+  "model": "xgboost",
+  "f1": 0.6962306935352758
+ },
+ {
+  "ds": "GCR",
+  "seed": 1,
+  "model": "inter_cur",
+  "f1": 0.6511350059737157,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.0033333333333333335,
+   "df1": 0.002955058724253723
+  },
+  "ruido": {
+   "flip": 0.0033333333333333335,
+   "df1": 0.002955058724253723
+  }
+ },
+ {
+  "ds": "GCR",
+  "seed": 1,
+  "model": "inter_densa",
+  "f1": 0.6540900646979694,
+  "bootstrap": {
+   "flip": 0.0033333333333333335,
+   "df1": -0.006684613167644682
+  },
+  "colperm": {
+   "flip": 0.0033333333333333335,
+   "df1": -0.006684613167644682
+  },
+  "ruido": {
+   "flip": 0.0033333333333333335,
+   "df1": -0.006684613167644682
+  }
+ },
+ {
+  "ds": "GCR",
+  "seed": 1,
+  "model": "sem_inter",
+  "f1": 0.708590068865531
+ },
+ {
+  "ds": "GCR",
+  "seed": 2,
+  "model": "knn",
+  "f1": 0.629684491186491
+ },
+ {
+  "ds": "GCR",
+  "seed": 2,
+  "model": "xgboost",
+  "f1": 0.6470588235294118
+ },
+ {
+  "ds": "GCR",
+  "seed": 2,
+  "model": "inter_cur",
+  "f1": 0.6799999999999999,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "ruido": {
+   "flip": 0.0,
+   "df1": 0.0
+  }
+ },
+ {
+  "ds": "GCR",
+  "seed": 2,
+  "model": "inter_densa",
+  "f1": 0.6830309974850817,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "ruido": {
+   "flip": 0.0,
+   "df1": 0.0
+  }
+ },
+ {
+  "ds": "GCR",
+  "seed": 2,
+  "model": "sem_inter",
+  "f1": 0.668141592920354
+ },
+ {
+  "ds": "GCR",
+  "seed": 3,
+  "model": "knn",
+  "f1": 0.629684491186491
+ },
+ {
+  "ds": "GCR",
+  "seed": 3,
+  "model": "xgboost",
+  "f1": 0.685505380910044
+ },
+ {
+  "ds": "GCR",
+  "seed": 3,
+  "model": "inter_cur",
+  "f1": 0.6534996534996534,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "ruido": {
+   "flip": 0.006666666666666667,
+   "df1": 0.0028380519817601257
+  }
+ },
+ {
+  "ds": "GCR",
+  "seed": 3,
+  "model": "inter_densa",
+  "f1": 0.6649292628443783,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "ruido": {
+   "flip": 0.0033333333333333335,
+   "df1": -0.0029260967980855312
+  }
+ },
+ {
+  "ds": "GCR",
+  "seed": 3,
+  "model": "sem_inter",
+  "f1": 0.7081865502918134
+ },
+ {
+  "ds": "GCR",
+  "seed": 4,
+  "model": "knn",
+  "f1": 0.5806315789473684
+ },
+ {
+  "ds": "GCR",
+  "seed": 4,
+  "model": "xgboost",
+  "f1": 0.69558599695586
+ },
+ {
+  "ds": "GCR",
+  "seed": 4,
+  "model": "inter_cur",
+  "f1": 0.7227997227997228,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "ruido": {
+   "flip": 0.0,
+   "df1": 0.0
+  }
+ },
+ {
+  "ds": "GCR",
+  "seed": 4,
+  "model": "inter_densa",
+  "f1": 0.7227997227997228,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "ruido": {
+   "flip": 0.0,
+   "df1": 0.0
+  }
+ },
+ {
+  "ds": "GCR",
+  "seed": 4,
+  "model": "sem_inter",
+  "f1": 0.6942519364044027
+ },
+ {
+  "ds": "HAB",
+  "seed": 0,
+  "model": "knn",
+  "f1": 0.5838815789473684
+ },
+ {
+  "ds": "HAB",
+  "seed": 0,
+  "model": "xgboost",
+  "f1": 0.5652173913043479
+ },
+ {
+  "ds": "HAB",
+  "seed": 0,
+  "model": "inter_cur",
+  "f1": 0.649207304836444,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "ruido": {
+   "flip": 0.0,
+   "df1": 0.0
+  }
+ },
+ {
+  "ds": "HAB",
+  "seed": 0,
+  "model": "inter_densa",
+  "f1": 0.6031372549019608,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "ruido": {
+   "flip": 0.0,
+   "df1": 0.0
+  }
+ },
+ {
+  "ds": "HAB",
+  "seed": 0,
+  "model": "sem_inter",
+  "f1": 0.6392156862745098
+ },
+ {
+  "ds": "HAB",
+  "seed": 1,
+  "model": "knn",
+  "f1": 0.5460526315789473
+ },
+ {
+  "ds": "HAB",
+  "seed": 1,
+  "model": "xgboost",
+  "f1": 0.5734612310151879
+ },
+ {
+  "ds": "HAB",
+  "seed": 1,
+  "model": "inter_cur",
+  "f1": 0.46767295597484276,
+  "bootstrap": {
+   "flip": 0.010869565217391304,
+   "df1": -0.042672955974842774
+  },
+  "colperm": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "ruido": {
+   "flip": 0.010869565217391304,
+   "df1": -0.042672955974842774
+  }
+ },
+ {
+  "ds": "HAB",
+  "seed": 1,
+  "model": "inter_densa",
+  "f1": 0.46767295597484276,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "ruido": {
+   "flip": 0.0,
+   "df1": 0.0
+  }
+ },
+ {
+  "ds": "HAB",
+  "seed": 1,
+  "model": "sem_inter",
+  "f1": 0.425
+ },
+ {
+  "ds": "HAB",
+  "seed": 2,
+  "model": "knn",
+  "f1": 0.5460526315789473
+ },
+ {
+  "ds": "HAB",
+  "seed": 2,
+  "model": "xgboost",
+  "f1": 0.6231884057971014
+ },
+ {
+  "ds": "HAB",
+  "seed": 2,
+  "model": "inter_cur",
+  "f1": 0.4177215189873418,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "ruido": {
+   "flip": 0.0,
+   "df1": 0.0
+  }
+ },
+ {
+  "ds": "HAB",
+  "seed": 2,
+  "model": "inter_densa",
+  "f1": 0.4177215189873418,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "ruido": {
+   "flip": 0.0,
+   "df1": 0.0
+  }
+ },
+ {
+  "ds": "HAB",
+  "seed": 2,
+  "model": "sem_inter",
+  "f1": 0.6786173929031072
+ },
+ {
+  "ds": "HAB",
+  "seed": 3,
+  "model": "knn",
+  "f1": 0.5015051173991572
+ },
+ {
+  "ds": "HAB",
+  "seed": 3,
+  "model": "xgboost",
+  "f1": 0.5989268947015426
+ },
+ {
+  "ds": "HAB",
+  "seed": 3,
+  "model": "inter_cur",
+  "f1": 0.57712814855672,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "ruido": {
+   "flip": 0.0,
+   "df1": 0.0
+  }
+ },
+ {
+  "ds": "HAB",
+  "seed": 3,
+  "model": "inter_densa",
+  "f1": 0.57712814855672,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "ruido": {
+   "flip": 0.0,
+   "df1": 0.0
+  }
+ },
+ {
+  "ds": "HAB",
+  "seed": 3,
+  "model": "sem_inter",
+  "f1": 0.57712814855672
+ },
+ {
+  "ds": "HAB",
+  "seed": 4,
+  "model": "knn",
+  "f1": 0.5538688593717056
+ },
+ {
+  "ds": "HAB",
+  "seed": 4,
+  "model": "xgboost",
+  "f1": 0.5855855855855856
+ },
+ {
+  "ds": "HAB",
+  "seed": 4,
+  "model": "inter_cur",
+  "f1": 0.5366300366300366,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "ruido": {
+   "flip": 0.0,
+   "df1": 0.0
+  }
+ },
+ {
+  "ds": "HAB",
+  "seed": 4,
+  "model": "inter_densa",
+  "f1": 0.5366300366300366,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "ruido": {
+   "flip": 0.0,
+   "df1": 0.0
+  }
+ },
+ {
+  "ds": "HAB",
+  "seed": 4,
+  "model": "sem_inter",
+  "f1": 0.5292547274749722
+ },
+ {
+  "ds": "ARR",
+  "seed": 0,
+  "model": "knn",
+  "f1": 0.46598129506675234
+ },
+ {
+  "ds": "ARR",
+  "seed": 0,
+  "model": "xgboost",
+  "f1": 0.8281979458450046
+ },
+ {
+  "ds": "ARR",
+  "seed": 0,
+  "model": "inter_cur",
+  "f1": 0.6693191865605659,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "ruido": {
+   "flip": 0.0,
+   "df1": 0.0
+  }
+ },
+ {
+  "ds": "ARR",
+  "seed": 0,
+  "model": "inter_densa",
+  "f1": 0.6693191865605659,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "ruido": {
+   "flip": 0.0,
+   "df1": 0.0
+  }
+ },
+ {
+  "ds": "ARR",
+  "seed": 0,
+  "model": "sem_inter",
+  "f1": 0.6261056657901027
+ },
+ {
+  "ds": "ARR",
+  "seed": 1,
+  "model": "knn",
+  "f1": 0.5038204722241344
+ },
+ {
+  "ds": "ARR",
+  "seed": 1,
+  "model": "xgboost",
+  "f1": 0.7267857142857144
+ },
+ {
+  "ds": "ARR",
+  "seed": 1,
+  "model": "inter_cur",
+  "f1": 0.703206311901964,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.007352941176470588,
+   "df1": -0.008481283843602583
+  },
+  "ruido": {
+   "flip": 0.007352941176470588,
+   "df1": -0.008481283843602583
+  }
+ },
+ {
+  "ds": "ARR",
+  "seed": 1,
+  "model": "inter_densa",
+  "f1": 0.6964285714285714,
+  "bootstrap": {
+   "flip": 0.007352941176470588,
+   "df1": 0.00836354745605039
+  },
+  "colperm": {
+   "flip": 0.014705882352941176,
+   "df1": -0.0017035433702099478
+  },
+  "ruido": {
+   "flip": 0.014705882352941176,
+   "df1": -0.0017035433702099478
+  }
+ },
+ {
+  "ds": "ARR",
+  "seed": 1,
+  "model": "sem_inter",
+  "f1": 0.6843501326259946
+ },
+ {
+  "ds": "ARR",
+  "seed": 2,
+  "model": "knn",
+  "f1": 0.4465624330691797
+ },
+ {
+  "ds": "ARR",
+  "seed": 2,
+  "model": "xgboost",
+  "f1": 0.7402739128062421
+ },
+ {
+  "ds": "ARR",
+  "seed": 2,
+  "model": "inter_cur",
+  "f1": 0.7480383609415868,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "ruido": {
+   "flip": 0.0,
+   "df1": 0.0
+  }
+ },
+ {
+  "ds": "ARR",
+  "seed": 2,
+  "model": "inter_densa",
+  "f1": 0.7557551020408163,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.007352941176470588,
+   "df1": -0.007716741099229485
+  },
+  "ruido": {
+   "flip": 0.007352941176470588,
+   "df1": -0.007716741099229485
+  }
+ },
+ {
+  "ds": "ARR",
+  "seed": 2,
+  "model": "sem_inter",
+  "f1": 0.7621857923497268
+ },
+ {
+  "ds": "ARR",
+  "seed": 3,
+  "model": "knn",
+  "f1": 0.46598129506675234
+ },
+ {
+  "ds": "ARR",
+  "seed": 3,
+  "model": "xgboost",
+  "f1": 0.7621857923497268
+ },
+ {
+  "ds": "ARR",
+  "seed": 3,
+  "model": "inter_cur",
+  "f1": 0.6901041666666667,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.014705882352941176,
+   "df1": 0.0
+  },
+  "ruido": {
+   "flip": 0.007352941176470588,
+   "df1": 0.007099200153860008
+  }
+ },
+ {
+  "ds": "ARR",
+  "seed": 3,
+  "model": "inter_densa",
+  "f1": 0.682983682983683,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "ruido": {
+   "flip": 0.0,
+   "df1": 0.0
+  }
+ },
+ {
+  "ds": "ARR",
+  "seed": 3,
+  "model": "sem_inter",
+  "f1": 0.705308775731311
+ },
+ {
+  "ds": "ARR",
+  "seed": 4,
+  "model": "knn",
+  "f1": 0.46598129506675234
+ },
+ {
+  "ds": "ARR",
+  "seed": 4,
+  "model": "xgboost",
+  "f1": 0.7567084078711985
+ },
+ {
+  "ds": "ARR",
+  "seed": 4,
+  "model": "inter_cur",
+  "f1": 0.7294429708222812,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "ruido": {
+   "flip": 0.0,
+   "df1": 0.0
+  }
+ },
+ {
+  "ds": "ARR",
+  "seed": 4,
+  "model": "inter_densa",
+  "f1": 0.7294429708222812,
+  "bootstrap": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "colperm": {
+   "flip": 0.0,
+   "df1": 0.0
+  },
+  "ruido": {
+   "flip": 0.0,
+   "df1": 0.0
+  }
+ },
+ {
+  "ds": "ARR",
+  "seed": 4,
+  "model": "sem_inter",
+  "f1": 0.7281812125249834
+ }
+]

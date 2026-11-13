@@ -14,6 +14,8 @@ Modelos (todos 200 épocas, sem parada antecipada, restaurando o melhor checkpoi
   FT-Softmax / FT-Sparsemax — FT inter-atributos; mesmos hiperparâmetros, só a função de atenção.
   ADMM-Nyström (ℓ1) — GridSearchCV 3-fold; σ na escala de √p.
   XGBoost — referência.
+--label odds usa a binarização do artigo do SAINT (versão ODDS: classes raras 3,4,5,7,8,9,14,15
+contra o resto; 66 positivos) em vez de normal × qualquer arritmia.
 
     python scripts/study_arrhythmia_kaggle.py --seeds 0 1 2 3 4 --output results/arr_g0.json
 """
@@ -42,9 +44,14 @@ DATA = ROOT / "data/raw/arrhythmia/arrhythmia.data"
 EP = dict(epochs=200, patience=200)
 
 
-def load_arrhythmia():
+ODDS_RARE = [3, 4, 5, 7, 8, 9, 14, 15]       # classes raras da versão ODDS (66 positivos, 14,6%)
+
+
+def load_arrhythmia(label: str = "any"):
     raw = np.genfromtxt(DATA, delimiter=",", missing_values="?", filling_values=np.nan)
     X, cls = raw[:, :-1], raw[:, -1].astype(int)
+    if label == "odds":                       # binarização do SAINT (ODDS/Stony Brook): raras × resto
+        return X, np.isin(cls, ODDS_RARE).astype(int)
     return X, (cls != 1).astype(int)          # 1 = arritmia (qualquer classe ≠ normal)
 
 
@@ -77,15 +84,17 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--seeds", nargs="+", type=int, default=list(range(10)))
     ap.add_argument("--models", nargs="*", default=None, help="subconjunto (nomes exatos)")
+    ap.add_argument("--label", choices=["any", "odds"], default="any",
+                    help="any = normal × qualquer arritmia; odds = classes raras × resto (artigo do SAINT)")
     ap.add_argument("--smoke", action="store_true", help="2 épocas, só para testar o pipeline")
     ap.add_argument("--output", default=str(ROOT / "results/study_arrhythmia_kaggle.json"))
     a = ap.parse_args()
     out = Path(a.output); out.parent.mkdir(parents=True, exist_ok=True)
     recs = json.loads(out.read_text()) if out.exists() else []
     done = {(r["seed"], r["model"]) for r in recs if r.get("status") == "ok"}
-    X, y = load_arrhythmia()
+    X, y = load_arrhythmia(a.label)
     dev = "cuda" if torch.cuda.is_available() else "cpu"
-    print(f"Arrhythmia {X.shape} | device {dev}", flush=True)
+    print(f"Arrhythmia {X.shape} | rótulo {a.label} ({int(y.sum())} positivos) | device {dev}", flush=True)
     for seed in a.seeds:
         Xtr, Xte, ytr, yte = make_splits(X, y, test_size=0.30, seed=seed)
         imp = SimpleImputer(strategy="median").fit(Xtr)
