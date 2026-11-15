@@ -35,18 +35,18 @@ MODEL_LABEL = {
     "PCPLSSVm":               "LSSVM-PCP",
     "FSALSSVmOriginal":       "LSSVM-FSA",
     "IPLSSVmOriginal":        "LSSVM-IP",
-    "PruningLSSVM":           "LSSVM-Prun",
-    "OppositeMapsOriginalLSSVM":"LSSVM-OppM",
-    "ADMMNesterovLSSVM":      "LSSVM-ADMM",
-    "ADMMElasticNet":         "LSSVM-ADMM-EN",
-    "FISTANesterov":          "LSSVM-FISTA",
+    "PruningLSSVM":           "LSSVM-Pruning",
+    "OppositeMapsOriginalLSSVM":"LSSVM-OppMaps",
+    "ADMMNesterovLSSVM":      "ADMM-Nesterov",
+    "ADMMElasticNet":         "ADMM-ElasticNet",
+    "FISTANesterov":          "FISTA-Nesterov",
     "DualFISTA":              "DualFISTA★",
-    "NystromLSSVMColnorm":    "Nystřöm-SVM★",
+    "NystromLSSVMColnorm":    "Nyström-SVM★",
     "ADMMNystromLSSVM":       "ADMM-Nyström★",
     "FISTANystrom":           "FISTA-Nyström★",
     "FTTransformerCURColnorm":"FT-CUR★",
     "FTTransformer_softmax":  "FT-Softmax",
-    "FTTransformer_topk":     "FT-TopK",
+    "FTTransformer_topk":     "FT-Top-$k$",
     "FTTransformer_entmax":   "FT-Entmax",
     "FTTransformer_sparsemax":"FT-Sparsemax",
     "SAINTColnorm":           "SAINT",
@@ -131,9 +131,9 @@ def main() -> None:
     ax.set_xlim(0.55, 0.95)
 
     patches = [
-        mpatches.Patch(color="#1f77b4", label="LSSVM baselines"),
+        mpatches.Patch(color="#1f77b4", label="LSSVMs de referência"),
         mpatches.Patch(color="#888888", label="FT-Transformer / SAINT"),
-        mpatches.Patch(color="#9467bd", label="ADMM/FISTA family"),
+        mpatches.Patch(color="#9467bd", label="Família ADMM/FISTA"),
         mpatches.Patch(color="#d62728", label="DualFISTA (proposto)"),
         mpatches.Patch(color="#2ca02c", label="Nyström-SVM (proposto)"),
         mpatches.Patch(color="#8c564b", label="ADMM-Nyström (proposto)"),
@@ -141,7 +141,7 @@ def main() -> None:
         mpatches.Patch(color="#ff7f0e", label="FT-CUR (proposto)"),
         mpatches.Patch(color="#e377c2", label="XGBoost"),
     ]
-    ax.legend(handles=patches, fontsize=8, loc="lower right")
+    ax.legend(handles=patches, fontsize=8, loc="upper left", bbox_to_anchor=(1.01, 1.0))
     ax.invert_yaxis()
     plt.tight_layout()
     fig.savefig(OUT / "fig1_f1_all_models.pdf", dpi=150)

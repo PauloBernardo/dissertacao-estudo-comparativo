@@ -118,7 +118,7 @@ def main() -> None:
     tf_records = json.loads((STUDY_ROOT / "results/table19_results.json").read_text())
     tf_labels = {
         "FTTransformer_softmax":   "FT-Softmax",
-        "FTTransformer_topk":      "FT-TopK",
+        "FTTransformer_topk":      "FT-Top-$k$",
         "FTTransformer_entmax":    "FT-Entmax",
         "FTTransformer_sparsemax": "FT-Sparsemax",
         "SAINT_minibatch":         "SAINT (mini-batch)",
