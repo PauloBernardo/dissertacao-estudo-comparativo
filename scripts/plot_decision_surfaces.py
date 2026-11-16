@@ -222,13 +222,15 @@ def _panel(ax, X_tr, y_tr_raw, xx, yy, Z, sv_points_scaled, scaler, title, spars
 
     neg_class = y_tr_raw.min()
     colors = np.where(y_tr_raw == neg_class, BLUE, RED)
-    ax.scatter(X_tr[:, 0], X_tr[:, 1], c=colors, s=14, edgecolors="white",
-               linewidths=0.4, zorder=3)
+    ax.scatter(X_tr[:, 0], X_tr[:, 1], c=colors, s=9, edgecolors="white",
+               linewidths=0.3, zorder=3)
 
     if sv_points_scaled is not None:
         sv_points = scaler.inverse_transform(sv_points_scaled)
-        ax.scatter(sv_points[:, 0], sv_points[:, 1], s=75, facecolors="none",
-                   edgecolors=INK, linewidths=1.1, zorder=4)
+        # Anéis finos e translúcidos: nos modelos densos quase todo ponto é vetor-suporte,
+        # e anéis grossos escondiam a superfície (observação de revisão, 16/11/2026).
+        ax.scatter(sv_points[:, 0], sv_points[:, 1], s=34, facecolors="none",
+                   edgecolors=INK, linewidths=0.55, alpha=0.6, zorder=4)
 
     full_title = title if sparsity_pct is None else f"{title}\n({sparsity_pct:.0f}% esparso)"
     ax.set_title(full_title, fontsize=9.5)

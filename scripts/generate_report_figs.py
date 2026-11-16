@@ -225,30 +225,38 @@ def main() -> None:
     ds_pairs = [("TWS", "TWS_2k"), ("TWM", "TWM_2k"), ("TWC", "TWC_2k")]
     ds_names  = ["TWS", "TWM", "TWC"]
 
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5), sharey=False)
+    # Halteres horizontais: rótulos dos modelos na horizontal (legíveis na largura do
+    # texto da tese, ~16 cm) e a variação N=400 -> N=2000 lida como o comprimento do traço.
+    fig, axes = plt.subplots(1, 3, figsize=(6.3, 3.0), sharey=True, sharex=True)
+    ypos = np.arange(len(SCALE_MODELS))[::-1]
     for col_idx, (ds400, ds2k) in enumerate(ds_pairs):
         ax = axes[col_idx]
-        for i, m in enumerate(SCALE_MODELS):
+        for y, m in zip(ypos, SCALE_MODELS):
             v400_list = sc400[m].get(ds400, [])
             v2k_list  = sc2000[m].get(ds2k, [])
             v400 = float(np.nanmean(v400_list)) if v400_list else float("nan")
             v2k  = float(np.nanmean(v2k_list))  if v2k_list  else float("nan")
             col = model_color(m)
-            lbl = MODEL_LABEL.get(m, m)
-            ax.bar(i - 0.2, v400, 0.35, color=col, alpha=0.45,
-                   label=f"{lbl} N=400" if col_idx == 0 else "")
-            ax.bar(i + 0.2, v2k,  0.35, color=col, alpha=0.95,
-                   label=f"{lbl} N=2000" if col_idx == 0 else "")
-        ax.set_title(f"Dataset: {ds_names[col_idx]}", fontsize=10)
-        ax.set_xticks(range(len(SCALE_MODELS)))
-        ax.set_xticklabels([MODEL_LABEL.get(m, m) for m in SCALE_MODELS],
-                           rotation=35, ha="right", fontsize=8)
-        ax.set_ylim(0.4, 1.05)
-        ax.set_ylabel("F1-macro" if col_idx == 0 else "")
-        ax.grid(True, axis="y", alpha=0.3)
-
-    fig.suptitle("Análise de Sensibilidade A — Escalabilidade Amostral: N=400 (translúcido) vs N=2000 (sólido)", fontsize=11)
-    plt.tight_layout()
+            ax.plot([v400, v2k], [y, y], color=col, lw=1.6, zorder=2)
+            ax.scatter(v400, y, s=26, facecolor="white", edgecolor=col, lw=1.3, zorder=3,
+                       label="$N=400$" if (col_idx == 0 and y == ypos[0]) else None)
+            ax.scatter(v2k, y, s=26, color=col, zorder=4,
+                       label="$N=2000$" if (col_idx == 0 and y == ypos[0]) else None)
+        ax.set_title(ds_names[col_idx], fontsize=9)
+        ax.set_yticks(ypos)
+        ax.set_yticklabels([MODEL_LABEL.get(m, m) for m in SCALE_MODELS], fontsize=8.5)
+        ax.tick_params(axis="x", labelsize=8)
+        ax.set_xlabel("F1-macro", fontsize=8.5)
+        ax.grid(True, axis="x", alpha=0.3)
+        ax.set_xlim(0.85, 1.008)   # mesma escala nos três painéis: o tamanho do ganho é comparável
+    h_, l_ = axes[0].get_legend_handles_labels()
+    leg = fig.legend(h_, l_, fontsize=8, loc="upper center", ncol=2, frameon=False,
+                     bbox_to_anchor=(0.6, 1.0), handletextpad=0.3)
+    for h in leg.legend_handles:
+        h.set_edgecolor("0.3")
+        if h.get_label() == "$N=2000$":
+            h.set_facecolor("0.3")
+    plt.tight_layout(w_pad=0.6, rect=(0, 0, 1, 0.93))
     fig.savefig(OUT / "fig3_scaling.pdf", dpi=150)
     fig.savefig(OUT / "fig3_scaling.png", dpi=150)
     plt.close(fig)

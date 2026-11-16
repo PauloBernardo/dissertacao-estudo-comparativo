@@ -23,7 +23,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.stats import spearmanr
+from scipy.stats import permutation_test, spearmanr
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "results" / "report_figs"
@@ -56,6 +56,12 @@ def main():
         yerr.append(float(np.std(vals))); labels.append(ds)
 
     rho, p = spearmanr(xs_pts, ys_pts)
+    # As 5 sementes de cada base têm a MESMA razão de desbalanceamento: o p sobre os 30
+    # pontos trata como independentes observações que não o são (exploratório). A unidade
+    # independente é a base -> Spearman sobre as 6 médias, com p exato por permutação.
+    rho_b = spearmanr(xm, ym)[0]
+    p_b = permutation_test((ym,), lambda yy: spearmanr(xm, yy)[0], permutation_type="pairings",
+                           n_resamples=np.inf, alternative="two-sided").pvalue
 
     plt.rcParams.update({"font.size": 9, "axes.linewidth": 0.6,
                          "font.family": "serif", "mathtext.fontset": "cm"})
@@ -94,7 +100,9 @@ def main():
     ax.set_ylim(0.0, 1.18)
     ax.set_xticks([1, 2, 3, 4, 5, 6, 7, 8])
 
-    ax.text(0.03, 0.06, rf"Spearman $\rho = {rho:+.2f}$  ($p = {p:.1e}$)",
+    fmt = lambda v, f: format(v, f).replace(".", "{,}").replace("-", "-")
+    ax.text(0.03, 0.06, rf"Spearman por base ($n=6$): $\rho = {fmt(rho_b, '+.2f')}$, $p$ exato $= {fmt(p_b, '.3f')}$"
+            "\n" rf"sobre os 30 pontos: $\rho = {fmt(rho, '+.2f')}$ (exploratório)",
             transform=ax.transAxes, fontsize=8, color=INK,
             ha="left", va="bottom",
             bbox=dict(boxstyle="round,pad=0.35", fc="white", ec=GRID, lw=0.6))
@@ -113,7 +121,7 @@ def main():
     for ext in ("pdf", "png"):
         fig.savefig(OUT / f"fig_l1_minority_pruning.{ext}", dpi=200,
                     bbox_inches="tight")
-    print(f"Spearman rho={rho:+.3f} p={p:.2e} (n={len(xs_pts)})")
+    print(f"Spearman rho={rho:+.3f} p={p:.2e} (n={len(xs_pts)}); por base rho={rho_b:+.3f} p_exato={p_b:.4f}")
     for x, y, e, lab in zip(xm, ym, yerr, labels):
         print(f"  {lab:10s} {x:.1f}:1  r_min={y:.3f}±{e:.3f}")
     print(f"salvo em {OUT}/fig_l1_minority_pruning.pdf")
