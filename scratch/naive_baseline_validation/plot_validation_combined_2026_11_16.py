@@ -91,7 +91,16 @@ OFFSETS = {
 }
 GROUP_LABEL = {
     "FISTANystromRandom": "ADMM-Nyström e FISTA-Nyström",
-    "ADMMElasticNet": "ADMM-Nesterov,\nADMM-ElasticNet e\nFISTA-Nesterov",
+    "ADMMElasticNet": "ADMM-ElasticNet,\nADMM-Nesterov e\nFISTA-Nesterov",
+}
+
+
+# rótulos dos pontos de parcimônia (triângulos vazados)
+PAR_OFFSETS = {
+    "FISTANesterov": (-7, 0, "right"),
+    "ADMMNesterovLSSVM": (0, 9, "center"),
+    "ADMMElasticNet": (7, 0, "left"),
+    "DualFISTA": (5, -9, "left"),
 }
 
 
@@ -112,7 +121,9 @@ def main() -> None:
     # jitter minusculo so pra separar visualmente os 3 primais l1, que
     # caem quase no mesmo ponto (13,30) -- nao afeta a leitura numerica,
     # os valores reais estao na tabela.
-    JITTER = {"ADMMNesterovLSSVM": (-1.2, 1.0), "ADMMElasticNet": (0.0, 0.0), "FISTANesterov": (1.2, -1.0)}
+    # 2026-11-16: deslocamento SÓ horizontal (os três têm a mesma estabilidade, 30%),
+    # preservando a ordem real em F1 (ElasticNet 12,7 < ADMM 13,1 < FISTA 13,4).
+    JITTER = {"ADMMElasticNet": (-2.5, 0.0), "ADMMNesterovLSSVM": (0.0, 0.0), "FISTANesterov": (2.5, 0.0)}
 
     for v, d in by_variant.items():
         f1pct = 100 * d["f1_wins"] / d["f1_n"] + JITTER.get(v, (0, 0))[0]
@@ -135,6 +146,9 @@ def main() -> None:
                         zorder=4)
             ax.scatter([f1p], [stabp], s=70, facecolors="white", edgecolors="#d94f4f",
                        marker="^", linewidths=1.6, zorder=5)
+            dx, dy, ha = PAR_OFFSETS[v]
+            ax.annotate(LABELS[v], (f1p, stabp), xytext=(dx, dy), textcoords="offset points",
+                        fontsize=7.5, ha=ha, va="center", color="#a13030", style="italic", zorder=6)
 
     ax.set_xlim(0, 100)
     ax.set_ylim(0, 105)
