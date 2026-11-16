@@ -6,7 +6,7 @@ Aqui, no Cenário 1 (10 bases, mesma partição 70/30 por semente), cada (base, 
 hiperparâmetros escolhidos pelo GridSearchCV publicado (results/tier1_gridcv.json) e só ν varia.
 Mede F1-macro, esparsidade e o número de condição de G̃ (espectro do kernel de treino).
 
-    .venv/bin/python scripts/study_tikhonov_sensitivity.py --seeds 0 1 2 3 4
+    .venv/bin/python scripts/study_tikhonov_sensitivity.py --seeds 0 1 2 3 4 5 6 7 8 9
 """
 from __future__ import annotations
 
