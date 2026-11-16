@@ -26,11 +26,11 @@ OUT = ROOT / "results" / "report_figs"
 MODEL_LABEL = {
     "StandardLSSVM": "LSSVM-Std", "PCPLSSVm": "LSSVM-PCP",
     "FSALSSVmOriginal": "LSSVM-FSA", "IPLSSVmOriginal": "LSSVM-IP",
-    "PruningLSSVM": "LSSVM-Prun", "OppositeMapsOriginalLSSVM": "LSSVM-OppM",
-    "ADMMNesterovLSSVM": "LSSVM-ADMM", "ADMMElasticNet": "ADMM-ElasticNet",
+    "PruningLSSVM": "LSSVM-Pruning", "OppositeMapsOriginalLSSVM": "LSSVM-OppMaps",
+    "ADMMNesterovLSSVM": "ADMM-Nesterov", "ADMMElasticNet": "ADMM-ElasticNet",
     "FISTANesterov": "FISTA-Nesterov", "DualFISTA": "DualFISTA★",
     "NystromLSSVMColnorm": "Nyström-SVM★", "FTTransformerCURColnorm": "FT-CUR★",
-    "FTTransformer_softmax": "FT-Softmax", "FTTransformer_topk": "FT-TopK",
+    "FTTransformer_softmax": "FT-Softmax", "FTTransformer_topk": "FT-Top-$k$",
     "FTTransformer_entmax": "FT-Entmax", "FTTransformer_sparsemax": "FT-Sparsemax",
     "SAINTColnorm": "SAINT", "XGBoost": "XGBoost",
 }
@@ -65,23 +65,49 @@ def collect(path, datasets):
     return out
 
 
-def barpanels(sc, models, ds_list, ds_labels, suptitle, fname):
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5), sharey=False)
+def barpanels(sc, models, ds_list, ds_labels, suptitle, fname, ref=None, ref_ds=None, ref_label=None,
+              main_label=None):
+    """Painéis de pontos horizontais (2026-11-16, revisão: rótulos legíveis na largura do texto).
+
+    Cada modelo é uma linha; o ponto cheio é a média ± desvio-padrão entre sementes. Com
+    ``ref``, um círculo vazio marca o mesmo modelo na condição de referência (ex.: 2D do
+    Cenário 1), ligado ao ponto cheio. ``suptitle`` não é desenhado: a legenda da tese explica.
+    """
+    plt.rcParams.update({"font.size": 8.5})
+    fig, axes = plt.subplots(1, len(ds_list), figsize=(6.3, 0.30 * len(models) + 1.25),
+                             sharey=True, sharex=True)
+    ypos = np.arange(len(models))[::-1]
     for col, ds in enumerate(ds_list):
         ax = axes[col]
-        vals = [np.mean(sc[m][ds]) if sc[m].get(ds) else np.nan for m in models]
-        stds = [np.std(sc[m][ds]) if sc[m].get(ds) else 0 for m in models]
-        cols = [model_color(m) for m in models]
-        ax.bar(range(len(models)), vals, color=cols, alpha=0.85, yerr=stds, capsize=3)
-        ax.set_title(ds_labels[col], fontsize=10)
-        ax.set_xticks(range(len(models)))
-        ax.set_xticklabels([MODEL_LABEL.get(m, m) for m in models],
-                           rotation=35, ha="right", fontsize=8)
-        ax.set_ylim(0.4, 1.05)
-        ax.set_ylabel("F1-macro" if col == 0 else "")
-        ax.grid(True, axis="y", alpha=0.3)
-    fig.suptitle(suptitle, fontsize=11)
-    plt.tight_layout()
+        for y, m in zip(ypos, models):
+            c = model_color(m)
+            v = sc[m].get(ds)
+            if ref is not None:
+                r = ref[m].get(ref_ds[col])
+                if r and v:
+                    ax.plot([np.mean(r), np.mean(v)], [y, y], color=c, lw=1.2, alpha=0.6, zorder=2)
+                if r:
+                    ax.scatter(np.mean(r), y, s=24, facecolor="white", edgecolor=c, lw=1.2, zorder=3)
+            if v:
+                ax.errorbar(np.mean(v), y, xerr=np.std(v), fmt="o", ms=4.5, color=c,
+                            elinewidth=1, capsize=2, zorder=4)
+        ax.set_title(ds_labels[col], fontsize=9)
+        ax.set_yticks(ypos)
+        ax.set_yticklabels([MODEL_LABEL.get(m, m) for m in models], fontsize=8.5)
+        ax.set_xlim(0.4, 1.02)
+        ax.set_xticks([0.4, 0.6, 0.8, 1.0])
+        ax.tick_params(axis="x", labelsize=8)
+        ax.set_xlabel("F1-macro", fontsize=8.5)
+        ax.grid(True, axis="x", alpha=0.3)
+    if ref is not None:
+        from matplotlib.lines import Line2D
+        h = [Line2D([], [], marker="o", ls="", mfc="white", mec="0.3", label=ref_label),
+             Line2D([], [], marker="o", ls="", color="0.3", label=main_label)]
+        fig.legend(handles=h, loc="upper center", ncol=2, frameon=False, fontsize=8,
+                   bbox_to_anchor=(0.6, 1.0))
+        plt.tight_layout(w_pad=0.6, rect=(0, 0, 1, 0.92))
+    else:
+        plt.tight_layout(w_pad=0.6)
     plt.savefig(OUT / f"{fname}.pdf", dpi=150)
     plt.savefig(OUT / f"{fname}.png", dpi=150)
     plt.close()
@@ -91,11 +117,19 @@ def barpanels(sc, models, ds_list, ds_labels, suptitle, fname):
 # fig4 — Ablação B (5 features com ruído)
 NOISE_MODELS = ["StandardLSSVM", "ADMMNesterovLSSVM", "DualFISTA",
                 "FTTransformer_sparsemax", "FTTransformer_softmax",
-                "NystromLSSVMColnorm", "FTTransformerCURColnorm"]
+                "NystromLSSVMColnorm", "FTTransformerCURColnorm", "XGBoost"]
 sc_b = collect(ROOT / "results" / "ablation_b_noise.json", ["TWS_5f", "TWM_5f", "TWC_5f"])
+sc_2d = collect(ROOT / "results" / "tier1_gridcv.json", ["TWS", "TWM", "TWC"])
 barpanels(sc_b, NOISE_MODELS, ["TWS_5f", "TWM_5f", "TWC_5f"],
-          ["Espiral (5f)", "Luas (5f)", "Tabuleiro (5f)"],
-          "Análise de Sensibilidade B — 5 features informativas + ruído", "fig4_5features")
+          ["Espiral (TWS)", "Luas (TWM)", "Tabuleiro (TWC)"],
+          "Análise de Sensibilidade B — 5 features informativas + ruído", "fig4_5features",
+          ref=sc_2d, ref_ds=["TWS", "TWM", "TWC"], ref_label="2D (Cenário 1)",
+          main_label="5D (3 atributos de ruído): média ± desvio-padrão")
+for m in NOISE_MODELS:
+    print(f"  {MODEL_LABEL.get(m, m):16s}", "  ".join(
+        f"{d}: 2D={np.mean(sc_2d[m][d]) if sc_2d[m].get(d) else float('nan'):.3f} "
+        f"5D={np.mean(sc_b[m][d + '_5f']) if sc_b[m].get(d + '_5f') else float('nan'):.3f}"
+        for d in ["TWS", "TWM", "TWC"]))
 
 # fig5 — Ablação C (MK5, complexidade)
 MK_MODELS = ["StandardLSSVM", "ADMMNesterovLSSVM", "DualFISTA",
